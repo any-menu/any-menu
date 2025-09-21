@@ -21,6 +21,12 @@ pnpm tauri dev # or pnpm tauri build
 在不使用交叉编译的情况下，`pnpm tauri build` 会在 stc-tauri/target/debug或release/ 中生成可执行程序。
 windows 环境生成 exe，Linux 环境生成 deb 等
 
+## 依赖
+
+```bash
+pnpm tauri add global-shortcut
+```
+
 ## 模板原README
 
 ```md
@@ -31,4 +37,27 @@ This template should help get you started developing with Tauri in vanilla HTML,
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+```
+
+## 学习笔记
+
+边开发边学习
+
+tauri.conf.json
+
+```json
+"windows": [
+  {
+    "label": "main",
+    "title": "any-menu",
+    "width": 800,
+    "height": 600,
+    "visible": false,     // 初始隐藏
+    "decorations": false, // 无标题栏和边框
+    "skipTaskbar": true,  // 不在任务栏显示
+    "alwaysOnTop": true,  // 始终置顶
+    "resizable": false,   // 可拖拽设置大小
+    "center": false
+  }
+],
 ```

@@ -1,5 +1,10 @@
-import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { invoke } from "@tauri-apps/api/core"
+
+// 注意api/window里的功能很多都需要开启权限
+import { getCurrentWindow } from '@tauri-apps/api/window'
+import { cursorPosition } from '@tauri-apps/api/window'
+
+// #region 默认的表单功能
 
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
@@ -22,6 +27,8 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// #endregion
+
 // #region 全局快捷键
 
 import { register } from '@tauri-apps/plugin-global-shortcut'
@@ -29,7 +36,13 @@ import { register } from '@tauri-apps/plugin-global-shortcut'
 register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
   if (event.state !== 'Pressed') return // Pressed/Released
 
-  console.log('Shortcut triggered', event)
+  console.log('Shortcut triggered1', event)
+  toggleWindow()
+})
+register('Alt+A', (event) => {
+  if (event.state !== 'Pressed') return // Pressed/Released
+
+  console.log('Shortcut triggered2', event)
   toggleWindow()
 })
 
@@ -37,17 +50,20 @@ register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
 
 /** 窗口控制函数 */
 async function toggleWindow() {
-  const appWindow = getCurrentWindow();
+  const appWindow = getCurrentWindow()
   
   try {
-    // 检查窗口是否可见
-    const isVisible = await appWindow.isVisible();
+    const isVisible = await appWindow.isVisible() // 检查窗口是否可见
+    const isFocused = await appWindow.isFocused() // 窗口是否聚焦
     
-    if (isVisible) {
-      // 如果窗口可见，则隐藏窗口
+    if (isFocused) {
       await appWindow.hide()
     } else {
-      // 如果窗口隐藏，则显示窗口
+      const cursor = await cursorPosition() // 光标位置
+      cursor.x += 5
+      cursor.y += 5
+      await appWindow.setPosition(cursor)
+
       await appWindow.show()
       await appWindow.setFocus() // 聚焦窗口
         // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
@@ -56,6 +72,6 @@ async function toggleWindow() {
       // await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
     }
   } catch (error) {
-    console.error('Window show fail:', error);
+    console.error('Window show fail:', error)
   }
 }

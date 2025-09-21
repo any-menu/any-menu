@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        platform: [windows-latest] # ubuntu-latest 版本需要要把 api/window 部分对应功能加上
 
     runs-on: ${{ matrix.platform }}
     
