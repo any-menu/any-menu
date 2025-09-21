@@ -21,27 +21,15 @@ pnpm tauri dev # or pnpm tauri build
 在不使用交叉编译的情况下，`pnpm tauri build` 会在 stc-tauri/target/debug或release/ 中生成可执行程序。
 windows 环境生成 exe，Linux 环境生成 deb 等
 
-## 依赖
+## 快捷面板模板
+
+(类似于 wox/utools/quicker/... 那样的模板)
+
+依赖
 
 ```bash
-pnpm tauri add global-shortcut
+pnpm tauri add global-shortcut # 用于全局快捷键
 ```
-
-## 模板原README
-
-```md
-# Tauri + Vanilla TS
-
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-```
-
-## 学习笔记
-
-边开发边学习
 
 tauri.conf.json
 
@@ -60,4 +48,43 @@ tauri.conf.json
     "center": false
   }
 ],
+```
+
+权限
+
+src-tauri/capabilities/default.json
+
+```json
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-position",
+    "core:window:allow-minimize",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-focus",
+    "core:window:allow-center",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
+  ]
+}
+```
+
+## 模板原README
+
+```md
+# Tauri + Vanilla TS
+
+This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+
+## Recommended IDE Setup
+
+- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 ```
