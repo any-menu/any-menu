@@ -26,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 import { register } from '@tauri-apps/plugin-global-shortcut'
 
-await register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
+register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
   if (event.state !== 'Pressed') return // Pressed/Released
 
   console.log('Shortcut triggered', event)
