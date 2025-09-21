@@ -49,8 +49,9 @@ async function toggleWindow() {
     } else {
       // 如果窗口隐藏，则显示窗口
       await appWindow.show()
+      await appWindow.setFocus() // 聚焦窗口
+        // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 
-      // await appWindow.setFocus() // 聚焦窗口
       // await appWindow.setAlwaysOnTop(true)  // 置顶窗口
       // await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
     }
