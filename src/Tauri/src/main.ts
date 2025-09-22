@@ -161,15 +161,43 @@ window.addEventListener("DOMContentLoaded", () => {
   const myMenu = new ABContextMenu(main)
   myMenu.append_data([
     {
+      label: 'Markdown',
+      children: [
+        { label: "表格" },
+        { label: "引用" },
+        { label: "代码块" },
+        { label: "公式块" },
+        { label: "有序列表" },
+        { label: "无序列表" },
+        { label: "---" },
+        { label: "标题" },
+        { label: "分割线" },
+        { label: "粗体" },
+        { label: "斜体" },
+      ]
+    },
+    {
       label: 'AnyBlock',
       children: root_menu_demo
     },
     {
-      label: 'mermaid',
+      label: 'Callout',
       children: []
     },
     {
-      label: 'plantuml',
+      label: 'Mermaid',
+      children: []
+    },
+    {
+      label: 'Plantuml',
+      children: []
+    },
+    {
+      label: 'Emoji',
+      children: []
+    },
+    {
+      label: '颜表情',
       children: []
     }
   ])

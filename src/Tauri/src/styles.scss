@@ -4,7 +4,7 @@
 
 :root {
   --am-bright-color: #23A8F2;
-  --am-text-color: #1E1E1E; // #0f0f0f;c
+  --am-text-color: #1E1E1E; // #0f0f0f;
   --am-background-color: #f6f6f6;
 
   color: var(--am-text-color);
@@ -74,6 +74,9 @@ html, body, #main {
 
   --ab-width-inner: 100%;
   --ab-width-outer: 100%;
+
+  --ab-menu-bg-color: #1B1B1B;
+  --ab-menu-text-color: #CCCCCC;
 }
 
 .ab-context-menu {
@@ -85,7 +88,7 @@ html, body, #main {
   margin: 0;
   min-width: 180px;
 
-  background-color: var(--ab-tab-root-bg-color);
+  background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
@@ -170,7 +173,7 @@ html, body, #main {
     right: 0;
     margin-top: 2px;
 
-    background-color:  var(--ab-tab-root-bg-color);
+    background-color:  var(--ab-menu-bg-color);
     border: 1px solid var(--ab-tab-root-bd-color);
     border-radius: 8px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
