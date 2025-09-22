@@ -176,10 +176,13 @@ export class ABContextMenu {
     const li_list = (ul: HTMLElement, menuItems: ContextMenuItems) => { // HTMLUListElement
       menuItems.forEach((item: ContextMenuItem) => {
         const li = document.createElement('li'); ul.appendChild(li)
-        // step1. label
+        // 菜单项标题
         li.textContent = item.label
 
-        // step2. callback
+        // 菜单项图标 (非ob版暂不支持)
+        if (item.icon) {}
+
+        // 菜单项功能
         {
           li.addEventListener('mousedown', (event) => {
             event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
@@ -213,7 +216,38 @@ export class ABContextMenu {
           }
         }
 
-        // step3. children
+        // 菜单项说明
+        let tooltip: HTMLElement|undefined = undefined
+        if (item.detail) {
+          li.onmouseenter = (evt: MouseEvent) => {
+            tooltip = document.createElement('div'); document.body.appendChild(tooltip);
+            tooltip.classList.add('ab-contextmenu-tooltip')
+            const domRect = li.getBoundingClientRect()
+            tooltip.setAttribute('style', `
+              position: fixed;
+              top: ${domRect.top + 1}px;
+              left: ${domRect.right + 1}px;
+              z-index: 9999;
+              background: var(--background-secondary);
+              padding: 8px;
+              border-radius: 4px;
+              box-shadow: var(--shadow-elevation-high);
+              max-width: 300px;
+            `)
+            // top: ${evt.clientY + 10}px;
+            // left: ${evt.clientX + 10}px;
+            const img = document.createElement('img'); tooltip.appendChild(img);
+              img.setAttribute('src', item.detail as string);
+              img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+          }
+          li.onmouseleave = (evt: MouseEvent) => {
+            if (!tooltip) return
+            document.body.removeChild(tooltip)
+            tooltip = undefined
+          }
+        }
+
+        // 菜单项的子菜单
         if (item.children) {
           li.classList.add('has-children')
           const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('ab-context-menu', 'sub-menu');
