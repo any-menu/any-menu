@@ -2,7 +2,179 @@
  * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
  */
 
-// ------------------------ 默认 ------------------------
+:root {
+  --ab-bright-color: #23A8F2;
+}
+
+html, body, #main {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+#main {
+  position: relative;
+
+  >button {
+    position: absolute;
+    box-sizing: border-box;
+    margin: 0;
+    bottom: 0px;
+    left: 0px;
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+    z-index: 1;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    &.active>svg {
+      stroke: var(--ab-bright-color);
+    }
+  }
+}
+
+/* -------------------------------- 菜单 ------------------------------- */
+// TODO 目前仅支持深色模式 颜色仿浏览器写的
+
+.ab-context-menu {
+  box-sizing: border-box;
+  position: fixed;
+  display: block; // [!code hl] Tauri版本默认不为none，其显示隐藏由窗口显示/隐藏控制
+  // left: // set by js
+  // top: // set by js
+  margin: 0;
+  min-width: 180px;
+
+  background-color: var(--ab-tab-root-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  z-index: 10;
+  list-style: none;
+  padding: 4px;
+
+  &.visible {
+    display: block;
+  }
+
+  >ul, >li, >div, >span, >button, >input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 28px;
+    margin: 0;
+    padding: 4px 12px;
+    line-height: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--ab-tab-root-hv-color);
+    }
+
+    .left {
+      margin-right: 10px;
+    }
+  }
+  input {
+    padding: 4px 4px;
+    border: none;
+    border-bottom: solid 1px var(--ab-tab-root-bd-color);
+    outline: none;
+    background: none;
+    color: currentColor;
+  }
+}
+
+.ab-context-menu.root-menu {}
+
+// 嵌套处理
+.ab-context-menu .has-children {
+  position: relative;
+  &::before {
+    content: "▶";
+    float: right;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+}
+.ab-context-menu.sub-menu {
+  display: none;
+  position: absolute;
+  top: -4px; // ul padding
+  left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
+  &.visible {
+    display: block;
+  }
+}
+
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 主容器样式 */
+.autocomplete-p {
+  position: relative;
+
+  // #search-input {
+  //   width: 100%;
+  //   padding: 10px;
+  //   font-size: 16px;
+  //   border: 1px solid #ccc;
+  //   border-radius: 4px;
+  //   box-sizing: border-box; /* 保证padding不会影响宽度 */
+  // }
+
+  /* 建议列表 */
+  .autocomplete-items {
+    position: absolute;
+    box-sizing: border-box;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 2px;
+
+    background-color:  var(--ab-tab-root-bg-color);
+    border: 1px solid var(--ab-tab-root-bd-color);
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    padding: 4px;
+    z-index: 100;    
+    max-height: 200px;
+    overflow-y: auto;
+
+    /* 建议列表项 */
+    >div {
+      box-sizing: border-box;
+      width: 100%;
+      height: 28px;
+      margin: 0;
+      padding: 4px 12px;
+      line-height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      // border-bottom: 1px solid var(--ab-tab-root-bd-color);
+
+      &:hover {
+        background-color: var(--ab-tab-root-hv-color);
+      }
+
+      &.autocomplete-active {
+        background-color: var(--ab-bright-color) !important;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+/* -------------------------------- 默认 ------------------------------- */
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

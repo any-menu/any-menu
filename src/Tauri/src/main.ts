@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core"
 
-// 注意api/window里的功能很多都需要开启权限
+// 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { cursorPosition } from '@tauri-apps/api/window'
 
@@ -148,9 +148,6 @@ async function showWindow() {
   await appWindow.show(); global_isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
-
-  // await appWindow.setAlwaysOnTop(true)  // 置顶窗口
-  // await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
 }
 
 // #endregion
@@ -179,8 +176,19 @@ window.addEventListener("DOMContentLoaded", () => {
   myMenu.attach(main)
 
   // 置顶按钮
-  const btn = document.createElement('button'); main.appendChild(btn); btn.textContent = 'Pin';
+  const btn = document.createElement('button'); main.appendChild(btn);
+  // https://lucide.dev/icons/pin
+  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`
   btn.onclick = async () => {
+    const appWindow = getCurrentWindow()
     global_isPin = !global_isPin
+    if (global_isPin) {
+      btn.classList.add('active')
+      await appWindow.setAlwaysOnTop(true)  // 置顶窗口
+    }
+    else {
+      btn.classList.remove('active')
+      await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
+    }
   }
 })
