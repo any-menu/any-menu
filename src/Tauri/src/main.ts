@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core"
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { cursorPosition } from '@tauri-apps/api/window'
 
-// #region 默认的表单功能
+// #region 默认的表单功能、与后端沟通
 
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
@@ -96,22 +96,22 @@ function initAutoHide() {
     event.stopPropagation();
   })
 
-  // 监听全局鼠标事件（通过窗口边界检测）
-  document.addEventListener('mouseleave', () => {
-    if (!globle_isWindowVisible) return
-    // 鼠标离开窗口区域时延迟隐藏
-    hideTimeout = window.setTimeout(() => {
-      hideWindow()
-    }, 200) // 给用户一点时间重新进入窗口
-  })
+  // // 监听全局鼠标事件（通过窗口边界检测）
+  // document.addEventListener('mouseleave', () => {
+  //   if (!globle_isWindowVisible) return
+  //   // 鼠标离开窗口区域时延迟隐藏
+  //   hideTimeout = window.setTimeout(() => {
+  //     hideWindow()
+  //   }, 200) // 给用户一点时间重新进入窗口
+  // })
 
-  document.addEventListener('mouseenter', () => {
-    // 鼠标重新进入窗口时取消隐藏
-    if (hideTimeout) {
-      clearTimeout(hideTimeout)
-      hideTimeout = null
-    }
-  })
+  // // 鼠标重新进入窗口时取消隐藏
+  // document.addEventListener('mouseenter', () => {
+  //   if (hideTimeout) {
+  //     clearTimeout(hideTimeout)
+  //     hideTimeout = null
+  //   }
+  // })
 
   // ESC键隐藏窗口
   document.addEventListener('keydown', (event) => {
@@ -135,9 +135,13 @@ async function showWindow() {
   const appWindow = getCurrentWindow()
 
   const cursor = await cursorPosition() // 光标位置
-  cursor.x += 5
-  cursor.y += 5
+  cursor.x += 0
+  cursor.y += 2
   await appWindow.setPosition(cursor)
+  
+  // TODO 动态计算大小
+  // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
+  // await appWindow.setSize({ width: 240, height: 320 })
 
   await appWindow.show(); globle_isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口
@@ -148,3 +152,14 @@ async function showWindow() {
 }
 
 // #endregion
+
+// 前端模块
+import { ABContextMenu } from "./contextmenu"
+import { root_menu_demo } from "./contextmenu/demo"
+window.addEventListener("DOMContentLoaded", () => {
+  const main: HTMLDivElement | null = document.querySelector("#main")
+  if (!main) return
+  const myMenu = new ABContextMenu(main)
+  myMenu.append_data(root_menu_demo)
+  myMenu.attach(main)
+})
