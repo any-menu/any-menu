@@ -31,6 +31,13 @@ html, body, #main {
 #main {
   position: relative;
 
+  /* 透明区域不接收鼠标事件 */
+  pointer-events: none;
+  /* 这个区域可以接收鼠标事件 */
+  > * {
+    pointer-events: auto;
+  }
+
   >button {
     position: absolute;
     box-sizing: border-box;

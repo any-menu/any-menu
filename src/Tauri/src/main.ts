@@ -33,23 +33,32 @@ window.addEventListener("DOMContentLoaded", () => {
 
 import { register } from '@tauri-apps/plugin-global-shortcut'
 
+let global_isPin = false // 是否置顶
+let global_isWindowVisible = false // 当前窗口是否可见 (可以去掉而是实时获取)
+let hideTimeout: number | null = null // 定时器，用于延时隐藏、防抖 (感觉不太需要? 延时加多了反而有种性能差的感觉)
+
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
   initClickThroughBehavior()
 })
-register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
-  if (event.state !== 'Pressed') return // Pressed/Released
+registerShortcuts()
 
-  console.log('Shortcut triggered1', event)
-  toggleWindow()
-})
-register('Alt+A', (event) => {
-  if (event.state !== 'Pressed') return // Pressed/Released
+/** 注册全局快捷键 */
+function registerShortcuts() {
+  register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
+    if (event.state !== 'Pressed') return // Pressed/Released
 
-  console.log('Shortcut triggered2', event)
-  toggleWindow()
-})
+    console.log('Shortcut triggered1', event)
+    toggleWindow()
+  })
+  register('Alt+A', (event) => {
+    if (event.state !== 'Pressed') return // Pressed/Released
+
+    console.log('Shortcut triggered2', event)
+    toggleWindow()
+  })
+}
 
 /** 窗口切换是否显示 */
 async function toggleWindow() {  
@@ -68,32 +77,88 @@ async function toggleWindow() {
   }
 }
 
-let global_isPin = false // 是否置顶
-let global_isWindowVisible = false // 当前窗口是否可见 (可以去掉而是实时获取)
-let hideTimeout: number | null = null // 定时器，用于延时隐藏、防抖 (感觉不太需要? 延时加多了反而有种性能差的感觉)
-
 /** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透 */
 function initClickThroughBehavior() {
+  const appWindow = getCurrentWindow()
+  const mainElement = document.querySelector('#main')
+
+  // 有多种策略实现，最后选用性能最好，实现最简单的策略一。虽然效果不是最佳的
+
+  // 策略一：监听点击事件 (缺点: 点击的那一下无法穿透，只是能起隐藏窗口的作用)
   // document.addEventListener('click', (event) => {
   document.addEventListener('mousedown', (event) => {
-    // 检查点击的元素是否在 #main 内
-    const mainElement = document.querySelector('#main')
     const target = event.target as Node
     
-    // 满足所有条件则点击穿透
-    if (!mainElement) return
-    if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
+    // b1. 满足所有条件则点击穿透
+    if (!mainElement) {}
+    else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
       console.log('click through')
       event.preventDefault()
-      const appWindow = getCurrentWindow()
+      document.body.style.pointerEvents = 'none'
       appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
+      setTimeout(() => {
+        document.body.style.pointerEvents = 'auto'
+        appWindow.setIgnoreCursorEvents(false)
+      }, 100)
       hideWindow()
       return
     }
-
-    // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
-    event.stopPropagation()
+    // b2. 否则不穿透
+    event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+    return
   })
+
+  // // 策略二：监听鼠标移动事件 (缺点: 穿透后就无法再有mouseover事件了，无法恢复不穿透状态)
+  // // document.addEventListener('mousemove', (event) => {
+  // document.addEventListener('mouseover', (event) => {
+  //   const target = event.target as Node
+    
+  //   console.log('mouseover', target)
+    
+  //   // b1. 满足所有条件则点击穿透
+  //   if (!mainElement) {}
+  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
+  //     console.log('through')
+  //     // event.preventDefault()
+  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
+  //     // hideWindow()
+  //     return
+  //   }
+  //   // b2. 否则不穿透
+  //   appWindow.setIgnoreCursorEvents(false)
+  //   return
+  // })
+
+  // // 策略三: 策略二 + 定时器重新启用鼠标事件
+  // // 缺点: 可能导致异常频繁刷新。所以可能要用其他方法进一步约束 (有改进空间)
+  // document.addEventListener('mousemove', (event) => {
+  //   const target = event.target as Node
+    
+  //   console.log('mouseover', target)
+    
+  //   // b1. 满足所有条件则点击穿透
+  //   if (!mainElement) {}
+  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
+  //     console.log('through')
+  //     // event.preventDefault()
+  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
+  //     setTimeout(() => { // 临时恢复并重新检测
+  //       document.body.style.pointerEvents = 'auto'
+  //       appWindow.setIgnoreCursorEvents(false)
+  //     }, 200)
+  //     // hideWindow()
+  //     return
+  //   }
+  //   // b2. 否则不穿透
+  //   appWindow.setIgnoreCursorEvents(false)
+  //   return
+  // })
+
+  // 策略四：点击事件的基础上去再模拟一个同坐标的点击事件 (需要 rust 后端配合)
+
+  // 策略五：局限于自带的菜单系统
+
+  // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
 }
 
 /** 自动隐藏功能、鼠标穿透功能 */
