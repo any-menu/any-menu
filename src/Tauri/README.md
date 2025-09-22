@@ -34,6 +34,8 @@ pnpm tauri add global-shortcut # 用于全局快捷键
 tauri.conf.json
 
 ```json
+// v1文档: https://v1.tauri.app/v1/api/js/window/ https://v1.tauri.app/v1/api/config/
+// v2文档: https://v2.tauri.app/reference/javascript/api/namespacewindow/#properties-6
 "windows": [
   {
     "label": "main",
@@ -47,6 +49,7 @@ tauri.conf.json
     "resizable": false,   // 可拖拽设置大小
     "center": false,
     "transparent": true,  // 透明
+    "shadow": false,      // 阴影
   }
 ],
 ```
@@ -56,6 +59,7 @@ tauri.conf.json
 src-tauri/capabilities/default.json
 
 ```json
+// 文档: https://v2.tauri.app/reference/acl/core-permissions/#default-permission-8
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",

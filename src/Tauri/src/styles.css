@@ -4,7 +4,7 @@
  */
 :root {
   --am-bright-color: #23A8F2;
-  --am-text-color: #0f0f0f;
+  --am-text-color: #1E1E1E;
   --am-background-color: #f6f6f6;
   color: var(--am-text-color);
   background-color: var(--am-background-color);
@@ -26,10 +26,6 @@ html, body, #main {
 
 #main {
   position: relative;
-}
-#main .ab-context-menu {
-  background: var(--am-background-color);
-  color: var(--am-text-color);
 }
 #main > button {
   position: absolute;
