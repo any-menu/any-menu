@@ -14,7 +14,7 @@
     "windows": [
       {
         "title": "any-menu",
-        "width": 240,
+        "width": 600,
         "decorations": false,
         "resizable": false,
         "skipTaskbar": true,

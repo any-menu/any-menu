@@ -3,25 +3,44 @@
  */
 
 :root {
-  --ab-bright-color: #23A8F2;
+  --am-bright-color: #23A8F2;
+  --am-text-color: #0f0f0f;
+  --am-background-color: #f6f6f6;
+
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --am-text-color: #f6f6f6;
+    --am-background-color: #2f2f2f;
+  }
+}
+
+// color: #f6f6f6;
+// background-color: #2f2f2f;
 
 html, body, #main {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
+  background: transparent !important;
 }
 
 #main {
   position: relative;
 
+  .ab-context-menu {
+    background: var(--am-background-color);
+    color: var(--am-text-color);
+  }
+
   >button {
     position: absolute;
     box-sizing: border-box;
     margin: 0;
-    bottom: 0px;
+    bottom: 5px;
     left: 0px;
     width: 24px;
     height: 24px;
@@ -38,13 +57,29 @@ html, body, #main {
     }
 
     &.active>svg {
-      stroke: var(--ab-bright-color);
+      stroke: var(--am-bright-color);
     }
   }
 }
 
 /* -------------------------------- 菜单 ------------------------------- */
 // TODO 目前仅支持深色模式 颜色仿浏览器写的
+
+:root {
+  --ab-tab-root-bg-color: #0d1117;  // #ffffff;
+  --ab-tab-root-bd-color: #34343f;  // #e0e0e0;
+  --ab-tab-root-hv-color: #363639;  // #D7D7D7 hover
+  --ab-tab-root-tx-color: #9e9e9e;  // blackc
+
+  --ab-bright-color: orange;        // lightgoldenrodyellow、yellowgreen
+  --pre-background-color: #1b1b1b;  // rgb(36,36,36)
+
+  --ab-table-border-width: 1px;
+  --ab-table-border-color: #363636;
+
+  --ab-width-inner: 100%;
+  --ab-width-outer: 100%;
+}
 
 .ab-context-menu {
   box-sizing: border-box;
@@ -167,7 +202,7 @@ html, body, #main {
       }
 
       &.autocomplete-active {
-        background-color: var(--ab-bright-color) !important;
+        background-color: var(--am-bright-color) !important;
         color: #ffffff;
       }
     }
@@ -181,9 +216,6 @@ html, body, #main {
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -214,8 +246,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
   transition: border-color 0.25s;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
@@ -232,21 +264,13 @@ button:active {
   background-color: #e8e8e8;
 }
 
+// 黑暗模式
 @media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
 
   a:hover {
     color: #24c8db;
   }
 
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
   button:active {
     background-color: #0f0f0f69;
   }
