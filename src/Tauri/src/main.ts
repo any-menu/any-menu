@@ -67,6 +67,7 @@ async function toggleWindow() {
   }
 }
 
+let global_isPin = false // 是否置顶
 let global_isWindowVisible = false // 当前窗口是否可见 (可以去掉而是实时获取)
 let hideTimeout: number | null = null // 定时器，用于延时隐藏、防抖 (感觉不太需要? 延时加多了反而有种性能差的感觉)
 
@@ -123,14 +124,15 @@ function initAutoHide() {
 
 /** 隐藏窗口 */
 async function hideWindow() {
-  // if (!global_isWindowVisible) return // 可注释
+  if (!global_isWindowVisible) return // 可注释
+  if (global_isPin) return
 
   const appWindow = getCurrentWindow()
 
   await appWindow.hide(); global_isWindowVisible = false;
 }
 
-/** 显示窗口，并自动定位到光标位置 */
+/** 显示窗口，并自动定位到光标位置 */ 
 async function showWindow() {
   const appWindow = getCurrentWindow()
 
@@ -160,6 +162,25 @@ window.addEventListener("DOMContentLoaded", () => {
   const main: HTMLDivElement | null = document.querySelector("#main")
   if (!main) return
   const myMenu = new ABContextMenu(main)
-  myMenu.append_data(root_menu_demo)
+  myMenu.append_data([
+    {
+      label: 'AnyBlock',
+      children: root_menu_demo
+    },
+    {
+      label: 'mermaid',
+      children: []
+    },
+    {
+      label: 'plantuml',
+      children: []
+    }
+  ])
   myMenu.attach(main)
+
+  // 置顶按钮
+  const btn = document.createElement('button'); main.appendChild(btn); btn.textContent = 'Pin';
+  btn.onclick = async () => {
+    global_isPin = !global_isPin
+  }
 })

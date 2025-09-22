@@ -45,7 +45,8 @@ tauri.conf.json
     "skipTaskbar": true,  // 不在任务栏显示
     "alwaysOnTop": true,  // 始终置顶
     "resizable": false,   // 可拖拽设置大小
-    "center": false
+    "center": false,
+    "transparent": true,  // 透明
   }
 ],
 ```

@@ -17,7 +17,8 @@
         "width": 240,
         "decorations": false,
         "resizable": false,
-        "skipTaskbar": true
+        "skipTaskbar": true,
+        "transparent": true
       }
     ],
     "security": {
