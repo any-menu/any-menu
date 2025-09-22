@@ -327,10 +327,10 @@ export const root_menu_raw: ContextMenuItems = [
   ] },
 ]
 
-/** 装饰 - 叉 */
-function input_delete() {
-  
-}
+// /** 装饰 - 叉 */
+// function input_delete() {
+//   
+// }
 
 /** 装饰 - 输入框建议
  * 
@@ -343,12 +343,11 @@ function input_delete() {
  */
 function input_suggestion(el_input: HTMLInputElement, el_container: HTMLElement) {
   el_container.classList.add('autocomplete-p')
-  let el_suggestion: HTMLElement
   const suggestions = ['list2table', 'list2tab', 'list2markmap', 'list2mermaid']
   let currentFocus: number = -1; // 用于跟踪键盘选择的项目
 
   // el_input事件 - 输入
-  el_input.addEventListener('input', function(e) {
+  el_input.addEventListener('input', function() {
     const val: string = this.value
     closeAllLists() // 关闭任何已打开的列表
 
