@@ -36,6 +36,7 @@ import { register } from '@tauri-apps/plugin-global-shortcut'
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
+  initClickThroughBehavior()
 })
 register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
   if (event.state !== 'Pressed') return // Pressed/Released
@@ -71,13 +72,35 @@ let global_isPin = false // 是否置顶
 let global_isWindowVisible = false // 当前窗口是否可见 (可以去掉而是实时获取)
 let hideTimeout: number | null = null // 定时器，用于延时隐藏、防抖 (感觉不太需要? 延时加多了反而有种性能差的感觉)
 
-// 自动隐藏功能
+/** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透 */
+function initClickThroughBehavior() {
+  // document.addEventListener('click', (event) => {
+  document.addEventListener('mousedown', (event) => {
+    // 检查点击的元素是否在 #main 内
+    const mainElement = document.querySelector('#main')
+    const target = event.target as Node
+    
+    // 满足所有条件则点击穿透
+    if (!mainElement) return
+    if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
+      console.log('click through')
+      event.preventDefault()
+      const appWindow = getCurrentWindow()
+      appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
+      hideWindow()
+      return
+    }
+
+    // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+    event.stopPropagation()
+  })
+}
+
+/** 自动隐藏功能、鼠标穿透功能 */
 function initAutoHide() {
-  
   // 监听窗口失焦事件
   const appWindow = getCurrentWindow()
   appWindow.onFocusChanged(({ payload: focused }) => {
-    console.log('Focus changed:', focused)
     // 失焦
     if (!focused) {
       hideTimeout = window.setTimeout(() => {
@@ -91,11 +114,11 @@ function initAutoHide() {
     }
   })
 
-  // 监听鼠标点击事件（检测点击外部）
-  document.addEventListener('click', (event) => {
-    // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
-    event.stopPropagation();
-  })
+  // // 监听鼠标点击事件（检测点击外部）
+  // document.addEventListener('click', (event) => {
+  //   // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+  //   event.stopPropagation()
+  // })
 
   // // 监听全局鼠标事件（通过窗口边界检测）
   // document.addEventListener('mouseleave', () => {
@@ -135,6 +158,8 @@ async function hideWindow() {
 /** 显示窗口，并自动定位到光标位置 */ 
 async function showWindow() {
   const appWindow = getCurrentWindow()
+
+  appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
 
   const cursor = await cursorPosition() // 光标位置
   cursor.x += 0
