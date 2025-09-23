@@ -5,6 +5,7 @@
  */
 
 import { register } from '@tauri-apps/plugin-global-shortcut'
+import { invoke } from "@tauri-apps/api/core"
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
 
@@ -22,6 +23,7 @@ export const global_state: {
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
   initClickThroughBehavior()
+  initTrayKeyboardShortcuts()
 })
 registerShortcuts()
 
@@ -41,20 +43,82 @@ function registerShortcuts() {
   })
 }
 
-/** 窗口切换是否显示 */
+/** 添加类似托盘的键盘快捷键 */
+function initTrayKeyboardShortcuts() {
+  // 为没有系统托盘的情况添加快捷键
+  register('CommandOrControl+Alt+Q', (event) => {
+    if (event.state !== 'Pressed') return
+    
+    console.log('Quit application shortcut triggered')
+    quitApp()
+  })
+  
+  register('CommandOrControl+Alt+H', (event) => {
+    if (event.state !== 'Pressed') return
+    
+    console.log('Hide window shortcut triggered')
+    hideWindow()
+  })
+  
+  register('CommandOrControl+Alt+S', (event) => {
+    if (event.state !== 'Pressed') return
+    
+    console.log('Show window shortcut triggered')
+    showWindow()
+  })
+}
+
+/** 窗口切换是否显示 - 使用 Rust 后端 */
 async function toggleWindow() {  
   try {
+    await invoke("toggle_window")
+    // 更新本地状态
     const appWindow = getCurrentWindow()
-    // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
-    const isFocused = await appWindow.isFocused() // 窗口是否聚焦
-    
-    if (isFocused) {
-      await hideWindow()
-    } else {
-      await showWindow()
-    }
+    const isVisible = await appWindow.isVisible()
+    global_state.isWindowVisible = isVisible
   } catch (error) {
-    console.error('Window show fail:', error)
+    console.error('Toggle window failed:', error)
+  }
+}
+
+/** 显示窗口 - 使用 Rust 后端 */
+async function showWindow() {
+  try {
+    const appWindow = getCurrentWindow()
+    appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透
+    
+    // 设置窗口位置到光标位置
+    const cursor = await cursorPosition()
+    cursor.x += 0
+    cursor.y += 2
+    await appWindow.setPosition(cursor)
+    
+    await invoke("show_window")
+    global_state.isWindowVisible = true
+  } catch (error) {
+    console.error('Show window failed:', error)
+  }
+}
+
+/** 隐藏窗口 - 使用 Rust 后端 */
+export async function hideWindow() {
+  if (!global_state.isWindowVisible) return
+  if (global_state.isPin) return
+
+  try {
+    await invoke("hide_window")
+    global_state.isWindowVisible = false
+  } catch (error) {
+    console.error('Hide window failed:', error)
+  }
+}
+
+/** 退出应用程序 - 类似托盘的退出功能 */
+async function quitApp() {
+  try {
+    await invoke("quit_app")
+  } catch (error) {
+    console.error('Quit app failed:', error)
   }
 }
 
@@ -87,60 +151,7 @@ function initClickThroughBehavior() {
     // b2. 否则不穿透
     event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
     return
-  })
-
-  // // 策略二：监听鼠标移动事件 (缺点: 穿透后就无法再有mouseover事件了，无法恢复不穿透状态)
-  // // document.addEventListener('mousemove', (event) => {
-  // document.addEventListener('mouseover', (event) => {
-  //   const target = event.target as Node
-    
-  //   console.log('mouseover', target)
-    
-  //   // b1. 满足所有条件则点击穿透
-  //   if (!mainElement) {}
-  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
-  //     console.log('through')
-  //     // event.preventDefault()
-  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
-  //     // hideWindow()
-  //     return
-  //   }
-  //   // b2. 否则不穿透
-  //   appWindow.setIgnoreCursorEvents(false)
-  //   return
-  // })
-
-  // // 策略三: 策略二 + 定时器重新启用鼠标事件
-  // // 缺点: 可能导致异常频繁刷新。所以可能要用其他方法进一步约束 (有改进空间)
-  // document.addEventListener('mousemove', (event) => {
-  //   const target = event.target as Node
-    
-  //   console.log('mouseover', target)
-    
-  //   // b1. 满足所有条件则点击穿透
-  //   if (!mainElement) {}
-  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
-  //     console.log('through')
-  //     // event.preventDefault()
-  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
-  //     setTimeout(() => { // 临时恢复并重新检测
-  //       document.body.style.pointerEvents = 'auto'
-  //       appWindow.setIgnoreCursorEvents(false)
-  //     }, 200)
-  //     // hideWindow()
-  //     return
-  //   }
-  //   // b2. 否则不穿透
-  //   appWindow.setIgnoreCursorEvents(false)
-  //   return
-  // })
-
-  // 策略四：点击事件的基础上去再模拟一个同坐标的点击事件 (需要 rust 后端配合)
-
-  // 策略五：局限于自带的菜单系统
-
-  // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
-}
+  }
 
 /** 自动隐藏功能、鼠标穿透功能 */
 function initAutoHide() {
@@ -160,63 +171,10 @@ function initAutoHide() {
     }
   })
 
-  // // 监听鼠标点击事件（检测点击外部）
-  // document.addEventListener('click', (event) => {
-  //   // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
-  //   event.stopPropagation()
-  // })
-
-  // // 监听全局鼠标事件（通过窗口边界检测）
-  // document.addEventListener('mouseleave', () => {
-  //   if (!global_state.isWindowVisible) return
-  //   // 鼠标离开窗口区域时延迟隐藏
-  //   global_state.hideTimeout = window.setTimeout(() => {
-  //     hideWindow()
-  //   }, 200) // 给用户一点时间重新进入窗口
-  // })
-
-  // // 鼠标重新进入窗口时取消隐藏
-  // document.addEventListener('mouseenter', () => {
-  //   if (global_state.hideTimeout) {
-  //     clearTimeout(global_state.hideTimeout)
-  //     global_state.hideTimeout = null
-  //   }
-  // })
-
   // ESC键隐藏窗口
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       hideWindow()
     }
   })
-}
-
-/** 隐藏窗口 */
-export async function hideWindow() {
-  if (!global_state.isWindowVisible) return // 可注释
-  if (global_state.isPin) return
-
-  const appWindow = getCurrentWindow()
-
-  await appWindow.hide(); global_state.isWindowVisible = false;
-}
-
-/** 显示窗口，并自动定位到光标位置 */ 
-async function showWindow() {
-  const appWindow = getCurrentWindow()
-
-  appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
-
-  const cursor = await cursorPosition() // 光标位置
-  cursor.x += 0
-  cursor.y += 2
-  await appWindow.setPosition(cursor)
-  
-  // TODO 动态计算大小
-  // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
-  // await appWindow.setSize({ width: 240, height: 320 })
-
-  await appWindow.show(); global_state.isWindowVisible = true;
-  await appWindow.setFocus() // 聚焦窗口
-    // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 }

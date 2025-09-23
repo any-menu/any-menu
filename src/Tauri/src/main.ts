@@ -113,4 +113,27 @@ window.addEventListener("DOMContentLoaded", () => {
       await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
     }
   }
+
+  // 退出程序按钮 - 类似系统托盘的退出功能
+  const quit_btn = document.createElement('button'); main.appendChild(quit_btn); quit_btn.classList.add('btn-1');
+  quit_btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="m18 6-12 12"/><path d="m6 6 12 12"/></svg>`
+  quit_btn.title = "退出程序 (Ctrl+Alt+Q)"
+  quit_btn.onclick = async () => {
+    if (confirm('确定要退出程序吗？')) {
+      await invoke("quit_app")
+    }
+  }
+
+  // 添加托盘功能说明
+  const info_div = document.createElement('div'); main.appendChild(info_div); info_div.classList.add('tray-info');
+  info_div.innerHTML = `
+    <div style="font-size: 12px; color: #666; margin: 10px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+      <div><strong>托盘式操作:</strong></div>
+      <div>• 关闭窗口 = 隐藏到后台</div>
+      <div>• Ctrl+Space / Alt+A = 显示/隐藏</div>
+      <div>• Ctrl+Alt+Q = 完全退出程序</div>
+      <div>• Ctrl+Alt+H = 隐藏窗口</div>
+      <div>• Ctrl+Alt+S = 显示窗口</div>
+    </div>
+  `
 })
