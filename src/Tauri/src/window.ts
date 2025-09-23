@@ -192,7 +192,7 @@ function initAutoHide() {
 }
 
 /** 隐藏窗口 */
-async function hideWindow() {
+export async function hideWindow() {
   if (!global_state.isWindowVisible) return // 可注释
   if (global_state.isPin) return
 

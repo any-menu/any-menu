@@ -39,7 +39,6 @@ html, body, #main {
   margin: 0;
   bottom: 5px;
   left: 0px;
-  width: 24px;
   height: 24px;
   padding: 0;
   z-index: 1;
@@ -53,6 +52,13 @@ html, body, #main {
 }
 #main > button.active > svg {
   stroke: var(--am-bright-color);
+}
+#main > .btn-1 {
+  bottom: 5px;
+  width: 34px;
+}
+#main > .btn-2 {
+  bottom: 50px;
 }
 
 /* -------------------------------- 菜单 ------------------------------- */

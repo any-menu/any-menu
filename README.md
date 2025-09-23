@@ -1,4 +1,6 @@
-# AnyMenu
+# AnyMenu —— Input Method Assistant / Editor Assistant
+
+AnyMenu —— 一款强大的输入法助手/编辑器助手
 
 （开发中）
 
@@ -51,8 +53,33 @@
     - 用于在一些简易的Editor临时使用更强大的功能。如在 notepad、notepad-- 等软件上使用多光标
     - 用于局部文本的编辑: 如将选中文本的某一文本替换成另一文本，这样不会影响全局
     - 临时备忘录、闪念笔记等
+  - 雾凇拼音功能 https://github.com/iDvel/rime-ice
+    相较于雾凇而言：不用记 (key-value系统)、更适合低频的输入内容、适合使用所有输入法的人群。但如果你笔记熟练使用雾凇，通常还是使用输入法更快
+    - 拆字反查（uU+拼音），**拆字辅码**（拼音+`+拆字辅码）
+    - 自整理的 Emoji
+    - 以词定字（左右中括号：[、]）
+    - Unicode（U+Unicode 码位）
+    - 数字、人民币大写（R+数字）
+    - 日期、时间、星期（详见方案 /date_translator 节点）
+    - 农历（转写：N+八位数字；获取当前农历：全拼nl，双拼lunar）
+    - 简易计算器（cC+算式）
+    - 特殊符号、字符输入（全拼v+首字母缩写；双拼V+首字母缩写）
+    - 拼音纠错（模糊音）
 - 逻辑复用的扩展功能
   - i18n 那个逻辑能做片段/css市场？
+- ai
+
+## 同类产品
+
+这点 msjsc001/QuickKV 中也有写
+
+这里先暂时不再赘述整理
+
+可能需要补充的产品: Obsidian插件:
+
+- Editor Toolbar
+- [Slash Commander](https://github.com/alephpiece/obsidian-slash-commander) ⭐89
+- Slash snippets
 
 ## 来源
 
