@@ -50,12 +50,24 @@ jobs:
         working-directory: ./src/Tauri
         run: pnpm tauri build
       
-      - name: Upload artifacts (Windows)
+      # - name: Upload artifacts (Windows)
+      #   if: matrix.platform == 'windows-latest'
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: any-menu-windows
+      #     path: ./src/Tauri/src-tauri/target/release/bundle/
+      - name: Upload MSI artifact (Windows)
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: any-menu-windows
-          path: ./src/Tauri/src-tauri/target/release/bundle/
+          name: any-menu-windows-msi
+          path: ./src/Tauri/src-tauri/target/release/bundle/msi/*.msi
+      - name: Upload NSIS artifact (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: any-menu-windows-nsis
+          path: ./src/Tauri/src-tauri/target/release/bundle/nsis/*.exe
       
       - name: Upload artifacts (Linux)
         if: matrix.platform == 'ubuntu-latest'
