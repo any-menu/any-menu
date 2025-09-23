@@ -151,7 +151,8 @@ function initClickThroughBehavior() {
     // b2. 否则不穿透
     event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
     return
-  }
+  })
+}
 
 /** 自动隐藏功能、鼠标穿透功能 */
 function initAutoHide() {
