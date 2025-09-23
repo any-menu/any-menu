@@ -6,13 +6,83 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+
+/// 项目模板 默认的表单功能
+#[tauri::command]
+fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
+}
+
+/// Show the main window
+#[tauri::command]
+fn show_window(app_handle: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        window.show().map_err(|e| e.to_string())?;
+        window.set_focus().map_err(|e| e.to_string())?;
+        window.unminimize().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+/// Hide the main window
+#[tauri::command]  
+fn hide_window(app_handle: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        window.hide().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+/// Toggle window visibility
+#[tauri::command]
+fn toggle_window(app_handle: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let is_visible = window.is_visible().map_err(|e| e.to_string())?;
+        if is_visible {
+            hide_window(app_handle)
+        } else {
+            show_window(app_handle)
+        }
+    } else {
+        Err("Window not found".to_string())
+    }
+}
+
+/// Quit the application completely
+#[tauri::command]
+fn quit_app(app_handle: tauri::AppHandle) -> Result<(), String> {
+    app_handle.exit(0);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![paste])
+        .setup(|app| {
+            // Initially hide the window to simulate tray behavior
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.hide();
+            }
+            Ok(())
+        })
+        .on_window_event(|window, event| {
+            // Prevent window from actually closing, hide it instead
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                let _ = window.hide();
+            }
+        })
+        .invoke_handler(tauri::generate_handler![
+            greet, 
+            paste, 
+            show_window, 
+            hide_window, 
+            toggle_window,
+            quit_app
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
