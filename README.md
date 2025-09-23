@@ -1,4 +1,4 @@
-# AnyMenu —— Input Method Assistant / Editor Assistant
+# AnyMenu —— InputMethod Assistant / Editor Assistant
 
 AnyMenu —— 一款强大的输入法助手/编辑器助手
 

@@ -1,20 +1,57 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
-/// 项目模板 默认的表单功能
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use tauri::{
+  menu::{Menu, MenuItem},
+  tray::TrayIconBuilder,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
+            let menu = Menu::with_items(app, &[&quit_item])?; // 菜单项数组
+
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
+                .tooltip("any-menu")
+                .menu(&menu) // 加载菜单项数组
+                // .show_menu_on_left_click(true) // 左键也能展开菜单
+                .on_menu_event(|app, event| match event.id.as_ref() { // 菜单事件
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                // .on_tray_icon_event(|tray, event| {
+                //     if let TrayIconEvent::Click {
+                //         button: MouseButton::Left,
+                //         button_state: _,
+                //         ..
+                //     } = event
+                //     {
+                //         let app = tray.app_handle();
+                //         if let Some(window) = app.get_webview_window("main") {
+                //             let _ = window.show();
+                //             let _ = window.set_focus();
+                //         }
+                //     }
+                // })
+                .build(app)?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![paste])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+/// 项目模板 默认的表单功能
+#[tauri::command]
+fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 // ----------------------------------------------------------------------------
