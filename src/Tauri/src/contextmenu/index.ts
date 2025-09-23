@@ -219,7 +219,7 @@ export class ABContextMenu {
         // 菜单项说明
         let tooltip: HTMLElement|undefined = undefined
         if (item.detail) {
-          li.onmouseenter = (evt: MouseEvent) => {
+          li.onmouseenter = () => {
             tooltip = document.createElement('div'); document.body.appendChild(tooltip);
             tooltip.classList.add('ab-contextmenu-tooltip')
             const domRect = li.getBoundingClientRect()
@@ -240,7 +240,7 @@ export class ABContextMenu {
               img.setAttribute('src', item.detail as string);
               img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
           }
-          li.onmouseleave = (evt: MouseEvent) => {
+          li.onmouseleave = () => {
             if (!tooltip) return
             document.body.removeChild(tooltip)
             tooltip = undefined
