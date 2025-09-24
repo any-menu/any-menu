@@ -90,7 +90,8 @@ window.addEventListener("DOMContentLoaded", () => {
     try {
       hideWindow()
       await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-      await invoke("paste", { text: 'paste from button' })
+      // await invoke("paste", { text: 'paste from button' })
+      await invoke("send", { text: 'send from button' })
     } catch (error) {
       console.error("Failed to insert text:", error);
     }

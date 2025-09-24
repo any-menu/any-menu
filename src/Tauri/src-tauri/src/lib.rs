@@ -44,6 +44,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![paste])
+        .invoke_handler(tauri::generate_handler![send])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -55,6 +56,8 @@ fn greet(name: &str) -> String {
 }
 
 // ----------------------------------------------------------------------------
+
+// #region paste
 
 #[tauri::command]
 fn paste(text: &str) -> String {
@@ -155,3 +158,150 @@ fn set_clipboard_text(_text: &str) -> Result<(), String> {
 fn simulate_paste() -> Result<(), String> {
     Err("Paste simulation not implemented for this platform".to_string())
 }
+
+// #endregion paste
+
+// #region enigo
+
+use enigo::{Enigo, Keyboard, Settings};
+
+#[tauri::command]
+fn send(text: &str) -> String {
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+    
+    // (可选) 根据文本长度选择发送方式
+    if text.len() > 100 {
+        return paste(text);
+    } else {
+        // 继续使用enigo发送
+    }
+
+    // enigo.move_mouse(500, 200, Abs).unwrap();
+    // enigo.button(Button::Left, Click).unwrap();
+    enigo.text(text).unwrap();
+
+    format!("Successfully sent: {}", text)
+}
+
+// #endregion
+
+// #region window sendText
+
+// // 使用windows的SendInput函数直接发送文本
+// #[cfg(target_os = "windows")]
+// fn send_text_directly(text: &str) -> Result<(), String> {
+//     use winapi::um::winuser::{SendInput, INPUT, INPUT_KEYBOARD, KEYEVENTF_UNICODE, KEYEVENTF_KEYUP};
+//     use winapi::shared::minwindef::WORD;
+    
+//     let mut inputs = Vec::new();
+    
+//     for ch in text.chars() {
+//         let unicode_value = ch as u32;
+        
+//         // 对于基本平面字符 (U+0000 到 U+FFFF)
+//         if unicode_value <= 0xFFFF {
+//             // 按下键
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: unicode_value as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+            
+//             // 释放键
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: unicode_value as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+//         } else {
+//             // 对于扩展平面字符，需要使用代理对 (Surrogate Pairs)
+//             let code_point = unicode_value - 0x10000;
+//             let high_surrogate = 0xD800 + (code_point >> 10);
+//             let low_surrogate = 0xDC00 + (code_point & 0x3FF);
+            
+//             // 高代理
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: high_surrogate as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+            
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: high_surrogate as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+            
+//             // 低代理
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: low_surrogate as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+            
+//             inputs.push(INPUT {
+//                 type_: INPUT_KEYBOARD,
+//                 u: unsafe {
+//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
+//                         wVk: 0,
+//                         wScan: low_surrogate as WORD,
+//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
+//                         time: 0,
+//                         dwExtraInfo: 0,
+//                     })
+//                 },
+//             });
+//         }
+//     }
+    
+//     unsafe {
+//         let result = SendInput(
+//             inputs.len() as u32,
+//             inputs.as_ptr(),
+//             std::mem::size_of::<INPUT>() as i32,
+//         );
+        
+//         if result == 0 {
+//             return Err("Failed to send input".to_string());
+//         }
+//     }
+    
+//     Ok(())
+// }
+
+// #endregion
