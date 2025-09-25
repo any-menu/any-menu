@@ -85,7 +85,7 @@ function initClickThroughBehavior() {
       return
     }
     // b2. 否则不穿透
-    event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+    // event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏 // 不要阻止，会有按钮和点击事件
     return
   })
 

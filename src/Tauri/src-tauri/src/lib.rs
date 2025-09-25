@@ -169,8 +169,8 @@ use enigo::{Enigo, Keyboard, Settings};
 fn send(text: &str) -> String {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
     
-    // (可选) 根据文本长度选择发送方式
-    if text.len() > 100 {
+    // (可选) 根据文本长度及是否包含换行符，选择发送方式
+    if (text.contains('\n') || text.len() > 30) {
         return paste(text);
     } else {
         // 继续使用enigo发送
