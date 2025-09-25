@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "any-menu",
+        "title": "AnyMenu",
         "width": 1000,
         "decorations": false,
         "resizable": false,

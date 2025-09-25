@@ -3,6 +3,7 @@
 use tauri::{
   menu::{Menu, MenuItem},
   tray::TrayIconBuilder,
+  Manager
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -12,7 +13,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
-            let menu = Menu::with_items(app, &[&quit_item])?; // 菜单项数组
+            let config_item = MenuItem::with_id(app, "config", "Open Config Panel", true, None::<&str>)?; // 新增配置菜单项
+            let menu = Menu::with_items(app, &[&quit_item, &config_item])?; // 菜单项数组
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
@@ -22,6 +24,28 @@ pub fn run() {
                 .on_menu_event(|app, event| match event.id.as_ref() { // 菜单事件
                     "quit" => {
                         app.exit(0);
+                    }
+                    "config" => { // 打开配置窗口
+                        // 如果配置窗口已存在，直接显示并聚焦
+                        if let Some(window) = app.get_webview_window("config") {
+                            
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                        // 如果配置窗口不存在，创建新窗口
+                        else {
+                            let _config_window = tauri::WebviewWindowBuilder::new(
+                                app,
+                                "config",
+                                tauri::WebviewUrl::App("config.html".into()) // 或者你的配置页面路径
+                            )
+                            .title("AnyMenu - Config")
+                            .inner_size(600.0, 500.0)
+                            .min_inner_size(400.0, 300.0)
+                            .center()
+                            .resizable(true)
+                            .build();
+                        }
                     }
                     _ => {}
                 })
@@ -42,9 +66,7 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![paste])
-        .invoke_handler(tauri::generate_handler![send])
+        .invoke_handler(tauri::generate_handler![greet, paste, send])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -170,7 +192,7 @@ fn send(text: &str) -> String {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
     
     // (可选) 根据文本长度及是否包含换行符，选择发送方式
-    if (text.contains('\n') || text.len() > 30) {
+    if text.contains('\n') || text.len() > 30 {
         return paste(text);
     } else {
         // 继续使用enigo发送
