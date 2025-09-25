@@ -31,12 +31,12 @@ window.addEventListener("DOMContentLoaded", () => {
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
 // 前端模块
-import { ABContextMenu } from "./contextmenu"
-import { root_menu_demo } from "./contextmenu/demo"
+import { ABContextMenu2 } from "./contextmenu/index"
+import { root_menu_demo } from "../../Core/contextmenu/demo"
 window.addEventListener("DOMContentLoaded", () => {
   const main: HTMLDivElement | null = document.querySelector("#main")
   if (!main) return
-  const myMenu = new ABContextMenu(main)
+  const myMenu = new ABContextMenu2(main)
   myMenu.append_data([
     {
       label: 'Markdown',

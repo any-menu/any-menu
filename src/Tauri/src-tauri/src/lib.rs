@@ -13,7 +13,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
-            let config_item = MenuItem::with_id(app, "config", "Open Config Panel", true, None::<&str>)?; // 新增配置菜单项
+            let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
             let menu = Menu::with_items(app, &[&quit_item, &config_item])?; // 菜单项数组
 
             let _tray = TrayIconBuilder::new()
