@@ -8,6 +8,12 @@ importers:
 
   .: {}
 
+  src/Core:
+    devDependencies:
+      node:
+        specifier: ^22.20.0
+        version: 22.20.0
+
   src/Tauri:
     dependencies:
       '@tauri-apps/api':
@@ -16,6 +22,9 @@ importers:
       '@tauri-apps/plugin-global-shortcut':
         specifier: ~2
         version: 2.3.0
+      '@tauri-apps/plugin-log':
+        specifier: ~2.7.0
+        version: 2.7.0
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.5.0
@@ -375,6 +384,9 @@ packages:
   '@tauri-apps/plugin-global-shortcut@2.3.0':
     resolution: {integrity: sha512-WbAz0ElhpP+0kzQZRScdCC7UQ7OPH8PAn//fsBNu7+ywihsnVSVOg1L9YhieAtLNtAlnmFI69Yl5AGaA3ge5IQ==}
 
+  '@tauri-apps/plugin-log@2.7.0':
+    resolution: {integrity: sha512-81XQ2f93x4vmIB5OY0XlYAxy60cHdYLs0Ki8Qp38tNATRiuBit+Orh3frpY3qfYQnqEvYVyRub7YRJWlmW2RRA==}
+
   '@tauri-apps/plugin-opener@2.5.0':
     resolution: {integrity: sha512-B0LShOYae4CZjN8leiNDbnfjSrTwoZakqKaWpfoH6nXiJwt6Rgj6RnVIffG3DoJiKsffRhMkjmBV9VeilSb4TA==}
 
@@ -403,6 +415,14 @@ packages:
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  node-bin-setup@1.1.4:
+    resolution: {integrity: sha512-vWNHOne0ZUavArqPP5LJta50+S8R261Fr5SvGul37HbEDcowvLjwdvd0ZeSr0r2lTSrPxl6okq9QUw8BFGiAxA==}
+
+  node@22.20.0:
+    resolution: {integrity: sha512-5s76ty1RExWqukVyzfq+9jOPB7FaLIJKUVxGwTI9xOHdePLmkq9bfYUGQ54oudx+sRgznAHvHaUomH5kVhqkxQ==}
+    engines: {npm: '>=5.0.0'}
     hasBin: true
 
   picocolors@1.1.1:
@@ -673,6 +693,10 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.8.0
 
+  '@tauri-apps/plugin-log@2.7.0':
+    dependencies:
+      '@tauri-apps/api': 2.8.0
+
   '@tauri-apps/plugin-opener@2.5.0':
     dependencies:
       '@tauri-apps/api': 2.8.0
@@ -716,6 +740,12 @@ snapshots:
     optional: true
 
   nanoid@3.3.11: {}
+
+  node-bin-setup@1.1.4: {}
+
+  node@22.20.0:
+    dependencies:
+      node-bin-setup: 1.1.4
 
   picocolors@1.1.1: {}
 

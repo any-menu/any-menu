@@ -1,17 +1,37 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 use tauri::{
-  menu::{Menu, MenuItem},
-  tray::TrayIconBuilder,
-  Manager
+    menu::{Menu, MenuItem},
+    tray::TrayIconBuilder,
+    Manager,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::new() // 日志插件
+            .level(log::LevelFilter::Debug) // 日志级别
+            .clear_targets()
+            // 打印到终端
+            .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
+            // 打印到前端控制台 (前端要开下attachConsole)
+            // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
+            // 打印到日志文件
+            // .target(tauri_plugin_log::Target::new(
+            //     tauri_plugin_log::TargetKind::Folder {
+            //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
+            //         file_name: None,
+            //     },
+            // ))
+            .build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            // log::debug!("info test in run");
+            // log::info!("info test in run");
+            // log::warn!("info test in run");
+            // log::error!("info test in run");
+
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
             let menu = Menu::with_items(app, &[&quit_item, &config_item])?; // 菜单项数组
@@ -21,11 +41,13 @@ pub fn run() {
                 .tooltip("any-menu")
                 .menu(&menu) // 加载菜单项数组
                 // .show_menu_on_left_click(true) // 左键也能展开菜单
-                .on_menu_event(|app, event| match event.id.as_ref() { // 菜单事件
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    // 菜单事件
                     "quit" => {
                         app.exit(0);
                     }
-                    "config" => { // 打开配置窗口
+                    // 打开配置窗口
+                    "config" => {
                         // 如果配置窗口已存在，直接显示并聚焦
                         if let Some(window) = app.get_webview_window("config") {
                             let _ = window.show();
@@ -36,7 +58,7 @@ pub fn run() {
                             let _config_window = tauri::WebviewWindowBuilder::new(
                                 app,
                                 "config",
-                                tauri::WebviewUrl::App("config.html".into()) // 或者你的配置页面路径
+                                tauri::WebviewUrl::App("config.html".into()), // 或者你的配置页面路径
                             )
                             .title("AnyMenu - Config")
                             .inner_size(600.0, 500.0)
@@ -82,7 +104,10 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn paste(text: &str) -> String {
-    // format!("Hello, {}! You've been pasted from Rust!", name)
+    // 实测位于后台线程中，日志无法输出成功
+    println!("println test in send");
+    log::info!("info test in send");
+    // tracing::info!("info test in send2");
 
     // 将文本写入剪贴板
     set_clipboard_text(text).expect("Failed to set clipboard text");
@@ -100,10 +125,10 @@ fn set_clipboard_text(text: &str) -> Result<(), String> {
     use std::iter::once;
     use std::os::windows::ffi::OsStrExt;
     use std::ptr;
-    use winapi::um::winuser::{OpenClipboard, EmptyClipboard, SetClipboardData, CloseClipboard};
     use winapi::um::winbase::{GlobalAlloc, GlobalLock, GlobalUnlock, GMEM_MOVEABLE};
     use winapi::um::winnt::HANDLE;
     use winapi::um::winuser::CF_UNICODETEXT;
+    use winapi::um::winuser::{CloseClipboard, EmptyClipboard, OpenClipboard, SetClipboardData};
 
     unsafe {
         if OpenClipboard(ptr::null_mut()) == 0 {
@@ -146,8 +171,8 @@ fn set_clipboard_text(text: &str) -> Result<(), String> {
 /// 模拟黏贴按键
 #[cfg(target_os = "windows")]
 fn simulate_paste() -> Result<(), String> {
-    use winapi::um::winuser::{keybd_event, VK_CONTROL, KEYEVENTF_KEYUP};
-    
+    use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL};
+
     const VK_V: u8 = 0x56; // VK_V 的值是 0x56
 
     unsafe {
@@ -205,12 +230,12 @@ fn send(text: &str) -> String {
 // fn send_text_directly(text: &str) -> Result<(), String> {
 //     use winapi::um::winuser::{SendInput, INPUT, INPUT_KEYBOARD, KEYEVENTF_UNICODE, KEYEVENTF_KEYUP};
 //     use winapi::shared::minwindef::WORD;
-    
+
 //     let mut inputs = Vec::new();
-    
+
 //     for ch in text.chars() {
 //         let unicode_value = ch as u32;
-        
+
 //         // 对于基本平面字符 (U+0000 到 U+FFFF)
 //         if unicode_value <= 0xFFFF {
 //             // 按下键
@@ -226,7 +251,7 @@ fn send(text: &str) -> String {
 //                     })
 //                 },
 //             });
-            
+
 //             // 释放键
 //             inputs.push(INPUT {
 //                 type_: INPUT_KEYBOARD,
@@ -245,7 +270,7 @@ fn send(text: &str) -> String {
 //             let code_point = unicode_value - 0x10000;
 //             let high_surrogate = 0xD800 + (code_point >> 10);
 //             let low_surrogate = 0xDC00 + (code_point & 0x3FF);
-            
+
 //             // 高代理
 //             inputs.push(INPUT {
 //                 type_: INPUT_KEYBOARD,
@@ -259,7 +284,7 @@ fn send(text: &str) -> String {
 //                     })
 //                 },
 //             });
-            
+
 //             inputs.push(INPUT {
 //                 type_: INPUT_KEYBOARD,
 //                 u: unsafe {
@@ -272,7 +297,7 @@ fn send(text: &str) -> String {
 //                     })
 //                 },
 //             });
-            
+
 //             // 低代理
 //             inputs.push(INPUT {
 //                 type_: INPUT_KEYBOARD,
@@ -286,7 +311,7 @@ fn send(text: &str) -> String {
 //                     })
 //                 },
 //             });
-            
+
 //             inputs.push(INPUT {
 //                 type_: INPUT_KEYBOARD,
 //                 u: unsafe {
@@ -301,19 +326,19 @@ fn send(text: &str) -> String {
 //             });
 //         }
 //     }
-    
+
 //     unsafe {
 //         let result = SendInput(
 //             inputs.len() as u32,
 //             inputs.as_ptr(),
 //             std::mem::size_of::<INPUT>() as i32,
 //         );
-        
+
 //         if result == 0 {
 //             return Err("Failed to send input".to_string());
 //         }
 //     }
-    
+
 //     Ok(())
 // }
 

@@ -1,5 +1,14 @@
 import { global_state, hideWindow } from './window'
 
+// #region Tauri 日志插件
+
+import { attachConsole } from '@tauri-apps/plugin-log';
+window.addEventListener("DOMContentLoaded", async () => {
+  await attachConsole();
+});
+
+// #endregion
+
 // #region 项目模板 默认的表单功能、与后端沟通
 
 import { invoke } from "@tauri-apps/api/core"
