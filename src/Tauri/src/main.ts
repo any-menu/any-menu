@@ -31,12 +31,57 @@ window.addEventListener("DOMContentLoaded", () => {
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
 // 前端模块
-import { ABContextMenu2 } from "./contextmenu/index"
-import { root_menu_demo } from "../../Core/contextmenu/demo"
 window.addEventListener("DOMContentLoaded", () => {
   const main: HTMLDivElement | null = document.querySelector("#main")
   if (!main) return
-  const myMenu = new ABContextMenu2(main)
+  
+  void initMenu(main)
+
+  // 黏贴测试 paste test
+  const paste_btn = document.createElement('button'); main.appendChild(paste_btn); paste_btn.classList.add('btn-2');
+    paste_btn.textContent = 'Paste Test'
+  paste_btn.onclick = async () => {
+    const appWindow = getCurrentWindow()
+    appWindow.emit('paste-event', { message: 'paste from button' }) // 无效
+    try {
+      hideWindow()
+      await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
+      // await invoke("paste", { text: 'paste from button' })
+      await invoke("send", { text: 'send from button' })
+    } catch (error) {
+      console.error("Failed to insert text:", error);
+    }
+    console.log('emit paste-event')
+  }
+
+  // 置顶按钮
+  const pin_btn = document.createElement('button'); main.appendChild(pin_btn); pin_btn.classList.add('btn-1');
+  // https://lucide.dev/icons/pin
+  pin_btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`
+  pin_btn.onclick = async () => {
+    const appWindow = getCurrentWindow()
+    global_state.isPin = !global_state.isPin
+    if (global_state.isPin) {
+      pin_btn.classList.add('active')
+      await appWindow.setAlwaysOnTop(true)  // 置顶窗口
+    }
+    else {
+      pin_btn.classList.remove('active')
+      await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
+    }
+  }
+})
+
+// #region 菜单
+
+import { ABContextMenu2 } from "./contextmenu/index"
+import { root_menu_demo } from "../../Core/contextmenu/demo"
+
+
+
+/// 初始化菜单
+async function initMenu(el: HTMLDivElement) {
+  const myMenu = new ABContextMenu2(el)
   myMenu.append_data([
     {
       label: 'Markdown',
@@ -79,39 +124,31 @@ window.addEventListener("DOMContentLoaded", () => {
       children: []
     }
   ])
-  // myMenu.attach(main)
 
-  // 黏贴测试 paste test
-  const paste_btn = document.createElement('button'); main.appendChild(paste_btn); paste_btn.classList.add('btn-2');
-    paste_btn.textContent = 'Paste Test'
-  paste_btn.onclick = async () => {
-    const appWindow = getCurrentWindow()
-    appWindow.emit('paste-event', { message: 'paste from button' }) // 无效
-    try {
-      hideWindow()
-      await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-      // await invoke("paste", { text: 'paste from button' })
-      await invoke("send", { text: 'send from button' })
-    } catch (error) {
-      console.error("Failed to insert text:", error);
-    }
-    console.log('emit paste-event')
-  }
 
-  // 置顶按钮
-  const pin_btn = document.createElement('button'); main.appendChild(pin_btn); pin_btn.classList.add('btn-1');
-  // https://lucide.dev/icons/pin
-  pin_btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`
-  pin_btn.onclick = async () => {
-    const appWindow = getCurrentWindow()
-    global_state.isPin = !global_state.isPin
-    if (global_state.isPin) {
-      pin_btn.classList.add('active')
-      await appWindow.setAlwaysOnTop(true)  // 置顶窗口
-    }
-    else {
-      pin_btn.classList.remove('active')
-      await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
-    }
-  }
-})
+
+
+
+
+  const result = await invoke("read_file", {
+    // 路径有问题
+    dir: '../../../docs/demo/emoji.txt',
+    // dir: 
+  });
+  console.warn('读取文件夹结果', result)
+
+  // const emojiFiles = await loadFilesFromDirectory('./assets/emoji');
+  // const emojiMenu = await gen_from_folder('./assets/emoji', emojiFiles);
+  // myMenu.append_data([])
+
+
+
+
+
+
+
+
+  // myMenu.attach(el)
+}
+
+// #endregion

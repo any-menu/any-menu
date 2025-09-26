@@ -9,7 +9,7 @@ use tauri::{
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
@@ -28,7 +28,6 @@ pub fn run() {
                     "config" => { // 打开配置窗口
                         // 如果配置窗口已存在，直接显示并聚焦
                         if let Some(window) = app.get_webview_window("config") {
-                            
                             let _ = window.show();
                             let _ = window.set_focus();
                         }
@@ -66,7 +65,7 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, paste, send])
+        .invoke_handler(tauri::generate_handler![greet, paste, send, read_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -118,7 +117,7 @@ fn set_clipboard_text(text: &str) -> Result<(), String> {
 
         let wide: Vec<u16> = OsStr::new(text).encode_wide().chain(once(0)).collect();
         let len = wide.len() * std::mem::size_of::<u16>();
-        
+
         let h_mem: HANDLE = GlobalAlloc(GMEM_MOVEABLE, len);
         if h_mem.is_null() {
             CloseClipboard();
@@ -149,23 +148,15 @@ fn set_clipboard_text(text: &str) -> Result<(), String> {
 fn simulate_paste() -> Result<(), String> {
     use winapi::um::winuser::{keybd_event, VK_CONTROL, KEYEVENTF_KEYUP};
     
-    // VK_V 的值是 0x56
-    const VK_V: u8 = 0x56;
-    
+    const VK_V: u8 = 0x56; // VK_V 的值是 0x56
+
     unsafe {
-        // 按下 Ctrl
-        keybd_event(VK_CONTROL as u8, 0, 0, 0);
-        
-        // 按下 V
-        keybd_event(VK_V, 0, 0, 0);
-        
-        // 释放 V
-        keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0);
-        
-        // 释放 Ctrl
-        keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0);
+        keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
+        keybd_event(VK_V, 0, 0, 0); // 按下 V
+        keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0); // 释放 V
+        keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
     }
-    
+
     Ok(())
 }
 
@@ -190,7 +181,7 @@ use enigo::{Enigo, Keyboard, Settings};
 #[tauri::command]
 fn send(text: &str) -> String {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
-    
+
     // (可选) 根据文本长度及是否包含换行符，选择发送方式
     if text.contains('\n') || text.len() > 30 {
         return paste(text);
@@ -324,6 +315,66 @@ fn send(text: &str) -> String {
 //     }
     
 //     Ok(())
+// }
+
+// #endregion
+
+// #region fs
+
+use std::fs;
+
+#[tauri::command]
+fn read_file(path: &str) -> Option<String> {
+    println!("rust println 测试 in read_file: {}", path);
+    // info("rust println 测试 in read_file2: {}", path);
+    // error!("这是错误");
+
+    match fs::read_to_string(&path) {
+        Ok(content) => {
+            println!("=== 文件: {} ===", path);
+            println!("{}", content);
+            println!("=== 结束 ===\n");
+            Some(content)
+        }
+        Err(e) => {
+            eprintln!("读取文件 {} 时出错: {}", path, e);
+            None
+        }
+    }
+}
+
+// #[tauri::command]
+// fn read_folder(dir: &str) -> String {
+//     let entries = fs::read_dir(dir)?;
+
+//     let mut files_json = Vec::new();
+
+//     for entry in entries {
+//         let entry = entry?;
+//         let path = entry.path();
+
+//         if !path.is_file() {
+//             continue; // 暂时只处理文件，跳过目录。TODO 后续也可以改成递归
+//         }
+
+//         let file_name = path.file_name().unwrap().to_str().unwrap();
+//         match fs::read_to_string(&path) {
+//             Ok(content) => {
+//                 println!("=== 文件: {} ===", file_name);
+//                 println!("{}", content);
+//                 println!("=== 结束 ===\n");
+//                 files_json.push(content);
+//             }
+//             Err(e) => {
+//                 eprintln!("读取文件 {} 时出错: {}", file_name, e);
+//             }
+//         }
+//     }
+
+//     serde_json::to_string(&files_json).unwrap_or_else(|e| {
+//         eprintln!("序列化文件内容时出错: {}", e);
+//         "[]".to_string()
+//     })
 // }
 
 // #endregion
