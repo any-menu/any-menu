@@ -4,7 +4,7 @@ import { global_state, hideWindow } from './window'
 
 import {
   attachConsole, // 允许使用 webview 查看 rust 日志
-  warn, debug, trace, info, error
+  // warn, debug, trace, info, error
 } from '@tauri-apps/plugin-log';
 window.addEventListener("DOMContentLoaded", async () => {
   await attachConsole();

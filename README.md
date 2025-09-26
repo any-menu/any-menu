@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="50%" src="./src/Tauri/src-tauri/icons/icon.png">
+  <img width="40%" src="./src/Tauri/src-tauri/icons/icon.png">
 </div>
 
 
