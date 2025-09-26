@@ -1,6 +1,6 @@
 import { ABContextMenu } from "../../../Core/contextmenu/index"
 
-import { hideWindow } from "..//window"
+import { hideWindow } from "../module/window"
 import { invoke } from "@tauri-apps/api/core"
 
 export class ABContextMenu2 extends ABContextMenu {
