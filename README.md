@@ -1,3 +1,8 @@
+<div align="center">
+  <img width="50%" src="./src/Tauri/src-tauri/icons/icon.png">
+</div>
+
+
 # AnyMenu —— InputMethod Assistant / Editor Assistant
 
 AnyMenu —— 一款强大的输入法助手/编辑器助手
