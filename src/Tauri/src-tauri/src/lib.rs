@@ -8,30 +8,28 @@ use tauri::{
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // 日志插件
+    let log_plugin = tauri_plugin_log::Builder::new()
+        .level(log::LevelFilter::Debug) // 日志级别
+        .clear_targets()
+        // 打印到终端
+        .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
+        // 打印到前端控制台 (前端要开下attachConsole)
+        // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
+        // 打印到日志文件
+        // .target(tauri_plugin_log::Target::new(
+        //     tauri_plugin_log::TargetKind::Folder {
+        //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
+        //         file_name: None,
+        //     },
+        // ))
+        .build();
+
     tauri::Builder::default()
-        .plugin(tauri_plugin_log::Builder::new() // 日志插件
-            .level(log::LevelFilter::Debug) // 日志级别
-            .clear_targets()
-            // 打印到终端
-            .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
-            // 打印到前端控制台 (前端要开下attachConsole)
-            // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
-            // 打印到日志文件
-            // .target(tauri_plugin_log::Target::new(
-            //     tauri_plugin_log::TargetKind::Folder {
-            //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
-            //         file_name: None,
-            //     },
-            // ))
-            .build())
+        .plugin(log_plugin)
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            // log::debug!("info test in run");
-            // log::info!("info test in run");
-            // log::warn!("info test in run");
-            // log::error!("info test in run");
-
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
             let menu = Menu::with_items(app, &[&quit_item, &config_item])?; // 菜单项数组
@@ -104,11 +102,6 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn paste(text: &str) -> String {
-    // 实测位于后台线程中，日志无法输出成功
-    println!("println test in send");
-    log::info!("info test in send");
-    // tracing::info!("info test in send2");
-
     // 将文本写入剪贴板
     set_clipboard_text(text).expect("Failed to set clipboard text");
 
@@ -350,15 +343,8 @@ use std::fs;
 
 #[tauri::command]
 fn read_file(path: &str) -> Option<String> {
-    println!("rust println 测试 in read_file: {}", path);
-    // info("rust println 测试 in read_file2: {}", path);
-    // error!("这是错误");
-
     match fs::read_to_string(&path) {
         Ok(content) => {
-            println!("=== 文件: {} ===", path);
-            println!("{}", content);
-            println!("=== 结束 ===\n");
             Some(content)
         }
         Err(e) => {

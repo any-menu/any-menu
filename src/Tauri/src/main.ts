@@ -2,7 +2,10 @@ import { global_state, hideWindow } from './window'
 
 // #region Tauri 日志插件
 
-import { attachConsole } from '@tauri-apps/plugin-log';
+import {
+  attachConsole, // 允许使用 webview 查看 rust 日志
+  warn, debug, trace, info, error
+} from '@tauri-apps/plugin-log';
 window.addEventListener("DOMContentLoaded", async () => {
   await attachConsole();
 });
@@ -137,25 +140,22 @@ async function initMenu(el: HTMLDivElement) {
 
 
 
-
-
+  const kv_emoji: Record<string, string> = {}
   const result = await invoke("read_file", {
-    // 路径有问题
-    dir: '../../../docs/demo/emoji.txt',
-    // dir: 
+    // 路径可能有问题?
+    path: '../../../docs/demo/emoji.txt',
+  })
+  if (typeof result !== 'string') return
+  // 解析csv内容
+  const lines = result.split('\n').filter(line => {
+    return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
   });
-  console.warn('读取文件夹结果', result)
+  for (const line of lines) {
+    const [label, value] = line.split('	'); // 没有确保安全性
+    kv_emoji[label] = value.trim();
+  }
 
-  // const emojiFiles = await loadFilesFromDirectory('./assets/emoji');
-  // const emojiMenu = await gen_from_folder('./assets/emoji', emojiFiles);
-  // myMenu.append_data([])
-
-
-
-
-
-
-
+  console.log('kv_obj', Object.keys(kv_emoji).length)
 
   // myMenu.attach(el)
 }
