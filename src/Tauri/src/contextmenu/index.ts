@@ -1,30 +1,77 @@
-import { ABContextMenu } from "../../../Core/contextmenu/index"
-
-import { hideWindow } from "../module/window"
 import { invoke } from "@tauri-apps/api/core"
 
-export class ABContextMenu2 extends ABContextMenu {
-  public override async sendText(str: string) {
-    // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
-    const activeElement: Element|null = document.activeElement
+import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
+import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/demo"
 
-    // 检查该元素是否是可编辑的输入框或文本域
-    if (!activeElement) {
-      console.warn('没有活动的元素，将demo文本生成到剪贴板')
-      navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
-    } else {
-      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str)
-
-      // [!code hl] Tauri
-      // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
-      // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-      // 这里应该多一个判断。不过这里恒为后者
-      hideWindow()
-      await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-      // await invoke("paste", { text: 'paste from button' })
-      await invoke("send", { text: str })
+/// 初始化菜单
+export async function initMenu(el: HTMLDivElement) {
+  const myMenu = new ABContextMenu2(el)
+  myMenu.append_data([
+    {
+      label: 'Markdown',
+      children: [
+        { label: "表格" },
+        { label: "引用" },
+        { label: "代码块" },
+        { label: "公式块" },
+        { label: "有序列表" },
+        { label: "无序列表" },
+        { label: "---" },
+        { label: "标题" },
+        { label: "分割线" },
+        { label: "粗体" },
+        { label: "斜体" },
+      ]
+    },
+    {
+      label: 'AnyBlock',
+      children: root_menu_demo
+    },
+    {
+      label: 'Callout',
+      children: root_menu_callout
+    },
+    {
+      label: 'Mermaid',
+      children: []
+    },
+    {
+      label: 'Plantuml',
+      children: []
+    },
+    {
+      label: 'Emoji',
+      children: [
+        { label: "Too many. You should use the search bar." }
+      ]
+    },
+    {
+      label: '颜表情',
+      children: [
+        { label: "Too many. You should use the search bar." }
+      ]
     }
+  ])
 
-    this.visual_hide()
+
+
+
+  const kv_emoji: Record<string, string> = {}
+  const result = await invoke("read_file", {
+    // 路径可能有问题?
+    path: '../../../docs/demo/emoji.txt',
+  })
+  if (typeof result !== 'string') return
+  // 解析csv内容
+  const lines = result.split('\n').filter(line => {
+    return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
+  });
+  for (const line of lines) {
+    const [label, value] = line.split('	'); // 没有确保安全性
+    kv_emoji[label] = value.trim();
   }
+
+  console.log('kv_obj', Object.keys(kv_emoji).length)
+
+  // myMenu.attach(el)
 }
