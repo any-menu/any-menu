@@ -5,6 +5,33 @@ import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/dem
 
 /// 初始化菜单
 export async function initMenu(el: HTMLDivElement) {
+  // #region key-value 数据
+
+  const kv_emoji: Record<string, string> = {}
+  const result = await invoke("read_file", {
+    // 路径可能有问题?
+    path: '../../../docs/demo/emoji.txt',
+  })
+  if (typeof result !== 'string') return
+  // 解析csv内容
+  const lines = result.split('\n').filter(line => {
+    return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
+  });
+  for (const line of lines) {
+    const [label, value] = line.split('	'); // 没有确保安全性
+    kv_emoji[label] = value.trim();
+  }
+
+  console.log('kv_obj', Object.keys(kv_emoji).length)
+
+  // #endregion
+
+  // #region 搜索框
+  
+  // #endregion
+
+  // #region 多级展开菜单
+
   const myMenu = new ABContextMenu2(el)
   myMenu.append_data([
     {
@@ -53,25 +80,7 @@ export async function initMenu(el: HTMLDivElement) {
     }
   ])
 
-
-
-
-  const kv_emoji: Record<string, string> = {}
-  const result = await invoke("read_file", {
-    // 路径可能有问题?
-    path: '../../../docs/demo/emoji.txt',
-  })
-  if (typeof result !== 'string') return
-  // 解析csv内容
-  const lines = result.split('\n').filter(line => {
-    return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
-  });
-  for (const line of lines) {
-    const [label, value] = line.split('	'); // 没有确保安全性
-    kv_emoji[label] = value.trim();
-  }
-
-  console.log('kv_obj', Object.keys(kv_emoji).length)
+  // #endregion
 
   // myMenu.attach(el)
 }

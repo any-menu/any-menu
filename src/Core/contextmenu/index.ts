@@ -21,6 +21,9 @@
  * 
  * ## 其他
  */
+
+import { global_setting } from "../Setting"
+
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
 import type { ContextMenuItems, ContextMenuItem } from "./demo"
@@ -308,16 +311,12 @@ export class ABContextMenu {
       console.warn('没有活动的元素，将demo文本生成到剪贴板')
       navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
     } else {
-      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str)
-
-      // [!code hl] Tauri
+      // 由app重新继承该类并实现
       // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
       // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-      // 这里应该多一个判断。不过这里恒为后者
-      // hideWindow()
-      // await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-      // // await invoke("paste", { text: 'paste from button' })
-      // await invoke("send", { text: str })
+      if (global_setting.env === 'app') { console.error('需继承并重载该方法'); return }
+
+      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str)
     }
 
     this.visual_hide()
