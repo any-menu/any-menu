@@ -174,24 +174,6 @@ export const root_menu_demo: ContextMenuItems = [
       { label: '标题转表格', callback: () => console.warn('执行了操作2.2.1') },
     ]
   },
-  // callout
-  {
-    label: 'callout', children: [
-      { label: 'note', callback: `> [!note]\n> \n> Note demo.\n\n` },
-      { label: 'warning', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
-      { label: 'tip', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
-      { label: 'note_complex', callback: `> [!note]+ title\n> Note demo.\n\n` },
-    ]
-  },
-  // mdit container
-  {
-    label: 'mdit container', children: [
-      { label: 'note', callback: `:::note\nNote demo.\n:::\n\n` },
-      { label: 'warning', callback: `:::warning\nWarning demo.\n:::\n\n` },
-      { label: 'tip', callback: `:::tip\nTip demo.\n:::\n\n` },
-      { label: 'note_complex', callback: `:::note+ title\nNote demo.\n:::\n\n` },
-    ]
-  },
   // two layout
   {
     label: 'two layout', children: [
@@ -225,6 +207,27 @@ text2
 text3
 
 :::\n\n` },
+    ]
+  },
+]
+
+export const root_menu_callout: ContextMenuItems = [
+  // callout
+  {
+    label: 'callout', children: [
+      { label: 'note', callback: `> [!note]\n> \n> Note demo.\n\n` },
+      { label: 'warning', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
+      { label: 'tip', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
+      { label: 'note_complex', callback: `> [!note]+ title\n> Note demo.\n\n` },
+    ]
+  },
+  // mdit container
+  {
+    label: 'mdit container', children: [
+      { label: 'note', callback: `:::note\nNote demo.\n:::\n\n` },
+      { label: 'warning', callback: `:::warning\nWarning demo.\n:::\n\n` },
+      { label: 'tip', callback: `:::tip\nTip demo.\n:::\n\n` },
+      { label: 'note_complex', callback: `:::note+ title\nNote demo.\n:::\n\n` },
     ]
   },
 ]

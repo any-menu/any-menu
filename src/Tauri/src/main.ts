@@ -87,9 +87,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // #region 菜单
 
 import { ABContextMenu2 } from "./contextmenu/index"
-import { root_menu_demo } from "../../Core/contextmenu/demo"
-
-
+import { root_menu_demo, root_menu_callout } from "../../Core/contextmenu/demo"
 
 /// 初始化菜单
 async function initMenu(el: HTMLDivElement) {
@@ -117,7 +115,7 @@ async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'Callout',
-      children: []
+      children: root_menu_callout
     },
     {
       label: 'Mermaid',
@@ -129,11 +127,15 @@ async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'Emoji',
-      children: []
+      children: [
+        { label: "Too many. You should use the search bar." }
+      ]
     },
     {
       label: '颜表情',
-      children: []
+      children: [
+        { label: "Too many. You should use the search bar." }
+      ]
     }
   ])
 
