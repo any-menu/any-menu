@@ -36,7 +36,7 @@ export class AMSearch {
     this.el_parent = el
     this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search')
     this.el_input = document.createElement('input'); this.el.appendChild(this.el_input); this.el_input.classList.add('am-search-input')
-      this.el_input.type = 'text'; this.el_input.placeholder = 'Search...待开发';
+      this.el_input.type = 'text'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
     this.el_input.oninput = (ev) => {

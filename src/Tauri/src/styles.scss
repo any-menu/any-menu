@@ -77,29 +77,34 @@ html, body, #main {
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  // position: relative;
+  position: relative;
 
   input.am-search-input {
+    height: 32px;
     width: 100%;
     box-sizing: border-box;
 
-    border: none;
-    box-shadow: none;
+    border: none;    
     outline: none;
+    // box-shadow: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   }
 
   .am-search-suggestion {
     width: 500px;
     box-sizing: border-box;
     position: absolute;
+    // transform: translate(0, 2px);
+    left: 0;
+    right: 0;
 
     z-index: 12;
-    padding: 4px 8px;
+    padding: 4px;
     border-radius: 8px;
     background-color: var(--ab-menu-bg-color);
-    opacity: 0.95;
+    opacity: 0.98;
     border: 1px solid var(--ab-tab-root-bd-color);
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     max-height: 400px;
     overflow-y: auto;
 
@@ -107,9 +112,9 @@ html, body, #main {
       display: flex;
       flex-wrap: nowrap;
       justify-content: space-between;
-      padding: 4px 8px;
+      padding: 4px 12px;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
 
       &:hover {
         background-color: var(--ab-tab-root-hv-color);
@@ -273,6 +278,29 @@ html, body, #main {
       }
     }
   }
+}
+
+/* -------------------------------- 黑暗主题滚动条样式 -------------------- */
+
+/* 适用于 Webkit 内核的浏览器 (Chrome, Safari, Edge 等) */
+::-webkit-scrollbar {
+  width: 12px; /* 滚动条整体宽度 */
+  height: 12px; /* 对于水平滚动条的高度 */
+}
+
+::-webkit-scrollbar-track {
+  background: #202324; /* 滚动条轨道背景色 */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4a4d4f; /* 滚动条滑块颜色 */
+  border-radius: 6px; /* 滑块圆角 */
+  border: 3px solid #202324; /* 在滑块周围创建边框，看起来像内边距 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5e60; /* 鼠标悬停时滑块的颜色 */
 }
 
 /* -------------------------------- 默认 ------------------------------- */
