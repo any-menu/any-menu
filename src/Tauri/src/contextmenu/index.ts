@@ -28,7 +28,7 @@ export async function initMenu(el: HTMLDivElement) {
   // #endregion
 
   // #region 搜索框
-  new AMSearch(el)
+  AMSearch.factory(el)
   // #endregion
 
   // #region 多级展开菜单

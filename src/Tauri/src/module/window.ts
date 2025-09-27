@@ -8,6 +8,8 @@ import { register } from '@tauri-apps/plugin-global-shortcut'
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
 
+import { SEARCH_DB } from '../../../Core/seach'
+
 export const global_state: {
   isPin: boolean // 是否置顶
   isWindowVisible: boolean // 当前窗口是否可见 (可以去掉而是实时获取)
@@ -201,7 +203,7 @@ export async function hideWindow() {
   await appWindow.hide(); global_state.isWindowVisible = false;
 }
 
-/** 显示窗口，并自动定位到光标位置 */ 
+/** 显示窗口，并自动定位到光标位置 */
 async function showWindow() {
   const appWindow = getCurrentWindow()
 
@@ -219,4 +221,6 @@ async function showWindow() {
   await appWindow.show(); global_state.isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
+
+  if (SEARCH_DB.el_search != null) SEARCH_DB.el_search.show() // 显示&聚焦搜索框
 }

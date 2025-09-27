@@ -12,14 +12,17 @@ import { global_setting } from "../Setting"
  * - 分词辅助 (可选)
  * - 后缀树: 不采用，占用太多
  */
-export const db: {
+export const SEARCH_DB: {
   trie: any
   reverse: any
   hash: any
+  // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
+  el_search: AMSearch | null
 } = {
   trie: null,
   reverse: null,
-  hash: null
+  hash: null,
+  el_search: null
 }
 
 /**
@@ -29,7 +32,15 @@ export const db: {
  */
 export class AMSearch {
   el_parent: HTMLElement | null = null
-  el: HTMLDivElement | null = null
+  el: HTMLElement | null = null
+  el_input: HTMLInputElement | null = null
+
+  /** 单例模式 */
+  static factory(el?: HTMLElement) {
+    if (SEARCH_DB.el_search) return SEARCH_DB.el_search
+    const instance = new AMSearch(el)
+    SEARCH_DB.el_search = instance
+  }
 
   /**
    * @param el 挂载的元素
@@ -45,11 +56,11 @@ export class AMSearch {
   createDom(el: HTMLElement) {
     this.el_parent = el
     this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search')
-    const input = document.createElement('input'); this.el.appendChild(input);
-      input.type = 'text'; input.placeholder = 'Search...待开发';
+    this.el_input = document.createElement('input'); this.el.appendChild(this.el_input);
+      this.el_input.type = 'text'; this.el_input.placeholder = 'Search...待开发';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
-    if (global_setting.focusStrategy) input.focus()
+    if (global_setting.focusStrategy) this.el_input.focus()
   }
 
   // 执行搜索
@@ -58,6 +69,7 @@ export class AMSearch {
   }
 
   show() {
+    this.el_input?.focus()
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env !== 'app') return
   }
