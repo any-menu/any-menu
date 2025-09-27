@@ -13,5 +13,8 @@
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
     "node": "^22.20.0"
+  },
+  "dependencies": {
+    "@editableblock/textarea": "1.0.1-beta35"
   }
 }

@@ -9,6 +9,10 @@ importers:
   .: {}
 
   src/Core:
+    dependencies:
+      '@editableblock/textarea':
+        specifier: 1.0.1-beta35
+        version: 1.0.1-beta35
     devDependencies:
       node:
         specifier: ^22.20.0
@@ -40,6 +44,9 @@ importers:
         version: 6.3.6
 
 packages:
+
+  '@editableblock/textarea@1.0.1-beta35':
+    resolution: {integrity: sha512-4X4FT6lIjz1pXW4+A9HPEg7ZpkBxXjRiMTDdhgVs+nnkJgT7vAMLSBRqsFvI9hqSZedgguRnX946sOxegSwO5w==}
 
   '@esbuild/aix-ppc64@0.25.10':
     resolution: {integrity: sha512-0NFWnA+7l41irNuaSVlLfgNT12caWJVLzp5eAVhZ0z1qpxbockccEt3s+149rE64VUI3Ml2zt8Nv5JVc4QXTsw==}
@@ -495,6 +502,8 @@ packages:
         optional: true
 
 snapshots:
+
+  '@editableblock/textarea@1.0.1-beta35': {}
 
   '@esbuild/aix-ppc64@0.25.10':
     optional: true

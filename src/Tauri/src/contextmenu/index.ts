@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core"
 
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
+import { AMSearch } from "../../../Core/seach"
 import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/demo"
 
 /// 初始化菜单
@@ -27,7 +28,7 @@ export async function initMenu(el: HTMLDivElement) {
   // #endregion
 
   // #region 搜索框
-  
+  new AMSearch(el)
   // #endregion
 
   // #region 多级展开菜单

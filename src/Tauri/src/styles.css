@@ -61,6 +61,13 @@ html, body, #main {
   bottom: 50px;
 }
 
+/* -------------------------------- 菜单搜索 --------------------------- */
+.am-search input {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
 /* -------------------------------- 菜单 ------------------------------- */
 :root {
   --ab-tab-root-bg-color: #0d1117;
