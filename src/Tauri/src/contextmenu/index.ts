@@ -3,27 +3,31 @@ import { invoke } from "@tauri-apps/api/core"
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
 import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/demo"
+import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 
 /// 初始化菜单
 export async function initMenu(el: HTMLDivElement) {
   // #region key-value 数据
 
-  const kv_emoji: Record<string, string> = {}
   const result = await invoke("read_file", {
     // 路径可能有问题?
     path: '../../../docs/demo/emoji.txt',
   })
   if (typeof result !== 'string') return
+  
   // 解析csv内容
-  const lines = result.split('\n').filter(line => {
-    return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
-  });
-  for (const line of lines) {
-    const [label, value] = line.split('	'); // 没有确保安全性
-    kv_emoji[label] = value.trim();
-  }
+  // const kv_emoji: Record<string, string> = {}
+  // const lines = result.split('\n').filter(line => {
+  //   return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
+  // })
+  // for (const line of lines) {
+  //   const [label, value] = line.split('	'); // 没有确保安全性
+  //   kv_emoji[label] = value.trim();
+  // }
+  // console.log('kv_obj', Object.keys(kv_emoji).length)
 
-  console.log('kv_obj', Object.keys(kv_emoji).length)
+  // 解析csv内容2
+  // SEARCH_DB.init_trie_by_csv(result)
 
   // #endregion
 
@@ -31,9 +35,11 @@ export async function initMenu(el: HTMLDivElement) {
   AMSearch.factory(el)
   // #endregion
 
-  // #region 多级展开菜单
-
   const myMenu = new ABContextMenu2(el)
+
+  // myMenu.append_headerEditor('header test', ()=>{})
+
+  // #region 多级展开菜单
   myMenu.append_data([
     {
       label: 'Markdown',
@@ -61,6 +67,14 @@ export async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'Mermaid',
+      children: []
+    },
+    {
+      label: '代码片段',
+      children: []
+    },
+    {
+      label: '自定义短语',
       children: []
     },
     {

@@ -8,7 +8,7 @@ import { register } from '@tauri-apps/plugin-global-shortcut'
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
 
-import { SEARCH_DB } from '../../../Core/seach'
+import { SEARCH_DB } from '../../../Core/seach/SearchDB'
 
 export const global_state: {
   isPin: boolean // 是否置顶

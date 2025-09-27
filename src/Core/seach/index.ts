@@ -1,29 +1,6 @@
 import { EditableBlock_Raw } from "@editableblock/textarea/dist/EditableBlock/src/EditableBlock_Raw"
 import { global_setting } from "../Setting"
-
-/** 核心数据库
- * 
- * 内容交给别的模块来初始化
- * 
- * 支持多层索引方式
- * - Trie树 (前缀树)，用于前缀匹配。对于输入法场景，这是最完美且高效的
- * - 倒排索引，用于模糊匹配
- * - 哈希表，用于精确匹配
- * - 分词辅助 (可选)
- * - 后缀树: 不采用，占用太多
- */
-export const SEARCH_DB: {
-  trie: any
-  reverse: any
-  hash: any
-  // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
-  el_search: AMSearch | null
-} = {
-  trie: null,
-  reverse: null,
-  hash: null,
-  el_search: null
-}
+import { SEARCH_DB } from "./SearchDB"
 
 /**
  * AnyMenu 的 k-v 搜索框
@@ -65,7 +42,28 @@ export class AMSearch {
 
   // 执行搜索
   public search(query: string) {
+    // 刷新输入建议
+  }
+
+  // 输入建议
+  input_suggestion(el_input: HTMLElement, el_input_parent: HTMLElement) {
     
+
+
+    // header_input.addEventListener('keydown', (ev) => { // input enter和suggestion enter冲突，前者先触发
+    //   if (ev.key === 'Enter') { // 按回车应用值
+    //     ev.preventDefault()
+    //     // 获取隐藏值 (提示值)
+    //     header_callback(header_input.value)
+    //     this.visual_hide()
+    //   }
+    //   // if (ev.key === 'Escape') { // 按esc不应用值
+    //   //   ev.preventDefault()
+    //   //   ev.stopPropagation()
+    //   //   header_2.value = header_old
+    //   //   this.hide()
+    //   // }
+    // })
   }
 
   show() {
