@@ -44,11 +44,11 @@ export class AMSearch {
       this.search(target.value)
     }
 
-    this.createDom_suggestion(this.el_input, this.el)
+    this.createDom_suggestion(this.el)
   }
 
   // 输入建议
-  createDom_suggestion(el_input: HTMLElement, el_input_parent: HTMLElement) {
+  createDom_suggestion(el_input_parent: HTMLElement) {
     this.el_suggestion = document.createElement('div'); el_input_parent.appendChild(this.el_suggestion); this.el_suggestion.classList.add('am-search-suggestion')
       this.el_suggestion.style.display = 'none' // 没有匹配项就隐藏
   }
