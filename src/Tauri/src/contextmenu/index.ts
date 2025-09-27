@@ -10,11 +10,21 @@ export async function initMenu(el: HTMLDivElement) {
   // #region key-value 数据
 
   ;(async () => {
-    const result = await invoke("read_file", {
-      // 路径可能有问题?
-      path: '../../../docs/demo/emoji.txt',
-    })
-    if (typeof result !== 'string') return
+    let result: string | unknown
+    try {
+      result = await invoke("read_file", {
+        // 路径可能有问题?
+        path: '../../../docs/demo/emoji.txt',
+      })
+    } catch (error) {
+      console.error("Failed to read file:", error)
+    }
+
+    // 非Tauri环境下的测试调试数据
+    if (typeof result !== 'string') {
+      result = 'testE	🙂‍↔️\ntest1\t读取词库文件失败\ntest2\ttest222\ntest3\ttest123超长测试超长测试超长测试超长测试超长测试5超长测试超长测试超长测试'
+      // return
+    }
     
     // 解析csv内容
     // const kv_emoji: Record<string, string> = {}
@@ -28,7 +38,7 @@ export async function initMenu(el: HTMLDivElement) {
     // console.log('kv_obj', Object.keys(kv_emoji).length)
 
     // 解析csv内容2
-    SEARCH_DB.init_trie_by_csv(result)
+    SEARCH_DB.init_trie_by_csv(result as string)
   })();
 
   // #endregion

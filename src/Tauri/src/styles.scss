@@ -99,7 +99,7 @@ html, body, #main {
     background-color: var(--ab-menu-bg-color);
     opacity: 0.95;
     border: 1px solid var(--ab-tab-root-bd-color);
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     max-height: 400px;
     overflow-y: auto;
 
@@ -107,7 +107,7 @@ html, body, #main {
       display: flex;
       flex-wrap: nowrap;
       justify-content: space-between;
-      padding: 4px 0;
+      padding: 4px 8px;
       cursor: pointer;
       border-radius: 4px;
 
@@ -115,7 +115,11 @@ html, body, #main {
         background-color: var(--ab-tab-root-hv-color);
       }
 
-      >.value {}
+      >.value {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
       >.key {}
     }
   }
