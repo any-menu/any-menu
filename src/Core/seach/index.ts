@@ -31,26 +31,93 @@ export class AMSearch {
     if (global_setting.env === 'app') this.show()
   }
 
-  // 输入框
+  /** 输入框
+   * 
+   * DOM:
+   * - el_parent
+   *   - .am-search (this.el)
+   *     - input.am-search-input (this.el_input)
+   *     - .am-search-suggestion (this.el_suggestion)
+   */
   createDom(el: HTMLElement) {
+    // el_input
     this.el_parent = el
-    this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search')
+    this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search');
     this.el_input = document.createElement('input'); this.el.appendChild(this.el_input); this.el_input.classList.add('am-search-input')
       this.el_input.type = 'text'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
-
-    this.el_input.oninput = (ev) => {
-      const target = ev.target as HTMLInputElement
-      this.search(target.value)
-    }
 
     this.createDom_suggestion(this.el)
   }
 
   // 输入建议
   createDom_suggestion(el_input_parent: HTMLElement) {
-    this.el_suggestion = document.createElement('div'); el_input_parent.appendChild(this.el_suggestion); this.el_suggestion.classList.add('am-search-suggestion')
+    const p_this = this
+
+    // el_suggestion
+    this.el_suggestion = document.createElement('div'); el_input_parent.appendChild(this.el_suggestion);
+      this.el_suggestion.classList.add('am-search-suggestion');
+      // this.el_suggestion.setAttribute("id", "autocomplete-list"); // 同一时间应该只会存在一个建议列表
       this.el_suggestion.style.display = 'none' // 没有匹配项就隐藏
+
+    // 键盘选择项追踪
+    let currentFocus: number = -1
+    // 添加高亮样式到选中项
+    function addActive(list: NodeListOf<Element>) {
+      if (!list || list.length == 0) return false
+      removeActive(list)
+
+      if (currentFocus >= list.length) currentFocus = 0
+      if (currentFocus < 0) currentFocus = (list.length - 1)
+      list[currentFocus].classList.add("autocomplete-active") // 添加高亮
+      list[currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
+    }
+    // 移除所有项的高亮样式
+    function removeActive(list: NodeListOf<Element>) {
+      for (let i = 0; i < list.length; i++) {
+        list[i].classList.remove("autocomplete-active");
+      }
+    }
+
+    // input事件 - 输入
+    let search_result: {
+      key: string;
+      value: string;
+    }[] = []
+    this.el_input?.addEventListener('input', (ev) => {
+      const target = ev.target as HTMLInputElement
+      search_result = this.search(target.value)
+
+      // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
+      currentFocus = 0
+      const el_items = p_this.el_suggestion!.querySelectorAll(":scope>div.item")
+      addActive(el_items)
+    })
+
+    // input事件 - 键盘按键
+    this.el_input?.addEventListener('keydown', (ev) => {
+      let el_items: NodeListOf<HTMLElement>|undefined
+      el_items = p_this.el_suggestion!.querySelectorAll(":scope>div.item")
+      if (!el_items) return
+
+      if (ev.key == 'ArrowDown') { // Down 切换选项
+        currentFocus++
+        addActive(el_items);
+      } else if (ev.key == 'ArrowUp') { // Up 切换选项
+        currentFocus--
+        addActive(el_items);
+      } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+        if (currentFocus > -1) {
+          ev.preventDefault()
+          if (el_items) el_items[currentFocus].click()
+        }
+      } else if (ev.key == 'Tab') { // Tab 不应用，仅将内容填入输入框
+        if (currentFocus > -1) {
+          ev.preventDefault()
+          if (el_items && search_result.length) p_this.el_input!.value = search_result[currentFocus].value
+        }
+      }
+    })
   }
 
   // 执行搜索、并修改输入建议

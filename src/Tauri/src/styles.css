@@ -189,17 +189,16 @@ html, body, #main {
 
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 主容器样式 */
-.autocomplete-p {
+.am-search {
   position: relative;
   /* 建议列表 */
 }
-.autocomplete-p .autocomplete-items {
+.am-search .am-search-suggestion {
   position: absolute;
   box-sizing: border-box;
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 2px;
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -210,7 +209,7 @@ html, body, #main {
   overflow-y: auto;
   /* 建议列表项 */
 }
-.autocomplete-p .autocomplete-items > div {
+.am-search .am-search-suggestion > div {
   box-sizing: border-box;
   width: 100%;
   height: 28px;
@@ -221,10 +220,10 @@ html, body, #main {
   cursor: pointer;
   font-size: 14px;
 }
-.autocomplete-p .autocomplete-items > div:hover {
+.am-search .am-search-suggestion > div:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.autocomplete-p .autocomplete-items > div.autocomplete-active {
+.am-search .am-search-suggestion > div.autocomplete-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }

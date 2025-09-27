@@ -438,7 +438,7 @@ function input_suggestion(el_input: HTMLInputElement, el_container: HTMLElement)
   })
 
   // el_input事件 - 键盘按键
-  el_input.addEventListener('keydown', function(ev) {
+  el_input.addEventListener('keydown', (ev) => {
     let el_list: HTMLElement|null = document.getElementById("autocomplete-list")
     let el_items: HTMLCollectionOf<HTMLElement>|undefined
     if (el_list) el_items = el_list.getElementsByTagName("div")
