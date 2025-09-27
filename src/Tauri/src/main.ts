@@ -77,10 +77,12 @@ window.addEventListener("DOMContentLoaded", () => {
     if (global_state.isPin) {
       pin_btn.classList.add('active')
       await appWindow.setAlwaysOnTop(true)  // 置顶窗口
+      document.body.setAttribute('style', 'background: rgba(0, 0, 0, 0.5) !important')
     }
     else {
       pin_btn.classList.remove('active')
       await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
+      document.body.setAttribute('style', 'background: transparent')
     }
   }
 })
