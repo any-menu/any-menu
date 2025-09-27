@@ -1,4 +1,3 @@
-import { EditableBlock_Raw } from "@editableblock/textarea/dist/EditableBlock/src/EditableBlock_Raw"
 import { global_setting } from "../Setting"
 import { SEARCH_DB } from "./SearchDB"
 
@@ -25,6 +24,7 @@ export class AMSearch {
    */
   constructor(el?: HTMLElement) {
     if (el) this.createDom(el)
+    this.show()
 
     // app环境默认显示，非app环境 (ob/) 默认隐藏
     if (global_setting.env === 'app') this.show()
@@ -37,11 +37,16 @@ export class AMSearch {
       this.el_input.type = 'text'; this.el_input.placeholder = 'Search...待开发';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
-    if (global_setting.focusStrategy) this.el_input.focus()
+    this.el_input.oninput = (ev) => {
+      const target = ev.target as HTMLInputElement
+      this.search(target.value)
+    }
   }
 
   // 执行搜索
   public search(query: string) {
+    const result = SEARCH_DB.query_by_trie(query)
+    console.log(`search [${query}]: `, result)
     // 刷新输入建议
   }
 
@@ -67,7 +72,8 @@ export class AMSearch {
   }
 
   show() {
-    this.el_input?.focus()
+    if (global_setting.focusStrategy) this.el_input?.focus()
+    
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env !== 'app') return
   }
