@@ -74,10 +74,50 @@ html, body, #main {
 /* -------------------------------- 菜单搜索 --------------------------- */
 
 .am-search {
-  input {
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
+  // position: relative;
+
+  input.am-search-input {
+    width: 100%;
+    box-sizing: border-box;
+
     border: none;
     box-shadow: none;
     outline: none;
+  }
+
+  .am-search-suggestion {
+    width: 500px;
+    box-sizing: border-box;
+    position: absolute;
+
+    z-index: 12;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background-color: var(--ab-menu-bg-color);
+    opacity: 0.95;
+    border: 1px solid var(--ab-tab-root-bd-color);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    max-height: 400px;
+    overflow-y: auto;
+
+    >div.item {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      padding: 4px 0;
+      cursor: pointer;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: var(--ab-tab-root-hv-color);
+      }
+
+      >.value {}
+      >.key {}
+    }
   }
 }
 

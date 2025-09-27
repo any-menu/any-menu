@@ -10,6 +10,7 @@ export class AMSearch {
   el_parent: HTMLElement | null = null
   el: HTMLElement | null = null
   el_input: HTMLInputElement | null = null
+  el_suggestion: HTMLElement | null = null
 
   /** 单例模式 */
   static factory(el?: HTMLElement) {
@@ -30,10 +31,11 @@ export class AMSearch {
     if (global_setting.env === 'app') this.show()
   }
 
+  // 输入框
   createDom(el: HTMLElement) {
     this.el_parent = el
     this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search')
-    this.el_input = document.createElement('input'); this.el.appendChild(this.el_input);
+    this.el_input = document.createElement('input'); this.el.appendChild(this.el_input); this.el_input.classList.add('am-search-input')
       this.el_input.type = 'text'; this.el_input.placeholder = 'Search...待开发';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
@@ -41,34 +43,42 @@ export class AMSearch {
       const target = ev.target as HTMLInputElement
       this.search(target.value)
     }
-  }
 
-  // 执行搜索
-  public search(query: string) {
-    const result = SEARCH_DB.query_by_trie(query)
-    console.log(`search [${query}]: `, result)
-    // 刷新输入建议
+    this.createDom_suggestion(this.el_input, this.el)
   }
 
   // 输入建议
-  input_suggestion(el_input: HTMLElement, el_input_parent: HTMLElement) {
-    
+  createDom_suggestion(el_input: HTMLElement, el_input_parent: HTMLElement) {
+    this.el_suggestion = document.createElement('div'); el_input_parent.appendChild(this.el_suggestion); this.el_suggestion.classList.add('am-search-suggestion')
+      this.el_suggestion.style.display = 'none' // 没有匹配项就隐藏
+  }
 
+  // 执行搜索、并修改输入建议
+  public search(query: string): {key: string, value: string}[] {
+    if (this.el_suggestion == null) return []
 
-    // header_input.addEventListener('keydown', (ev) => { // input enter和suggestion enter冲突，前者先触发
-    //   if (ev.key === 'Enter') { // 按回车应用值
-    //     ev.preventDefault()
-    //     // 获取隐藏值 (提示值)
-    //     header_callback(header_input.value)
-    //     this.visual_hide()
-    //   }
-    //   // if (ev.key === 'Escape') { // 按esc不应用值
-    //   //   ev.preventDefault()
-    //   //   ev.stopPropagation()
-    //   //   header_2.value = header_old
-    //   //   this.hide()
-    //   // }
-    // })
+    const result = SEARCH_DB.query_by_trie(query)
+
+    // 数量检查
+    if (result.length === 0) {
+      this.el_suggestion.style.display = 'none'
+      this.el_suggestion.innerHTML = ''
+      return []
+    }
+    // if (result.length == 50) {} // 达到上限
+
+    // 添加到建议列表
+    this.el_suggestion.style.display = 'block'
+    this.el_suggestion.innerHTML = ''
+    for (const item of result) {
+      const div = document.createElement('div'); this.el_suggestion.appendChild(div); div.classList.add('item')
+      const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
+        div_value.textContent = item.value
+      const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
+        div_key.textContent = item.key
+    }
+
+    return result
   }
 
   show() {

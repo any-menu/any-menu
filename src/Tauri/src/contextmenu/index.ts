@@ -9,25 +9,27 @@ import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 export async function initMenu(el: HTMLDivElement) {
   // #region key-value 数据
 
-  const result = await invoke("read_file", {
-    // 路径可能有问题?
-    path: '../../../docs/demo/emoji.txt',
-  })
-  if (typeof result !== 'string') return
-  
-  // 解析csv内容
-  // const kv_emoji: Record<string, string> = {}
-  // const lines = result.split('\n').filter(line => {
-  //   return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
-  // })
-  // for (const line of lines) {
-  //   const [label, value] = line.split('	'); // 没有确保安全性
-  //   kv_emoji[label] = value.trim();
-  // }
-  // console.log('kv_obj', Object.keys(kv_emoji).length)
+  ;(async () => {
+    const result = await invoke("read_file", {
+      // 路径可能有问题?
+      path: '../../../docs/demo/emoji.txt',
+    })
+    if (typeof result !== 'string') return
+    
+    // 解析csv内容
+    // const kv_emoji: Record<string, string> = {}
+    // const lines = result.split('\n').filter(line => {
+    //   return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
+    // })
+    // for (const line of lines) {
+    //   const [label, value] = line.split('	'); // 没有确保安全性
+    //   kv_emoji[label] = value.trim();
+    // }
+    // console.log('kv_obj', Object.keys(kv_emoji).length)
 
-  // 解析csv内容2
-  SEARCH_DB.init_trie_by_csv(result)
+    // 解析csv内容2
+    SEARCH_DB.init_trie_by_csv(result)
+  })();
 
   // #endregion
 

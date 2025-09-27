@@ -44,38 +44,38 @@ class SearchDB {
     }
   }
 
-  // 前缀查询
-  query_by_trie(query: string): string[] {
-    const results: string[] = [];
+  /** 前缀查询
+   * @return 返回 {完整字符串, 值} 数组
+   */
+  query_by_trie(query: string): {key: string, value: string}[] {
+    const results: {key: string, value: string}[] = [];
     const startNode = this.trie.findPrefixNode(query);
 
     // 如果前缀不存在，返回空数组
     if (!startNode) return results
 
     // 使用深度优先搜索（DFS）来收集所有结果
-    const collect = (node: TrieNode) => {
-      // 如果已达到限制，则停止收集
-      if (results.length >= this.limit) return results
+    const collect = (node: TrieNode, currentKey: string) => {
+      if (results.length >= this.limit) return results // limit
 
-      // 如果是单词结尾，将其关联的values添加到结果中
+      // 如果是单词结尾，将其关联的 key/value 对添加到结果中
       if (node.isEndOfWord) {
         for (const val of node.values) {
-            if (results.length < this.limit && !results.includes(val)) {
-                results.push(val)
-            }
+          if (results.length >= this.limit) break // limit
+          results.push({ key: currentKey, value: val })
         }
       }
 
       // 递归访问所有子节点
-      for (const childNode of node.children.values()) {
-        collect(childNode)
-        if (results.length >= this.limit) {
-          return results // 提前退出
-        }
+      for (const [char, childNode] of node.children.entries()) {
+        if (results.length >= this.limit) return // limit
+
+        // 将当前字符追加到 key 上，然后继续递归
+        collect(childNode, currentKey + char)
       }
     }
 
-    collect(startNode)
+    collect(startNode, query)
     return results
   }
 }

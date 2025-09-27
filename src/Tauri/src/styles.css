@@ -62,12 +62,43 @@ html, body, #main {
 }
 
 /* -------------------------------- 菜单搜索 --------------------------- */
-.am-search input {
+.am-search {
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
+}
+.am-search input.am-search-input {
+  width: 100%;
+  box-sizing: border-box;
   border: none;
   box-shadow: none;
   outline: none;
 }
-
+.am-search .am-search-suggestion {
+  width: 500px;
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 12;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background-color: var(--ab-menu-bg-color);
+  opacity: 0.95;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.am-search .am-search-suggestion > div.item {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 4px 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.am-search .am-search-suggestion > div.item:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
 /* -------------------------------- 菜单 ------------------------------- */
 :root {
   --ab-tab-root-bg-color: #0d1117;
