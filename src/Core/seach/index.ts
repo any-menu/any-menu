@@ -58,24 +58,29 @@ export class AMSearch {
     if (this.el_suggestion == null) return []
 
     const result = SEARCH_DB.query_by_trie(query)
+    // console.log(`query [${query}]: `, result)
 
     // 数量检查
     if (result.length === 0) {
-      this.el_suggestion.style.display = 'none'
-      this.el_suggestion.innerHTML = ''
+      this.el_suggestion.innerHTML = ''; this.el_suggestion.style.display = 'none';
       return []
     }
     // if (result.length == 50) {} // 达到上限
 
     // 添加到建议列表
-    this.el_suggestion.style.display = 'block'
-    this.el_suggestion.innerHTML = ''
+    this.el_suggestion.innerHTML = ''; this.el_suggestion.style.display = 'block';
     for (const item of result) {
       const div = document.createElement('div'); this.el_suggestion.appendChild(div); div.classList.add('item')
       const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
         div_value.textContent = item.value
       const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
         div_key.textContent = item.key
+
+      div.onclick = () => {
+        this.el_input!.value = ''
+        this.el_suggestion!.innerHTML = ''; this.el_suggestion!.style.display = 'none';
+        void global_setting.api.sendText(item.value)
+      }
     }
 
     return result

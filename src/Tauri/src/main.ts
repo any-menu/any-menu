@@ -42,6 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { initMenu } from './contextmenu';
+import { global_setting } from '../../Core/Setting';
 
 // 前端模块
 window.addEventListener("DOMContentLoaded", () => {
@@ -59,8 +60,7 @@ window.addEventListener("DOMContentLoaded", () => {
     try {
       hideWindow()
       await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-      // await invoke("paste", { text: 'paste from button' })
-      await invoke("send", { text: 'send from button' })
+      global_setting.api.sendText('paste from button')
     } catch (error) {
       console.error("Failed to insert text:", error);
     }
