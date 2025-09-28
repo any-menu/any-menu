@@ -208,6 +208,7 @@ import { global_setting } from '../../../Core/Setting'
 
 global_setting.api.getCursorXY = async () => {
   const pos = await invoke("get_caret_xy");
+  if (typeof pos === 'string') return { x: -1, y: -1 }
   return pos as { x: number, y: number }
 }
 

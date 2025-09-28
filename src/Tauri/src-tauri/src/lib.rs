@@ -5,6 +5,7 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
+use log::{error, info};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -402,7 +403,7 @@ struct Point {
 }
 
 #[tauri::command]
-fn get_caret_xy() -> Result<Point, String> {
+fn get_caret_xy() -> (i32, i32) {
     let mut x = 0;
     let mut y = 0;
 
@@ -412,7 +413,9 @@ fn get_caret_xy() -> Result<Point, String> {
     //     Err(e) => Err(e.to_string()), // 如果失败，返回错误信息
     // }
 
-    // 尝试二。失败: 第一次调用时，输出的位置是鼠标位置而非光标位置。从第二次调用开始，输出值都是 `Success (0, 0)``
+    // 尝试二
+    // 失败: 第一次调用时，输出的位置是鼠标位置而非光标位置
+    // 从第二次调用开始，都是 "没有聚焦的窗口"，输出值都是 `Success (0, 0)`
     #[cfg(target_os = "windows")]
     {
         use winapi::um::winuser::{GetFocus, GetCaretPos};
@@ -421,7 +424,7 @@ fn get_caret_xy() -> Result<Point, String> {
         unsafe {
             let hwnd = GetFocus();
             if hwnd.is_null() {
-                println!("没有聚焦的窗口");
+                error!("没有聚焦的窗口");
             } else {
                 print_window_name(hwnd); // 打印窗口名称（调试用）
             }
@@ -430,11 +433,11 @@ fn get_caret_xy() -> Result<Point, String> {
             if GetCaretPos(&mut point) != 0 {
                 use winapi::um::winuser::ClientToScreen;
                 ClientToScreen(hwnd, &mut point);
-                println!("GetCaretPos 获取位置成功 ({}, {})", point.x, point.y);
+                info!("GetCaretPos 获取位置成功 ({}, {})", point.x, point.y);
                 x = point.x;
                 y = point.y;
             } else {
-                println!("GetCaretPos 获取位置失败");
+                error!("GetCaretPos 获取位置失败");
             }
         }
     }
@@ -455,13 +458,14 @@ fn get_caret_xy() -> Result<Point, String> {
             gui_info.cbSize = size_of::<GUITHREADINFO>() as u32;
 
             if GetGUIThreadInfo(0, &mut gui_info) == 0 {
-                return Err("获取GUI线程信息失败".to_string());
+                error!("获取GUI线程信息失败");
+                // return (-1, -1);
             }
             
             // 检查是否有活动的插入符号
             if gui_info.hwndCaret.is_null() {
-                println!("没有活动的插入符号");
-                return Err("没有活动的插入符号".to_string());
+                error!("没有活动的插入符号");
+                // return (-1, -1);
             }
 
             // 获取插入符号的位置
@@ -475,17 +479,18 @@ fn get_caret_xy() -> Result<Point, String> {
             };
             x = point.x;
             y = point.y;
-            println!("gui_info.rcCaret获取成功: ({}, {})", point.x, point.y);
+            info!("gui_info.rcCaret获取成功: ({}, {})", point.x, point.y);
             
             if ClientToScreen(hwnd_caret, &mut point) == 0 {
-                return Err("Failed to convert to screen coordinates".to_string());
+                error!("Failed to convert to screen coordinates");
+                // return (-1, -1);
             }
         }
     }
 
-    println!("Cursor position: ({}, {})", x, y);
+    info!("Cursor position: ({}, {})", x, y);
 
-    return Ok(Point { x: x, y: y });
+    return (x, y);
 }
 
 // 辅助函数：打印窗口名称（调试用）
