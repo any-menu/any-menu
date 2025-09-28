@@ -35,3 +35,5 @@ tauri-plugin-global-shortcut = "2"
 # winapi (windows) 复制黏贴等
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] }
+uiautomation = "0.24.0"
+windows = "0.62.1"

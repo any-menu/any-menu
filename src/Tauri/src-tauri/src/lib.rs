@@ -407,11 +407,11 @@ fn get_caret_xy() -> (i32, i32) {
     let mut x = 0;
     let mut y = 0;
 
-    print_msg();
+    return print_msg();
 
     // info!("Cursor position: ({}, {})", x, y);
 
-    return (x, y);
+    // return (x, y);
 }
 
 // 辅助函数：打印窗口名称（调试用）
@@ -434,7 +434,7 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
 }
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-fn print_msg() {
+fn print_msg() -> (i32, i32) { 
     info!("---------------print_msg---------------");
 
     #[cfg(target_os = "windows")]
@@ -569,13 +569,15 @@ fn print_msg() {
                             error!("S4: 前台窗口无法转换为屏幕坐标");
                         } else {
                             info!("S4: 前台窗口光标位置: ({}, {})", point.x, point.y);
+                            return (point.x, point.y);
                         }
                     }
                 }
             }
         }
+
+        return (-1, -1);
     }
 }
-
 
 // #endregion
