@@ -214,22 +214,22 @@ global_setting.api.getCursorXY = async () => {
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
-  const appWindow = getCurrentWindow()
-
-  appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
-
-  // s1. 鼠标位置 (类似于quciker app)
-  const cursor = await cursorPosition()
-  cursor.x += 0
-  cursor.y += 2
-  await appWindow.setPosition(cursor)
 
   // s2. 光标位置 (类似于windows自带的 `win+.` 面板)
   let cursor2 = await global_setting.api.getCursorXY()
   if (cursor2.x < 0 || cursor2.y < -1) {
     console.error('getCursorXY failed, use mouse position instead')
-    cursor2 = cursor
+    // cursor2 = cursor
   }
+
+  // s1. 鼠标位置 (类似于quciker app)
+  const appWindow = getCurrentWindow()
+  const cursor = await cursorPosition()
+  cursor.x += 0
+  cursor.y += 2
+  await appWindow.setPosition(cursor)
+
+  
    
   // s3. 屏幕中间位置计算 (类似于 wox/utools app)
   
@@ -238,6 +238,7 @@ async function showWindow() {
   // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
   // await appWindow.setSize({ width: 240, height: 320 })
 
+  appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
