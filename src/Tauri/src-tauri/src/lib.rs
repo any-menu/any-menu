@@ -85,7 +85,7 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, paste, send, read_file])
+        .invoke_handler(tauri::generate_handler![greet, paste, send, read_file, get_caret_xy])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -387,5 +387,124 @@ fn read_file(path: &str) -> Option<String> {
 //         "[]".to_string()
 //     })
 // }
+
+// #endregion
+
+// #region getCursorXY
+
+// #[tauri::command]
+// fn get_cursor_xy() -> Result<Point, String> {}
+
+#[derive(serde::Serialize)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+#[tauri::command]
+fn get_caret_xy() -> Result<Point, String> {
+    let mut x = 0;
+    let mut y = 0;
+
+    // 尝试一。失败：win_win 没有 caret_pos 方法
+    // match win_win::caret_pos() {
+    //     Ok((x, y)) => Ok(Point { x, y }),
+    //     Err(e) => Err(e.to_string()), // 如果失败，返回错误信息
+    // }
+
+    // 尝试二。失败: 第一次调用时，输出的位置是鼠标位置而非光标位置。从第二次调用开始，输出值都是 `Success (0, 0)``
+    #[cfg(target_os = "windows")]
+    {
+        use winapi::um::winuser::{GetFocus, GetCaretPos};
+        use winapi::shared::windef::POINT;
+        
+        unsafe {
+            let hwnd = GetFocus();
+            if hwnd.is_null() {
+                println!("没有聚焦的窗口");
+            } else {
+                print_window_name(hwnd); // 打印窗口名称（调试用）
+            }
+            
+            let mut point = POINT { x: 0, y: 0 };
+            if GetCaretPos(&mut point) != 0 {
+                use winapi::um::winuser::ClientToScreen;
+                ClientToScreen(hwnd, &mut point);
+                println!("GetCaretPos 获取位置成功 ({}, {})", point.x, point.y);
+                x = point.x;
+                y = point.y;
+            } else {
+                println!("GetCaretPos 获取位置失败");
+            }
+        }
+    }
+
+    // 尝试三。GetGUIThreadInfo
+    // 不完全成功: 获取的确实是光标的而非鼠标的，需要纠正: 相对于窗口而非屏幕的坐标
+    // 可能获取不到: 浏览器输入框正常，VSCode和QQ会在 "检查是否有活动的插入符号" 阶段return Err
+    #[cfg(target_os = "windows")]
+    {
+        use winapi::um::winuser::{GetFocus, GetGUIThreadInfo, GUITHREADINFO};
+        use winapi::shared::windef::{HWND, POINT, RECT};
+        use winapi::um::winuser::{ClientToScreen, GetWindowRect};
+        use std::mem::size_of;
+
+        unsafe {
+            // 获取当前GUI线程信息
+            let mut gui_info: GUITHREADINFO = std::mem::zeroed();
+            gui_info.cbSize = size_of::<GUITHREADINFO>() as u32;
+
+            if GetGUIThreadInfo(0, &mut gui_info) == 0 {
+                return Err("获取GUI线程信息失败".to_string());
+            }
+            
+            // 检查是否有活动的插入符号
+            if gui_info.hwndCaret.is_null() {
+                println!("没有活动的插入符号");
+                return Err("没有活动的插入符号".to_string());
+            }
+
+            // 获取插入符号的位置
+            let mut caret_rect = gui_info.rcCaret;
+            let hwnd_caret = gui_info.hwndCaret;
+            
+            // 将客户区坐标转换为屏幕坐标
+            let mut point = POINT { 
+                x: caret_rect.left, 
+                y: caret_rect.bottom // 使用底部坐标，这样窗口会出现在光标下方
+            };
+            x = point.x;
+            y = point.y;
+            println!("gui_info.rcCaret获取成功: ({}, {})", point.x, point.y);
+            
+            if ClientToScreen(hwnd_caret, &mut point) == 0 {
+                return Err("Failed to convert to screen coordinates".to_string());
+            }
+        }
+    }
+
+    println!("Cursor position: ({}, {})", x, y);
+
+    return Ok(Point { x: x, y: y });
+}
+
+// 辅助函数：打印窗口名称（调试用）
+#[cfg(target_os = "windows")]
+fn print_window_name(hwnd: winapi::shared::windef::HWND) {
+    use winapi::um::winuser::GetWindowTextW;
+    use std::ffi::OsString;
+    use std::os::windows::ffi::OsStringExt;
+    
+    unsafe {
+        let mut buffer = [0u16; 512];
+        let len = GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
+        if len > 0 {
+            let window_name = OsString::from_wide(&buffer[0..len as usize]);
+            println!("窗口名称: {:?}", window_name);
+        } else {
+            println!("无法获取窗口名称或窗口无标题");
+        }
+    }
+}
 
 // #endregion

@@ -92,6 +92,7 @@ dependencies = [
  "tauri-plugin-global-shortcut",
  "tauri-plugin-log",
  "tauri-plugin-opener",
+ "win-win",
  "winapi",
 ]
 
@@ -4949,6 +4950,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "win-win"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c30bbe0de223c7200eb7bb6307a2b660910fff0157e6c283abd54efe7b0cdfb7"
+dependencies = [
+ "winapi",
+ "wio",
+]
+
+[[package]]
 name = "winapi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5399,6 +5410,15 @@ checksum = "cb5a765337c50e9ec252c2069be9bf91c7df47afb103b642ba3a53bf8101be97"
 dependencies = [
  "cfg-if",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "wio"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5d129932f4644ac2396cb456385cbf9e63b5b30c6e8dc4820bdca4eb082037a5"
+dependencies = [
+ "winapi",
 ]
 
 [[package]]
