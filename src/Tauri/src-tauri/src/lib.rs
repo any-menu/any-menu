@@ -6,9 +6,20 @@ use tauri::{
     Manager,
 };
 use log::{error, info};
+use std::thread;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // uia
+    thread::spawn(|| {
+        // 在新线程中初始化 uiautomation。否则会报错 "COM library not initialized"
+        // 原因: 不要让同一线程中同时使用aio和tauri，他们会都尝试去初始化COM
+        let automation = UIAutomation::new().unwrap();
+        let walker = automation.get_control_view_walker().unwrap();
+        let root = automation.get_root_element().unwrap();
+        print_element(&walker, &root, 0).unwrap();
+    });
+
     // 日志插件
     let log_plugin = tauri_plugin_log::Builder::new()
         .level(log::LevelFilter::Debug) // 日志级别
@@ -576,8 +587,42 @@ fn print_msg() -> (i32, i32) {
             }
         }
 
+        // uiautomation
+        {
+            // let automation = UIAutomation::new().unwrap();
+            // let walker = automation.get_control_view_walker().unwrap();
+            // let root = automation.get_root_element().unwrap();
+
+            // print_element(&walker, &root, 0).unwrap();
+        }
+
         return (-1, -1);
     }
+}
+
+// use uiautomation::Result; // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
+use uiautomation::UIAutomation;
+use uiautomation::UIElement;
+use uiautomation::UITreeWalker;
+
+fn print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+    for _ in 0..level {
+        print!(" ")
+    }
+    println!("{} - {}", element.get_classname()?, element.get_name()?);
+
+    if let Ok(child) = walker.get_first_child(&element) {
+        // print_element(walker, &child, level + 1)?; // 递归
+
+        let mut next = child;
+        while let Ok(sibling) = walker.get_next_sibling(&next) {
+            print_element(walker, &sibling, level + 1)?;
+
+            next = sibling;
+        }
+    }
+    
+    Ok(())
 }
 
 // #endregion
