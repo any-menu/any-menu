@@ -22,13 +22,30 @@ use uiautomation::{
 
 // #region uia thread
 
-fn start_uia_worker() {
+// 定义全局 Sender 类型
+struct UiaSender(pub Mutex<Sender<UiaMsg>>);
+
+// 消息枚举，根据需求可扩展
+enum UiaMsg {
+    PrintElement,
+}
+
+fn start_uia_worker(rx: Receiver<UiaMsg>) {
     thread::spawn(move || {
         // 初始化 uiautomation
         let automation = UIAutomation::new().unwrap();
         let walker = automation.get_control_view_walker().unwrap();
         let root = automation.get_root_element().unwrap();
-        print_element(&walker, &root, 0).unwrap(); // 初始时执行一次
+        print_element(&walker, &root, 0); // 初始时执行一次
+
+        loop {
+            match rx.recv() {
+                Ok(UiaMsg::PrintElement) => {
+                    let _ = print_element(&walker, &root, 0);
+                }
+                Err(_) => break,
+            }
+        }
     });
 }
 
@@ -36,7 +53,12 @@ fn start_uia_worker() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    start_uia_worker();
+    // uia
+    // 新增：初始化channel
+    let (tx, rx) = mpsc::channel::<UiaMsg>();
+    let uia_sender = UiaSender(Mutex::new(tx));
+    // 启动worker线程，传递receiver
+    start_uia_worker(rx);
 
     // 日志插件
     let log_plugin = tauri_plugin_log::Builder::new()
@@ -56,6 +78,7 @@ pub fn run() {
         .build();
 
     tauri::Builder::default()
+        .manage(uia_sender) // 依赖注入，注入到Tauri State管理
         .plugin(log_plugin)
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init())
@@ -432,14 +455,16 @@ struct Point {
 }
 
 #[tauri::command]
-fn get_caret_xy(app_handle: tauri::AppHandle) -> (i32, i32) {
+fn get_caret_xy(app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32) {
     let mut x = 0;
     let mut y = 0;
 
+    // uia
+    // 向worker线程发消息
+    let tx = uia_sender.0.lock().unwrap();
+    let _ = tx.send(UiaMsg::PrintElement);
+
     return print_msg(app_handle);
-
-    // info!("Cursor position: ({}, {})", x, y);
-
     // return (x, y);
 }
 
