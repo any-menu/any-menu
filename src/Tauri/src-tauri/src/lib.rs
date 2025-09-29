@@ -8,17 +8,35 @@ use tauri::{
 use log::{error, info};
 use std::thread;
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    // uia
-    thread::spawn(|| {
-        // 在新线程中初始化 uiautomation。否则会报错 "COM library not initialized"
-        // 原因: 不要让同一线程中同时使用aio和tauri，他们会都尝试去初始化COM
+use std::sync::mpsc::{self, Sender, Receiver};
+use std::sync::{Arc, Mutex};
+use tauri::State;
+use uiautomation::{
+    // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
+    // Result 最好不要use，容易出报错
+    UIAutomation,
+    UIElement,
+    UITreeWalker,
+};
+
+
+// #region uia thread
+
+fn start_uia_worker() {
+    thread::spawn(move || {
+        // 初始化 uiautomation
         let automation = UIAutomation::new().unwrap();
         let walker = automation.get_control_view_walker().unwrap();
         let root = automation.get_root_element().unwrap();
-        print_element(&walker, &root, 0).unwrap();
+        print_element(&walker, &root, 0).unwrap(); // 初始时执行一次
     });
+}
+
+// #endregion
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    start_uia_worker();
 
     // 日志插件
     let log_plugin = tauri_plugin_log::Builder::new()
@@ -414,11 +432,11 @@ struct Point {
 }
 
 #[tauri::command]
-fn get_caret_xy() -> (i32, i32) {
+fn get_caret_xy(app_handle: tauri::AppHandle) -> (i32, i32) {
     let mut x = 0;
     let mut y = 0;
 
-    return print_msg();
+    return print_msg(app_handle);
 
     // info!("Cursor position: ({}, {})", x, y);
 
@@ -445,7 +463,7 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
 }
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-fn print_msg() -> (i32, i32) { 
+fn print_msg(app_handle: tauri::AppHandle) -> (i32, i32) { 
     info!("---------------print_msg---------------");
 
     #[cfg(target_os = "windows")]
@@ -587,23 +605,9 @@ fn print_msg() -> (i32, i32) {
             }
         }
 
-        // uiautomation
-        {
-            // let automation = UIAutomation::new().unwrap();
-            // let walker = automation.get_control_view_walker().unwrap();
-            // let root = automation.get_root_element().unwrap();
-
-            // print_element(&walker, &root, 0).unwrap();
-        }
-
         return (-1, -1);
     }
 }
-
-// use uiautomation::Result; // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
-use uiautomation::UIAutomation;
-use uiautomation::UIElement;
-use uiautomation::UITreeWalker;
 
 fn print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
