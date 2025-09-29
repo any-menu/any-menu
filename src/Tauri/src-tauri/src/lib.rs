@@ -36,12 +36,11 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
         let automation = UIAutomation::new().unwrap();
         let walker = automation.get_control_view_walker().unwrap();
         let root = automation.get_root_element().unwrap();
-        print_element(&walker, &root, 0); // 初始时执行一次
 
         loop {
             match rx.recv() {
                 Ok(UiaMsg::PrintElement) => {
-                    let _ = print_element(&walker, &root, 0);
+                    let _ = print_focused_element(&walker, &automation, 0);
                 }
                 Err(_) => break,
             }
@@ -634,6 +633,33 @@ fn print_msg(app_handle: tauri::AppHandle) -> (i32, i32) {
     }
 }
 
+// 仅打印当前聚焦的 element 及其子元素
+fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
+    let focused = automation.get_focused_element()?;
+    print_element_tree(walker, &focused, level)
+}
+
+// 递归打印传入元素及其子树
+fn print_element_tree(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+    for _ in 0..level {
+        print!(" ");
+    }
+    println!("{} - {}", element.get_classname()?, element.get_name()?);
+
+    if let Ok(child) = walker.get_first_child(&element) {
+        let mut next = child;
+        loop {
+            print_element_tree(walker, &next, level + 1)?;
+            match walker.get_next_sibling(&next) {
+                Ok(sibling) => next = sibling,
+                Err(_) => break, // 没有下一个兄弟，跳出循环
+            }
+        }
+    }
+    Ok(())
+}
+
+// 递归打印传入的 element 及其子元素
 fn print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ")
