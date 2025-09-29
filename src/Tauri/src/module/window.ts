@@ -240,7 +240,7 @@ async function showWindow() {
   // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
   // await appWindow.setSize({ width: 240, height: 320 })
 
-  await appWindow.setPosition(cursor)
+  await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口

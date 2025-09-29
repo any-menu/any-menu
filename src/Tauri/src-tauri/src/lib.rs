@@ -8,8 +8,11 @@ use tauri::{
 use log::{error, info};
 use std::thread;
 
-use std::sync::mpsc::{self, Sender, Receiver};
-use std::sync::{Arc, Mutex};
+use std::sync::{
+    mpsc::{self, Sender, Receiver},
+    // Arc,
+    Mutex,
+};
 use tauri::State;
 use uiautomation::{
     // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
@@ -447,11 +450,11 @@ fn read_file(path: &str) -> Option<String> {
 // #[tauri::command]
 // fn get_cursor_xy() -> Result<Point, String> {}
 
-#[derive(serde::Serialize)]
-struct Point {
-    x: i32,
-    y: i32,
-}
+// #[derive(serde::Serialize)]
+// struct Point {
+//     x: i32,
+//     y: i32,
+// }
 
 #[tauri::command]
 fn get_caret_xy(app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32) {
@@ -463,7 +466,7 @@ fn get_caret_xy(app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (
     let tx = uia_sender.0.lock().unwrap();
     let _ = tx.send(UiaMsg::PrintElement);
 
-    return print_msg(app_handle);
+    return print_msg();
     // return (x, y);
 }
 
@@ -487,7 +490,7 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
 }
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-fn print_msg(app_handle: tauri::AppHandle) -> (i32, i32) { 
+fn print_msg() -> (i32, i32) { 
     info!("---------------print_msg---------------");
 
     #[cfg(target_os = "windows")]
@@ -633,9 +636,88 @@ fn print_msg(app_handle: tauri::AppHandle) -> (i32, i32) {
     }
 }
 
+use uiautomation::controls::TextControl;
+use uiautomation::actions::Text;
+use uiautomation::patterns::UITextPattern;
+
 // 仅打印当前聚焦的 element 及其子元素
 fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
-    let focused = automation.get_focused_element()?;
+    let focused = automation.get_focused_element()?; // 当前聚焦
+
+    // 环境问题
+    // VSCode 环境，控制台可能可能会让你按 Alt+Shift+F1, 开启后 VSCode 右下角会显示 "已为屏幕阅读器优化"，这种情况下的 vscode 才能获取到信息
+    // classname: 大部分是空 (浏览器 qq vscode 等空)，notepad-- 是 ScintillaEditView，windows notepad 是 RichEditD2DPT
+    // controltype: 大部分是Edit，windows notepad 是Document，浏览器搜索框是 ComboBox
+    // name: 窗口名/输入框默认名
+    println!("classname: {}", focused.get_classname()?);
+    println!("controltype: {}", focused.get_control_type()?);
+    println!("name: {}", focused.get_name()?);
+
+    // api测试
+    // 获取 TextPattern 总是成功的
+    // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
+    match focused.get_pattern::<UITextPattern>() {
+        Ok(text_pattern) => {
+            println!("获取 TextPattern 成功: {:?}", text_pattern);
+            match text_pattern.get_caret_range() {
+                Ok((has_caret, caret_range)) => {
+                    println!("获取插入符号状态成功 {}", has_caret);
+                    if has_caret {
+                        match caret_range.get_enclosing_element() {
+                            Ok(caret_elem) => {
+                                match caret_elem.get_bounding_rectangle() {
+                                    Ok(rect) => {
+                                        println!("插入符号位置: left={}, top={}, width={}, height={}",
+                                            rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height());
+                                    }
+                                    Err(e) => println!("获取插入符号边界失败: {}", e),
+                                }
+                            }
+                            Err(e) => println!("获取插入符号元素失败: {}", e),
+                        }
+                    } else {
+                        println!("当前控件没有插入符号");
+                    }
+                }
+                Err(e) => println!("获取插入符号范围失败: {}", e),
+            }
+
+            match text_pattern.get_selection() {
+                Ok(ranges) => {
+                    println!("获取选区成功: {:?}", ranges);
+                    for (i, range) in ranges.iter().enumerate() {
+                        match range.get_enclosing_element() {
+                            Ok(elem) => match elem.get_bounding_rectangle() {
+                                Ok(rect) => {
+                                    // 这个获取到的是文本框的边界，而不是光标选区的边界
+                                    println!(
+                                        "选区 {} 位置: left={}, top={}, width={}, height={}",
+                                        i,
+                                        rect.get_left(),
+                                        rect.get_top(),
+                                        rect.get_width(),
+                                        rect.get_height()
+                                    );
+                                }
+                                Err(e) => println!(
+                                    "获取选区 {} 边界失败: {}",
+                                    i, e
+                                ),
+                            },
+                            Err(e) => println!(
+                                "获取选区 {} 元素失败: {}",
+                                i, e
+                            ),
+                        }
+                    }
+                }
+                Err(e) => println!("获取选区失败: {}", e),
+            }
+        }
+        Err(e) => println!("获取 UITextPattern 失败: {}", e),
+    }
+
+    // println!("聚焦元素信息:");
     print_element_tree(walker, &focused, level)
 }
 
@@ -660,18 +742,18 @@ fn print_element_tree(walker: &UITreeWalker, element: &UIElement, level: usize) 
 }
 
 // 递归打印传入的 element 及其子元素
-fn print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+fn _print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ")
     }
     println!("{} - {}", element.get_classname()?, element.get_name()?);
 
     if let Ok(child) = walker.get_first_child(&element) {
-        // print_element(walker, &child, level + 1)?; // 递归
+        // _print_element(walker, &child, level + 1)?; // 递归
 
         let mut next = child;
         while let Ok(sibling) = walker.get_next_sibling(&next) {
-            print_element(walker, &sibling, level + 1)?;
+            _print_element(walker, &sibling, level + 1)?;
 
             next = sibling;
         }

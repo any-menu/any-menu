@@ -104,7 +104,13 @@ export async function initMenu(el: HTMLDivElement) {
       children: [
         { label: "Too many. You should use the search bar." }
       ]
-    }
+    },
+    {
+      label: '表情包', // 这功能会用到本体存储，app版才支持
+      children: [
+        { label: "Too many. You should use the search bar." }
+      ]
+    },
   ])
 
   // #endregion
