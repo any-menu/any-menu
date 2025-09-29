@@ -2,13 +2,15 @@
  * 获取光标、窗口信息、uia信息
  */
 
- use log::{error, info};
+use log::{error, info};
 use uiautomation::{
     // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
     // Result 最好不要use，容易出报错
     UIAutomation,
     UIElement,
     UITreeWalker,
+    // actions::Text,
+    patterns::UITextPattern,
 };
 
 // 辅助函数：打印窗口名称（调试用）
@@ -41,12 +43,12 @@ pub fn print_msg() -> (i32, i32) {
             GetCaretPos,
             GetGUIThreadInfo,
             GUITHREADINFO,
-            ClientToScreen, GetWindowRect,
+            ClientToScreen,
             GetForegroundWindow,
             GetWindowThreadProcessId,
         };
         use winapi::shared::windef::{
-            HWND, POINT, RECT
+            POINT
         };
         use std::mem::size_of;
 
@@ -87,7 +89,7 @@ pub fn print_msg() -> (i32, i32) {
                     error!("S2: gui_info.hwndCaret: 没有活动的插入符号");
                 } else {
                     // 获取插入符号的位置
-                    let mut caret_rect = gui_info.rcCaret;
+                    let caret_rect = gui_info.rcCaret;
                     let hwnd_caret = gui_info.hwndCaret;
                     
                     // 打印窗口名称（调试用）
@@ -152,7 +154,7 @@ pub fn print_msg() -> (i32, i32) {
                     if gui_info.hwndCaret.is_null() {
                         error!("S4: 前台窗口没有活动的插入符号");
                     } else {
-                        let mut caret_rect = gui_info.rcCaret;
+                        let caret_rect = gui_info.rcCaret;
                         let hwnd_caret = gui_info.hwndCaret;
                         
                         print_window_name(hwnd_caret);
@@ -177,13 +179,10 @@ pub fn print_msg() -> (i32, i32) {
     }
 }
 
-use uiautomation::controls::TextControl;
-use uiautomation::actions::Text;
-use uiautomation::patterns::UITextPattern;
-
 // 仅打印当前聚焦的 element 及其子元素
 pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
-    let focused = automation.get_focused_element()?; // 当前聚焦
+    let focused = automation.get_focused_element()?; // 当前聚焦元素
+    let _root = automation.get_root_element().unwrap(); // 根元素
 
     // 环境问题
     // VSCode 环境，控制台可能可能会让你按 Alt+Shift+F1, 开启后 VSCode 右下角会显示 "已为屏幕阅读器优化"，这种情况下的 vscode 才能获取到信息

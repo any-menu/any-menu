@@ -5,7 +5,6 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-use log::{error, info};
 use std::thread;
 
 use std::sync::{
@@ -15,11 +14,7 @@ use std::sync::{
 };
 use tauri::State;
 use uiautomation::{
-    // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
-    // Result 最好不要use，容易出报错
     UIAutomation,
-    UIElement,
-    UITreeWalker,
 };
 
 // 自定义包
@@ -45,7 +40,6 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
         // 初始化 uiautomation
         let automation = UIAutomation::new().unwrap();
         let walker = automation.get_control_view_walker().unwrap();
-        let root = automation.get_root_element().unwrap();
 
         loop {
             match rx.recv() {
@@ -464,9 +458,10 @@ fn read_file(path: &str) -> Option<String> {
 // }
 
 #[tauri::command]
-fn get_caret_xy(app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32) {
-    let mut x = 0;
-    let mut y = 0;
+fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32) {
+    // let mut x = 0;
+    // let mut y = 0;
+    // return (x, y);
 
     // uia
     // 向worker线程发消息
@@ -474,7 +469,6 @@ fn get_caret_xy(app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (
     let _ = tx.send(UiaMsg::PrintElement);
 
     return print_msg();
-    // return (x, y);
 }
 
 // #endregion
