@@ -196,66 +196,45 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
     // api测试
     // 获取 TextPattern 总是成功的
     // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
-    match focused.get_pattern::<UITextPattern>() {
-        Ok(text_pattern) => {
-            println!("获取 TextPattern 成功: {:?}", text_pattern);
-            match text_pattern.get_caret_range() {
-                Ok((has_caret, caret_range)) => {
-                    println!("获取插入符号状态成功 {}", has_caret);
-                    if has_caret {
-                        match caret_range.get_enclosing_element() {
-                            Ok(caret_elem) => {
-                                match caret_elem.get_bounding_rectangle() {
-                                    Ok(rect) => {
-                                        println!("插入符号位置: left={}, top={}, width={}, height={}",
-                                            rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height());
-                                    }
-                                    Err(e) => println!("获取插入符号边界失败: {}", e),
-                                }
-                            }
-                            Err(e) => println!("获取插入符号元素失败: {}", e),
-                        }
-                    } else {
-                        println!("当前控件没有插入符号");
-                    }
-                }
-                Err(e) => println!("获取插入符号范围失败: {}", e),
-            }
-
-            match text_pattern.get_selection() {
-                Ok(ranges) => {
-                    println!("获取选区成功: {:?}", ranges);
-                    for (i, range) in ranges.iter().enumerate() {
-                        match range.get_enclosing_element() {
-                            Ok(elem) => match elem.get_bounding_rectangle() {
-                                Ok(rect) => {
-                                    // 这个获取到的是文本框的边界，而不是光标选区的边界
-                                    println!(
-                                        "选区 {} 位置: left={}, top={}, width={}, height={}",
-                                        i,
-                                        rect.get_left(),
-                                        rect.get_top(),
-                                        rect.get_width(),
-                                        rect.get_height()
-                                    );
-                                }
-                                Err(e) => println!(
-                                    "获取选区 {} 边界失败: {}",
-                                    i, e
-                                ),
-                            },
-                            Err(e) => println!(
-                                "获取选区 {} 元素失败: {}",
-                                i, e
-                            ),
-                        }
-                    }
-                }
-                Err(e) => println!("获取选区失败: {}", e),
-            }
-        }
-        Err(e) => println!("获取 UITextPattern 失败: {}", e),
-    }
+    let text_pattern = focused.get_pattern::<UITextPattern>().or_else(|e| {
+        println!("获取 UITextPattern 失败: {}", e); Err(e)
+    })?;
+    // 基于 get_caret_range()
+    let _ret = (|| -> Result<(), Box<dyn std::error::Error>> {
+        let (has_caret, caret_range) = text_pattern.get_caret_range()
+            .map_err(|e| { println!("获取插入符号范围失败: {}", e); e })?;
+        if !has_caret { println!("当前控件没有插入符号"); return Ok(()); };
+        let caret_elem = caret_range.get_enclosing_element()
+            .map_err(|e| { println!("获取插入符号元素失败: {}", e); e })?;
+        let rect = caret_elem.get_bounding_rectangle()
+            .map_err(|e| { println!("获取插入符号边界失败: {}", e); e })?;
+        println!("插入符号位置: left={}, top={}, width={}, height={}",
+            rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height()
+        );
+        Ok(())
+    })();
+    // 基于 get_selection()
+    let _ret2 = (|| -> Result<(), Box<dyn std::error::Error>> {
+        let ranges = text_pattern.get_selection()
+            .map_err(|e| { println!("获取选区失败: {}", e); e })?;
+            println!("获取选区成功: {:?}", ranges);
+        for (i, range) in ranges.iter().enumerate() {
+            let elem = range.get_enclosing_element()
+                .map_err(|e| { println!("获取选区 {} 元素失败: {}", i, e); e })?;
+            let rect = elem.get_bounding_rectangle()
+                .map_err(|e| { println!("获取选区 {} 边界失败: {}", i, e); e })?;
+            // 这个获取到的是文本框的边界，而不是光标选区的边界
+            println!(
+                "选区 {} 位置: left={}, top={}, width={}, height={}",
+                i,
+                rect.get_left(),
+                rect.get_top(),
+                rect.get_width(),
+                rect.get_height()
+            );
+        };
+        Ok(())
+    })();
 
     // println!("聚焦元素信息:");
     print_element_tree(walker, &focused, level)
