@@ -25,16 +25,16 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
         let len = GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
         if len > 0 {
             let window_name = OsString::from_wide(&buffer[0..len as usize]);
-            info!("窗口名称: {:?}", window_name);
+            info!("    窗口名称: {:?}", window_name);
         } else {
-            info!("无法获取窗口名称或窗口无标题");
+            error!("    无法获取窗口名称或窗口无标题");
         }
     }
 }
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
 pub fn print_msg() -> (i32, i32) { 
-    info!("---------------print_msg---------------");
+    info!("  > print_msg --------------");
 
     #[cfg(target_os = "windows")]
     {
@@ -168,19 +168,22 @@ pub fn print_msg() -> (i32, i32) {
                             error!("S4: 前台窗口无法转换为屏幕坐标");
                         } else {
                             info!("S4: 前台窗口光标位置: ({}, {})", point.x, point.y);
+                            info!("  < print_msg --------------");
                             return (point.x, point.y);
                         }
                     }
                 }
             }
         }
-
-        return (-1, -1);
     }
+
+    info!("  < print_msg --------------");
+    return (-1, -1);
 }
 
 // 仅打印当前聚焦的 element 及其子元素
 pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
+    info!("  > print uia msg --------------");
     let focused = automation.get_focused_element()?; // 当前聚焦元素
     let _root = automation.get_root_element().unwrap(); // 根元素
 
@@ -189,27 +192,28 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
     // classname: 大部分是空 (浏览器 qq vscode 等空)，notepad-- 是 ScintillaEditView，windows notepad 是 RichEditD2DPT
     // controltype: 大部分是Edit，windows notepad 是Document，浏览器搜索框是 ComboBox
     // name: 窗口名/输入框默认名
-    info!("classname: {}", focused.get_classname()?);
+    info!("classname:   {}", focused.get_classname()?);
     info!("controltype: {}", focused.get_control_type()?);
-    info!("name: {}", focused.get_name()?);
+    info!("name:        {}", focused.get_name()?);
 
     // api测试
     // 获取 TextPattern 总是成功的
     // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
     let text_pattern: UITextPattern = focused.get_pattern::<UITextPattern>().or_else(|e| {
-        warn!("1 获取 UITextPattern 失败: {}", e); Err(e)
+        warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
     })?;
+    info!("U1  获取 UITextPattern 成功");
 
     // 基于 get_caret_range()
     let _ret = (|| -> Result<(), Box<dyn std::error::Error>> {
         let (has_caret, caret_range) = text_pattern.get_caret_range()
-            .map_err(|e| { warn!("2 获取插入符号范围失败: {}", e); e })?;
-        if !has_caret { warn!("2 当前控件没有插入符号"); return Ok(()); };
+            .map_err(|e| { warn!("U2  获取插入符号范围失败: {}", e); e })?;
+        if !has_caret { warn!("U2  当前控件没有插入符号"); return Ok(()); };
         let caret_elem = caret_range.get_enclosing_element()
-            .map_err(|e| { warn!("2 获取插入符号元素失败: {}", e); e })?;
+            .map_err(|e| { warn!("U2  获取插入符号元素失败: {}", e); e })?;
         let rect = caret_elem.get_bounding_rectangle()
-            .map_err(|e| { warn!("2 获取插入符号边界失败: {}", e); e })?;
-        info!("2 插入符号位置: left={}, top={}, width={}, height={}",
+            .map_err(|e| { warn!("U2  获取插入符号边界失败: {}", e); e })?;
+        info!("U2  插入符号位置: left={}, top={}, width={}, height={}",
             rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height()
         );
         Ok(())
@@ -218,15 +222,15 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
     // 基于 get_selection()
     let _ret2 = (|| -> Result<(), Box<dyn std::error::Error>> {
         let ranges = text_pattern.get_selection()
-            .map_err(|e| { warn!("3 获取选区失败: {}", e); e })?;
+            .map_err(|e| { warn!("U3  获取选区失败: {}", e); e })?;
         for (i, range) in ranges.iter().enumerate() {
             let elem = range.get_enclosing_element()
-                .map_err(|e| { warn!("3 获取选区 {} 元素失败: {}", i, e); e })?;
+                .map_err(|e| { warn!("U3  获取选区 {} 元素失败: {}", i, e); e })?;
             let rect = elem.get_bounding_rectangle()
-                .map_err(|e| { warn!("3 获取选区 {} 边界失败: {}", i, e); e })?;
+                .map_err(|e| { warn!("U3  获取选区 {} 边界失败: {}", i, e); e })?;
             // 这个获取到的是文本框的边界，而不是光标选区的边界
             info!(
-                "3 选区 {} 位置: left={}, top={}, width={}, height={}",
+                "U3  选区 {} 位置: left={}, top={}, width={}, height={}",
                 i,
                 rect.get_left(),
                 rect.get_top(),
@@ -237,8 +241,10 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
         Ok(())
     })();
 
-    // println!("聚焦元素信息:");
-    print_element_tree(walker, &focused, level)
+    let _ = print_element_tree(walker, &focused, level);
+
+    info!("  < print uia msg --------------");
+    Ok(())
 }
 
 // 递归打印传入元素及其子树
