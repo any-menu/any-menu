@@ -20,8 +20,8 @@ use uiautomation::{
 // 自定义包
 mod uia;
 use uia::{
-    print_msg,
-    print_focused_element,
+    get_message,
+    get_uia_focused,
 };
 
 
@@ -44,7 +44,7 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
         loop {
             match rx.recv() {
                 Ok(UiaMsg::PrintElement) => {
-                    let _ = print_focused_element(&walker, &automation, 0);
+                    let _ = get_uia_focused(&walker, &automation, 0);
                 }
                 Err(_) => break,
             }
@@ -484,7 +484,7 @@ fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> 
     let tx = uia_sender.0.lock().unwrap();
     let _ = tx.send(UiaMsg::PrintElement);
 
-    let (x, y) = print_msg();
+    let (x, y) = get_message();
     return (x, y);
 }
 

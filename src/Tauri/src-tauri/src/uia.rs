@@ -30,7 +30,7 @@ use uiautomation::{
 };
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-pub fn print_msg() -> (i32, i32) { 
+pub fn get_message() -> (i32, i32) { 
     info!("  > print_msg --------------");
     let mut x = -1;
     let mut y = -1;
@@ -71,7 +71,7 @@ fn get_message_getfocus() -> Option<(i32, i32)> {
         if hwnd.is_null() {
             error!("S1: GetFocus: 没有聚焦的窗口");
         } else {
-            print_window_name(hwnd); // 打印窗口名称（调试用）
+            get_message_window_name(hwnd); // 打印窗口名称（调试用）
     
             point1 = POINT { x: 0, y: 0 };
             if GetCaretPos(&mut point1) != 0 {
@@ -117,7 +117,7 @@ fn get_message_getgui() -> Option<(i32, i32)> {
                 let hwnd_caret = gui_info.hwndCaret;
                 
                 // 打印窗口名称（调试用）
-                print_window_name(hwnd_caret);
+                get_message_window_name(hwnd_caret);
                 
                 // 将客户区坐标转换为屏幕坐标
                 point2 = POINT { 
@@ -161,7 +161,7 @@ fn get_message_getforeground() -> Option<(i32, i32)> {
         let _thread_id = GetWindowThreadProcessId(hwnd2, &mut pid);
 
         // 打印窗口名称（调试用）
-        print_window_name(hwnd2);
+        get_message_window_name(hwnd2);
 
         point3 = POINT { x: 0, y: 0 };
         if GetCaretPos(&mut point3) == 0 { // 不知道为什么这里的CaretPos总是窗口位置而非Caret位置
@@ -198,7 +198,7 @@ fn _get_message_getforeground_gui() -> Option<(i32, i32)> {
         let thread_id = GetWindowThreadProcessId(hwnd2, &mut pid);
         
         // 打印窗口名称和线程ID（调试用）
-        print_window_name(hwnd2);
+        get_message_window_name(hwnd2);
         
         // 获取线程的GUI信息
         let mut gui_info: GUITHREADINFO = std::mem::zeroed();
@@ -213,7 +213,7 @@ fn _get_message_getforeground_gui() -> Option<(i32, i32)> {
         let caret_rect = gui_info.rcCaret;
         let hwnd_caret = gui_info.hwndCaret;
         
-        print_window_name(hwnd_caret);
+        get_message_window_name(hwnd_caret);
         
         let mut point = POINT { 
             x: caret_rect.left, 
@@ -231,7 +231,7 @@ fn _get_message_getforeground_gui() -> Option<(i32, i32)> {
 
 // 辅助函数：打印窗口名称（调试用）
 #[cfg(target_os = "windows")]
-fn print_window_name(hwnd: winapi::shared::windef::HWND) {
+fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
     use winapi::um::winuser::GetWindowTextW;
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
@@ -248,8 +248,11 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
     }
 }
 
-// 仅打印当前聚焦的 element 及其子元素
-pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
+/** 仅打印当前聚焦的 element 及其子元素
+ * 
+ * 旧返回值: uiautomation::Result<()>
+ */
+pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
     info!("  > print uia msg --------------");
     let focused = automation.get_focused_element()?; // 当前聚焦元素
     let _root = automation.get_root_element().unwrap(); // 根元素
@@ -263,10 +266,19 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
     info!("controltype: {}", focused.get_control_type()?);
     info!("name:        {}", focused.get_name()?);
 
+    let _ = get_uia_textpattern(&focused);
+
+    let _ = get_uia_eltree(walker, &focused, level);
+
+    info!("  < print uia msg --------------");
+    Ok(())
+}
+
+fn get_uia_textpattern(el: &UIElement) -> Result<(), Box<dyn std::error::Error>> {
     // api测试
     // 获取 TextPattern 总是成功的
     // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
-    let text_pattern: UITextPattern = focused.get_pattern::<UITextPattern>().or_else(|e| {
+    let text_pattern: UITextPattern = el.get_pattern::<UITextPattern>().or_else(|e| {
         warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
     })?;
     info!("U1  获取 UITextPattern 成功");
@@ -307,15 +319,11 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
         };
         Ok(())
     })();
-
-    let _ = print_element_tree(walker, &focused, level);
-
-    info!("  < print uia msg --------------");
     Ok(())
 }
 
 // 递归打印传入元素及其子树
-fn print_element_tree(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+fn get_uia_eltree(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ");
     }
@@ -324,7 +332,7 @@ fn print_element_tree(walker: &UITreeWalker, element: &UIElement, level: usize) 
     if let Ok(child) = walker.get_first_child(&element) {
         let mut next = child;
         loop {
-            print_element_tree(walker, &next, level + 1)?;
+            get_uia_eltree(walker, &next, level + 1)?;
             match walker.get_next_sibling(&next) {
                 Ok(sibling) => next = sibling,
                 Err(_) => break, // 没有下一个兄弟，跳出循环
@@ -335,7 +343,7 @@ fn print_element_tree(walker: &UITreeWalker, element: &UIElement, level: usize) 
 }
 
 // 递归打印传入的 element 及其子元素
-fn _print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+fn _get_uia_all(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ")
     }
@@ -346,7 +354,7 @@ fn _print_element(walker: &UITreeWalker, element: &UIElement, level: usize) -> u
 
         let mut next = child;
         while let Ok(sibling) = walker.get_next_sibling(&next) {
-            _print_element(walker, &sibling, level + 1)?;
+            _get_uia_all(walker, &sibling, level + 1)?;
 
             next = sibling;
         }
