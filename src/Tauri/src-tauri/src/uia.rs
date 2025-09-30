@@ -1,8 +1,24 @@
 /**
  * 获取光标、窗口信息、uia信息
+ * 
+ * ## 测试
+ * 
+ * 我为许多种api都给出了编号，下面是对各种环境的测试:
+ * 
+ * [lt]
+ * 
+ * - 方案 | 内容 | 成功 | 失败
+ * - S系列是 windows api
+ *   - S1 | 光标 | 从未成功
+ *   - S2 | 光标 | notepad/browser/notepad-- | ob/qq/vscode/vscode屏幕增强
+ *   - S3 | 应用窗口 | 恒成功
+ *   - S4 | 光标 | notepad/browser/notepad-- | ob/qq/vscode/vscode屏幕增强
+ * - U系列是 uiautomation api
+ *   - U2 | 光标 | 从未成功
+ *   - U3 | 编辑器窗口| 恒成功，但似乎有误差 (概率失败)
  */
 
-use log::{warn, info, error};
+use log::{debug, warn, info, error};
 use uiautomation::{
     // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
     // Result 最好不要use，容易出报错
@@ -25,7 +41,7 @@ fn print_window_name(hwnd: winapi::shared::windef::HWND) {
         let len = GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
         if len > 0 {
             let window_name = OsString::from_wide(&buffer[0..len as usize]);
-            info!("    窗口名称: {:?}", window_name);
+            debug!("    窗口名称: {:?}", window_name);
         } else {
             error!("    无法获取窗口名称或窗口无标题");
         }
@@ -39,7 +55,6 @@ pub fn print_msg() -> (i32, i32) {
     #[cfg(target_os = "windows")]
     {
         use winapi::um::winuser::{
-            GetFocus,
             GetCaretPos,
             GetGUIThreadInfo,
             GUITHREADINFO,
@@ -52,8 +67,10 @@ pub fn print_msg() -> (i32, i32) {
         };
         use std::mem::size_of;
 
-        // GetFocus 方式。不好用，第一次定位聚焦窗口错误，聚焦到应用本身，第二次开始都是 "没有聚焦的窗口"
+        // GetFocus 方式。不好用，废弃!
+        // 第一次定位聚焦窗口错误，聚焦到应用本身，第二次开始都是 "没有聚焦的窗口"
         // GPT 说好像只能获取 **当前线程** 的焦点窗口，不利于去获取非本应用的窗口信息
+        /*use winapi::um::winuser::GetFocus;
         let hwnd: winapi::shared::windef::HWND; // 窗口句柄 (hwnd = Handle to WiNDow)                
         let mut point1: POINT;
         unsafe {
@@ -72,9 +89,10 @@ pub fn print_msg() -> (i32, i32) {
                     error!("S1: GetCaretPos: 获取位置失败");
                 }
             }
-        }
+        }*/
 
-        // GetGUIThreadInfo 方式，也不好用。浏览器成功，但VSCode、QQ等失败
+        // GetGUIThreadInfo 方式，也不好用。
+        // 浏览器成功，但VSCode、QQ等失败
         let mut point2: POINT;
         unsafe {
             let mut gui_info: GUITHREADINFO = std::mem::zeroed(); // 获取当前GUI线程信息
@@ -118,6 +136,10 @@ pub fn print_msg() -> (i32, i32) {
             if hwnd2.is_null() {
                 error!("S3: GetForegroundWindow: 没有前台窗口");
             } else {
+                // 获取前台窗口的线程ID
+                let mut pid = 0;
+                let _thread_id = GetWindowThreadProcessId(hwnd2, &mut pid);
+
                 // 打印窗口名称（调试用）
                 print_window_name(hwnd2);
 
@@ -131,9 +153,9 @@ pub fn print_msg() -> (i32, i32) {
             }
         }
     
-        // GetForegroundWindow + GetGUIThreadInfo组合方式。
+        // GetForegroundWindow + GetGUIThreadInfo组合方式。同S2，重复废弃
         // 和之前一样，前者成功，后者浏览器成功，但VSCode、QQ等失败
-        unsafe {            
+        /*unsafe {            
             if hwnd2.is_null() {
                 error!("S4: 没有前台窗口");
             } else {
@@ -174,7 +196,7 @@ pub fn print_msg() -> (i32, i32) {
                     }
                 }
             }
-        }
+        }*/
     }
 
     info!("  < print_msg --------------");

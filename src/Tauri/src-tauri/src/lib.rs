@@ -74,7 +74,7 @@ pub fn run() {
     let log_plugin = tauri_plugin_log::Builder::new()
         .level(log::LevelFilter::Debug) // 日志级别
         .with_colors(colors) // 日志高亮
-        .format(move |out, message, record| { // 日志格式。主要修改点: 对齐日志级别、对齐日志内容、日志位置后移
+        .format(move |out, message, record| { // 日志格式。主要修改点: 对齐日志级别、对齐日志内容、后移不定长的输出位置
             let time_str = chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]");
             out.finish(format_args!(
                 "{time} [{level:<5}] {message} [{target}]",
@@ -95,11 +95,12 @@ pub fn run() {
         // ))*/
         .build();
 
+    // Tauri 主程序
     tauri::Builder::default()
         .manage(uia_sender) // 依赖注入，注入到Tauri State管理
-        .plugin(log_plugin)
+        .plugin(log_plugin) // 日志插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
-        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
@@ -483,7 +484,8 @@ fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> 
     let tx = uia_sender.0.lock().unwrap();
     let _ = tx.send(UiaMsg::PrintElement);
 
-    return print_msg();
+    let (x, y) = print_msg();
+    return (x, y);
 }
 
 // #endregion
