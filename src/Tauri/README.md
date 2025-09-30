@@ -1,5 +1,18 @@
 # Tauri版本
 
+## 编译
+
+> [!WARNING]
+> **注意项**
+
+这是一个monorepo项目(pnpm) + monorepo项目(ts+rust)
+
+从最外部打开的话，vsocde rust 插件或其他IDE有可能无法解析rust相关内容。
+体现就是rust部分无报错、难以查看定义、原型等。
+
+解决方法是使用让 VSCode 打开多个 wrokspace: VSCodec菜单 > 文件 > 将文件夹添加到工作区，
+添加 src/Tauri 文件夹
+
 ## 项目记录
 
 创建模板

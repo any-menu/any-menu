@@ -64,8 +64,16 @@ pub fn run() {
     start_uia_worker(rx);
 
     // 日志插件
+    let colors = fern::colors::ColoredLevelConfig {
+        error: fern::colors::Color::Red,
+        warn: fern::colors::Color::Yellow,
+        info: fern::colors::Color::Green,
+        debug: fern::colors::Color::Blue,
+        trace: fern::colors::Color::Cyan,
+    };
     let log_plugin = tauri_plugin_log::Builder::new()
         .level(log::LevelFilter::Debug) // 日志级别
+        .with_colors(colors) // 日志高亮
         .clear_targets()
         // 打印到终端
         .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
