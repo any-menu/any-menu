@@ -69,20 +69,19 @@ fn get_message_getfocus() -> Option<(i32, i32)> {
     unsafe {
         hwnd = GetFocus();
         if hwnd.is_null() {
-            error!("S1: GetFocus: 没有聚焦的窗口");
-        } else {
-            get_message_window_name(hwnd); // 打印窗口名称（调试用）
-    
-            point1 = POINT { x: 0, y: 0 };
-            if GetCaretPos(&mut point1) != 0 {
-                use winapi::um::winuser::ClientToScreen;
-                ClientToScreen(hwnd, &mut point1);
-                info!("S1: GetCaretPos: 获取位置成功 ({}, {})", point1.x, point1.y);
-                (point1.x, point1.y);
-            } else {
-                error!("S1: GetCaretPos: 获取位置失败");
-            }
+            error!("S1: GetFocus: 没有聚焦的窗口"); return None
         }
+        get_message_window_name(hwnd); // 打印窗口名称（调试用）
+
+        point1 = POINT { x: 0, y: 0 };
+        if GetCaretPos(&mut point1) == 0 {
+            error!("S1: GetCaretPos: 获取位置失败"); return None
+        }
+
+        use winapi::um::winuser::ClientToScreen;
+        ClientToScreen(hwnd, &mut point1);
+        info!("S1: GetCaretPos: 获取位置成功 ({}, {})", point1.x, point1.y);
+        (point1.x, point1.y);
     };
     None
 }
@@ -105,37 +104,31 @@ fn get_message_getgui() -> Option<(i32, i32)> {
         gui_info.cbSize = size_of::<GUITHREADINFO>() as u32;
     
         if GetGUIThreadInfo(0, &mut gui_info) == 0 {
-            error!("S2: GetGUIThreadInfo: 获取GUI线程信息失败");
+            error!("S2: GetGUIThreadInfo: 获取GUI线程信息失败"); return None
         }
-        else {
-            // 检查是否有活动的插入符号
-            if gui_info.hwndCaret.is_null() {
-                error!("S2: gui_info.hwndCaret: 没有活动的插入符号");
-            } else {
-                // 获取插入符号的位置
-                let caret_rect = gui_info.rcCaret;
-                let hwnd_caret = gui_info.hwndCaret;
-                
-                // 打印窗口名称（调试用）
-                get_message_window_name(hwnd_caret);
-                
-                // 将客户区坐标转换为屏幕坐标
-                point2 = POINT { 
-                    x: caret_rect.left, 
-                    y: caret_rect.bottom // 使用底部坐标，这样窗口会出现在光标下方
-                };
-                
-                if ClientToScreen(hwnd_caret, &mut point2) == 0 {
-                    error!("S2: 转换屏幕坐标失败，转换前位置: ({}, {})", point2.x, point2.y);
-                } else {
-                    info!("S2: 转换屏幕坐标成功: ({}, {})", point2.x, point2.y);
-                    return Some((point2.x, point2.y));
-                }
-            }
+        // 检查是否有活动的插入符号
+        if gui_info.hwndCaret.is_null() {
+            error!("S2: gui_info.hwndCaret: 没有活动的插入符号"); return None
         }
+        // 获取插入符号的位置
+        let caret_rect = gui_info.rcCaret;
+        let hwnd_caret = gui_info.hwndCaret;
+        
+        // 打印窗口名称（调试用）
+        get_message_window_name(hwnd_caret);
+        
+        // 将客户区坐标转换为屏幕坐标
+        point2 = POINT { 
+            x: caret_rect.left, 
+            y: caret_rect.bottom // 使用底部坐标，这样窗口会出现在光标下方
+        };
+        
+        if ClientToScreen(hwnd_caret, &mut point2) == 0 {
+            error!("S2: 转换屏幕坐标失败，转换前位置: ({}, {})", point2.x, point2.y); return None
+        }
+        info!("S2: 转换屏幕坐标成功: ({}, {})", point2.x, point2.y);
+        return Some((point2.x, point2.y));
     }
-
-    None
 }
 
 /** GetForegroundWindow 方式。准确，获取的是活跃窗口的窗口位置
@@ -248,9 +241,7 @@ fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
     }
 }
 
-/** 仅打印当前聚焦的 element 及其子元素
- * 
- * 旧返回值: uiautomation::Result<()>
+/** 获取uia信息 - 聚焦窗口中
  */
 pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
     info!("  > print uia msg --------------");
@@ -266,7 +257,10 @@ pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: 
     info!("controltype: {}", focused.get_control_type()?);
     info!("name:        {}", focused.get_name()?);
 
-    let _ = get_uia_textpattern(&focused);
+    let text_pattern = get_uia_textpattern(&focused);
+    if let Ok(_text_pattern) = text_pattern {
+        // let _ = get_uia_eltree(walker, &_text_pattern, level);
+    }
 
     let _ = get_uia_eltree(walker, &focused, level);
 
@@ -274,16 +268,15 @@ pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: 
     Ok(())
 }
 
-fn get_uia_textpattern(el: &UIElement) -> Result<(), Box<dyn std::error::Error>> {
-    // api测试
-    // 获取 TextPattern 总是成功的
-    // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
+/** 获取uia信息 - 聚焦窗口中的文本框? */
+fn get_uia_textpattern(el: &UIElement) -> Result<UITextPattern, Box<dyn std::error::Error>> {
     let text_pattern: UITextPattern = el.get_pattern::<UITextPattern>().or_else(|e| {
         warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
     })?;
     info!("U1  获取 UITextPattern 成功");
 
     // 基于 get_caret_range()
+    // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
     let _ret = (|| -> Result<(), Box<dyn std::error::Error>> {
         let (has_caret, caret_range) = text_pattern.get_caret_range()
             .map_err(|e| { warn!("U2  获取插入符号范围失败: {}", e); e })?;
@@ -319,7 +312,8 @@ fn get_uia_textpattern(el: &UIElement) -> Result<(), Box<dyn std::error::Error>>
         };
         Ok(())
     })();
-    Ok(())
+
+    Ok(text_pattern)
 }
 
 // 递归打印传入元素及其子树
