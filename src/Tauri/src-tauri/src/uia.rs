@@ -254,44 +254,15 @@ pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: 
     let _ = get_uia_uimsg(&focused);
     let _ = get_uia_textpattern(&focused);
     let _ = get_uia_textpattern2(&focused);
-    test_uia_notepad();
     // if let Ok(_text_pattern) = text_pattern {
     //     let _ = get_uia_eltree(walker, &_text_pattern, level);
     // }
 
-    // let _ = get_uia_eltree(walker, &focused, level);
+    // test_uia_notepad();
+    _test_uia_print(walker, &focused, level)?;
 
     info!("  < print uia msg --------------");
     Ok(())
-}
-
-/** 自动打开记事本并输出文本 */
-fn test_uia_notepad() {
-    use uiautomation::actions::Window;
-    use uiautomation::controls::WindowControl;
-    use uiautomation::core::UIAutomation;
-    use uiautomation::inputs::Keyboard;
-    use uiautomation::processes::Process;
-
-    Process::create("notepad.exe").unwrap();
-    let automation = UIAutomation::new().unwrap();
-    let root = automation.get_root_element().unwrap();
-    let matcher = automation.create_matcher().from(root).timeout(10000).classname("Notepad").debug(true);
-    if let Ok(notepad) = matcher.find_first() {
-        println!("Found: {} - {}", notepad.get_name().unwrap(), notepad.get_classname().unwrap());
-
-        notepad.send_text_by_clipboard("This is from clipboard.\n").unwrap();
-        notepad.send_keys("Hello, Rust UIAutomation!", 10).unwrap();
-        notepad.send_text("\r\n{Win}D.", 10).unwrap();
-
-        let kb = Keyboard::new().interval(10).ignore_parse_err(true);
-        kb.send_keys(" {None} (Keys).").unwrap();
-
-        notepad.hold_send_keys("{Ctrl}{Shift}", "{Left}{Left}", 50).unwrap();
-
-        let window: WindowControl = notepad.try_into().unwrap();
-        window.maximize().unwrap(); // 最大化窗口
-    }
 }
 
 // 打印 uia ui 常见信息
@@ -396,9 +367,9 @@ fn get_uia_textpattern (el: &UIElement) -> Result<UITextPattern, Box<dyn std::er
 }
 fn get_uia_textpattern2 (el: &UIElement) -> Result<UITextEditPattern, Box<dyn std::error::Error>> {
     let text_pattern = el.get_pattern::<UITextEditPattern>().or_else(|e| {
-        warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
+        warn!("21  获取 UITextPattern 失败: {}", e); Err(e)
     })?;
-    info!("U1  获取 UITextPattern 成功");
+    info!("21  获取 UITextPattern 成功");
 
     // 基于 get_caret_range()
     // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
@@ -410,39 +381,18 @@ fn get_uia_textpattern2 (el: &UIElement) -> Result<UITextEditPattern, Box<dyn st
     Ok(text_pattern)
 }
 
-// 递归打印传入元素及其子树
-fn get_uia_eltree(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
-    for _ in 0..level {
-        print!(" ");
-    }
-    println!("{} - {}", element.get_classname()?, element.get_name()?);
-
-    if let Ok(child) = walker.get_first_child(&element) {
-        let mut next = child;
-        loop {
-            get_uia_eltree(walker, &next, level + 1)?;
-            match walker.get_next_sibling(&next) {
-                Ok(sibling) => next = sibling,
-                Err(_) => break, // 没有下一个兄弟，跳出循环
-            }
-        }
-    }
-    Ok(())
-}
-
 // 递归打印传入的 element 及其子元素
-fn _get_uia_all(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
+fn _test_uia_print(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ")
     }
     println!("{} - {}", element.get_classname()?, element.get_name()?);
 
     if let Ok(child) = walker.get_first_child(&element) {
-        // _print_element(walker, &child, level + 1)?; // 递归
-
+        _test_uia_print(walker, &child, level + 1)?; // 递归 第一个儿子
         let mut next = child;
         while let Ok(sibling) = walker.get_next_sibling(&next) {
-            _get_uia_all(walker, &sibling, level + 1)?;
+            _test_uia_print(walker, &sibling, level + 1)?; // 递归 第一个儿子的兄弟
 
             next = sibling;
         }
@@ -450,3 +400,33 @@ fn _get_uia_all(walker: &UITreeWalker, element: &UIElement, level: usize) -> uia
     
     Ok(())
 }
+
+/** 自动打开记事本并输出文本 */
+fn _test_uia_notepad() {
+    use uiautomation::actions::Window;
+    use uiautomation::controls::WindowControl;
+    use uiautomation::core::UIAutomation;
+    use uiautomation::inputs::Keyboard;
+    use uiautomation::processes::Process;
+
+    Process::create("notepad.exe").unwrap();
+    let automation = UIAutomation::new().unwrap();
+    let root = automation.get_root_element().unwrap();
+    let matcher = automation.create_matcher().from(root).timeout(10000).classname("Notepad").debug(true);
+    if let Ok(notepad) = matcher.find_first() {
+        println!("Found: {} - {}", notepad.get_name().unwrap(), notepad.get_classname().unwrap());
+
+        notepad.send_text_by_clipboard("This is from clipboard.\n").unwrap();
+        notepad.send_keys("Hello, Rust UIAutomation!", 10).unwrap();
+        notepad.send_text("\r\n{Win}D.", 10).unwrap();
+
+        let kb = Keyboard::new().interval(10).ignore_parse_err(true);
+        kb.send_keys(" {None} (Keys).").unwrap();
+
+        notepad.hold_send_keys("{Ctrl}{Shift}", "{Left}{Left}", 50).unwrap();
+
+        let window: WindowControl = notepad.try_into().unwrap();
+        window.maximize().unwrap(); // 最大化窗口
+    }
+}
+
