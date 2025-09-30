@@ -75,6 +75,9 @@ src-tauri/capabilities/default.json
     "core:window:allow-unminimize",
     "core:window:allow-set-focus",
     "core:window:allow-center",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-ignore-cursor-events",
+    "log:default",
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister"

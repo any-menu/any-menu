@@ -2,7 +2,7 @@
  * 获取光标、窗口信息、uia信息
  */
 
-use log::{error, info};
+use log::{warn, info, error};
 use uiautomation::{
     // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
     // Result 最好不要use，容易出报错
@@ -189,43 +189,44 @@ pub fn print_focused_element(walker: &UITreeWalker, automation: &UIAutomation, l
     // classname: 大部分是空 (浏览器 qq vscode 等空)，notepad-- 是 ScintillaEditView，windows notepad 是 RichEditD2DPT
     // controltype: 大部分是Edit，windows notepad 是Document，浏览器搜索框是 ComboBox
     // name: 窗口名/输入框默认名
-    println!("classname: {}", focused.get_classname()?);
-    println!("controltype: {}", focused.get_control_type()?);
-    println!("name: {}", focused.get_name()?);
+    info!("classname: {}", focused.get_classname()?);
+    info!("controltype: {}", focused.get_control_type()?);
+    info!("name: {}", focused.get_name()?);
 
     // api测试
     // 获取 TextPattern 总是成功的
     // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
-    let text_pattern = focused.get_pattern::<UITextPattern>().or_else(|e| {
-        println!("获取 UITextPattern 失败: {}", e); Err(e)
+    let text_pattern: UITextPattern = focused.get_pattern::<UITextPattern>().or_else(|e| {
+        warn!("1 获取 UITextPattern 失败: {}", e); Err(e)
     })?;
+
     // 基于 get_caret_range()
     let _ret = (|| -> Result<(), Box<dyn std::error::Error>> {
         let (has_caret, caret_range) = text_pattern.get_caret_range()
-            .map_err(|e| { println!("获取插入符号范围失败: {}", e); e })?;
-        if !has_caret { println!("当前控件没有插入符号"); return Ok(()); };
+            .map_err(|e| { warn!("2 获取插入符号范围失败: {}", e); e })?;
+        if !has_caret { warn!("2 当前控件没有插入符号"); return Ok(()); };
         let caret_elem = caret_range.get_enclosing_element()
-            .map_err(|e| { println!("获取插入符号元素失败: {}", e); e })?;
+            .map_err(|e| { warn!("2 获取插入符号元素失败: {}", e); e })?;
         let rect = caret_elem.get_bounding_rectangle()
-            .map_err(|e| { println!("获取插入符号边界失败: {}", e); e })?;
-        println!("插入符号位置: left={}, top={}, width={}, height={}",
+            .map_err(|e| { warn!("2 获取插入符号边界失败: {}", e); e })?;
+        info!("2 插入符号位置: left={}, top={}, width={}, height={}",
             rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height()
         );
         Ok(())
     })();
+
     // 基于 get_selection()
     let _ret2 = (|| -> Result<(), Box<dyn std::error::Error>> {
         let ranges = text_pattern.get_selection()
-            .map_err(|e| { println!("获取选区失败: {}", e); e })?;
-            println!("获取选区成功: {:?}", ranges);
+            .map_err(|e| { warn!("3 获取选区失败: {}", e); e })?;
         for (i, range) in ranges.iter().enumerate() {
             let elem = range.get_enclosing_element()
-                .map_err(|e| { println!("获取选区 {} 元素失败: {}", i, e); e })?;
+                .map_err(|e| { warn!("3 获取选区 {} 元素失败: {}", i, e); e })?;
             let rect = elem.get_bounding_rectangle()
-                .map_err(|e| { println!("获取选区 {} 边界失败: {}", i, e); e })?;
+                .map_err(|e| { warn!("3 获取选区 {} 边界失败: {}", i, e); e })?;
             // 这个获取到的是文本框的边界，而不是光标选区的边界
-            println!(
-                "选区 {} 位置: left={}, top={}, width={}, height={}",
+            info!(
+                "3 选区 {} 位置: left={}, top={}, width={}, height={}",
                 i,
                 rect.get_left(),
                 rect.get_top(),
