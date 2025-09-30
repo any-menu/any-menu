@@ -74,18 +74,25 @@ pub fn run() {
     let log_plugin = tauri_plugin_log::Builder::new()
         .level(log::LevelFilter::Debug) // 日志级别
         .with_colors(colors) // 日志高亮
-        .clear_targets()
-        // 打印到终端
-        .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
-        // 打印到前端控制台 (前端要开下attachConsole)
+        .format(move |out, message, record| { // 日志格式。主要修改点: 对齐日志级别、对齐日志内容、日志位置后移
+            let time_str = chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]");
+            out.finish(format_args!(
+                "{time} [{level:<5}] {message} [{target}]",
+                time = time_str,
+                level = colors.color(record.level()),
+                message = message,
+                target = record.target(),
+            ));
+        })
+        // .clear_targets() // 日志目标 (下面分别是: 终端、前端、文件，可按需使用)
+        // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
         // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
-        // 打印到日志文件
         // .target(tauri_plugin_log::Target::new(
         //     tauri_plugin_log::TargetKind::Folder {
         //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
         //         file_name: None,
         //     },
-        // ))
+        // ))*/
         .build();
 
     tauri::Builder::default()
