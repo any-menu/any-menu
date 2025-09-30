@@ -26,7 +26,10 @@ use uiautomation::{
     UIElement,
     UITreeWalker,
     // actions::Text,
-    patterns::UITextPattern,
+    patterns::{
+        UITextPattern,
+        UITextEditPattern,
+    }
 };
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
@@ -245,32 +248,105 @@ fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
  */
 pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
     info!("  > print uia msg --------------");
-    let focused = automation.get_focused_element()?; // 当前聚焦元素
-    let _root = automation.get_root_element().unwrap(); // 根元素
+    let focused: UIElement = automation.get_focused_element()?; // 当前聚焦元素
+    let _root: UIElement = automation.get_root_element().unwrap(); // 根元素
 
-    // 环境问题
-    // VSCode 环境，控制台可能可能会让你按 Alt+Shift+F1, 开启后 VSCode 右下角会显示 "已为屏幕阅读器优化"，这种情况下的 vscode 才能获取到信息
-    // classname: 大部分是空 (浏览器 qq vscode 等空)，notepad-- 是 ScintillaEditView，windows notepad 是 RichEditD2DPT
-    // controltype: 大部分是Edit，windows notepad 是Document，浏览器搜索框是 ComboBox
-    // name: 窗口名/输入框默认名
-    info!("classname:   {}", focused.get_classname()?);
-    info!("controltype: {}", focused.get_control_type()?);
-    info!("name:        {}", focused.get_name()?);
+    let _ = get_uia_uimsg(&focused);
+    let _ = get_uia_textpattern(&focused);
+    let _ = get_uia_textpattern2(&focused);
+    test_uia_notepad();
+    // if let Ok(_text_pattern) = text_pattern {
+    //     let _ = get_uia_eltree(walker, &_text_pattern, level);
+    // }
 
-    let text_pattern = get_uia_textpattern(&focused);
-    if let Ok(_text_pattern) = text_pattern {
-        // let _ = get_uia_eltree(walker, &_text_pattern, level);
-    }
-
-    let _ = get_uia_eltree(walker, &focused, level);
+    // let _ = get_uia_eltree(walker, &focused, level);
 
     info!("  < print uia msg --------------");
     Ok(())
 }
 
+/** 自动打开记事本并输出文本 */
+fn test_uia_notepad() {
+    use uiautomation::actions::Window;
+    use uiautomation::controls::WindowControl;
+    use uiautomation::core::UIAutomation;
+    use uiautomation::inputs::Keyboard;
+    use uiautomation::processes::Process;
+
+    Process::create("notepad.exe").unwrap();
+    let automation = UIAutomation::new().unwrap();
+    let root = automation.get_root_element().unwrap();
+    let matcher = automation.create_matcher().from(root).timeout(10000).classname("Notepad").debug(true);
+    if let Ok(notepad) = matcher.find_first() {
+        println!("Found: {} - {}", notepad.get_name().unwrap(), notepad.get_classname().unwrap());
+
+        notepad.send_text_by_clipboard("This is from clipboard.\n").unwrap();
+        notepad.send_keys("Hello, Rust UIAutomation!", 10).unwrap();
+        notepad.send_text("\r\n{Win}D.", 10).unwrap();
+
+        let kb = Keyboard::new().interval(10).ignore_parse_err(true);
+        kb.send_keys(" {None} (Keys).").unwrap();
+
+        notepad.hold_send_keys("{Ctrl}{Shift}", "{Left}{Left}", 50).unwrap();
+
+        let window: WindowControl = notepad.try_into().unwrap();
+        window.maximize().unwrap(); // 最大化窗口
+    }
+}
+
+// 打印 uia ui 常见信息
+fn get_uia_uimsg(focused: &UIElement) -> uiautomation::Result<()> {
+    // 环境问题
+    // VSCode 环境问题，控制台可能可能会让你按 Alt+Shift+F1
+    // 开启后 VSCode 右下角会显示 "已为屏幕阅读器优化"，这种情况下的 vscode 才能获取到信息
+    
+    // name:        窗口名/对于输入框是默认名 (而不是输入内容)
+    debug!("name:               {}", focused.get_name()?);
+    // classname:   大部分是空 (textarea qq vscode 等空)，notepad-- 是 ScintillaEditView，windows notepad 是 RichEditD2DPT
+    debug!("classname:          {}", focused.get_classname()?);
+    // controltype: 大部分是如textarea是Edit，windows notepad 是Document，浏览器搜索框是 ComboBox
+    debug!("controltype:        {}", focused.get_control_type()?);
+    debug!("parent:             {}", match focused.get_cached_parent() {
+        Ok(p) => p.get_name().unwrap_or_default(),
+        Err(_) => "无父元素".to_string()
+    });
+    debug!("children.len:       {}", match focused.get_cached_children() {
+        Ok(children) => children.len() as i32,
+        Err(_) => -1
+    });
+    debug!("process_id:         {}", match focused.get_process_id() {
+        Ok(pid) => pid as i64,
+        Err(_) => -1
+    });
+    debug!("is_enabled:         {}", focused.is_enabled()?);
+    debug!("is_password:        {}", focused.is_password()?);
+    debug!("get_culture:        {}", focused.get_culture()?); // 语言标识符？
+    debug!("get_item_type:      {}", focused.get_item_type()?);
+    // Firefox是Gecko，大部分如vscode obsidian qq chorome都是Chrome
+    debug!("get_framework_id:   {}", focused.get_framework_id()?);
+    debug!("has_kb_focus:       {}", focused.has_keyboard_focus()?);
+    debug!("is_kb_focusable:    {}", focused.is_keyboard_focusable()?);
+    debug!("is_content_element: {}", focused.is_content_element()?);
+    debug!("is_control_element: {}", focused.is_control_element()?);
+    debug!("rect:               {}", match focused.get_bounding_rectangle() { // 通常是正确可靠的
+        Ok(rect) => format!("left={}, top={}, width={}, height={}",
+            rect.get_left(), rect.get_top(), rect.get_width(), rect.get_height()
+        ),
+        Err(e) => format!("获取失败: {}", e)
+    });
+    debug!("help_text:          {}", focused.get_help_text()?);
+    debug!("accelerator_key:    {}", focused.get_accelerator_key()?);
+    debug!("access_key:         {}", focused.get_access_key()?);
+    debug!("automation_id:      {}", focused.get_automation_id()?);
+    debug!("is_offscreen:       {}", focused.is_offscreen()?);
+    debug!("labeled_by:         {:?}", focused.get_labeled_by().map(|e| e.get_name().unwrap_or_default()));
+
+    Ok(())
+}
+
 /** 获取uia信息 - 聚焦窗口中的文本框? */
-fn get_uia_textpattern(el: &UIElement) -> Result<UITextPattern, Box<dyn std::error::Error>> {
-    let text_pattern: UITextPattern = el.get_pattern::<UITextPattern>().or_else(|e| {
+fn get_uia_textpattern (el: &UIElement) -> Result<UITextPattern, Box<dyn std::error::Error>> {
+    let text_pattern = el.get_pattern::<UITextPattern>().or_else(|e| {
         warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
     })?;
     info!("U1  获取 UITextPattern 成功");
@@ -310,6 +386,24 @@ fn get_uia_textpattern(el: &UIElement) -> Result<UITextPattern, Box<dyn std::err
                 rect.get_height()
             );
         };
+        Ok(())
+    })();
+
+    // print UITextPattern 常见信息
+    let _ = text_pattern.get_document_range();
+
+    Ok(text_pattern)
+}
+fn get_uia_textpattern2 (el: &UIElement) -> Result<UITextEditPattern, Box<dyn std::error::Error>> {
+    let text_pattern = el.get_pattern::<UITextEditPattern>().or_else(|e| {
+        warn!("U1  获取 UITextPattern 失败: {}", e); Err(e)
+    })?;
+    info!("U1  获取 UITextPattern 成功");
+
+    // 基于 get_caret_range()
+    // 获取 插入符号状态总是失败的，无论在任何软件的文本框环境中，错误原因总是：不支持此接口
+    let _ret = (|| -> Result<(), Box<dyn std::error::Error>> {
+        // let m = text_pattern.text;
         Ok(())
     })();
 
