@@ -381,13 +381,29 @@ fn get_uia_textpattern2 (el: &UIElement) -> Result<UITextEditPattern, Box<dyn st
     Ok(text_pattern)
 }
 
-// 递归打印传入的 element 及其子元素
+/** 递归打印传入的 element 及其子元素
+ * 
+ * 以下是不同环境下的测试:
+ * 
+ * - QQ环境: - [] (Edit) 群名 -> - [] (Text) <消息框内容>
+ * - Obsidian: Edit -> 一堆散乱的 Text/Image (格式)，特别阅读模式，基本无法还原成源md
+ * - notepad--:
+ *   - [ScintillaEditView] (Edit)
+ *     - [QWidget] (Group)
+ *     - [QWidget] (Group) 
+ *       - [QScrollBar] (ScrollBar)
+ * - notepad: - [RichEditD2DPT] (Document) 文本编辑器
+ * - VSCode: - [] (Edit) 现在无法访问编辑器。 若要启用屏幕阅读器优化模式，请使用 Shift+Alt+F1
+ * - VSCode增强: - [] (Edit) Cargo.toml, 编辑器组2 -> [] (Text) [package] <文件内容>
+ */
 fn _test_uia_print(walker: &UITreeWalker, element: &UIElement, level: usize) -> uiautomation::Result<()> {
     for _ in 0..level {
         print!(" ")
     }
-    println!("{} - {}", element.get_classname()?, element.get_name()?);
+    println!("- [{}] ({}) {}",
+        element.get_classname()?, element.get_control_type()?, element.get_name()?);
 
+    // 递归
     if let Ok(child) = walker.get_first_child(&element) {
         _test_uia_print(walker, &child, level + 1)?; // 递归 第一个儿子
         let mut next = child;

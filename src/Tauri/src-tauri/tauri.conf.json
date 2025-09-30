@@ -15,6 +15,7 @@
       {
         "title": "AnyMenu",
         "width": 1000,
+        "visible": false,
         "decorations": false,
         "skipTaskbar": true,
         "transparent": true,
