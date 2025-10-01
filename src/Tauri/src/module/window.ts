@@ -24,6 +24,7 @@ export const global_state: {
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
   initClickThroughBehavior()
+  cacheMenuSize()
 })
 registerShortcuts()
 
@@ -217,6 +218,18 @@ global_setting.api.getScreenSize = async () => {
   return { width: pos[0], height: pos[1] }
 }
 
+/** 缓存菜单尺寸 (仅一级菜单) */
+let menuSize = { width: -1, height: -1 }
+async function cacheMenuSize() {
+  await new Promise(resolve => setTimeout(resolve, 500)) // 延时等待渲染完成
+  const el_search = document.querySelector('#main>.am-search');
+  const el_menu = document.querySelector('#main>.ab-context-menu');
+
+  menuSize.height = (el_search?.clientHeight ?? 0) + (el_menu?.clientHeight ?? 0)
+  menuSize.width = Math.max(el_search?.clientWidth ?? 0, el_menu?.clientWidth ?? 0)
+  // console.log('菜单尺寸:', menuSize);
+}
+
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
   // s1. 鼠标位置 (类似于quciker app)
@@ -224,28 +237,36 @@ async function showWindow() {
   const cursor = await cursorPosition()
   cursor.x += 0
   cursor.y += 2
-  console.log('鼠标坐标:', cursor);
+  // console.log('鼠标坐标:', cursor);
 
   // s2. 光标位置 (类似于windows自带的 `win+.` 面板)
   let cursor2 = await global_setting.api.getCursorXY()
+  // console.log('光标坐标:', cursor);
   if (cursor2.x < 0 || cursor2.y < 0) {
     console.error('getCursorXY failed, use mouse position instead')
     cursor2 = cursor
   }
   else {
     cursor.x = cursor2.x; cursor.y = cursor2.y;
-    console.log('光标坐标:', cursor);
   }
    
   // s3. 屏幕中间位置计算 (类似于 wox/utools app)
   
-  // 位置纠正
+  // 屏幕尺寸
   // 这里需要注意这里的屏幕尺寸，暂时为窗口所在的屏幕尺寸 (若有需要，可以将该api修改成其他含义)
-  // 目前仅纠正y轴坐标
-  // TODO 动态计算大小 // 假设窗口大小是固定的，如果不是，需要用 appWindow.innerSize() 获取
-  // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
   const screenSize = await global_setting.api.getScreenSize()
-  console.log('屏幕尺寸:', screenSize);
+  // console.log('屏幕尺寸:', screenSize);
+
+  // 最终坐标 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
+  // 目前仅纠正y轴坐标，默认预留windows状态栏高度48px
+  // TODO 纠正x轴坐标
+  // TODO 若采用光标模式，应该不是触底生成，而是在光标上方生成
+  if (menuSize.height > 0) {
+    if (screenSize.height - 48 - cursor.y < menuSize.height) {
+      cursor.y = screenSize.height - 48 - menuSize.height
+    }
+  }
+  console.log('最终坐标:', cursor);
 
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
