@@ -232,47 +232,51 @@ async function cacheMenuSize() {
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
-  // s1. 鼠标位置 (类似于quciker app)
+  // step1. 鼠标位置 (类似于quciker app)
   const appWindow = getCurrentWindow()
   const cursor = await cursorPosition()
   cursor.x += 0
   cursor.y += 2
   // console.log('鼠标坐标:', cursor);
 
-  // s2. 光标位置 (类似于windows自带的 `win+.` 面板)
+  // step2. 光标位置 (类似于windows自带的 `win+.` 面板)
   let cursor2 = await global_setting.api.getCursorXY()
+  let cursor2_flag = false // 是否成功获取到光标坐标
   // console.log('光标坐标:', cursor);
   if (cursor2.x < 0 || cursor2.y < 0) {
     console.error('getCursorXY failed, use mouse position instead')
     cursor2 = cursor
   }
   else {
+    cursor2_flag = true
     cursor.x = cursor2.x; cursor.y = cursor2.y;
   }
-   
-  // s3. 屏幕中间位置计算 (类似于 wox/utools app)
-  
-  // 屏幕尺寸
+
+  // step3. 屏幕尺寸
   // 这里需要注意这里的屏幕尺寸，暂时为窗口所在的屏幕尺寸 (若有需要，可以将该api修改成其他含义)
+  // 此处也可以计算屏幕中间位置，作为菜单的生成位置 (类似于 wox/utools app)
   const screenSize = await global_setting.api.getScreenSize()
   // console.log('屏幕尺寸:', screenSize);
 
-  // 最终坐标 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
+  // step4. 最终坐标 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
   // 目前仅纠正y轴坐标，默认预留windows状态栏高度48px
   // TODO 纠正x轴坐标
-  // TODO 若采用光标模式，应该不是触底生成，而是在光标上方生成
   if (menuSize.height > 0) {
-    if (screenSize.height - 48 - cursor.y < menuSize.height) {
-      cursor.y = screenSize.height - 48 - menuSize.height
+    if (screenSize.height - 48 - cursor.y < menuSize.height) { // y轴溢出
+      if (cursor2_flag) { // 生成在光标上方 // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
+        cursor.y = cursor2.y - 8 - menuSize.height
+      } else { // 生成在屏幕底部上方
+        cursor.y = screenSize.height - 48 - menuSize.height
+      }
     }
   }
   console.log('最终坐标:', cursor);
 
+  // step5. 应用坐标并显示窗口
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
   await appWindow.setFocus() // 聚焦窗口
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
-
   if (SEARCH_DB.el_search != null) SEARCH_DB.el_search.show() // 显示&聚焦搜索框
 }
