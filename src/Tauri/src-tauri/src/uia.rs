@@ -246,7 +246,7 @@ fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
 
 /** 获取uia信息 - 聚焦窗口中
  */
-pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: usize) -> uiautomation::Result<()> {
+pub fn get_uia_focused(_walker: &UITreeWalker, automation: &UIAutomation, _level: usize) -> uiautomation::Result<()> {
     info!("  > print uia msg --------------");
     let focused: UIElement = automation.get_focused_element()?; // 当前聚焦元素
     let _root: UIElement = automation.get_root_element().unwrap(); // 根元素
@@ -258,8 +258,8 @@ pub fn get_uia_focused(walker: &UITreeWalker, automation: &UIAutomation, level: 
     //     let _ = get_uia_eltree(walker, &_text_pattern, level);
     // }
 
-    // test_uia_notepad();
-    _test_uia_print(walker, &focused, level)?;
+    // _test_uia_notepad();
+    // _test_uia_print(walker, &focused, level)?;
 
     info!("  < print uia msg --------------");
     Ok(())
@@ -386,6 +386,7 @@ fn get_uia_textpattern2 (el: &UIElement) -> Result<UITextEditPattern, Box<dyn st
  * 以下是不同环境下的测试:
  * 
  * - QQ环境: - [] (Edit) 群名 -> - [] (Text) <消息框内容>
+ * - 浏览器input/textarea: 显示的是默认值而不是当前值，- [] (Edit) file content
  * - Obsidian: Edit -> 一堆散乱的 Text/Image (格式)，特别阅读模式，基本无法还原成源md
  * - notepad--:
  *   - [ScintillaEditView] (Edit)

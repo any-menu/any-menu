@@ -157,7 +157,9 @@ pub fn run() {
                 .build(app)?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, paste, send, read_file, get_caret_xy])
+        .invoke_handler(tauri::generate_handler![
+            greet, paste, send, read_file, get_caret_xy, get_screen_size
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -486,6 +488,49 @@ fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> 
 
     let (x, y) = get_message();
     return (x, y);
+}
+
+// #endregion
+
+// #region getScreenSize
+
+#[tauri::command]
+fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
+    // 窗口所在的显示器
+    let window = app_handle
+        // .get_window("main") // tauri v1
+        .get_webview_window("main") // tauri v2
+        .ok_or("Main window not found")?;
+    let window_monitor = window
+        .current_monitor()
+        .map_err(|e| e.to_string())?
+        .ok_or("No monitor found for current window")?;
+    let at_size = window_monitor.size();
+    log::info!("at_size:        width={}, height={}", at_size.width, at_size.height);
+
+    // 主显示器
+    // let primary_monitor = app_handle
+    //     .primary_monitor()
+    //     .map_err(|e| e.to_string())?
+    //     .ok_or("No primary monitor found")?;
+    // let primary_size = primary_monitor.size();
+    // log::info!("primary_size:   width={}, height={}", primary_size.width, primary_size.height);
+
+    // 所有显示器的第一个显示器（通常是主显示器）
+    // let monitors = app_handle
+    //     .available_monitors()
+    //     .map_err(|e| e.to_string())?;
+    // let monitor = monitors
+    //     .into_iter()
+    //     .next()
+    //     .ok_or("No monitors available")?;
+    // let first_size = monitor.size();
+    // log::info!("first_size:     width={}, height={}", first_size.width, first_size.height);
+
+    // 其他方案: 也可以用第三方库，如 screen
+
+    // 返回
+    Ok((at_size.width as i32, at_size.height as i32))
 }
 
 // #endregion

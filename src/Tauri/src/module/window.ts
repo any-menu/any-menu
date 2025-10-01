@@ -207,9 +207,14 @@ import { invoke } from "@tauri-apps/api/core"
 import { global_setting } from '../../../Core/Setting'
 
 global_setting.api.getCursorXY = async () => {
-  const pos = await invoke("get_caret_xy");
+  const pos: any = await invoke("get_caret_xy");
   if (typeof pos === 'string') return { x: -1, y: -1 }
-  return pos as { x: number, y: number }
+  return { x: pos[0], y: pos[1] }
+}
+global_setting.api.getScreenSize = async () => {
+  const pos: any = await invoke("get_screen_size");
+  if (typeof pos === 'string') return { width: -1, height: -1 }
+  return { width: pos[0], height: pos[1] }
 }
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
@@ -219,26 +224,28 @@ async function showWindow() {
   const cursor = await cursorPosition()
   cursor.x += 0
   cursor.y += 2
-  console.log('坐标1:', cursor);
+  console.log('鼠标坐标:', cursor);
 
   // s2. 光标位置 (类似于windows自带的 `win+.` 面板)
-  let cursor2: any = await global_setting.api.getCursorXY()
-  // if (cursor2.x < 0 || cursor2.y < 0) {
-  if (cursor2[0] < 0 || cursor2[1] < 0) {
+  let cursor2 = await global_setting.api.getCursorXY()
+  if (cursor2.x < 0 || cursor2.y < 0) {
     console.error('getCursorXY failed, use mouse position instead')
     cursor2 = cursor
   }
   else {
-    cursor.x = cursor2[0]; cursor.y = cursor2[1];
-    console.log('坐标2:', cursor);
+    cursor.x = cursor2.x; cursor.y = cursor2.y;
+    console.log('光标坐标:', cursor);
   }
    
   // s3. 屏幕中间位置计算 (类似于 wox/utools app)
   
   // 位置纠正
-  // TODO 动态计算大小
+  // 这里需要注意这里的屏幕尺寸，暂时为窗口所在的屏幕尺寸 (若有需要，可以将该api修改成其他含义)
+  // 目前仅纠正y轴坐标
+  // TODO 动态计算大小 // 假设窗口大小是固定的，如果不是，需要用 appWindow.innerSize() 获取
   // TODO 动态计算边界，是否超出屏幕，若是，进行位置纠正
-  // await appWindow.setSize({ width: 240, height: 320 })
+  const screenSize = await global_setting.api.getScreenSize()
+  console.log('屏幕尺寸:', screenSize);
 
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)

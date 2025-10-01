@@ -20,6 +20,7 @@ export const global_setting: {
   api: {
     readFile: (path: string) => Promise<string | unknown>
     getCursorXY: () => Promise<{ x: number, y: number }>
+    getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
   }
 } = {
@@ -28,6 +29,7 @@ export const global_setting: {
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },
     getCursorXY: async () => { console.error("需实现 getCursorXY 方法"); return { x: -1, y: -1 } },
+    getScreenSize: async () => { console.error("需实现 getScreenSize 方法"); return { width: -1, height: -1 } },
     sendText: async () => { console.error("需实现 sendText 方法") }
   }
 }
