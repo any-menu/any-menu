@@ -43,6 +43,12 @@ class SearchDB {
     // }
     this.trie = new TrieDB()
     this.reverse = new ReverseIndexDB()
+
+    // debug时，用demo判断引擎是否正常
+    if (global_setting.isDebug) {
+      TrieDB.demo()
+      ReverseIndexDB.demo()
+    }
   }
 
   /** 构造前缀树
@@ -109,7 +115,7 @@ class SearchDB {
         }
       } else if (global_setting.config.search_engine == 'reverse') {
         for (const key_item of keys) {
-          this.reverse.add(key_item, key_item + '-' + value)
+          this.reverse.add(key_item, value)
         }
       } else {
         console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
@@ -153,7 +159,6 @@ class SearchDB {
   }
 
   query_by_reverse(query: string): {key: string, value: string}[] {
-    ReverseIndexDB.test();
     return this.reverse.search(query)
       .slice(0, this.limit)
       .map((item: string) => { return { "value": item, "key": "" } } )

@@ -1,5 +1,6 @@
 export const global_setting: {
   env: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
+  isDebug: boolean,
   /**
    * 是否启用自动聚焦到输入框 (目前仅app环境有效)。分两种模式: 不聚焦使用和聚焦使用
    * - 聚焦使用: 当需要使用菜单中input时只能使用这种方式，app也只能用这种方式 (切换窗口了)
@@ -31,6 +32,7 @@ export const global_setting: {
   }
 } = {
   env: 'app',
+  isDebug: true,
   focusStrategy: true,
   config: {
     pinyin_index: true,

@@ -1,25 +1,29 @@
 // --- 倒排索引实现 by claude sonnet 4.5 ---
 
 /**
- * 倒排索引
+ * 倒排索引 —— 多对多版本
  * 
- * key是唯一的, value serach key
+ * 多对多即: 多个input可输出一个output，一个input也可输出多个output
  */
 export class ReverseIndexDB {
-  // 倒排索引: 字符 -> 包含该字符的文档集合
+  // 倒排索引: 字符 -> 包含该字符的文档集合 Map<input, ...>
   private index: Map<string, Set<string>> = new Map();
-  // 文档存储
-  private documents: Map<string, string> = new Map();
+  // 文档存储: Map<output, 所有input>
+  private documents: Map<string, Set<string>> = new Map();
 
   /**
    * 添加文档
    * @param query input, 可去检索的
-   * @param output output, id, 唯一的, 不可重复
+   * @param output output, id, 可重复
    */
   add(query: string, output: string) {
-    this.documents.set(output, query);
+    // 1. 将 query 添加到 output 的关联集合中
+    if (!this.documents.has(output)) {
+      this.documents.set(output, new Set());
+    }
+    this.documents.get(output)!.add(query);
     
-    // 为每个字符建立索引
+    // 2. 为每个字符建立索引，指向 output
     for (const char of query) {
       if (!this.index.has(char)) {
         this.index.set(char, new Set());
@@ -30,31 +34,32 @@ export class ReverseIndexDB {
 
   /**
    * 模糊搜索: 支持子序列匹配
-   * @param query 查询关键词（如 "物 和 然"）
-   * @returns 匹配的文档ID列表
+   * @param query 查询关键词（如 "认可"）
+   * @returns 匹配的 output 列表（如 ["👍", "👏"]）
    */
   search(query: string): string[] {
     // 去除空格，提取关键字符
     const chars = query.replace(/\s+/g, '').split('');
   
     if (chars.length === 0) return [];
-    console.log(`Fuzzy search flag2`);
 
-    // 1. 找出包含第一个字符的所有文档
+    // 1. 找出包含第一个字符的所有候选 output
     let candidates = this.index.get(chars[0]);
     if (!candidates || candidates.size === 0) return [];
-    console.log(`Fuzzy search flag3`);
 
-    // 2. 对每个候选文档，验证是否包含子序列
+    // 2. 对每个候选 output，检查其所有关联的 query
     const results: string[] = [];
-    for (const docId of candidates) {
-      const content = this.documents.get(docId)!;
-      if (this.isSubsequence(chars, content)) {
-        results.push(docId);
+    for (const output of candidates) {
+      const queries = this.documents.get(output)!;
+      // 检查是否有任何一个 query 匹配子序列
+      for (const docQuery of queries) {
+        if (this.isSubsequence(chars, docQuery)) {
+          results.push(output);
+          break; // 找到一个匹配就够了
+        }
       }
     }
 
-    console.log(`Fuzzy search for "${query}" found ${results.length} results.`);
     return results;
   }
 
@@ -72,13 +77,34 @@ export class ReverseIndexDB {
     return charIndex === chars.length;
   }
 
-  static test() {
-    // 使用示例
-    const fuzzyEngine = new ReverseIndexDB();
-    fuzzyEngine.add('动物和自然', 'doc1');
-    fuzzyEngine.add('植物与生态', 'doc2');
+  /**
+   * 获取某个 output 的所有关联 query
+   */
+  getQueries(output: string): string[] {
+    return Array.from(this.documents.get(output) || []);
+  }
 
-    console.log(fuzzyEngine.search('物 和 然')); // ['doc1']
-    console.log(fuzzyEngine.search('物 生')); // ['doc2']
+  /** 使用示例 */
+  static demo() {
+    const emojiEngine = new ReverseIndexDB();
+    
+    // 多个 query 指向同一个 output
+    emojiEngine.add('认可', '👍');
+    emojiEngine.add('点头', '👍');
+    emojiEngine.add('同意', '👍');
+    
+    // 一个 query 也可以关联多个 output
+    emojiEngine.add('认可', '👏');
+    emojiEngine.add('鼓掌', '👏');
+    
+    emojiEngine.add('开心', '😊');
+    emojiEngine.add('微笑', '😊');
+
+    console.log('demo: TrieDB, search "认可":', emojiEngine.search('认可')); // ['👍', '👏']
+    console.log('demo: TrieDB, search "点头":', emojiEngine.search('点头')); // ['👍']
+    console.log('demo: TrieDB, search "鼓":', emojiEngine.search('鼓'));     // ['👏']
+    console.log('demo: TrieDB, search "开":', emojiEngine.search('开'));     // ['😊']
+    
+    console.log('demo: TrieDB, value 👍 find key:', emojiEngine.getQueries('👍')); // ['认可', '点头', '同意']
   }
 }

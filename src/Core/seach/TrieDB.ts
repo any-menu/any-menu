@@ -51,4 +51,18 @@ export class TrieDB {
     }
     return node;
   }
+
+  static demo() {
+    const trie = new TrieDB();
+    // 一对多
+    trie.insert("app", "应用");
+    trie.insert("app", "应用2");
+
+    // 多对一
+    trie.insert("apple", "苹果");
+    trie.insert("apricot", "苹果");
+
+    const result = trie.findPrefixNode("ap");
+    console.log("demo: TrieDB, search 'ap':", result);
+  }
 }
