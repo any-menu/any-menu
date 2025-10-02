@@ -72,9 +72,10 @@ class SearchDB {
 
   /** 构造前缀树
    * json是 {key: <input>, value: <output>}[] 对象，允许多对多
+   * name是显示名，用于不显示错字/混淆音/模糊音/拼音/缩写等增强检索
    */
   add_data_by_json(
-    json: {key: string, value: string}[],
+    json: {key: string, name?: string, value: string}[],
     path?: string
   ) {
     for (const item of json) {
@@ -86,6 +87,7 @@ class SearchDB {
       //   console.warn("Skip empty key_item:", key, item, json)
       //   continue
       // }
+      let name = (item.name === undefined) ? item.key : item.name
       let key = item.key
       if (path === undefined) {
         keys.push(item.key)
@@ -141,7 +143,7 @@ class SearchDB {
         }
       } else if (global_setting.config.search_engine == 'reverse') {
         for (const key_item of keys) {
-          this.reverse.add(key_item, item.value)
+          this.reverse.add(key_item, item.value, name)
         }
       } else {
         console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
@@ -187,7 +189,9 @@ class SearchDB {
   query_by_reverse(query: string): {key: string, value: string}[] {
     return this.reverse.search(query)
       .slice(0, this.limit)
-      .map((item: string) => { return { "value": item, "key": "" } } )
+      .map((item: {output: string, name: string}) => {
+        return { "value": item.output, "key": item.name }
+      } )
   }
 }
 

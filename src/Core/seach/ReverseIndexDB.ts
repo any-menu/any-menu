@@ -10,25 +10,34 @@ export class ReverseIndexDB {
   private index: Map<string, Set<string>> = new Map();
   // 文档存储: Map<output, 所有input>
   private documents: Map<string, Set<string>> = new Map();
+  // 存储 query -> {output, name} 的映射
+  private queryMapping: Map<string, Array<{output: string, name: string}>> = new Map();
 
   /**
    * 添加文档
-   * @param query input, 可去检索的
+   * @param query input, 可去检索的（如拼音、模糊音等）
    * @param output output, id, 可重复
+   * @param name 名称，不和output绑定，与query对应
    */
-  add(query: string, output: string) {
+  add(query: string, output: string, name: string) {
     // 1. 将 query 添加到 output 的关联集合中
     if (!this.documents.has(output)) {
       this.documents.set(output, new Set());
     }
     this.documents.get(output)!.add(query);
     
-    // 2. 为每个字符建立索引，指向 output
+    // 2. 存储 query -> {output, name} 的映射
+    if (!this.queryMapping.has(query)) {
+      this.queryMapping.set(query, []);
+    }
+    this.queryMapping.get(query)!.push({output, name});
+    
+    // 3. 为每个字符建立索引，指向 query（而不是output）
     for (const char of query) {
       if (!this.index.has(char)) {
         this.index.set(char, new Set());
       }
-      this.index.get(char)!.add(output);
+      this.index.get(char)!.add(query);
     }
   }
 
@@ -37,25 +46,30 @@ export class ReverseIndexDB {
    * @param query 查询关键词（如 "认可"）
    * @returns 匹配的 output 列表（如 ["👍", "👏"]）
    */
-  search(query: string): string[] {
+  search(query: string): Array<{output: string, name: string}> {
     // 去除空格，提取关键字符
     const chars = query.replace(/\s+/g, '').split('');
   
     if (chars.length === 0) return [];
 
-    // 1. 找出包含第一个字符的所有候选 output
+    // 1. 找出包含第一个字符的所有候选 query
     let candidates = this.index.get(chars[0]);
     if (!candidates || candidates.size === 0) return [];
 
-    // 2. 对每个候选 output，检查其所有关联的 query
-    const results: string[] = [];
-    for (const output of candidates) {
-      const queries = this.documents.get(output)!;
-      // 检查是否有任何一个 query 匹配子序列
-      for (const docQuery of queries) {
-        if (this.isSubsequence(chars, docQuery)) {
-          results.push(output);
-          break; // 找到一个匹配就够了
+    // 2. 对每个候选 query，检查是否匹配子序列
+    const results: Array<{output: string, name: string}> = [];
+    const seen = new Set<string>(); // 用于去重
+    
+    for (const candidateQuery of candidates) {
+      if (this.isSubsequence(chars, candidateQuery)) {
+        // 获取该 query 对应的所有 {output, name}
+        const mappings = this.queryMapping.get(candidateQuery) || [];
+        for (const mapping of mappings) {
+          const key = `${mapping.output}|${mapping.name}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            results.push(mapping);
+          }
         }
       }
     }
@@ -78,33 +92,55 @@ export class ReverseIndexDB {
   }
 
   /**
-   * 获取某个 output 的所有关联 query
+   * 获取某个 output 的所有关联信息
    */
-  getQueries(output: string): string[] {
-    return Array.from(this.documents.get(output) || []);
+  getDetailsByOutput(output: string): Array<{query: string, name: string}> {
+    const results: Array<{query: string, name: string}> = [];
+    for (const [query, mappings] of this.queryMapping.entries()) {
+      for (const mapping of mappings) {
+        if (mapping.output === output) {
+          results.push({query, name: mapping.name});
+        }
+      }
+    }
+    return results;
   }
 
   /** 使用示例 */
   static demo() {
     const emojiEngine = new ReverseIndexDB();
     
-    // 多个 query 指向同一个 output
-    emojiEngine.add('认可', '👍');
-    emojiEngine.add('点头', '👍');
-    emojiEngine.add('同意', '👍');
+    // query 和 output 和 name 都是多对多关系
+    emojiEngine.add('renke', '👍', '认可');
+    emojiEngine.add('rk', '👍', '认可');
+    emojiEngine.add('diantou', '👍', '点头');
+    emojiEngine.add('dt', '👍', '点头');
+    emojiEngine.add('tongyi', '👍', '同意');
     
     // 一个 query 也可以关联多个 output
-    emojiEngine.add('认可', '👏');
-    emojiEngine.add('鼓掌', '👏');
+    emojiEngine.add('renke', '👏', '认可');
+    emojiEngine.add('rk', '👏', '认可');
+    emojiEngine.add('guzhang', '👏', '鼓掌');
     
-    emojiEngine.add('开心', '😊');
-    emojiEngine.add('微笑', '😊');
+    emojiEngine.add('kaixin', '😊', '开心');
+    emojiEngine.add('weixiao', '😊', '微笑');
 
-    console.log('demo: TrieDB, search "认可":', emojiEngine.search('认可')); // ['👍', '👏']
-    console.log('demo: TrieDB, search "点头":', emojiEngine.search('点头')); // ['👍']
-    console.log('demo: TrieDB, search "鼓":', emojiEngine.search('鼓'));     // ['👏']
-    console.log('demo: TrieDB, search "开":', emojiEngine.search('开'));     // ['😊']
+    console.log('demo: ReverseIndexDB, search "renke":', emojiEngine.search('renke')); 
+    // [{output: '👍', name: '认可'}, {output: '👏', name: '认可'}]
     
-    console.log('demo: TrieDB, value 👍 find key:', emojiEngine.getQueries('👍')); // ['认可', '点头', '同意']
+    console.log('demo: ReverseIndexDB, search "rk":', emojiEngine.search('rk')); 
+    // [{output: '👍', name: '认可'}, {output: '👏', name: '认可'}]
+    
+    console.log('demo: ReverseIndexDB, search "dt":', emojiEngine.search('dt'));     
+    // [{output: '👍', name: '点头'}]
+    
+    console.log('demo: ReverseIndexDB, search "gu":', emojiEngine.search('gu'));     
+    // [{output: '👏', name: '鼓掌'}]
+    
+    console.log('demo: ReverseIndexDB, search "k":', emojiEngine.search('k'));       
+    // [{output: '😊', name: '开心'}, {output: '👍', name: '认可'}, {output: '👏', name: '认可'}]
+    
+    console.log('demo: ReverseIndexDB, value 👍 find details:', emojiEngine.getDetailsByOutput('👍')); 
+    // [{query: 'renke', name: '认可'}, {query: 'rk', name: '认可'}, {query: 'diantou', name: '点头'}, {query: 'dt', name: '点头'}, {query: 'tongyi', name: '同意'}]
   }
 }

@@ -119,7 +119,7 @@ export async function initMenu(el: HTMLDivElement) {
       ]
     },
     {
-      label: '表情包', // 这功能会用到本体存储，app版才支持
+      label: '表情包', // 以及svg icon。这功能会用到本体存储，要么app版才支持，要么这里应该需要联网查询。
       children: [
         { label: "Too many. You should use the search bar." }
       ]

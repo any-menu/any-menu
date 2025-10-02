@@ -120,7 +120,8 @@ html, body, #main {
         background-color: var(--ab-tab-root-hv-color);
       }
 
-      >.value { // TODO value 有可能是多行文本
+      // TODO value 有可能是多行文本，这里最好是有个flag来说明是不是多行，以使用不同样式
+      >.value {
         text-overflow: ellipsis;
         white-space: pre-wrap;
         overflow: hidden;
