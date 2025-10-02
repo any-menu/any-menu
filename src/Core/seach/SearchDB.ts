@@ -60,26 +60,29 @@ class SearchDB {
       return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
     })
 
-    const json: Record<string, string>[] = []
+    const json: {key: string, value: string}[] = []
     for (const line of lines) {
       const parts = line.split('\t')
       if (parts.length != 2) continue // 过滤非法行
       json.push({ key: parts[0], value: parts[1] })
     }
 
-    this.add_data_by_records(json, path)
+    this.add_data_by_json(json, path)
   }
 
   /** 构造前缀树
-   * json是 {key: value}[] 对象，允许多对多
+   * json是 {key: <input>, value: <output>}[] 对象，允许多对多
    */
-  add_data_by_records(json: Record<string, string>[], path?: string) {
-    
+  add_data_by_json(json: {key: string, value: string}[], path?: string) {
     for (const item of json) {
       // 多keys
       const keys: string[] = []
 
       // 1. 常规key + 显示名 (显示名是为了不显示错字/混淆音/模糊音/拼音/缩写等增强检索)
+      // if (typeof item.key !== 'string' || item.key.trim() === '') {
+      //   console.warn("Skip empty key_item:", key, item, json)
+      //   continue
+      // }
       const key = item.key
       keys.push(item.key)
 

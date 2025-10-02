@@ -32,8 +32,10 @@ export async function initMenu(el: HTMLDivElement) {
       path: '../../../docs/demo/ybq.json',
     })
     const jsonData = JSON.parse(result as string)
-    let records: Record<string, string>[] = jsonData.map((item: any) => { return { [item["description"]]: item["text"] } })
-    SEARCH_DB.add_data_by_records(records, '颜表情')
+    let records: {key: string, value: string}[] = jsonData.map((item: any) => {
+      return { key: item["description"], value: item["text"] }
+    })
+    SEARCH_DB.add_data_by_json(records, '颜表情')
   } catch (error) {
     console.error("Load dict fail:", error)
   }
