@@ -1,9 +1,14 @@
+/** 核心搜索数据库，内置多种子搜索索引方式 */
+
 import type { AMSearch } from '../seach/index'
 import { global_setting } from '../Setting'
-import { Trie, type TrieNode } from './Trie'
+import { TrieDB, type TrieNode } from './TrieDB'
+import { ReverseIndexDB } from './ReverseIndexDB'
 import pinyin from 'pinyin'
 
 /** 核心数据库
+ * 
+ * 单例，内置多种搜索索引方式
  * 
  * 内容交给别的模块来初始化
  * 
@@ -20,23 +25,31 @@ import pinyin from 'pinyin'
  * - TODO 生成 cache 文件，以加速启动
  */
 class SearchDB {
-  trie: Trie
-  reverse: any
-  hash: any
+  trie: TrieDB // 前缀树
+  reverse: ReverseIndexDB // FuzzySearchEngine
+  hash: undefined
   // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
   el_search: AMSearch | null = null
 
   limit: number = 50 // 限制返回结果数量
 
   constructor() {
-    this.trie = new Trie()
+    // if (global_setting.config.search_engine == 'trie') {
+    //   this.trie = new TrieDB()
+    // } else if (global_setting.config.search_engine == 'reverse') {
+    //   this.reverse = new ReverseIndexDB()
+    // } else {
+    //   console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
+    // }
+    this.trie = new TrieDB()
+    this.reverse = new ReverseIndexDB()
   }
 
   /** 构造前缀树
    * str是使用tab分割的kv对，key允许重复
    * @param str csv字符串 (每行格式为 ${key}\t${value}) 
    */
-  init_trie_by_csv(str: string, path?: string) {
+  init_db_by_csv(str: string, path?: string) {
     const lines = str.split(/\r?\n/).filter(line => {
       return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
     })
@@ -88,8 +101,18 @@ class SearchDB {
       // - 分别塞: (暂不支持)
       //   - 好处是可以各自限额，避免某一类似匹配项过多覆盖其他类型
       //   - 可以搜索前限制在哪个类型里搜索
-      for (const key_item of keys) {
-        this.trie.insert(key_item, value) // TODO 不支持 "显示名"，后续再改
+      // 
+      // TODO 不支持 "显示名"，后续再改。前缀树不打算支持这功能，比较麻烦，感觉用倒排索引更合适
+      if (global_setting.config.search_engine == 'trie') {
+        for (const key_item of keys) {
+          this.trie.insert(key_item, value)
+        }
+      } else if (global_setting.config.search_engine == 'reverse') {
+        for (const key_item of keys) {
+          this.reverse.add(key_item, key_item + '-' + value)
+        }
+      } else {
+        console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
       }
     }
   }
@@ -127,6 +150,13 @@ class SearchDB {
 
     collect(startNode, query)
     return results
+  }
+
+  query_by_reverse(query: string): {key: string, value: string}[] {
+    ReverseIndexDB.test();
+    return this.reverse.search(query)
+      .slice(0, this.limit)
+      .map((item: string) => { return { "value": item, "key": "" } } )
   }
 }
 

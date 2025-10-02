@@ -12,17 +12,17 @@ export class TrieNode {
 }
 
 // 前缀树
-export class Trie {
+export class TrieDB {
   root: TrieNode = new TrieNode();
 
   /**
    * 插入一个键值对
-   * @param key 
-   * @param value 
+   * @param input key input 可重复插入 (重复会自动合并)
+   * @param output value output
    */
-  insert(key: string, value: string) {
+  insert(input: string, output: string) {
     let node = this.root;
-    for (const char of key) {
+    for (const char of input) {
       if (!node.children.has(char)) {
         node.children.set(char, new TrieNode());
       }
@@ -30,8 +30,8 @@ export class Trie {
     }
     node.isEndOfWord = true;
     // 避免为同一个 key 添加重复的 value
-    if (!node.values.includes(value)) {
-      node.values.push(value);
+    if (!node.values.includes(output)) {
+      node.values.push(output);
     }
   }
 

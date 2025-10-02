@@ -12,6 +12,7 @@ export const global_setting: {
   config: { 
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
+    search_engine: 'reverse'|'trie', // TODO 混合使用策略
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
@@ -34,6 +35,7 @@ export const global_setting: {
   config: {
     pinyin_index: true,
     pinyin_first_index: true,
+    search_engine: 'reverse'
   },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },

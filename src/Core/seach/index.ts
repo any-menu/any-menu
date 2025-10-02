@@ -124,7 +124,15 @@ export class AMSearch {
   public search(query: string): {key: string, value: string}[] {
     if (this.el_suggestion == null) return []
 
-    const result = SEARCH_DB.query_by_trie(query)
+    let result: {key: string, value: string}[] = []
+    if (global_setting.config.search_engine === 'trie') {
+      result = SEARCH_DB.query_by_trie(query)
+    } else if (global_setting.config.search_engine === 'reverse') {
+      result = SEARCH_DB.query_by_reverse(query)
+    } else {
+      console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
+      return []
+    }
     // console.log(`query [${query}]: `, result)
 
     // 数量检查
