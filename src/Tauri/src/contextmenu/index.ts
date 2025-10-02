@@ -70,11 +70,11 @@ export async function initMenu(el: HTMLDivElement) {
     })
     anyblock_menu = toml_parse(result as string)["categories"] as ContextMenuItems
 
-    const records: {key: string, value: string}[] = []
+    const records: {key: string, value: string, name?: string}[] = []
     function recursive(items: ContextMenuItems) {
       for (const item of items) {
         if (item.callback && typeof item.callback === 'string') {
-          records.push({ key: item.label, value: item.callback })
+          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
         }
         if (item.children) recursive(item.children)
       }
@@ -93,11 +93,11 @@ export async function initMenu(el: HTMLDivElement) {
     })
     adQuote_menu = toml_parse(result as string)["categories"] as ContextMenuItems
 
-    const records: {key: string, value: string}[] = []
+    const records: {key: string, value: string, name?: string}[] = []
     function recursive(items: ContextMenuItems) {
       for (const item of items) {
         if (item.callback && typeof item.callback === 'string') {
-          records.push({ key: item.label, value: item.callback })
+          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
         }
         if (item.children) recursive(item.children)
       }

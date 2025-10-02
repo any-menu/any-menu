@@ -5,11 +5,14 @@ export { parse as toml_parse, stringify as toml_stringify } from "smol-toml"
  */
 
 export type ContextMenuItem = {
-  label: string
+  label: string // 显示名，众多别名中的主名称
   // 如果是字符串则表示黏贴该字符串，方便声明demo模板 (TODO demo模板可能需要配图和help url?)
   callback?: string | ((str?: string) => void)
   icon?: string // 目前仅obsidian环境有效，使用lucide图标
-  detail?: string // 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)
+  key?: string // 匹配名，显示名的多个别名、匹配增强名、拼音等
+  // 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)。
+  // 话说如果不包含用例，像ob环境，直接渲染岂不是更好?
+  detail?: string
   children?: ContextMenuItems
 }
 export type ContextMenuItems = ContextMenuItem[]

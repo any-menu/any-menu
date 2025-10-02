@@ -10,6 +10,7 @@ label = "list"
 
 [[categories.children]]
 label = "列表转表格"
+key = "列表转表格 list2table"
 detail = "https://cdn.pkmer.cn/images/202508241625503.png!pkmer" # 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
 callback = """
 [table]
@@ -27,6 +28,7 @@ callback = """
 
 [[categories.children]]
 label = "列表转目录"
+key = "列表转目录 dir"
 callback = """
 [dir]
 
@@ -58,6 +60,7 @@ label = "mindmap"
 
 [[categories.children]]
 label = "node"
+key = "node 思维导图 节点图"
 detail = "https://cdn.pkmer.cn/images/202508241625515.png!pkmer"
 callback = """
 [nodes]
@@ -73,6 +76,7 @@ callback = """
 
 [[categories.children]]
 label = "plantuml mindmap"
+key = "plantuml mindmap 思维导图"
 callback = """
 [mindmap]
 
@@ -87,6 +91,7 @@ callback = """
 
 [[categories.children]]
 label = "pumlWBS"
+key = "key 思维导图 结构分解图"
 callback = """
 [list2pumlWBS]
 
@@ -111,6 +116,7 @@ callback = """
 
 [[categories.children]]
 label = "mermaid"
+key = "mermaid 思维导图"
 callback = """
 [mermaid]
 
@@ -130,6 +136,7 @@ callback = """
 
 [[categories.children]]
 label = "mermaid mindmap"
+key = "mermaid mindmap 思维导图"
 callback = """
 [listroot(root((mindmap)))|list2mindmap]
 
@@ -153,6 +160,7 @@ callback = """
 
 [[categories.children]]
 label = "markmap"
+key = "markmap 思维导图"
 callback = """
 [list2markmap]
 
@@ -182,6 +190,7 @@ label = "table"
 
 [[categories.children]]
 label = "列表转表格"
+key = "列表转表格 list2table table"
 callback = """
 [table]
 
@@ -198,6 +207,7 @@ callback = """
 
 [[categories.children]]
 label = "合并表格"
+key = "合并表格 exTable"
 callback = """
 [exTable]
 
@@ -213,10 +223,10 @@ callback = """
 [[categories]]
 label = "heading"
 
-[[categories.children]]
-label = "标题转表格"
-# 注意：TOML 不支持函数，这里可以用字符串标识或留空
-callback = "console.warn('执行了操作2.2.1')"
+# [[categories.children]]
+# label = "标题转表格"
+# # 注意：TOML 不支持函数，这里可以用字符串标识或留空
+# callback = "console.warn('执行了操作2.2.1')"
 
 # ============================================================
 # Two Layout 分类
@@ -226,6 +236,7 @@ label = "two layout"
 
 [[categories.children]]
 label = "col"
+key = "col 分栏 分列"
 callback = """
 :::col
 
@@ -247,6 +258,7 @@ text3
 
 [[categories.children]]
 label = "tabs"
+key = "tabs 标签页 选项卡"
 callback = """
 :::tabs
 
