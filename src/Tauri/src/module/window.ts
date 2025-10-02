@@ -267,6 +267,7 @@ async function showWindow() {
         cursor.y = cursor2.y - 8 - menuSize.height
       } else { // 生成在屏幕底部上方
         cursor.y = screenSize.height - 8 - 48 - menuSize.height
+        cursor.x += 4 // 避免变成 `<-->` 光标，好看一些
       }
     }
   }

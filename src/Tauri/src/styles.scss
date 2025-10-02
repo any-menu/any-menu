@@ -182,7 +182,7 @@ html, body, #main {
   >ul, >li, >div, >span, >button, >input {
     box-sizing: border-box;
     width: 100%;
-    height: 28px;
+    min-height: 28px; // (20+8+0)
     margin: 0;
     padding: 4px 12px;
     line-height: 20px;

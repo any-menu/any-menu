@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { initMenu } from './contextmenu';
-import { global_setting } from '../../Core/Setting';
+// import { global_setting } from '../../Core/Setting';
 
 // 前端模块
 window.addEventListener("DOMContentLoaded", () => {
@@ -52,7 +52,7 @@ window.addEventListener("DOMContentLoaded", () => {
   void initMenu(main)
 
   // 黏贴测试 paste test
-  const paste_btn = document.createElement('button'); main.appendChild(paste_btn); paste_btn.classList.add('btn-2');
+  /*const paste_btn = document.createElement('button'); main.appendChild(paste_btn); paste_btn.classList.add('btn-2');
     paste_btn.textContent = 'Paste Test'
   paste_btn.onclick = async () => {
     const appWindow = getCurrentWindow()
@@ -65,7 +65,7 @@ window.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to insert text:", error);
     }
     console.log('emit paste-event')
-  }
+  }*/
 
   // 置顶按钮
   const pin_btn = document.createElement('button'); main.appendChild(pin_btn); pin_btn.classList.add('btn-1');
