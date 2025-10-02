@@ -120,12 +120,17 @@ html, body, #main {
         background-color: var(--ab-tab-root-hv-color);
       }
 
-      >.value {
+      >.value { // TODO value 有可能是多行文本
+        text-overflow: ellipsis;
+        white-space: pre-wrap;
+        overflow: hidden;
+      }
+      >.key {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+        margin-left: 10px;
       }
-      >.key {}
     }
   }
 }

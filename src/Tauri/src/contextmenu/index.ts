@@ -124,6 +124,12 @@ export async function initMenu(el: HTMLDivElement) {
         { label: "Too many. You should use the search bar." }
       ]
     },
+    // {
+    //   label: '最近', // 缓存最近通过菜单插入的内容项
+    //   children: [
+    //     { label: "Too many. You should use the search bar." }
+    //   ]
+    // },
   ])
 
   // #endregion

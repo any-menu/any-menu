@@ -61,8 +61,10 @@ export class TrieDB {
     // 多对一
     trie.insert("apple", "苹果");
     trie.insert("apricot", "苹果");
-
-    const result = trie.findPrefixNode("ap");
-    console.log("demo: TrieDB, search 'ap':", result);
+    trie.insert("苹果", "苹果");
+    
+    console.log("demo: TrieDB, search 'ap':", trie.findPrefixNode("ap"));
+    console.log("demo: TrieDB, search 'ping':", trie.findPrefixNode("ping"));
+    console.log("demo: TrieDB, search 'pg':", trie.findPrefixNode("pg"));
   }
 }

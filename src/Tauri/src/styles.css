@@ -105,9 +105,16 @@ html, body, #main {
 }
 .am-search .am-search-suggestion > div.item > .value {
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
   overflow: hidden;
 }
+.am-search .am-search-suggestion > div.item > .key {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 10px;
+}
+
 /* -------------------------------- 菜单 ------------------------------- */
 :root {
   --ab-tab-root-bg-color: #0d1117;

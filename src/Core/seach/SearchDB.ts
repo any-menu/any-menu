@@ -81,18 +81,24 @@ class SearchDB {
       // 多keys
       const keys: string[] = []
 
-      // 1. 常规key + 显示名 (显示名是为了不显示错字/混淆音/模糊音/拼音/缩写等增强检索)
+      // 1&2. 常规key + 路径key, 或可能作为显示名 (显示名是为了不显示错字/混淆音/模糊音/拼音/缩写等增强检索)
       // if (typeof item.key !== 'string' || item.key.trim() === '') {
       //   console.warn("Skip empty key_item:", key, item, json)
       //   continue
       // }
-      const key = (path === undefined) ? item.key : `[${path}] ${item.key}`
-      keys.push(item.key)
-
-      // 2. 路径key
-      if (path !== undefined) {
-        const key_path: string = path
-        keys.push(key_path)
+      let key = item.key
+      if (path === undefined) {
+        keys.push(item.key)
+      } else {
+        if (global_setting.config.search_engine === 'reverse') { // 倒排索引将路径塞入key
+          keys.push(`[${path}] ${item.key}`)
+        } else if (global_setting.config.search_engine === 'trie') { // 前缀树单独塞路径
+          keys.push(item.key)
+          keys.push(path)
+        } else {
+          console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
+          return
+        }
       }
 
       // 3. 拼音key
