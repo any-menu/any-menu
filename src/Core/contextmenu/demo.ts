@@ -13,36 +13,3 @@ export type ContextMenuItem = {
   children?: ContextMenuItems
 }
 export type ContextMenuItems = ContextMenuItem[]
-
-// const root_menu_convert: ContextMenuItems = [
-//   { label: '未检测到选中文本 (未开发)' },
-// ]
-
-// export const root_menu_demo: ContextMenuItems // 弃用，改为toml配置
-
-export const root_menu_callout: ContextMenuItems = [
-  // callout
-  {
-    label: 'callout', children: [
-      { label: 'note', callback: `> [!note]\n> \n> Note demo.\n\n` },
-      { label: 'warning', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
-      { label: 'tip', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
-      { label: 'note_complex', callback: `> [!note]+ title\n> Note demo.\n\n` },
-    ]
-  },
-  // mdit container
-  {
-    label: 'mdit container', children: [
-      { label: 'note', callback: `:::note\nNote demo.\n:::\n\n` },
-      { label: 'warning', callback: `:::warning\nWarning demo.\n:::\n\n` },
-      { label: 'tip', callback: `:::tip\nTip demo.\n:::\n\n` },
-      { label: 'note_complex', callback: `:::note+ title\nNote demo.\n:::\n\n` },
-    ]
-  },
-]
-
-// export const root_menu: ContextMenuItems = [
-//   // TODO 转换菜单需要选中文本且文本满足一定规则才会显示，并根据内容进行推荐
-//   { label: 'AnyBlock', icon: 'list-plus', children: root_menu_demo },
-//   // { label: '转化为AnyBlock', icon: 'list-plus', children: root_menu_convert }
-// ]

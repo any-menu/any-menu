@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core"
 
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
-import { type ContextMenuItems, root_menu_callout, toml_parse } from "../../../Core/contextmenu/demo"
+import { type ContextMenuItems, toml_parse } from "../../../Core/contextmenu/demo"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 import { global_setting } from "../../../Core/Setting"
 
@@ -85,6 +85,29 @@ export async function initMenu(el: HTMLDivElement) {
     console.error("Load dict fail:", error)
   }
 
+  // AdQuote
+  let adQuote_menu: ContextMenuItems = []
+  try {
+    const result = await invoke("read_file", {
+      path: '../../../docs/demo/AdQuote.toml',
+    })
+    adQuote_menu = toml_parse(result as string)["categories"] as ContextMenuItems
+
+    const records: {key: string, value: string}[] = []
+    function recursive(items: ContextMenuItems) {
+      for (const item of items) {
+        if (item.callback && typeof item.callback === 'string') {
+          records.push({ key: item.label, value: item.callback })
+        }
+        if (item.children) recursive(item.children)
+      }
+    }
+    recursive(adQuote_menu)
+    SEARCH_DB.add_data_by_json(records, 'AdQuote')
+  } catch (error) {
+    console.error("Load dict fail:", error)
+  }
+
   // #endregion
 
   // #region 多级展开菜单
@@ -111,7 +134,7 @@ export async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'Callout',
-      children: root_menu_callout
+      children: adQuote_menu
     },
     {
       label: 'Mermaid',

@@ -1,0 +1,43 @@
+# ============================================================
+# Callout 分类
+# ============================================================
+[[categories]]
+label = "callout"
+
+[[categories.children]]
+label = "note"
+callback = "> [!note]\n> \n> Note demo.\n\n"
+
+[[categories.children]]
+label = "warning"
+callback = "> [!warning]\n> \n> Warning demo.\n\n"
+
+[[categories.children]]
+label = "tip"
+callback = "> [!tip]\n> \n> Tip demo.\n\n"
+
+[[categories.children]]
+label = "note_complex"
+callback = "> [!note]+ title\n> Note demo.\n\n"
+
+# ============================================================
+# mdit container 分类
+# ============================================================
+[[categories]]
+label = "mdit container"
+
+[[categories.children]]
+label = "note"
+callback = ":::note\nNote demo.\n:::\n\n"
+
+[[categories.children]]
+label = "warning"
+callback = ":::warning\nWarning demo.\n:::\n\n"
+
+[[categories.children]]
+label = "tip"
+callback = ":::tip\nTip demo.\n:::\n\n"
+
+[[categories.children]]
+label = "note_complex"
+callback = ":::note+ title\nNote demo.\n:::\n\n"
