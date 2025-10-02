@@ -1,4 +1,4 @@
-import { global_state, hideWindow } from './module/window'
+import { global_state } from './module/window'
 
 // #region Tauri 日志插件
 

@@ -112,6 +112,7 @@ html, body, #main {
       display: flex;
       flex-wrap: nowrap;
       justify-content: space-between;
+      min-height: 28px; // (20+8+0)
       padding: 4px 12px;
       cursor: pointer;
       border-radius: 6px;
@@ -126,15 +127,15 @@ html, body, #main {
         white-space: pre-wrap;
         overflow: hidden;
         height: auto;
-        min-height: 28px; // (20+8+0)
-        max-height: 98px; // 三行半
+        min-height: 20px;
+        max-height: 70px; // 三行半
       }
       >.key {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
         margin-left: 10px;
-        height: 28px;
+        height: 20px;
       }
     }
   }
@@ -262,7 +263,7 @@ html, body, #main {
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     padding: 4px;
     z-index: 100;    
-    max-height: 200px;
+    max-height: 260px; // (28*9+8+0)
     overflow-y: auto;
 
     /* 建议列表项 */
