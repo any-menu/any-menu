@@ -262,11 +262,11 @@ async function showWindow() {
   // 目前仅纠正y轴坐标，默认预留windows状态栏高度48px
   // TODO 纠正x轴坐标
   if (menuSize.height > 0) {
-    if (screenSize.height - 48 - cursor.y < menuSize.height) { // y轴溢出
+    if (screenSize.height - 8 - 48 - cursor.y < menuSize.height) { // y轴溢出
       if (cursor2_flag) { // 生成在光标上方 // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
         cursor.y = cursor2.y - 8 - menuSize.height
       } else { // 生成在屏幕底部上方
-        cursor.y = screenSize.height - 48 - menuSize.height
+        cursor.y = screenSize.height - 8 - 48 - menuSize.height
       }
     }
   }

@@ -271,21 +271,26 @@ fn simulate_paste() -> Result<(), String> {
 use enigo::{Enigo, Keyboard, Settings};
 
 #[tauri::command]
-fn send(text: &str) -> String {
+fn send(text: &str, method: &str) -> String {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
 
     // (可选) 根据文本长度及是否包含换行符，选择发送方式
-    if text.contains('\n') || text.len() > 30 {
+    if method == "clipboard" {
         return paste(text);
-    } else {
-        // 继续使用enigo发送
+    } 
+    else if method == "enigo" || method == "keyboard" {
+        // enigo.move_mouse(500, 200, Abs).unwrap();
+        // enigo.button(Button::Left, Click).unwrap();
+        enigo.text(text).unwrap();
+        return format!("Successfully sent: {}", text);
     }
-
-    // enigo.move_mouse(500, 200, Abs).unwrap();
-    // enigo.button(Button::Left, Click).unwrap();
-    enigo.text(text).unwrap();
-
-    format!("Successfully sent: {}", text)
+    else { // "auto"
+        if text.contains('\n') || text.len() > 30 {
+            return paste(text);
+        }
+        enigo.text(text).unwrap();
+        return format!("Successfully sent: {}", text);
+    }
 }
 
 // #endregion
