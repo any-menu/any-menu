@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@editableblock/textarea": "1.0.1-beta35",
-    "pinyin": "^4.0.0"
+    "pinyin": "^4.0.0",
+    "smol-toml": "^1.4.2"
   }
 }

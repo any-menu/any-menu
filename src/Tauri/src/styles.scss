@@ -125,12 +125,16 @@ html, body, #main {
         text-overflow: ellipsis;
         white-space: pre-wrap;
         overflow: hidden;
+        height: auto;
+        min-height: 28px; // (20+8+0)
+        max-height: 98px; // 三行半
       }
       >.key {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
         margin-left: 10px;
+        height: 28px;
       }
     }
   }
@@ -265,7 +269,8 @@ html, body, #main {
     >div {
       box-sizing: border-box;
       width: 100%;
-      height: 28px;
+      min-height: 28px; // (20+8+0)
+      max-height: 98px; // 三行半
       margin: 0;
       padding: 4px 12px;
       line-height: 20px;

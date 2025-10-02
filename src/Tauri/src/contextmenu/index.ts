@@ -2,12 +2,20 @@ import { invoke } from "@tauri-apps/api/core"
 
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
-import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/demo"
+import { type ContextMenuItems, root_menu_callout, toml_parse } from "../../../Core/contextmenu/demo"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 import { global_setting } from "../../../Core/Setting"
 
 /// 初始化菜单
 export async function initMenu(el: HTMLDivElement) {
+  // #region 元素 - 搜索框和多级菜单
+
+  AMSearch.factory(el)
+  const myMenu = new ABContextMenu2(el)
+  // myMenu.append_headerEditor('header test', ()=>{})
+
+  // #endregion
+
   // #region key-value 数据
 
   // 测试数据 (非Tauri环境下或其他环境下，不让数据为空)
@@ -54,15 +62,30 @@ export async function initMenu(el: HTMLDivElement) {
     console.error("Load dict fail:", error)
   }
 
+  // AnyBlock
+  let anyblock_menu: ContextMenuItems = []
+  try {
+    const result = await invoke("read_file", {
+      path: '../../../docs/demo/AnyBlock.toml',
+    })
+    anyblock_menu = toml_parse(result as string)["categories"] as ContextMenuItems
+
+    const records: {key: string, value: string}[] = []
+    function recursive(items: ContextMenuItems) {
+      for (const item of items) {
+        if (item.callback && typeof item.callback === 'string') {
+          records.push({ key: item.label, value: item.callback })
+        }
+        if (item.children) recursive(item.children)
+      }
+    }
+    recursive(anyblock_menu)
+    SEARCH_DB.add_data_by_json(records, 'AnyBlock')
+  } catch (error) {
+    console.error("Load dict fail:", error)
+  }
+
   // #endregion
-
-  // #region 搜索框
-  AMSearch.factory(el)
-  // #endregion
-
-  const myMenu = new ABContextMenu2(el)
-
-  // myMenu.append_headerEditor('header test', ()=>{})
 
   // #region 多级展开菜单
   myMenu.append_data([
@@ -84,7 +107,7 @@ export async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'AnyBlock',
-      children: root_menu_demo
+      children: anyblock_menu,
     },
     {
       label: 'Callout',
@@ -92,19 +115,27 @@ export async function initMenu(el: HTMLDivElement) {
     },
     {
       label: 'Mermaid',
-      children: []
+      children: [
+        { label: "待补充" }
+      ]
     },
     {
       label: '代码片段',
-      children: []
+      children: [
+        { label: "待补充" }
+      ]
     },
     {
       label: '自定义短语',
-      children: []
+      children: [
+        { label: "待补充" }
+      ]
     },
     {
       label: 'Plantuml',
-      children: []
+      children: [
+        { label: "待补充" }
+      ]
     },
     {
       label: 'Emoji',
