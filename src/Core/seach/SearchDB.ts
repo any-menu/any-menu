@@ -55,19 +55,33 @@ class SearchDB {
    * str是使用tab分割的kv对，key允许重复
    * @param str csv字符串 (每行格式为 ${key}\t${value}) 
    */
-  init_db_by_csv(str: string, path?: string) {
+  add_data_by_csv(str: string, path?: string) {
     const lines = str.split(/\r?\n/).filter(line => {
       return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
     })
+
+    const json: Record<string, string>[] = []
     for (const line of lines) {
+      const parts = line.split('\t')
+      if (parts.length != 2) continue // 过滤非法行
+      json.push({ key: parts[0], value: parts[1] })
+    }
+
+    this.add_data_by_records(json, path)
+  }
+
+  /** 构造前缀树
+   * json是 {key: value}[] 对象，允许多对多
+   */
+  add_data_by_records(json: Record<string, string>[], path?: string) {
+    
+    for (const item of json) {
       // 多keys
       const keys: string[] = []
 
       // 1. 常规key + 显示名 (显示名是为了不显示错字/混淆音/模糊音/拼音/缩写等增强检索)
-      const parts = line.split('\t')
-      if (parts.length != 2) continue // 过滤非法行
-      const [key, value] = parts
-      keys.push(key)
+      const key = item.key
+      keys.push(item.key)
 
       // 2. 路径key
       if (path !== undefined) {
@@ -111,11 +125,11 @@ class SearchDB {
       // TODO 不支持 "显示名"，后续再改。前缀树不打算支持这功能，比较麻烦，感觉用倒排索引更合适
       if (global_setting.config.search_engine == 'trie') {
         for (const key_item of keys) {
-          this.trie.insert(key_item, value)
+          this.trie.insert(key_item, item.value)
         }
       } else if (global_setting.config.search_engine == 'reverse') {
         for (const key_item of keys) {
-          this.reverse.add(key_item, value)
+          this.reverse.add(key_item, item.value)
         }
       } else {
         console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)

@@ -4,42 +4,39 @@ import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
 import { root_menu_demo, root_menu_callout } from "../../../Core/contextmenu/demo"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
+import { global_setting } from "../../../Core/Setting"
 
 /// 初始化菜单
 export async function initMenu(el: HTMLDivElement) {
   // #region key-value 数据
 
-  ;(async () => {
-    let result: string | unknown
-    try {
-      result = await invoke("read_file", {
-        // 路径可能有问题?
-        path: '../../../docs/demo/emoji.txt',
-      })
-    } catch (error) {
-      console.error("Failed to read file:", error)
-    }
+  // 测试数据 (非Tauri环境下或其他环境下，不让数据为空)
+  if (global_setting.isDebug) {
+    const result = 'testE	🙂‍↔️\ntest1\t读取词库文件失败\ntest2\ttest222\ntest3\ttest123超长测试超长测试超长测试超长测试超长测试5超长测试超长测试超长测试'
+    SEARCH_DB.add_data_by_csv(result as string, 'test')
+  }
 
-    // 非Tauri环境下的测试调试数据
-    if (typeof result !== 'string') {
-      result = 'testE	🙂‍↔️\ntest1\t读取词库文件失败\ntest2\ttest222\ntest3\ttest123超长测试超长测试超长测试超长测试超长测试5超长测试超长测试超长测试'
-      // return
-    }
-    
-    // 解析csv内容
-    // const kv_emoji: Record<string, string> = {}
-    // const lines = result.split('\n').filter(line => {
-    //   return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
-    // })
-    // for (const line of lines) {
-    //   const [label, value] = line.split('	'); // 没有确保安全性
-    //   kv_emoji[label] = value.trim();
-    // }
-    // console.log('kv_obj', Object.keys(kv_emoji).length)
+  // emoji
+  try {
+    const result = await invoke("read_file", {
+      path: '../../../docs/demo/emoji.txt', // 路径可能有问题?
+    })
+    SEARCH_DB.add_data_by_csv(result as string, 'emoji')
+  } catch (error) {
+    console.error("Load dict fail:", error)
+  }
 
-    // 解析csv内容2
-    SEARCH_DB.init_db_by_csv(result as string, 'emoji')
-  })();
+  // 颜表情
+  try {
+    const result = await invoke("read_file", {
+      path: '../../../docs/demo/ybq.json',
+    })
+    const jsonData = JSON.parse(result as string)
+    let records: Record<string, string>[] = jsonData.map((item: any) => { return { [item["description"]]: item["text"] } })
+    SEARCH_DB.add_data_by_records(records, '颜表情')
+  } catch (error) {
+    console.error("Load dict fail:", error)
+  }
 
   // #endregion
 
