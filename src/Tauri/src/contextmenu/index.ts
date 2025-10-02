@@ -38,7 +38,7 @@ export async function initMenu(el: HTMLDivElement) {
     // console.log('kv_obj', Object.keys(kv_emoji).length)
 
     // 解析csv内容2
-    SEARCH_DB.init_trie_by_csv(result as string)
+    SEARCH_DB.init_trie_by_csv(result as string, 'emoji')
   })();
 
   // #endregion

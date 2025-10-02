@@ -7,7 +7,12 @@ export const global_setting: {
    * - 不聚焦使用: 需要阻止任何点击事件避免聚焦转移
    *   可以在聚焦不改变的情况下直接输出文本，少了等待理论上会更快，而且能在窗口上多次操作和多次输出
    */
-  focusStrategy: true | false
+  focusStrategy: true | false,
+  /** 跨平台的通用配置。这里是通用模块，不跨平台的不存这 */
+  config: { 
+    pinyin_index: boolean, // 是否为中文key自动构建拼音索引
+    pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
+  },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
    * 
@@ -26,6 +31,10 @@ export const global_setting: {
 } = {
   env: 'app',
   focusStrategy: true,
+  config: {
+    pinyin_index: true,
+    pinyin_first_index: true,
+  },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },
     getCursorXY: async () => { console.error("需实现 getCursorXY 方法"); return { x: -1, y: -1 } },

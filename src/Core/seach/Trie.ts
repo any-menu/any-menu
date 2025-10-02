@@ -1,6 +1,7 @@
 // --- 前缀树实现 by gemini 2.5 pro ---
 
-// 前缀树节点
+/** 前缀树节点
+ */
 export class TrieNode {
   // 子节点
   children: Map<string, TrieNode> = new Map();

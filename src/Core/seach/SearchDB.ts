@@ -1,5 +1,7 @@
 import type { AMSearch } from '../seach/index'
+import { global_setting } from '../Setting'
 import { Trie, type TrieNode } from './Trie'
+import pinyin from 'pinyin'
 
 /** 核心数据库
  * 
@@ -13,6 +15,9 @@ import { Trie, type TrieNode } from './Trie'
  * - 后缀树: 不采用，占用太多
  * 
  * 在app环境中，这里仅临时使用，后续最好还是交给Rust来实现
+ * 
+ * - TODO 支持后端数据库，以增强性能
+ * - TODO 生成 cache 文件，以加速启动
  */
 class SearchDB {
   trie: Trie
@@ -31,15 +36,60 @@ class SearchDB {
    * str是使用tab分割的kv对，key允许重复
    * @param str csv字符串 (每行格式为 ${key}\t${value}) 
    */
-  init_trie_by_csv(str: string) {
+  init_trie_by_csv(str: string, path?: string) {
     const lines = str.split(/\r?\n/).filter(line => {
       return line.trim() !== '' && !line.startsWith('#') // 过滤空行和注释行
     })
     for (const line of lines) {
+      // 多keys
+      const keys: string[] = []
+
+      // 1. 常规key + 显示名 (显示名是为了不显示错字/混淆音/模糊音/拼音/缩写等增强检索)
       const parts = line.split('\t')
-      if (parts.length === 2) {
-        const [key, value] = parts
-        this.trie.insert(key, value)
+      if (parts.length != 2) continue // 过滤非法行
+      const [key, value] = parts
+      keys.push(key)
+
+      // 2. 路径key
+      if (path !== undefined) {
+        const key_path: string = path
+        keys.push(key_path)
+      }
+
+      // 3. 拼音key
+      // 有中文不一定就有拼音。其范围不一定和拼音库的范围相符合（他两可能采用了不同的汉字字标范围，如是否包含某些扩展区）
+      const has_chinese = /[\u4e00-\u9fa5]/.test(key)
+
+      // 3.1. 全拼音key
+      if (has_chinese && global_setting.config.pinyin_index) {
+        const key_pinyin: string = pinyin(key, {
+          style: pinyin.STYLE_NORMAL, // 普通风格，不带声调
+          heteronym: false, // 不返回多音字的所有读音
+          segment: false // 不使用分词
+        }).join('')
+        keys.push(key_pinyin)
+      }
+
+      // 3.2. 拼音首字母key
+      if (has_chinese && global_setting.config.pinyin_first_index) {
+        const key_first_pinyin: string = pinyin(key, {
+          style: pinyin.STYLE_FIRST_LETTER, // 首字母风格
+          heteronym: false,
+          segment: false
+        }).join('')
+        keys.push(key_first_pinyin)
+      }
+
+      // 填入搜索索引
+      // 塞同一前缀树还是分别塞？分别塞的好处
+      // 塞多个的话，按分类塞还是按属性(显示/路径/拼音/首拼音)塞
+      // - 塞同一个:
+      //   - 好处是全部按匹配相关度排序，而不需要分别检索后合并再排序。汉字和拼音感觉适合这种
+      // - 分别塞: (暂不支持)
+      //   - 好处是可以各自限额，避免某一类似匹配项过多覆盖其他类型
+      //   - 可以搜索前限制在哪个类型里搜索
+      for (const key_item of keys) {
+        this.trie.insert(key_item, value) // TODO 不支持 "显示名"，后续再改
       }
     }
   }
