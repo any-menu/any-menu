@@ -13,7 +13,7 @@ export const global_setting: {
   config: { 
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
-    search_engine: 'reverse'|'trie', // TODO 混合使用策略
+    search_engine: 'reverse'|'trie', // TODO 新选项: 混合使用策略
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api

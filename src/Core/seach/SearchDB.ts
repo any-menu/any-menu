@@ -73,7 +73,10 @@ class SearchDB {
   /** 构造前缀树
    * json是 {key: <input>, value: <output>}[] 对象，允许多对多
    */
-  add_data_by_json(json: {key: string, value: string}[], path?: string) {
+  add_data_by_json(
+    json: {key: string, value: string}[],
+    path?: string
+  ) {
     for (const item of json) {
       // 多keys
       const keys: string[] = []
@@ -83,7 +86,7 @@ class SearchDB {
       //   console.warn("Skip empty key_item:", key, item, json)
       //   continue
       // }
-      const key = item.key
+      const key = (path === undefined) ? item.key : `[${path}] ${item.key}`
       keys.push(item.key)
 
       // 2. 路径key

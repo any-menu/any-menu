@@ -17,11 +17,25 @@ export async function initMenu(el: HTMLDivElement) {
   }
 
   // emoji
+  // try {
+  //   const result = await invoke("read_file", {
+  //     path: '../../../docs/demo/emoji.txt', // 路径可能有问题?
+  //   })
+  //   SEARCH_DB.add_data_by_csv(result as string, 'emoji')
+  // } catch (error) {
+  //   console.error("Load dict fail:", error)
+  // }
+
+  // emoji2
   try {
     const result = await invoke("read_file", {
-      path: '../../../docs/demo/emoji.txt', // 路径可能有问题?
+      path: '../../../docs/demo/emojis_通用.json',
     })
-    SEARCH_DB.add_data_by_csv(result as string, 'emoji')
+    const jsonData = JSON.parse(result as string)
+    let records: {key: string, value: string}[] = jsonData.map((item: any) => {
+      return { key: item["keyword"], value: item["title"] }
+    })
+    SEARCH_DB.add_data_by_json(records, 'emojis')
   } catch (error) {
     console.error("Load dict fail:", error)
   }
