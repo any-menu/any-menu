@@ -7,6 +7,7 @@ import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 import { global_setting } from "../../../Core/Setting"
 
 /// 初始化菜单
+/// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
 export async function initMenu(el: HTMLDivElement) {
   // #region 元素 - 搜索框和多级菜单
 
@@ -70,26 +71,42 @@ export async function initMenu(el: HTMLDivElement) {
       file_ext = file_part[file_part.length - 1].toLowerCase()
     }
 
+    let file_content: string = ''
+    if (['toml', 'csv', 'txt', 'json', 'js'].includes(file_ext)) {
+      try {
+        // 读取并解析文件
+        const file_content = await invoke("read_file", {
+          path: file_path,
+        })
+        if (typeof file_content !== 'string') {
+          throw new Error("Invalid file content format")
+        }
+      } catch (error) {
+        console.error("Load dict fail:", error)
+        return
+      }
+    } else {// 无关文件
+      return
+    }
+
     // 分发各种扩展名 // TODO 存在顺序问题
     if (file_ext === 'toml') {
-      void fillDB_by_toml(file_path, file_name_short)
+      void fillDB_by_toml(file_content, file_name_short)
     } else if (file_ext === 'csv' || file_ext === 'txt') {
-      void fillDB_by_csv(file_path, file_name_short)
+      void fillDB_by_csv(file_content, file_name_short)
     } else if (file_ext === 'json') {
-      void fillDB_by_json(file_path, file_name_short)
+      void fillDB_by_json(file_content, file_name_short)
+    } else if (file_ext === 'js') {
+      void load_script(file_content, file_name_short)
     } else { // 无关文件
       return
     }
   }
 
-  async function fillDB_by_toml(file_path: string, file_name_short: string) {
+  async function fillDB_by_toml(file_content: string, file_name_short: string) {
     let menu_items: ContextMenuItems = []
     try {
-      // 读取并解析文件
-      const result = await invoke("read_file", {
-        path: file_path,
-      })
-      menu_items = toml_parse(result as string)["categories"] as ContextMenuItems
+      menu_items = toml_parse(file_content)["categories"] as ContextMenuItems
 
       // 搜索建议部分
       const records: {key: string, value: string, name?: string}[] = []
@@ -116,23 +133,17 @@ export async function initMenu(el: HTMLDivElement) {
     }
   }
 
-  async function fillDB_by_csv(file_path: string, file_name_short: string) {
+  async function fillDB_by_csv(file_content: string, file_name_short: string) {
     try {
-      const result = await invoke("read_file", {
-        path: file_path,
-      })
-      SEARCH_DB.add_data_by_csv(result as string, file_name_short)
+      SEARCH_DB.add_data_by_csv(file_content, file_name_short)
     } catch (error) {
       console.error("Load dict fail:", error)
     }
   }
 
-  async function fillDB_by_json(file_path: string, file_name_short: string) {
+  async function fillDB_by_json(file_content: string, file_name_short: string) {
     try {
-      const result = await invoke("read_file", {
-        path: file_path,
-      })
-      const jsonData = JSON.parse(result as string)
+      const jsonData = JSON.parse(file_content)
       let records: {key: string, value: string}[] = jsonData.map((item: any) => {
         return { key: item["keyword"], value: item["title"], name: item["description"] }
         // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
@@ -212,6 +223,14 @@ export async function initMenu(el: HTMLDivElement) {
     //   ]
     // },
   ])
+
+  // #endregion
+
+  // #region custom script 自定义脚本
+
+  async function load_script(file_content: string, file_name_short: string) {
+    
+  }
 
   // #endregion
 
