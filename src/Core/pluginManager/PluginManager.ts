@@ -1,9 +1,9 @@
 // 定义插件必须实现的接口
 interface PluginInterface {
-  // 必需方法
-  process: (str?: string) => string;
-  
-  // 可选方法
+  // 必须实现
+  process: (str?: string) => Promise<void|string>;
+
+  // 可选实现
   onLoad?: () => void;
   onUnload?: () => void;
   
@@ -48,13 +48,14 @@ export class PluginLoader {
     
     // 验证必需的 process 方法
     if (typeof plugin.process !== 'function') {
-      throw new Error('插件必须实现 process(str?: string): string 方法');
+      throw new Error('插件必须实现 process(str?: string): Promise<void|string> 方法');
     }
     
-    // 可以进一步验证方法签名
+    // 验证 process 方法返回 Promise
     const testResult = plugin.process('test');
-    if (typeof testResult !== 'string') {
-      throw new Error('process 方法必须返回 string 类型');
+    // if (typeof testResult !== 'string') {
+    if (!(testResult instanceof Promise)) {
+      throw new Error('process 方法必须返回 Promise 类型');
     }
     
     // 验证可选方法
@@ -68,7 +69,7 @@ export class PluginLoader {
   }
 
   // 使用示例
-  static demo() {
+  static async demo() {
     const loader = new PluginLoader();
 
     // 用户编写的插件脚本
@@ -102,10 +103,9 @@ export class PluginLoader {
         
         // 调用插件
         if (plugin.onLoad) plugin.onLoad();
-        
-        const result = plugin.process('hello world');
+
+        const result = await plugin.process('hello world');
         console.log(result); // "HELLO WORLD"
-        
         if (plugin.onUnload) plugin.onUnload();
     } catch (error) {
         console.error('插件错误:', error);

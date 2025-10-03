@@ -202,8 +202,11 @@ export class ABContextMenu {
           // b3. 自定义事件
           else {
             const callback = item.callback
-            li.addEventListener('click', () => {
-              callback()
+            li.addEventListener('click', async () => {
+              const result = await callback() // TODO 参数呢
+              if (result && typeof result === 'string') {
+                this.sendText(result)
+              }
               this.visual_hide()
             })
           }
@@ -327,17 +330,17 @@ export class ABContextMenu {
   // 用例
   static demo() {
     const menuItems: ContextMenuItems = [
-      { label: '操作一', callback: () => console.warn('执行了操作一') },
+      { label: '操作一', callback: async () => console.warn('执行了操作一') },
       {
-        label: '操作二', callback: () => console.warn('执行了操作二'), children: [
-          { label: '操作2.1', callback: () => console.warn('执行了操作2.1') },
-          { label: '操作2.2', callback: () => console.warn('执行了操作2.2') },
+        label: '操作二', callback: async () => console.warn('执行了操作二'), children: [
+          { label: '操作2.1', callback: async () => console.warn('执行了操作2.1') },
+          { label: '操作2.2', callback: async () => console.warn('执行了操作2.2') },
         ]
       },
       {
         label: '操作三', children: [
-          { label: '操作3.1', callback: () => console.warn('执行了操作3.1') },
-          { label: '操作3.2', callback: () => console.warn('执行了操作3.2') },
+          { label: '操作3.1', callback: async () => console.warn('执行了操作3.1') },
+          { label: '操作3.2', callback: async () => console.warn('执行了操作3.2') },
         ]
       }
     ]
@@ -363,14 +366,14 @@ export class ABContextMenu {
 // 非AnyBlock的通用环境的原根/正文菜单 (给App用)
 export const root_menu_raw: ContextMenuItems = [
   { label: '请用快捷键代替', children: [
-    { label: '撤销 (ctrl z)', callback: () => {} },
-    { label: '重做 (ctrl shift z)', callback: () => {} },
-    { label: '复制 (ctrl c)', callback: () => {} },
-    { label: '剪切 (ctrl x)', callback: () => {} },
-    { label: '黏贴 (ctrl v)', callback: () => {} },
-    { label: '黏贴为无格式文本 (ctrl shift v)', callback: () => {} },
-    { label: '删除 (delete)', callback: () => {} },
-    { label: '全选 (ctrl a)', callback: () => {} },
+    { label: '撤销 (ctrl z)', callback: async () => {} },
+    { label: '重做 (ctrl shift z)', callback: async () => {} },
+    { label: '复制 (ctrl c)', callback: async () => {} },
+    { label: '剪切 (ctrl x)', callback: async () => {} },
+    { label: '黏贴 (ctrl v)', callback: async () => {} },
+    { label: '黏贴为无格式文本 (ctrl shift v)', callback: async () => {} },
+    { label: '删除 (delete)', callback: async () => {} },
+    { label: '全选 (ctrl a)', callback: async () => {} },
   ] },
 ]
 

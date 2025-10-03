@@ -1,7 +1,7 @@
 /*// 定义插件必须实现的接口
 interface PluginInterface {
   // 必需方法
-  process: (str?: string) => string;
+  process: (str?: string) => Promise<void|string>;
   
   // 可选方法
   onLoad?: () => void;
@@ -23,7 +23,7 @@ const plugin = {
     },
     
     // 必须实现的方法
-    process(str) {
+    async process(str) {
         if (!str) return 'Empty input';
         return str.toUpperCase();
     },

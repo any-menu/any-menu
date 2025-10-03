@@ -39,7 +39,7 @@ export async function initMenu(el: HTMLDivElement) {
       fillDB_by_file(file_path)
     }
   } catch (error) {
-    console.error("Failed to read directory:", error) // debug 环境可以用硬编码
+    console.warn("Failed to read directory:", error) // debug 环境会走这里，使用硬编码
     try {
       const files: string[]|null = await invoke("read_folder", {
         path: '../../../docs/demo/'
