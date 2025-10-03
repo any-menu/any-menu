@@ -25,7 +25,11 @@ export const global_setting: {
      * TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
      */
     send_text_method: 'keyboard'|'clipboard'|'auto',
-    // 搜索首页候选数/限制数 (通过 `[]` 翻页 or 滚动)
+    // 查询结果的首页显示数
+    // 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
+    // 对于前缀树引擎: 是查询数
+    // 暂时以滚动形式显示，不支持类似输入法的通过 `[]` 翻页，否则这个数量可以限制更多
+    search_limit: number,
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
@@ -51,6 +55,7 @@ export const global_setting: {
     pinyin_first_index: true,
     search_engine: 'reverse',
     send_text_method: 'clipboard',
+    search_limit: 80,
   },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },

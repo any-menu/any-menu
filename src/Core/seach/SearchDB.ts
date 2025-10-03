@@ -31,8 +31,6 @@ class SearchDB {
   // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
   el_search: AMSearch | null = null
 
-  limit: number = 50 // 限制返回结果数量
-
   constructor() {
     // if (global_setting.config.search_engine == 'trie') {
     //   this.trie = new TrieDB()
@@ -163,19 +161,19 @@ class SearchDB {
 
     // 使用深度优先搜索（DFS）来收集所有结果
     const collect = (node: TrieNode, currentKey: string) => {
-      if (results.length >= this.limit) return results // limit
+      if (results.length >= global_setting.config.search_limit) return results // limit
 
       // 如果是单词结尾，将其关联的 key/value 对添加到结果中
       if (node.isEndOfWord) {
         for (const val of node.values) {
-          if (results.length >= this.limit) break // limit
+          if (results.length >= global_setting.config.search_limit) break // limit
           results.push({ key: currentKey, value: val })
         }
       }
 
       // 递归访问所有子节点
       for (const [char, childNode] of node.children.entries()) {
-        if (results.length >= this.limit) return // limit
+        if (results.length >= global_setting.config.search_limit) return // limit
 
         // 将当前字符追加到 key 上，然后继续递归
         collect(childNode, currentKey + char)
@@ -193,7 +191,7 @@ class SearchDB {
   // - 早退: 目前是先全量评分排序，然后显示时再做数量限制/分页。可以限制查询时数量限制 (有可能错过优质结果)
   query_by_reverse(query: string): {key: string, value: string}[] {
     return this.reverse.search(query)
-      .slice(0, this.limit)
+      .slice(0, global_setting.config.search_limit)
       .map((item: {output: string, name: string}) => {
         return { "value": item.output, "key": item.name }
       } )
