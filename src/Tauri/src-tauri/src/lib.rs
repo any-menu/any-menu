@@ -158,7 +158,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet, paste, send, get_caret_xy, get_screen_size,
+            greet, get_caret_xy, get_screen_size,
+            paste, send, get_selected,
             read_file, read_folder, create_file,
         ])
         .run(tauri::generate_context!())
@@ -178,7 +179,7 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 fn paste(text: &str) -> String {
     // 将文本写入剪贴板
-    set_clipboard_text(text).expect("Failed to set clipboard text");
+    clipboard_set_text(text).expect("Failed to set clipboard text");
 
     // 模拟 Ctrl+V 按键来粘贴
     simulate_paste().expect("Failed to simulate paste");
@@ -188,7 +189,7 @@ fn paste(text: &str) -> String {
 
 /// 将文本写入剪贴板
 #[cfg(target_os = "windows")]
-fn set_clipboard_text(text: &str) -> Result<(), String> {
+fn clipboard_set_text(text: &str) -> Result<(), String> {
     use std::ffi::OsStr;
     use std::iter::once;
     use std::os::windows::ffi::OsStrExt;
@@ -236,12 +237,51 @@ fn set_clipboard_text(text: &str) -> Result<(), String> {
     }
 }
 
+/// 从剪贴板获取文本
+#[cfg(target_os = "windows")]
+fn clipboard_get_text() -> Result<String, String> {
+    use std::ptr;
+    use winapi::um::winbase::{GlobalLock, GlobalUnlock};
+    use winapi::um::winuser::{CloseClipboard, OpenClipboard, GetClipboardData, CF_UNICODETEXT};
+
+    unsafe {
+        if OpenClipboard(ptr::null_mut()) == 0 {
+            return Err("Failed to open clipboard".to_string());
+        }
+
+        let h_data = GetClipboardData(CF_UNICODETEXT);
+        if h_data.is_null() {
+            CloseClipboard();
+            return Err("No text data in clipboard".to_string());
+        }
+
+        let p_data = GlobalLock(h_data);
+        if p_data.is_null() {
+            CloseClipboard();
+            return Err("Failed to lock clipboard data".to_string());
+        }
+
+        let mut len = 0;
+        while *(p_data as *const u16).add(len) != 0 {
+            len += 1;
+        }
+
+        let slice = std::slice::from_raw_parts(p_data as *const u16, len);
+        let text = String::from_utf16(slice).map_err(|e| e.to_string())?;
+
+        GlobalUnlock(h_data);
+        CloseClipboard();
+        Ok(text)
+    }
+}
+
+
 /// 模拟黏贴按键
 #[cfg(target_os = "windows")]
 fn simulate_paste() -> Result<(), String> {
     use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL};
 
-    const VK_V: u8 = 0x56; // VK_V 的值是 0x56
+    const VK_V: u8 = b'V'; // 大写V的ascii码是 86 = 0x56
 
     unsafe {
         keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
@@ -253,9 +293,40 @@ fn simulate_paste() -> Result<(), String> {
     Ok(())
 }
 
+/// 模拟复制按键
+#[cfg(target_os = "windows")]
+fn simulate_copy() -> Result<(), String> {
+    log::info!("simulate_copy called start");
+    use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL, VK_MENU};
+
+    const VK_C: u8 = b'C'; // 大写C的ascii码是 67 = 0x43
+    const VK_A: u8 = b'A'; // 大写A的ascii码是 65 = 0x41
+
+    unsafe {
+        // 可能的冲突: 释放 Alt和A, 防止与召唤菜单时的按键冲突
+        // 焦点转移策略时，需要在菜单召唤前 (焦点转移前) 完成
+        keybd_event(VK_A, 0, KEYEVENTF_KEYUP, 0);
+        keybd_event(VK_MENU as u8, 0, KEYEVENTF_KEYUP, 0);
+
+        keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
+        keybd_event(VK_C, 0, 0, 0); // 按下 C
+        keybd_event(VK_C, 0, KEYEVENTF_KEYUP, 0); // 释放 C
+        keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
+    }
+
+    log::info!("simulate_copy called end");
+    Ok(())
+}
+
 /// 将文本写入剪贴板
 #[cfg(not(target_os = "windows"))]
-fn set_clipboard_text(_text: &str) -> Result<(), String> {
+fn clipboard_set_text(_text: &str) -> Result<(), String> {
+    Err("Clipboard operations not implemented for this platform".to_string())
+}
+
+/// 从剪贴板获取文本
+#[cfg(not(target_os = "windows"))]
+fn clipboard_get_text() -> Result<String, String> {
     Err("Clipboard operations not implemented for this platform".to_string())
 }
 
@@ -265,9 +336,15 @@ fn simulate_paste() -> Result<(), String> {
     Err("Paste simulation not implemented for this platform".to_string())
 }
 
+/// 模拟黏贴按键
+#[cfg(not(target_os = "windows"))]
+fn simulate_copy() -> Result<(), String> {
+    Err("Copy simulation not implemented for this platform".to_string())
+}
+
 // #endregion paste
 
-// #region enigo
+// #region send by enigo
 
 use enigo::{Enigo, Keyboard, Settings};
 
@@ -295,6 +372,37 @@ fn send(text: &str, method: &str) -> String {
 }
 
 // #endregion
+
+/// 获取当前选中的文本
+/// 
+/// method: &str,
+/// - 目前仅支持剪切板方式，但事实上剪切板方式并不好用:
+///   - 需要在菜单召唤出来前完成ctrl+c的模拟按键 (而对于剪切版的识别可以延后执行)
+///   - 需要等待剪切板更新，而这个时间不确定且通常较长，会影响用户体验
+///   - 可能会覆盖用户原本的剪切板内容
+///   - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
+/// 后续可能会用uia等其他方式
+#[tauri::command]
+fn get_selected() -> Option<String> {
+    let method = "clipboard";
+    match method {
+        "clipboard" => {
+            match simulate_copy() {
+                Ok(_) => {}
+                Err(_) => { log::error!("Failed to simulate copy"); return None; }
+            };
+            // 模拟复制后，等待一小会儿，确保剪贴板内容更新。这个时间不确定 (根据系统不同可能不同，但通常不能太短)
+            // 不过好在这里的复制时机是展开面板时，而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            let Ok(selected_text) = clipboard_get_text() else {
+                log::error!("Failed to get clipboard text");
+                return None;
+            };
+            Some(selected_text)
+        }
+        _ => { log::error!("Unsupported method: {}", method); return None; }
+    }
+}
 
 // #region window sendText
 

@@ -232,6 +232,12 @@ async function cacheMenuSize() {
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
+  // 获取当前选择的文本
+  invoke("get_selected").then((selected: any) => {
+    if (!selected || typeof selected !== 'string') return
+    global_setting.state.selectedText = selected.length > 0 ? selected : undefined
+  });
+
   // step1. 鼠标位置 (类似于quciker app)
   const appWindow = getCurrentWindow()
   const cursor = await cursorPosition()

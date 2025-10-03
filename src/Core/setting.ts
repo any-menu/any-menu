@@ -46,6 +46,10 @@ export const global_setting: {
     pinyin_method: 'pinyin', //  目前仅支持普通拼音，后续可能加入其他拼音方案甚至形码
     menu_position: 'cursor'|'mouse'|'screen', // 窗口出现位置，插入符光标优先|鼠标位置|屏幕中心
   },
+  // 运行时状态
+  state: {
+    selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
+  },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
    * 
@@ -77,6 +81,9 @@ export const global_setting: {
     is_auto_startup: false,
     pinyin_method: 'pinyin',
     menu_position: 'cursor',
+  },
+  state: {
+    selectedText: undefined
   },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },
