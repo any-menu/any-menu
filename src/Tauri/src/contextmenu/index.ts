@@ -33,39 +33,45 @@ export async function initMenu(el: HTMLDivElement) {
     }
 
     for (const file_path of files) {
-      // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
-      let file_name_short: string
-      let file_ext: string
-      const file_name_full = file_path.split(/\/|\\/).pop()??''
-      const file_part = file_name_full.split('.')
-      if (file_part.length < 2) {
-        file_name_short = file_name_full
-        file_ext = ''
-      }
-      else {
-        file_name_short = file_part.slice(0, -1).join('.')
-        file_ext = file_part[file_part.length - 1].toLowerCase()
-      }
-      
-      // 分发各种扩展名 // TODO 存在顺序问题
-      if (file_ext === 'toml') {
-        fillDB_by_toml(file_path, file_name_short)
-      } else if (file_ext === 'csv' || file_ext === 'txt') {
-        fillDB_by_csv(file_path, file_name_short)
-      } else {
-        continue // 无关文件
-      }
+      fillDB_by_file(file_path)
     }
   } catch (error) {
     console.error("Failed to read directory:", error)
   }
 
-  async function fillDB_by_toml(path: string, name_short: string) {
+  async function fillDB_by_file(file_path: string) {
+    // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
+    let file_name_short: string
+    let file_ext: string
+    const file_name_full = file_path.split(/\/|\\/).pop()??''
+    const file_part = file_name_full.split('.')
+    if (file_part.length < 2) {
+      file_name_short = file_name_full
+      file_ext = ''
+    }
+    else {
+      file_name_short = file_part.slice(0, -1).join('.')
+      file_ext = file_part[file_part.length - 1].toLowerCase()
+    }
+
+    // 分发各种扩展名 // TODO 存在顺序问题
+    if (file_ext === 'toml') {
+      void fillDB_by_toml(file_path, file_name_short)
+    } else if (file_ext === 'csv' || file_ext === 'txt') {
+      void fillDB_by_csv(file_path, file_name_short)
+    } else if (file_ext === 'json') {
+      void fillDB_by_json(file_path, file_name_short)
+    } else { // 无关文件
+      return
+    }
+  }
+
+  async function fillDB_by_toml(file_path: string, file_name_short: string) {
     let menu_items: ContextMenuItems = []
     try {
       // 读取并解析文件
       const result = await invoke("read_file", {
-        path: path,
+        path: file_path,
       })
       menu_items = toml_parse(result as string)["categories"] as ContextMenuItems
 
@@ -80,12 +86,12 @@ export async function initMenu(el: HTMLDivElement) {
         }
       }
       recursive(menu_items)
-      SEARCH_DB.add_data_by_json(records, name_short)
+      SEARCH_DB.add_data_by_json(records, file_name_short)
 
       // 多级菜单部分
       myMenu.append_data([
         {
-          label: name_short,
+          label: file_name_short,
           children: menu_items
         }
       ])
@@ -94,54 +100,31 @@ export async function initMenu(el: HTMLDivElement) {
     }
   }
 
-  async function fillDB_by_csv(path: string, name_short: string) {
+  async function fillDB_by_csv(file_path: string, file_name_short: string) {
     try {
       const result = await invoke("read_file", {
-        path: path,
+        path: file_path,
       })
-      SEARCH_DB.add_data_by_csv(result as string, name_short)
+      SEARCH_DB.add_data_by_csv(result as string, file_name_short)
     } catch (error) {
       console.error("Load dict fail:", error)
     }
   }
 
-  // emoji wusong
-  // try {
-  //   const result = await invoke("read_file", {
-  //     path: '../../../docs/demo/emoji.txt', // 路径可能有问题?
-  //   })
-  //   SEARCH_DB.add_data_by_csv(result as string, 'emoji')
-  // } catch (error) {
-  //   console.error("Load dict fail:", error)
-  // }
-
-  // emoji2
-  try {
-    const result = await invoke("read_file", {
-      path: '../../../docs/demo/emojis_通用.json',
-    })
-    const jsonData = JSON.parse(result as string)
-    let records: {key: string, value: string}[] = jsonData.map((item: any) => {
-      return { key: item["keyword"], value: item["title"] }
-    })
-    SEARCH_DB.add_data_by_json(records, 'emojis')
-  } catch (error) {
-    console.error("Load dict fail:", error)
-  }
-
-  // 颜表情
-  try {
-    const result = await invoke("read_file", {
-      path: '../../../docs/demo/ybq.json',
-    })
-    const jsonData = JSON.parse(result as string)
-    let records: {key: string, value: string, name?: string}[] = []
-    records = jsonData.map((item: any) => {
-      return { key: item["tag"] + '/' + item["description"], value: item["text"] }
-    })
-    SEARCH_DB.add_data_by_json(records, '颜表情')
-  } catch (error) {
-    console.error("Load dict fail:", error)
+  async function fillDB_by_json(file_path: string, file_name_short: string) {
+    try {
+      const result = await invoke("read_file", {
+        path: file_path,
+      })
+      const jsonData = JSON.parse(result as string)
+      let records: {key: string, value: string}[] = jsonData.map((item: any) => {
+        return { key: item["keyword"], value: item["title"], name: item["description"] }
+        // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
+      })
+      SEARCH_DB.add_data_by_json(records, file_name_short)
+    } catch (error) {
+      console.error("Load dict fail:", error)
+    }
   }
 
   // #endregion
