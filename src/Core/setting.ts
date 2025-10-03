@@ -14,10 +14,9 @@ export const global_setting: {
    * - 这里是可序列化的配置 (可对应配置文件)，不可序列化的不放在这
    * - 用户不可配置的硬编码也不放在这
    */
-  config: { 
+  config: {
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
-    pinyin_method: 'pinyin', //  目前仅支持普通拼音，后续可能加入其他拼音方案甚至形码
     search_engine: 'reverse'|'trie', // TODO 新选项: 混合使用策略
     /** 发送文本的方式。enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
      * 建议为 clipboard (或 auto，auto根据文本长度和是否有换行符决定)
@@ -36,6 +35,11 @@ export const global_setting: {
     // 暂时以滚动形式显示，不支持类似输入法的通过 `[]` 翻页，否则这个数量可以限制更多
     search_limit: number,
     dict_paths: string, // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
+  },
+  config_: { // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
+    is_auto_startup: boolean, // 是否开机自启
+    pinyin_method: 'pinyin', //  目前仅支持普通拼音，后续可能加入其他拼音方案甚至形码
+    menu_position: 'cursor'|'mouse'|'screen', // 窗口出现位置，插入符光标优先|鼠标位置|屏幕中心
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
@@ -56,14 +60,18 @@ export const global_setting: {
   env: 'app',
   isDebug: true,
   focusStrategy: true,
-  config: {
+  config: {    
     pinyin_index: true,
     pinyin_first_index: true,
-    pinyin_method: 'pinyin',
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 80,
-    dict_paths: './dict/',
+    dict_paths: '',
+  },
+  config_: {
+    is_auto_startup: false,
+    pinyin_method: 'pinyin',
+    menu_position: 'cursor',
   },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },

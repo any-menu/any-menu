@@ -104,7 +104,7 @@ pub fn run() {
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
-            let menu = Menu::with_items(app, &[&quit_item, &config_item])?; // 菜单项数组
+            let menu = Menu::with_items(app, &[&config_item, &quit_item])?; // 菜单项数组
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
@@ -119,7 +119,7 @@ pub fn run() {
                     // 打开配置窗口
                     "config" => {
                         // 如果配置窗口已存在，直接显示并聚焦
-                        if let Some(window) = app.get_webview_window("config") {
+                        if let Some(window) = app.get_webview_window("am-config") {
                             let _ = window.show();
                             let _ = window.set_focus();
                         }
@@ -127,7 +127,7 @@ pub fn run() {
                         else {
                             let _config_window = tauri::WebviewWindowBuilder::new(
                                 app,
-                                "config",
+                                "am-config",
                                 tauri::WebviewUrl::App("config.html".into()), // 或者你的配置页面路径
                             )
                             .title("AnyMenu - Config")
@@ -433,6 +433,8 @@ fn read_file(path: &str) -> Option<String> {
     }
 }
 
+/// 读取目录下的所有文件路径，并返回文件路径列表
+/// 似乎不会改变目录的形式 (绝对/相对路径)
 #[tauri::command]
 fn read_folder(path: &str) -> Option<Vec<String>> {
     let Ok(entries) = fs::read_dir(path) else {

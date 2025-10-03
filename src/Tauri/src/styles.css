@@ -16,11 +16,12 @@
     --am-background-color: #2f2f2f;
   }
 }
-html, body, #main {
+html, body, #main, #am-config {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   background: transparent !important;
 }
 
@@ -239,6 +240,43 @@ html, body, #main {
 .am-search .am-search-suggestion > div.autocomplete-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
+}
+
+/* -------------------------------- 配置页面 ----------------------------- */
+#am-config {
+  padding: 0px;
+  position: relative;
+  overflow: hidden;
+}
+#am-config textarea {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 8px;
+  background-color: var(--pre-background-color);
+  color: var(--am-text-color);
+  resize: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+#am-config textarea.no-save {
+  padding-left: 7px;
+  border-left: 1px solid orange;
+}
+#am-config textarea.error-save {
+  padding-left: 7px;
+  border-left: 1px solid red;
+}
+#am-config button {
+  position: absolute;
+  height: 28px;
+  right: 16px;
+  bottom: 16px;
+  padding: 0 18px;
 }
 
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */
