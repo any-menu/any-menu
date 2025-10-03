@@ -57,6 +57,8 @@ export class ABContextMenu {
   public el_container: HTMLDivElement|undefined
   /// 当前菜单是否处于显示状态
   private isShow: boolean = false
+  /// 保存右键时选中的文本
+  private selectedText: string|undefined = undefined
 
   // 创建一个菜单实例
   constructor(
@@ -85,7 +87,7 @@ export class ABContextMenu {
     if (menuItems) this.append_data(menuItems)
   }
 
-  /** 在目标上监听 contextmenu 事件，并显示该菜单
+  /** 在目标上监听 contextmenu 事件，并显示该菜单 (仅非 App 环境)
    * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
    */
   public attach(targetElement: HTMLElement | string) {
@@ -96,6 +98,10 @@ export class ABContextMenu {
       ev.stopPropagation() // 阻止冒泡
       let x = ev.clientX
       let y = ev.clientY
+
+      // 获取选中的文本
+      const selectedText_ = window.getSelection()?.toString()
+      this.selectedText = (selectedText_ && selectedText_.length > 0) ? selectedText_ : undefined
 
       // 光标纠正: 在obsidian中，这个坐标是基于 workspace-tab-container 也就是md编辑区域的，而 非body的
       const workspaceContainer = document.querySelector('.workspace-leaf.mod-active');
@@ -203,7 +209,7 @@ export class ABContextMenu {
           else {
             const callback = item.callback
             li.addEventListener('click', async () => {
-              const result = await callback() // TODO 参数呢
+              const result = await callback(this.selectedText)
               if (result && typeof result === 'string') {
                 this.sendText(result)
               }
