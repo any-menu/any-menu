@@ -24,13 +24,10 @@ export async function initMenu(el: HTMLDivElement) {
     SEARCH_DB.add_data_by_csv(result as string, 'test')
   }
 
-  let dict_path = global_setting.config.dict_paths.length > 0 ?
-    global_setting.config.dict_paths :
-    '../../../docs/demo/'
-  if (!dict_path.endsWith('/')) { dict_path += '/' }
+  if (!global_setting.config.dict_paths.endsWith('/')) { global_setting.config.dict_paths += '/' }
   try {
     const files: string[]|null = await invoke("read_folder", {
-      path: dict_path
+      path: global_setting.config.dict_paths
     })
     if (typeof files !== 'object' || !Array.isArray(files)) {
       throw new Error("Invalid directory listing format")
@@ -40,7 +37,22 @@ export async function initMenu(el: HTMLDivElement) {
       fillDB_by_file(file_path)
     }
   } catch (error) {
-    console.error("Failed to read directory:", error)
+    console.error("Failed to read directory:", error) // debug 环境可以用硬编码
+    try {
+      const files: string[]|null = await invoke("read_folder", {
+        path: '../../../docs/demo/'
+      })
+      if (typeof files !== 'object' || !Array.isArray(files)) {
+        throw new Error("Invalid directory listing format")
+      }
+
+      for (const file_path of files) {
+        fillDB_by_file(file_path)
+      }
+    } catch (error) {
+      console.error("Failed to read directory:", error)
+      
+    }
   }
 
   async function fillDB_by_file(file_path: string) {

@@ -71,7 +71,7 @@ export const global_setting: {
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 80,
-    dict_paths: '',
+    dict_paths: './dict',
   },
   config_: {
     is_auto_startup: false,

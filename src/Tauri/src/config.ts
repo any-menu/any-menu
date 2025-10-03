@@ -4,8 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { global_setting } from '../../Core/Setting';
 import { toml_parse } from '../../Core/contextmenu/demo';
 
-const CONFIG_PATH = './config.toml'
-let is_init = false
+const CONFIG_PATH = './am-user.toml'
 
 window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
@@ -23,17 +22,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   save_btn.onclick = () => {
     save_config(textarea.value, textarea)
   }
-
-  // 未初始化，则读写一次配置文件
-  if (!is_init) {
-    is_init = true
-    const result = await load_config()
-    if (result.trim() == '') { console.error('配置文件读取/初始化失败'); return }
-    await save_config(result)
-  }
 })
 
-async function load_config() {
+export async function load_config() {
   let file_content: string = ''
 
   // 读取配置文件
@@ -71,7 +62,7 @@ async function load_config() {
  * @param new_str 新的配置字符串
  * @param textarea (可选) 用于表示未保存/保存错误的状态
  */
-function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
+export function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
   try {
     const new_config = toml_parse(new_str)['config']
     if (new_config && typeof new_config === 'object') {
@@ -97,8 +88,10 @@ const DEFAULT_TOML = `\
 [[config]]
 pinyin_index = true         # 是否为中文key自动构建拼音索引
 pinyin_first_index = true   # 是否为中文key自动构建拼音首字母索引
+
 # 搜索引擎类型，'reverse'|'trie' (模糊匹配/倒序 | 前缀树)
 search_engine = "reverse"
+
 #  发送文本的方式。
 # 'keyboard'|'clipboard'|'auto'
 # enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
@@ -112,11 +105,13 @@ search_engine = "reverse"
 # TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
 # 
 send_text_method = "clipboard"
+
 # 查询结果的首页显示数
 # 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
 # 对于前缀树引擎: 是查询数
 # 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
 search_limit = 80
+
 # 词库路径列表。在debug模式下不使用这个路径，而是硬编码
-dict_paths = ""
+dict_paths = "./dict"
 `

@@ -131,7 +131,7 @@ pub fn run() {
                                 tauri::WebviewUrl::App("config.html".into()), // 或者你的配置页面路径
                             )
                             .title("AnyMenu - Config")
-                            .inner_size(600.0, 500.0)
+                            .inner_size(1000.0, 750.0)
                             .min_inner_size(400.0, 300.0)
                             .center()
                             .resizable(true)
@@ -428,7 +428,7 @@ fn read_file(path: &str) -> Option<String> {
             Some(content)
         }
         Err(e) => {
-            eprintln!("读取文件 {} 时出错: {}", path, e);
+            log::error!("读取文件 {} 时出错: {}", path, e);
             None
         }
     }
@@ -439,7 +439,7 @@ fn create_file(path: &str, content: &str) -> bool {
     match fs::write(path, content) {
         Ok(_) => true,
         Err(e) => {
-            eprintln!("创建文件 {} 时出错: {}", path, e);
+            log::error!("创建文件 {} 时出错: {}", path, e);
             false
         }
     }
@@ -450,7 +450,7 @@ fn create_file(path: &str, content: &str) -> bool {
 #[tauri::command]
 fn read_folder(path: &str) -> Option<Vec<String>> {
     let Ok(entries) = fs::read_dir(path) else {
-        eprintln!("读取目录 {} 时出错: 目录不存在或无法访问", path);
+        log::error!("读取目录 {} 时出错: 目录不存在或无法访问", path);
         return None;
     };
 
