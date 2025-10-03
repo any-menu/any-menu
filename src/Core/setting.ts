@@ -9,7 +9,11 @@ export const global_setting: {
    *   可以在聚焦不改变的情况下直接输出文本，少了等待理论上会更快，而且能在窗口上多次操作和多次输出
    */
   focusStrategy: true | false,
-  /** 跨平台的通用配置。这里是通用模块，不跨平台的不存这 */
+  /** 跨平台的通用配置。
+   * - 这里是通用模块，不跨平台的不存这
+   * - 这里是可序列化的配置 (可对应配置文件)，不可序列化的不放在这
+   * - 用户不可配置的硬编码也不放在这
+   */
   config: { 
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
@@ -31,6 +35,7 @@ export const global_setting: {
     // 对于前缀树引擎: 是查询数
     // 暂时以滚动形式显示，不支持类似输入法的通过 `[]` 翻页，否则这个数量可以限制更多
     search_limit: number,
+    dict_paths: string, // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
@@ -58,6 +63,7 @@ export const global_setting: {
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 80,
+    dict_paths: './dict/',
   },
   api: {
     readFile: async () => { console.error("需实现 readFile 方法"); return '' },

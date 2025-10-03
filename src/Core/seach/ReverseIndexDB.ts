@@ -141,7 +141,7 @@ export class ReverseIndexDB {
 
   /**
    * 检查 chars 是否为 text 的子序列
-   */
+   *
   private isSubsequence(chars: string[], text: string): boolean {
     let charIndex = 0;
     for (const char of text) {
@@ -151,7 +151,7 @@ export class ReverseIndexDB {
       }
     }
     return charIndex === chars.length;
-  }
+  }*/
 
   /**
    * 获取某个 output 的所有关联信息

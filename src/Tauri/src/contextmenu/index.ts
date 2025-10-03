@@ -24,9 +24,13 @@ export async function initMenu(el: HTMLDivElement) {
     SEARCH_DB.add_data_by_csv(result as string, 'test')
   }
 
+  let dict_path = global_setting.config.dict_paths.length > 0 ?
+    global_setting.config.dict_paths :
+    '../../../docs/demo/'
+  if (!dict_path.endsWith('/')) { dict_path += '/' }
   try {
     const files: string[]|null = await invoke("read_folder", {
-      path: '../../../docs/demo/' // 保证有后 `/`
+      path: dict_path
     })
     if (typeof files !== 'object' || !Array.isArray(files)) {
       throw new Error("Invalid directory listing format")
