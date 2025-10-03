@@ -2,8 +2,9 @@ import { invoke } from "@tauri-apps/api/core"
 
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
-import { type ContextMenuItems, toml_parse } from "../../../Core/contextmenu/demo"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
+import { type ContextMenuItems, toml_parse } from "../../../Core/contextmenu/demo"
+import { PLUGIN_LOADER_INSTANCE, PluginLoader } from "../../../Core/pluginManager/PluginManager"
 import { global_setting } from "../../../Core/Setting"
 
 /// 初始化菜单
@@ -75,7 +76,7 @@ export async function initMenu(el: HTMLDivElement) {
     if (['toml', 'csv', 'txt', 'json', 'js'].includes(file_ext)) {
       try {
         // 读取并解析文件
-        const file_content = await invoke("read_file", {
+        file_content = await invoke("read_file", {
           path: file_path,
         })
         if (typeof file_content !== 'string') {
@@ -99,7 +100,7 @@ export async function initMenu(el: HTMLDivElement) {
     } else if (file_ext === 'js') {
       void load_script(file_content, file_name_short)
     } else { // 无关文件
-      return
+      console.error('Unreadable, file type:', file_ext)
     }
   }
 
@@ -129,7 +130,7 @@ export async function initMenu(el: HTMLDivElement) {
         }
       ])
     } catch (error) {
-      console.error("Load dict fail:", error)
+      console.error("Parse error:", error)
     }
   }
 
@@ -137,7 +138,7 @@ export async function initMenu(el: HTMLDivElement) {
     try {
       SEARCH_DB.add_data_by_csv(file_content, file_name_short)
     } catch (error) {
-      console.error("Load dict fail:", error)
+      console.error("Parse error:", error)
     }
   }
 
@@ -150,7 +151,7 @@ export async function initMenu(el: HTMLDivElement) {
       })
       SEARCH_DB.add_data_by_json(records, file_name_short)
     } catch (error) {
-      console.error("Load dict fail:", error)
+      console.error("Parse error:", error)
     }
   }
 
@@ -228,8 +229,25 @@ export async function initMenu(el: HTMLDivElement) {
 
   // #region custom script 自定义脚本
 
+  PluginLoader.demo()
+
   async function load_script(file_content: string, file_name_short: string) {
-    
+    try {
+      // const fn = new Function(file_content)
+
+      const plugin = PLUGIN_LOADER_INSTANCE.loadPlugin(file_content)
+      if (plugin.onLoad) plugin.onLoad();
+
+      // 多级菜单部分
+      myMenu.append_data([
+        {
+          label: file_name_short,
+          callback: plugin.process
+        }
+      ])
+    } catch (error) {
+      console.error("Parse script error:", error)
+    }
   }
 
   // #endregion
