@@ -32,8 +32,6 @@ export async function initMenu(el: HTMLDivElement) {
       throw new Error("Invalid directory listing format")
     }
 
-    console.log('Read dir success:', files)
-
     for (const file_path of files) {
       // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
       let file_name_short: string
@@ -52,6 +50,8 @@ export async function initMenu(el: HTMLDivElement) {
       // 分发各种扩展名 // TODO 存在顺序问题
       if (file_ext === 'toml') {
         fillDB_by_toml(file_path, file_name_short)
+      } else if (file_ext === 'csv' || file_ext === 'txt') {
+        fillDB_by_csv(file_path, file_name_short)
       } else {
         continue // 无关文件
       }
@@ -94,6 +94,17 @@ export async function initMenu(el: HTMLDivElement) {
     }
   }
 
+  async function fillDB_by_csv(path: string, name_short: string) {
+    try {
+      const result = await invoke("read_file", {
+        path: path,
+      })
+      SEARCH_DB.add_data_by_csv(result as string, name_short)
+    } catch (error) {
+      console.error("Load dict fail:", error)
+    }
+  }
+
   // emoji wusong
   // try {
   //   const result = await invoke("read_file", {
@@ -103,16 +114,6 @@ export async function initMenu(el: HTMLDivElement) {
   // } catch (error) {
   //   console.error("Load dict fail:", error)
   // }
-
-  // other wusong
-  try {
-    const result = await invoke("read_file", {
-      path: '../../../docs/demo/others.txt',
-    })
-    SEARCH_DB.add_data_by_csv(result as string, 'others')
-  } catch (error) {
-    console.error("Load dict fail:", error)
-  }
 
   // emoji2
   try {
