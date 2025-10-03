@@ -24,7 +24,7 @@ export async function initMenu(el: HTMLDivElement) {
     SEARCH_DB.add_data_by_csv(result as string, 'test')
   }
 
-  // emoji
+  // emoji wusong
   // try {
   //   const result = await invoke("read_file", {
   //     path: '../../../docs/demo/emoji.txt', // 路径可能有问题?
@@ -33,6 +33,16 @@ export async function initMenu(el: HTMLDivElement) {
   // } catch (error) {
   //   console.error("Load dict fail:", error)
   // }
+
+  // other wusong
+  try {
+    const result = await invoke("read_file", {
+      path: '../../../docs/demo/others.txt',
+    })
+    SEARCH_DB.add_data_by_csv(result as string, 'others')
+  } catch (error) {
+    console.error("Load dict fail:", error)
+  }
 
   // emoji2
   try {
