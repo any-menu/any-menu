@@ -158,7 +158,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet, paste, send, read_file, get_caret_xy, get_screen_size
+            greet, paste, send, read_file, read_folder, get_caret_xy, get_screen_size
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -433,39 +433,24 @@ fn read_file(path: &str) -> Option<String> {
     }
 }
 
-// #[tauri::command]
-// fn read_folder(dir: &str) -> String {
-//     let entries = fs::read_dir(dir)?;
+#[tauri::command]
+fn read_folder(path: &str) -> Option<Vec<String>> {
+    let Ok(entries) = fs::read_dir(path) else {
+        eprintln!("读取目录 {} 时出错: 目录不存在或无法访问", path);
+        return None;
+    };
 
-//     let mut files_json = Vec::new();
+    let mut file_paths = Vec::new(); // 文件路径列表
+    for entry in entries {
+        let Ok(entry) = entry else { continue }; // 跳过无法读取的条目
+        let file_path = entry.path();
+        if !file_path.is_file() { continue; } // 跳过目录
+        let Some(path_str) = file_path.to_str() else { continue; }; // 跳过无法转换为字符串的路径
+        file_paths.push(path_str.to_string());
+    }
 
-//     for entry in entries {
-//         let entry = entry?;
-//         let path = entry.path();
-
-//         if !path.is_file() {
-//             continue; // 暂时只处理文件，跳过目录。TODO 后续也可以改成递归
-//         }
-
-//         let file_name = path.file_name().unwrap().to_str().unwrap();
-//         match fs::read_to_string(&path) {
-//             Ok(content) => {
-//                 println!("=== 文件: {} ===", file_name);
-//                 println!("{}", content);
-//                 println!("=== 结束 ===\n");
-//                 files_json.push(content);
-//             }
-//             Err(e) => {
-//                 eprintln!("读取文件 {} 时出错: {}", file_name, e);
-//             }
-//         }
-//     }
-
-//     serde_json::to_string(&files_json).unwrap_or_else(|e| {
-//         eprintln!("序列化文件内容时出错: {}", e);
-//         "[]".to_string()
-//     })
-// }
+    Some(file_paths)
+}
 
 // #endregion
 

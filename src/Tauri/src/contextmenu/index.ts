@@ -24,6 +24,76 @@ export async function initMenu(el: HTMLDivElement) {
     SEARCH_DB.add_data_by_csv(result as string, 'test')
   }
 
+  try {
+    const files: string[]|null = await invoke("read_folder", {
+      path: '../../../docs/demo/' // 保证有后 `/`
+    })
+    if (typeof files !== 'object' || !Array.isArray(files)) {
+      throw new Error("Invalid directory listing format")
+    }
+
+    console.log('Read dir success:', files)
+
+    for (const file_path of files) {
+      // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
+      let file_name_short: string
+      let file_ext: string
+      const file_name_full = file_path.split(/\/|\\/).pop()??''
+      const file_part = file_name_full.split('.')
+      if (file_part.length < 2) {
+        file_name_short = file_name_full
+        file_ext = ''
+      }
+      else {
+        file_name_short = file_part.slice(0, -1).join('.')
+        file_ext = file_part[file_part.length - 1].toLowerCase()
+      }
+      
+      // 分发各种扩展名 // TODO 存在顺序问题
+      if (file_ext === 'toml') {
+        fillDB_by_toml(file_path, file_name_short)
+      } else {
+        continue // 无关文件
+      }
+    }
+  } catch (error) {
+    console.error("Failed to read directory:", error)
+  }
+
+  async function fillDB_by_toml(path: string, name_short: string) {
+    let menu_items: ContextMenuItems = []
+    try {
+      // 读取并解析文件
+      const result = await invoke("read_file", {
+        path: path,
+      })
+      menu_items = toml_parse(result as string)["categories"] as ContextMenuItems
+
+      // 搜索建议部分
+      const records: {key: string, value: string, name?: string}[] = []
+      function recursive(items: ContextMenuItems) {
+        for (const item of items) {
+          if (item.callback && typeof item.callback === 'string') {
+            records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
+          }
+          if (item.children) recursive(item.children)
+        }
+      }
+      recursive(menu_items)
+      SEARCH_DB.add_data_by_json(records, name_short)
+
+      // 多级菜单部分
+      myMenu.append_data([
+        {
+          label: name_short,
+          children: menu_items
+        }
+      ])
+    } catch (error) {
+      console.error("Load dict fail:", error)
+    }
+  }
+
   // emoji wusong
   // try {
   //   const result = await invoke("read_file", {
@@ -73,52 +143,6 @@ export async function initMenu(el: HTMLDivElement) {
     console.error("Load dict fail:", error)
   }
 
-  // AnyBlock
-  let anyblock_menu: ContextMenuItems = []
-  try {
-    const result = await invoke("read_file", {
-      path: '../../../docs/demo/AnyBlock.toml',
-    })
-    anyblock_menu = toml_parse(result as string)["categories"] as ContextMenuItems
-
-    const records: {key: string, value: string, name?: string}[] = []
-    function recursive(items: ContextMenuItems) {
-      for (const item of items) {
-        if (item.callback && typeof item.callback === 'string') {
-          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
-        }
-        if (item.children) recursive(item.children)
-      }
-    }
-    recursive(anyblock_menu)
-    SEARCH_DB.add_data_by_json(records, 'AnyBlock')
-  } catch (error) {
-    console.error("Load dict fail:", error)
-  }
-
-  // AdQuote
-  let adQuote_menu: ContextMenuItems = []
-  try {
-    const result = await invoke("read_file", {
-      path: '../../../docs/demo/AdQuote.toml',
-    })
-    adQuote_menu = toml_parse(result as string)["categories"] as ContextMenuItems
-
-    const records: {key: string, value: string, name?: string}[] = []
-    function recursive(items: ContextMenuItems) {
-      for (const item of items) {
-        if (item.callback && typeof item.callback === 'string') {
-          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
-        }
-        if (item.children) recursive(item.children)
-      }
-    }
-    recursive(adQuote_menu)
-    SEARCH_DB.add_data_by_json(records, 'AdQuote')
-  } catch (error) {
-    console.error("Load dict fail:", error)
-  }
-
   // #endregion
 
   // #region 多级展开菜单
@@ -138,14 +162,6 @@ export async function initMenu(el: HTMLDivElement) {
         { label: "粗体" },
         { label: "斜体" },
       ]
-    },
-    {
-      label: 'AnyBlock',
-      children: anyblock_menu,
-    },
-    {
-      label: 'Callout',
-      children: adQuote_menu
     },
     {
       label: 'Mermaid',

@@ -13,6 +13,7 @@ export const global_setting: {
   config: { 
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
+    pinyin_method: 'pinyin', //  目前仅支持普通拼音，后续可能加入其他拼音方案甚至形码
     search_engine: 'reverse'|'trie', // TODO 新选项: 混合使用策略
     /** 发送文本的方式。enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
      * 建议为 clipboard (或 auto，auto根据文本长度和是否有换行符决定)
@@ -53,6 +54,7 @@ export const global_setting: {
   config: {
     pinyin_index: true,
     pinyin_first_index: true,
+    pinyin_method: 'pinyin',
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 80,
