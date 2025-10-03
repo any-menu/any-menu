@@ -158,7 +158,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet, paste, send, read_file, read_folder, get_caret_xy, get_screen_size
+            greet, paste, send, get_caret_xy, get_screen_size,
+            read_file, read_folder, create_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -429,6 +430,17 @@ fn read_file(path: &str) -> Option<String> {
         Err(e) => {
             eprintln!("读取文件 {} 时出错: {}", path, e);
             None
+        }
+    }
+}
+
+#[tauri::command]
+fn create_file(path: &str, content: &str) -> bool {
+    match fs::write(path, content) {
+        Ok(_) => true,
+        Err(e) => {
+            eprintln!("创建文件 {} 时出错: {}", path, e);
+            false
         }
     }
 }
