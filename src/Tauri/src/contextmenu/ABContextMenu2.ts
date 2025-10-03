@@ -31,4 +31,9 @@ export class ABContextMenu2 extends ABContextMenu {
 
     this.visual_hide()
   }
+
+  protected visual_hide(): void {
+    super.visual_hide()
+    hideWindow()
+  }
 }

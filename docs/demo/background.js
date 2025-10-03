@@ -6,7 +6,10 @@ const plugin = {
     },
 
     async process(str) {
-        if (!str) return;
+        if (!str) {
+            console.warn('需要选中文本后再执行');
+            return;
+        }
         return `<span style="background:#ff4d4f">${str}</span>`;
     }
 }
