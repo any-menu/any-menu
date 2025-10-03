@@ -186,6 +186,11 @@ class SearchDB {
     return results
   }
 
+  // TODO 如果有几万数据，可能进行的优化：
+  // - 异步操作: 并在查询过程中显示查询图标
+  // - ~~分页/块查询~~: (做不到，没序列)
+  // - 多引擎优化: 多个搜索引擎逐步返回
+  // - 早退: 目前是先全量评分排序，然后显示时再做数量限制/分页。可以限制查询时数量限制 (有可能错过优质结果)
   query_by_reverse(query: string): {key: string, value: string}[] {
     return this.reverse.search(query)
       .slice(0, this.limit)

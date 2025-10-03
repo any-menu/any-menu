@@ -44,7 +44,7 @@ export class ReverseIndexDB {
   /**
    * 模糊搜索: 支持子序列匹配
    * @param query 查询关键词（如 "认可"）
-   * @returns 匹配的 output 列表（如 ["👍", "👏"]）
+   * @returns 匹配的 output 列表（如 ["👍", "👏"]），按匹配度排序
    */
   search(query: string): Array<{output: string, name: string}> {
     // 去除空格，提取关键字符
@@ -56,25 +56,87 @@ export class ReverseIndexDB {
     let candidates = this.index.get(chars[0]);
     if (!candidates || candidates.size === 0) return [];
 
-    // 2. 对每个候选 query，检查是否匹配子序列
-    const results: Array<{output: string, name: string}> = [];
+    // 2. 对每个候选 query，检查是否匹配子序列，并计算匹配度
+    const scoredResults: Array<{output: string, name: string, score: number}> = [];
     const seen = new Set<string>(); // 用于去重
     
     for (const candidateQuery of candidates) {
-      if (this.isSubsequence(chars, candidateQuery)) {
+      const matchInfo = this.getMatchScore(chars, candidateQuery);
+      if (matchInfo.matched) {
         // 获取该 query 对应的所有 {output, name}
         const mappings = this.queryMapping.get(candidateQuery) || [];
         for (const mapping of mappings) {
           const key = `${mapping.output}|${mapping.name}`;
           if (!seen.has(key)) {
             seen.add(key);
-            results.push(mapping);
+            scoredResults.push({...mapping, score: matchInfo.score});
           }
         }
       }
     }
 
-    return results;
+    // 3. 按评分排序（分数越高越靠前）
+    return scoredResults
+      .sort((a, b) => b.score - a.score)
+      .map(({output, name}) => ({output, name}));
+  }
+
+  /**
+   * 检查 chars 是否为 text 的子序列，并计算匹配度
+   * @returns {matched: boolean, score: number} 匹配度评分规则：
+   *   - 完全匹配（query == text）：100分
+   *   - 前缀匹配（text以query开头）：50分
+   *   - 连续匹配度：根据连续字符占比加分
+   *   - 长度惩罚：text越长，分数越低
+   */
+  private getMatchScore(chars: string[], text: string): {matched: boolean, score: number} {
+    const queryStr = chars.join('');
+    
+    // 完全匹配
+    if (text === queryStr) {
+      return {matched: true, score: 100};
+    }
+    
+    // 前缀匹配
+    if (text.startsWith(queryStr)) {
+      return {matched: true, score: 50};
+    }
+    
+    // 子序列匹配 + 评分
+    let charIndex = 0;
+    let consecutiveMatches = 0;
+    let maxConsecutive = 0;
+    let lastMatchIndex = -1;
+    
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === chars[charIndex]) {
+        // 检查是否连续
+        if (i === lastMatchIndex + 1) {
+          consecutiveMatches++;
+        } else {
+          maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
+          consecutiveMatches = 1;
+        }
+        lastMatchIndex = i;
+        charIndex++;
+        if (charIndex === chars.length) break;
+      }
+    }
+    
+    if (charIndex !== chars.length) {
+      return {matched: false, score: 0};
+    }
+    
+    maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
+    
+    // 计算分数
+    const lengthRatio = chars.length / text.length; // 长度比例（越接近1越好）
+    const consecutiveRatio = maxConsecutive / chars.length; // 连续匹配比例
+    
+    // 综合评分：长度比例60% + 连续匹配40%
+    const score = (lengthRatio * 0.6 + consecutiveRatio * 0.4) * 40; // 最高40分
+    
+    return {matched: true, score};
   }
 
   /**

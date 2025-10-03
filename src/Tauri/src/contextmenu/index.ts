@@ -54,8 +54,9 @@ export async function initMenu(el: HTMLDivElement) {
       path: '../../../docs/demo/ybq.json',
     })
     const jsonData = JSON.parse(result as string)
-    let records: {key: string, value: string}[] = jsonData.map((item: any) => {
-      return { key: item["description"], value: item["text"] }
+    let records: {key: string, value: string, name?: string}[] = []
+    records = jsonData.map((item: any) => {
+      return { key: item["tag"] + '/' + item["description"], value: item["text"] }
     })
     SEARCH_DB.add_data_by_json(records, '颜表情')
   } catch (error) {
