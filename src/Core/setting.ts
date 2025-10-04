@@ -74,7 +74,7 @@ export const global_setting: {
     pinyin_first_index: true,
     search_engine: 'reverse',
     send_text_method: 'clipboard',
-    search_limit: 80,
+    search_limit: 500,
     dict_paths: './dict',
   },
   config_: {

@@ -1,19 +1,5 @@
 // 定义插件必须实现的接口
-interface PluginInterface {
-  // 必须实现
-  process: (str?: string) => Promise<void|string>;
-
-  // 可选实现
-  onLoad?: () => void;
-  onUnload?: () => void;
-  
-  // 元数据
-  metadata?: {
-    name: string;
-    version: string;
-    author?: string;
-  };
-}
+import { PluginInterface } from './PluginInterface';
 
 /**
  * TODO 转为插件管理器，提供容器，可以去卸载插件 (?)
