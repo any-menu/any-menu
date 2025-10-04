@@ -1,7 +1,8 @@
-<div align="center">
-  <img width="40%" src="./src/Tauri/src-tauri/icons/icon.png">
+<div align="center" style="margin-bottom: 20px">
+  <img width="35%" src="./src/Tauri/src-tauri/icons/icon.png">
 </div>
 
+[中文](./README.md) | [English](./docs/README.github.md)
 
 # AnyMenu —— InputMethod Assistant / Editor Assistant
 
@@ -9,24 +10,29 @@
 
 （开发中）
 
-演示:
+使用 - 基本演示:
 
-![](./docs/PixPin_2025-10-04_09-45-58.gif)
+![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
 
-![](./docs/PixPin_2025-10-04_09-38-24.gif)
+![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
 
-## 定位
+使用 - 自定义词典:
 
-话说有个ob群里之前也有人发过类似的 (msjsc001/QuickKV)，用pyside2开发，其定位是 “轻量级中文自动补全”，也是支持自定义词库。
+见 [自定义词典](./docs/zh/自定义词典.md) / [dict](./docs/README.dict.md)
 
-该软件定位也有一部分是自动补全、快捷生成模板。完整定位是:
-专注于文本编辑环境的、高可自定义的、轻量化的、高通用的 **输入法伴侣/编辑器编辑伴侣**。
-用于增强输入法或编辑器编辑功能
-支持作为 Obsidian 插件使用、也支持作为跨平台的独立软件使用。
+## 什么是AnyMenu? 产品定位
 
-都已经有像 quicker 和 utools 这样的工具了，这个东西有什么优势？见下面的功能设计
+定位: 专注于文本编辑环境的、跨平台、轻量、快速、可自定义的 **输入法伴侣/编辑器编辑伴侣**
 
-## 设计介绍
+用于增强输入法或编辑器编辑功能，快捷生成模板、自动补全
+
+多平台: 支持作为 Obsidian 插件使用、也支持作为跨平台的独立软件使用。
+
+都已经有像 quicker 和 utools 这样的工具了，这个东西有什么优势？见 [有哪些快捷输入/自动补全方案？](./docs/zh/对比.md)
+
+## 功能 - 设计
+
+(这个部分是我开发之前写好的产品设计，不一定都做出来了。后续我有空更新文档时，会再去写哪些还在TODO中)
 
 - 零门槛
   - 不是输入链最短最快的 (最快的是输入法短语，以及热字符串的方案，但有门槛)
@@ -86,25 +92,28 @@
   - i18n 那个逻辑能做片段/css市场？
 - ai
 
-## 配置文件
+## 功能 - Obsidian版本可代替插件
 
-默认路径在相对于可执行文件的相对路径 `./dict` 里
+如果你在用以下的一些 Obsidian 插件，说不定该插件功能也适合你 (部分功能重叠)
 
-- 支持 csv、json、toml, 提供了demmo文件可以仿写
-- 其中 toml 会自动载入 多级菜单和搜索栏，而其他只会载入搜索栏
-- 可能会有一些空内容的 txt 文件，那些是用来作为flag开关，若你不知道其对应的功能，请勿重命名和删除
+特别是如果你 **同时使用多个编辑器去编辑你的文档时**，你希望在多个编辑器都能获得相同的体验
 
-## 同类产品
-
-这点 msjsc001/QuickKV 中也有写
-
-这里先暂时不再赘述整理
-
-可能需要补充的产品: Obsidian插件:
-
-- Editor Toolbar
-- [Slash Commander](https://github.com/alephpiece/obsidian-slash-commander) ⭐89
-- Slash snippets
+- 工具栏
+  - Editor Toolbar
+- 斜杠召唤插入菜单
+  - [Slash Commander](https://github.com/alephpiece/obsidian-slash-commander) ⭐89
+  - Slash snippets
+- 插入内容
+  - Emoji Toolbar
+- 自动补全
+  - LaTex Suit: 虽然初印象他是用来自动补全公式的，但其实他也能自动补全其他东西。
+    你可以在设置面板去自定义 snippets
+  - Linter: 虽然初印象他是用来格式化文档的，但他设置面板中，也能支持一个功能:
+    "自定义命令"/"自定义正则表达式替换"
+  - Template: 可以快速创建文件并写入模板
+  - QuickAdd: 支持Template/Capture/Macros，其中 Template 就是可以创建模板
+- 非Obsidian
+  - Windows自带的 `Win+.` 他那个所支持的内容太少了，也不能自定义
 
 ## 来源
 

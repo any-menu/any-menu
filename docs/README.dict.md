@@ -31,13 +31,10 @@
 支持多行的多行csv
 
 - toml
-- yaml
-- md+yaml
-- md br table
-- json5 (是5)
 
 ## 鸣谢
 
 (词典/代码参考，帮助)
 
-https://github.com/iDvel/rime-ice 借用了其 opencc/ 下的 emoji 和 others 字典
+- [rime-ice](https://github.com/iDvel/rime-ice) 借用了其 opencc/ 下的 emoji 和 others 字典
+- [kanata](https://github.com/jtroo/kanata) 让我决定用rust语言搭建此项目
