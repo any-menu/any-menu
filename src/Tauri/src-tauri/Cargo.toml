@@ -37,11 +37,10 @@ tauri-plugin-global-shortcut = "2"
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] }
 uiautomation = { version = "0.24.0", features = ["input", "process", "clipboard"] }
-windows = "0.62.1"
-# features = [
-#     "Win32_Foundation",
-#     "Win32_UI_Accessibility",
-#     "Win32_UI_WindowsAndMessaging",
-#     "Win32_System_Com",
-#     "Win32_System_Ole",
-# ]
+windows = { version = "0.62.1", features = [
+    "Win32_Foundation",
+    "Win32_UI_Accessibility",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_Com",
+    "Win32_System_Ole",
+] }

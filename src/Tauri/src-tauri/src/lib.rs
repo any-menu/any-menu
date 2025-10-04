@@ -22,6 +22,7 @@ mod uia;
 use uia::{
     get_message,
     get_uia_focused,
+    get_uia_by_windows,
 };
 mod text;
 use text::{
@@ -207,6 +208,8 @@ fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> 
     // 向worker线程发消息
     let tx = uia_sender.0.lock().unwrap();
     let _ = tx.send(UiaMsg::PrintElement);
+
+    let _ = get_uia_by_windows();
 
     let (x, y) = get_message();
     return (x, y);

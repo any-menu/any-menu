@@ -19,18 +19,8 @@
  */
 
 use log::{debug, warn, info, error};
-use uiautomation::{
-    // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
-    // Result 最好不要use，容易出报错
-    UIAutomation,
-    UIElement,
-    UITreeWalker,
-    // actions::Text,
-    patterns::{
-        UITextPattern,
-        UITextEditPattern,
-    }
-};
+
+// #region winapi 方式
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
 pub fn get_message() -> (i32, i32) { 
@@ -169,62 +159,6 @@ fn get_message_getforeground() -> Option<(i32, i32)> {
     }
 }
 
-/** GetForegroundWindow + GetGUIThreadInfo组合方式。同S2，重复废弃 */
-fn _get_message_getforeground_gui() -> Option<(i32, i32)> {
-    use winapi::um::winuser::{
-        GetGUIThreadInfo,
-        ClientToScreen,
-        GetForegroundWindow,
-        GetWindowThreadProcessId,
-        GUITHREADINFO,
-    };
-    use winapi::shared::windef::POINT;
-
-    let hwnd2: winapi::shared::windef::HWND;
-    unsafe {            
-        hwnd2 = GetForegroundWindow();
-        if hwnd2.is_null() {
-            error!("S3: GetForegroundWindow: 没有前台窗口"); return None
-        }
-        if hwnd2.is_null() {
-            error!("S4: 没有前台窗口"); return None
-        }
-        // 获取前台窗口的线程ID
-        let mut pid = 0;
-        let thread_id = GetWindowThreadProcessId(hwnd2, &mut pid);
-        
-        // 打印窗口名称和线程ID（调试用）
-        get_message_window_name(hwnd2);
-        
-        // 获取线程的GUI信息
-        let mut gui_info: GUITHREADINFO = std::mem::zeroed();
-        gui_info.cbSize = size_of::<GUITHREADINFO>() as u32;
-        
-        if GetGUIThreadInfo(thread_id, &mut gui_info) == 0 {
-            error!("S4: 获取前台窗口GUI线程信息失败"); return None
-        }
-        if gui_info.hwndCaret.is_null() {
-            error!("S4: 前台窗口没有活动的插入符号"); return None
-        }
-        let caret_rect = gui_info.rcCaret;
-        let hwnd_caret = gui_info.hwndCaret;
-        
-        get_message_window_name(hwnd_caret);
-        
-        let mut point = POINT { 
-            x: caret_rect.left, 
-            y: caret_rect.bottom 
-        };
-        
-        if ClientToScreen(hwnd_caret, &mut point) == 0 {
-            error!("S4: 前台窗口无法转换为屏幕坐标");
-            return None
-        }
-        info!("S4: 前台窗口光标位置: ({}, {})", point.x, point.y);
-        return Some((point.x, point.y));
-    }
-}
-
 // 辅助函数：打印窗口名称（调试用）
 #[cfg(target_os = "windows")]
 fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
@@ -243,6 +177,23 @@ fn get_message_window_name(hwnd: winapi::shared::windef::HWND) {
         }
     }
 }
+
+// #endregion
+
+// #region uiautomation-rs 方式
+
+use uiautomation::{
+    // Result, // 这行代码告诉编译器：“在这个函数里，当我写 Result 的时候，我指的不是标准库里的 std::result::Result，而是 uiautomation 这个库里定义的 Result
+    // Result 最好不要use，容易出报错
+    UIAutomation,
+    UIElement,
+    UITreeWalker,
+    // actions::Text,
+    patterns::{
+        UITextPattern,
+        UITextEditPattern,
+    }
+};
 
 /** 获取uia信息 - 聚焦窗口中
  */
@@ -343,6 +294,7 @@ fn get_uia_textpattern (el: &UIElement) -> Result<UITextPattern, Box<dyn std::er
         let ranges = text_pattern.get_selection()
             .map_err(|e| { warn!("U3  获取选区失败: {}", e); e })?;
         for (i, range) in ranges.iter().enumerate() {
+            // range.get_text(max_length)
             let elem = range.get_enclosing_element()
                 .map_err(|e| { warn!("U3  获取选区 {} 元素失败: {}", i, e); e })?;
             let rect = elem.get_bounding_rectangle()
@@ -447,3 +399,234 @@ fn _test_uia_notepad() {
     }
 }
 
+// #endregion
+
+// #region windows-rs uia 方式
+
+/** 不用uia-rs crate，而是用windows crate 的尝试 */
+#[cfg(target_os = "windows")]
+pub fn get_uia_by_windows() -> Result<(), String> {
+    // use windows::core::{ComInterface, BSTR}; // ComInterface
+    // use windows::Win32::UI::UIAutomation::{
+    //     IUIAutomation, CUIAutomation, IUIAutomationElement, IUIAutomationTextPattern,
+    //     UIA_IsTextPatternAvailablePropertyId, UIA_TextPatternId
+    // };
+
+    use windows::{
+        core::*,
+        // Win32::Foundation::*,
+        Win32::System::Com::*,
+        Win32::UI::Accessibility::*,
+        Win32::UI::WindowsAndMessaging::*,
+    };
+
+    unsafe {
+        // 初始化 COM
+        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
+
+        println!("=== Windows 焦点元素信息获取 Demo ===\n");
+
+        // 1. 获取当前焦点窗口
+        let hwnd = GetForegroundWindow();
+        // if hwnd.0 == 0 { // 报错，无法解决
+        //     println!("无法获取焦点窗口");
+        //     CoUninitialize();
+        //     return Err("无法获取焦点窗口".into());
+        // }
+
+        println!("焦点窗口句柄: {:?}", hwnd);
+
+        // 获取窗口标题
+        let mut title = [0u16; 512];
+        let len = GetWindowTextW(hwnd, &mut title);
+        if len > 0 {
+            let title_str = String::from_utf16_lossy(&title[..len as usize]);
+            println!("窗口标题: {}", title_str);
+        }
+
+        // 获取窗口类名
+        let mut class_name = [0u16; 256];
+        let len = GetClassNameW(hwnd, &mut class_name);
+        if len > 0 {
+            let class_str = String::from_utf16_lossy(&class_name[..len as usize]);
+            println!("窗口类名: {}\n", class_str);
+        }
+
+        // 2. 使用 UI Automation 获取焦点元素
+        println!("--- UI Automation 信息 ---");
+        
+        let ui_automation: IUIAutomation = match CoCreateInstance(
+            &CUIAutomation,
+            None,
+            CLSCTX_INPROC_SERVER,
+        ) {
+            Ok(ua) => ua,
+            Err(e) => {
+                println!("无法创建 UI Automation 实例: {:?}", e);
+                CoUninitialize();
+                return Err("无法创建 UI Automation 实例".into());
+            }
+        };
+
+        // 获取焦点元素
+        match ui_automation.GetFocusedElement() {
+            Ok(element) => {
+                println!("成功获取焦点元素");
+
+                // 获取元素名称
+                if let Ok(name) = element.CurrentName() {
+                    println!("元素名称: {}", name);
+                }
+
+                // 获取元素类型
+                if let Ok(control_type) = element.CurrentControlType() {
+                    println!("控件类型 ID: {}", control_type.0);
+                    println!("控件类型: {}", get_control_type_name(control_type.0));
+                }
+
+                // 获取元素的自动化 ID
+                if let Ok(automation_id) = element.CurrentAutomationId() {
+                    println!("Automation ID: {}", automation_id);
+                }
+
+                // 获取元素类名
+                if let Ok(class_name) = element.CurrentClassName() {
+                    println!("元素类名: {}", class_name);
+                }
+
+                // 3. 尝试获取文本模式（Text Pattern）以获取选中内容和插入符位置
+                println!("\n--- 文本信息 ---");
+                
+                if let Ok(text_pattern) = element.GetCurrentPattern(UIA_TextPatternId) {
+                    let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
+                        Ok(tp) => tp,
+                        Err(e) => {
+                            println!("无法转换为 Text Pattern: {:?}", e);
+                            CoUninitialize();
+                            return Err("无法转换为 Text Pattern".into());
+                        }
+                    };
+
+                    // 获取选中的文本范围
+                    if let Ok(selection) = text_pattern.GetSelection() {
+                        let count = match selection.Length() {
+                            Ok(c) => c,
+                            Err(_) => { return Err("无法获取选中区域数量".into()); }
+                        };
+                        println!("选中区域数量: {}", count);
+
+                        for i in 0..count {
+                            if let Ok(range) = selection.GetElement(i) {
+                                if let Ok(text) = range.GetText(-1) {
+                                    println!("选中的文本 [{}]: {}", i, text);
+                                }
+                            }
+                        }
+                    }
+
+                    // 获取整个文档的文本
+                    if let Ok(document_range) = text_pattern.DocumentRange() {
+                        if let Ok(full_text) = document_range.GetText(1000) {
+                            println!("文档文本（前1000字符）: {}", full_text);
+                        }
+                    }
+                }
+
+                // 4. 尝试获取值模式（Value Pattern）
+                if let Ok(value_pattern) = element.GetCurrentPattern(UIA_ValuePatternId) {
+                    let value_pattern: IUIAutomationValuePattern = match value_pattern.cast() {
+                        Ok(vp) => vp,
+                        Err(e) => {
+                            println!("无法转换为 Value Pattern: {:?}", e);
+                            CoUninitialize();
+                            return Err("无法转换为 Value Pattern".into());
+                        }
+                    };
+                    if let Ok(value) = value_pattern.CurrentValue() {
+                        println!("元素值: {}", value);
+                    }
+                }
+
+                // 5. 获取边界矩形
+                if let Ok(rect) = element.CurrentBoundingRectangle() {
+                    println!("\n--- 位置信息 ---");
+                    println!("边界矩形: Left={}, Top={}, Right={}, Bottom={}", 
+                        rect.left, rect.top, rect.right, rect.bottom);
+                    println!("宽度: {}, 高度: {}", 
+                        rect.right - rect.left, rect.bottom - rect.top);
+                }
+
+                // 6. 获取其他属性
+                println!("\n--- 其他属性 ---");
+                if let Ok(is_enabled) = element.CurrentIsEnabled() {
+                    println!("是否启用: {}", is_enabled.as_bool());
+                }
+                if let Ok(has_keyboard_focus) = element.CurrentHasKeyboardFocus() {
+                    println!("是否有键盘焦点: {}", has_keyboard_focus.as_bool());
+                }
+                if let Ok(is_keyboard_focusable) = element.CurrentIsKeyboardFocusable() {
+                    println!("是否可获得键盘焦点: {}", is_keyboard_focusable.as_bool());
+                }
+            }
+            Err(e) => {
+                println!("无法获取焦点元素: {:?}", e);
+            }
+        }
+
+        CoUninitialize();
+        Ok(())
+    }
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn get_uia_by_windows() -> Result<()> {
+    log::error!("目前仅支持 windows 平台"); None
+}
+
+// 辅助函数：将控件类型 ID 转换为可读名称
+fn get_control_type_name(control_type: i32) -> &'static str {
+    match control_type {
+        50000 => "Button",
+        50001 => "Calendar",
+        50002 => "CheckBox",
+        50003 => "ComboBox",
+        50004 => "Edit",
+        50005 => "Hyperlink",
+        50006 => "Image",
+        50007 => "ListItem",
+        50008 => "List",
+        50009 => "Menu",
+        50010 => "MenuBar",
+        50011 => "MenuItem",
+        50012 => "ProgressBar",
+        50013 => "RadioButton",
+        50014 => "ScrollBar",
+        50015 => "Slider",
+        50016 => "Spinner",
+        50017 => "StatusBar",
+        50018 => "Tab",
+        50019 => "TabItem",
+        50020 => "Text",
+        50021 => "ToolBar",
+        50022 => "ToolTip",
+        50023 => "Tree",
+        50024 => "TreeItem",
+        50025 => "Custom",
+        50026 => "Group",
+        50027 => "Thumb",
+        50028 => "DataGrid",
+        50029 => "DataItem",
+        50030 => "Document",
+        50031 => "SplitButton",
+        50032 => "Window",
+        50033 => "Pane",
+        50034 => "Header",
+        50035 => "HeaderItem",
+        50036 => "Table",
+        50037 => "TitleBar",
+        50038 => "Separator",
+        _ => "Unknown",
+    }
+}
+
+// #endregion
