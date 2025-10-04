@@ -384,13 +384,14 @@ html, body, #main {
       padding-left: 7px;
       border-left: 1px solid red;
     }
-    button {
-      position: absolute;
-      height: 28px;
-      right: 16px;
-      bottom: 16px;
-      padding: 0 18px;
-    }
+  }
+
+  button {
+    position: absolute;
+    height: 28px;
+    right: 16px;
+    bottom: 16px;
+    padding: 0 18px;
   }
 }
 

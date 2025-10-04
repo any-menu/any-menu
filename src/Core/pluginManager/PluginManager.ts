@@ -7,8 +7,12 @@ import { PluginInterface } from './PluginInterface';
  * TODO 转为插件管理器，提供容器，可以去卸载插件 (?)
  */
 export class PluginManager {  
-   plugin_list: Record<string, PluginInterface> = {};
-   dict_list: Record<string, PluginInterface> = {};
+  plugin_list: Record<string, PluginInterface> = {};
+  dict_list: Record<string, PluginInterface> = {};
+
+  constructor() {
+    console.log('>>> PluginManager initialized'); // 验证单例
+  }
 
   // 加载并验证插件
   loadPlugin(scriptContent: string): PluginInterface {
@@ -103,4 +107,5 @@ export class PluginManager {
   }
 }
 
+// TODO 需要实现多进程单例 (Main 和 Config 面板是两个 WebView 进程)
 export const PLUGIN_MANAGER = new PluginManager();

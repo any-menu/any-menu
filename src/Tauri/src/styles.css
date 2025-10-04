@@ -321,7 +321,7 @@ html, body, #main {
   padding-left: 7px;
   border-left: 1px solid red;
 }
-#am-config div:has(> textarea) button {
+#am-config button {
   position: absolute;
   height: 28px;
   right: 16px;
