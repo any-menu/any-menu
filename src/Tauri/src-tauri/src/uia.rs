@@ -403,7 +403,10 @@ fn _test_uia_notepad() {
 
 // #region windows-rs uia 方式
 
-/** 不用uia-rs crate，而是用windows crate 的尝试 */
+/** 不用uia-rs crate，而是用windows crate 的尝试
+ * 
+ * 一些测试环境: Ob QQ Ndd (Notepad--) N (Notepad) VSC，均通过会标识 "可靠"
+ */
 #[cfg(target_os = "windows")]
 pub fn get_uia_by_windows() -> Result<(), String> {
     // use windows::core::{ComInterface, BSTR}; // ComInterface
@@ -424,19 +427,20 @@ pub fn get_uia_by_windows() -> Result<(), String> {
         // 初始化 COM
         let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
 
+        // #region 窗口类
+
         println!("=== Windows 焦点元素信息获取 Demo ===\n");
 
-        // 1. 获取当前焦点窗口
+        // 获取当前焦点窗口 (可靠)
         let hwnd = GetForegroundWindow();
         // if hwnd.0 == 0 { // 报错，无法解决
         //     println!("无法获取焦点窗口");
         //     CoUninitialize();
         //     return Err("无法获取焦点窗口".into());
         // }
-
         println!("焦点窗口句柄: {:?}", hwnd);
 
-        // 获取窗口标题
+        // 获取窗口标题 (可靠, 通常是用 ` - ` 连接的一连串字符，Notepad和QQ则是同名)
         let mut title = [0u16; 512];
         let len = GetWindowTextW(hwnd, &mut title);
         if len > 0 {
@@ -444,7 +448,7 @@ pub fn get_uia_by_windows() -> Result<(), String> {
             println!("窗口标题: {}", title_str);
         }
 
-        // 获取窗口类名
+        // 获取窗口类名 (可靠，几乎全Chrome_WidgetWin_1，Ndd是Qt5152QWindowIcon，N是Notepad)
         let mut class_name = [0u16; 256];
         let len = GetClassNameW(hwnd, &mut class_name);
         if len > 0 {
@@ -452,9 +456,11 @@ pub fn get_uia_by_windows() -> Result<(), String> {
             println!("窗口类名: {}\n", class_str);
         }
 
-        // 2. 使用 UI Automation 获取焦点元素
+        // #endregion
+
+        // #region 窗口内的元素类
+        // 使用 UI Automation 获取焦点元素 (可靠)
         println!("--- UI Automation 信息 ---");
-        
         let ui_automation: IUIAutomation = match CoCreateInstance(
             &CUIAutomation,
             None,
@@ -468,110 +474,121 @@ pub fn get_uia_by_windows() -> Result<(), String> {
             }
         };
 
-        // 获取焦点元素
-        match ui_automation.GetFocusedElement() {
+        // 获取焦点元素 (可靠)
+        let element = match ui_automation.GetFocusedElement() {
             Ok(element) => {
                 println!("成功获取焦点元素");
-
-                // 获取元素名称
-                if let Ok(name) = element.CurrentName() {
-                    println!("元素名称: {}", name);
-                }
-
-                // 获取元素类型
-                if let Ok(control_type) = element.CurrentControlType() {
-                    println!("控件类型 ID: {}", control_type.0);
-                    println!("控件类型: {}", get_control_type_name(control_type.0));
-                }
-
-                // 获取元素的自动化 ID
-                if let Ok(automation_id) = element.CurrentAutomationId() {
-                    println!("Automation ID: {}", automation_id);
-                }
-
-                // 获取元素类名
-                if let Ok(class_name) = element.CurrentClassName() {
-                    println!("元素类名: {}", class_name);
-                }
-
-                // 3. 尝试获取文本模式（Text Pattern）以获取选中内容和插入符位置
-                println!("\n--- 文本信息 ---");
-                
-                if let Ok(text_pattern) = element.GetCurrentPattern(UIA_TextPatternId) {
-                    let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
-                        Ok(tp) => tp,
-                        Err(e) => {
-                            println!("无法转换为 Text Pattern: {:?}", e);
-                            CoUninitialize();
-                            return Err("无法转换为 Text Pattern".into());
-                        }
-                    };
-
-                    // 获取选中的文本范围
-                    if let Ok(selection) = text_pattern.GetSelection() {
-                        let count = match selection.Length() {
-                            Ok(c) => c,
-                            Err(_) => { return Err("无法获取选中区域数量".into()); }
-                        };
-                        println!("选中区域数量: {}", count);
-
-                        for i in 0..count {
-                            if let Ok(range) = selection.GetElement(i) {
-                                if let Ok(text) = range.GetText(-1) {
-                                    println!("选中的文本 [{}]: {}", i, text);
-                                }
-                            }
-                        }
-                    }
-
-                    // 获取整个文档的文本
-                    if let Ok(document_range) = text_pattern.DocumentRange() {
-                        if let Ok(full_text) = document_range.GetText(1000) {
-                            println!("文档文本（前1000字符）: {}", full_text);
-                        }
-                    }
-                }
-
-                // 4. 尝试获取值模式（Value Pattern）
-                if let Ok(value_pattern) = element.GetCurrentPattern(UIA_ValuePatternId) {
-                    let value_pattern: IUIAutomationValuePattern = match value_pattern.cast() {
-                        Ok(vp) => vp,
-                        Err(e) => {
-                            println!("无法转换为 Value Pattern: {:?}", e);
-                            CoUninitialize();
-                            return Err("无法转换为 Value Pattern".into());
-                        }
-                    };
-                    if let Ok(value) = value_pattern.CurrentValue() {
-                        println!("元素值: {}", value);
-                    }
-                }
-
-                // 5. 获取边界矩形
-                if let Ok(rect) = element.CurrentBoundingRectangle() {
-                    println!("\n--- 位置信息 ---");
-                    println!("边界矩形: Left={}, Top={}, Right={}, Bottom={}", 
-                        rect.left, rect.top, rect.right, rect.bottom);
-                    println!("宽度: {}, 高度: {}", 
-                        rect.right - rect.left, rect.bottom - rect.top);
-                }
-
-                // 6. 获取其他属性
-                println!("\n--- 其他属性 ---");
-                if let Ok(is_enabled) = element.CurrentIsEnabled() {
-                    println!("是否启用: {}", is_enabled.as_bool());
-                }
-                if let Ok(has_keyboard_focus) = element.CurrentHasKeyboardFocus() {
-                    println!("是否有键盘焦点: {}", has_keyboard_focus.as_bool());
-                }
-                if let Ok(is_keyboard_focusable) = element.CurrentIsKeyboardFocusable() {
-                    println!("是否可获得键盘焦点: {}", is_keyboard_focusable.as_bool());
-                }
+                element
             }
             Err(e) => {
                 println!("无法获取焦点元素: {:?}", e);
+                CoUninitialize();
+                return Err("无法获取焦点元素".into());
             }
+        };
+
+        // 获取元素名称 (Ob Ndd 没有, Notepad是'文本编辑器'，VSC要开阅读模式，QQ是对面名/群名。
+        // 因为这个元素不是窗口元素，而是窗口内的输入框的元素，名字缺失可以理解)
+        if let Ok(name) = element.CurrentName() {
+            println!("元素名称: {}", name);
         }
+
+        // 获取控件类型 (几乎全Edit，Ndd是MenuBar，N是Document，与窗口类名相对应)
+        if let Ok(control_type) = element.CurrentControlType() {
+            println!("控件类型 ID: {}, Name: {}", control_type.0, get_control_type_name(control_type.0));
+        }
+
+        // 获取元素的自动化 ID (几乎全没有，Ndd是CCNotePad.nd_mainmenu)
+        if let Ok(automation_id) = element.CurrentAutomationId() {
+            println!("Automation ID: {}", automation_id);
+        }
+
+        // 获取元素类名 (几乎全没有，Ndd是QMenuBar，Notepad是RichEditD2DPT)
+        if let Ok(class_name) = element.CurrentClassName() {
+            println!("元素类名: {}", class_name);
+        }
+
+        // 获取元素边界矩形 (可靠)
+        if let Ok(rect) = element.CurrentBoundingRectangle() {
+            println!("边界矩形: Left={}, Top={}, Right={}, Bottom={}, Width={}, Height={}", 
+                rect.left, rect.top, rect.right, rect.bottom,
+                rect.right - rect.left, rect.bottom - rect.top
+            );
+        }
+
+        // 其他属性 (可靠，在文本框聚焦后，这三个全true的)
+        if let Ok(is_enabled) = element.CurrentIsEnabled() {
+            println!("是否启用: {}", is_enabled.as_bool());
+        }
+        if let Ok(has_keyboard_focus) = element.CurrentHasKeyboardFocus() {
+            println!("是否有键盘焦点: {}", has_keyboard_focus.as_bool());
+        }
+        if let Ok(is_keyboard_focusable) = element.CurrentIsKeyboardFocusable() {
+            println!("是否可获得键盘焦点: {}", is_keyboard_focusable.as_bool());
+        }
+
+        // #endregion
+
+        // #region 窗口内的元素类 - 模式
+
+        println!("\n--- 文本/值 信息 ---");
+
+        // 文本模式 (Text Pattern)，以获取选中内容和插入符位置 (可靠，Ndd常失灵)
+        if let Ok(text_pattern) = element.GetCurrentPattern(UIA_TextPatternId) {
+            let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
+                Ok(tp) => tp,
+                Err(e) => {
+                    println!("无法转换为 Text Pattern: {:?}", e);
+                    CoUninitialize();
+                    return Err("无法转换为 Text Pattern".into());
+                }
+            };
+
+            // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)
+            if let Ok(selection) = text_pattern.GetSelection() {
+                let count = match selection.Length() {
+                    Ok(c) => c,
+                    Err(_) => { return Err("无法获取选中区域数量".into()); }
+                };
+                println!("选中区域数量: {}", count);
+
+                for i in 0..count {
+                    if let Ok(range) = selection.GetElement(i) {
+                        if let Ok(text) = range.GetText(-1) {
+                            println!("选中的文本 [{}]: {}", i, text);
+                        }
+                    }
+                }
+            }
+
+            // 获取整个文档的文本 (不一定准，一般可用，VSC要开阅读模式，Ob哪怕开了源码模式也会排版混乱)
+            if let Ok(document_range) = text_pattern.DocumentRange() {
+                if let Ok(full_text) = document_range.GetText(50) {
+                    println!("文档文本（前50字符）: {}", full_text);
+                }
+            }
+        } else {
+            println!("元素不支持文本模式 (Text Pattern)");
+        }
+
+        // 值模式 (Value Pattern) (大部分都没有，N和QQ有)
+        if let Ok(value_pattern) = element.GetCurrentPattern(UIA_ValuePatternId) {
+            let value_pattern: IUIAutomationValuePattern = match value_pattern.cast() {
+                Ok(vp) => vp,
+                Err(e) => {
+                    println!("无法转换为 Value Pattern: {:?}", e);
+                    CoUninitialize();
+                    return Err("无法转换为 Value Pattern".into());
+                }
+            };
+            if let Ok(value) = value_pattern.CurrentValue() {
+                println!("元素值: {}", value);
+            }
+        } else {
+            println!("元素不支持值模式 (Value Pattern)");
+        }
+
+        // #endregion
 
         CoUninitialize();
         Ok(())
