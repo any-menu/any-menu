@@ -2,9 +2,13 @@
 import { PluginInterface } from './PluginInterface';
 
 /**
+ * 暂时把词典和插件都放这一起管理
+ * 
  * TODO 转为插件管理器，提供容器，可以去卸载插件 (?)
  */
-export class PluginLoader {
+export class PluginManager {  
+  //  plugins: PluginInterface[] = [];
+
   // 加载并验证插件
   loadPlugin(scriptContent: string): PluginInterface {
     try {
@@ -56,7 +60,7 @@ export class PluginLoader {
 
   // 使用示例
   static async demo() {
-    const loader = new PluginLoader();
+    const loader = new PluginManager();
 
     // 用户编写的插件脚本
     const userScript = `\
@@ -99,4 +103,4 @@ export class PluginLoader {
   }
 }
 
-export const PLUGIN_LOADER_INSTANCE = new PluginLoader();
+export const PLUGIN_MANAGER = new PluginManager();

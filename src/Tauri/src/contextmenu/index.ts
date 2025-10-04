@@ -4,7 +4,7 @@ import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
 import { AMSearch } from "../../../Core/seach"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 import { type ContextMenuItems, toml_parse } from "../../../Core/contextmenu/demo"
-import { PLUGIN_LOADER_INSTANCE, PluginLoader } from "../../../Core/pluginManager/PluginManager"
+import { PLUGIN_MANAGER, PluginManager } from "../../../Core/pluginManager/PluginManager"
 import { global_setting } from "../../../Core/Setting"
 
 /// 初始化菜单
@@ -229,13 +229,13 @@ export async function initMenu(el: HTMLDivElement) {
 
   // #region custom script 自定义脚本
 
-  PluginLoader.demo()
+  if (global_setting.isDebug) PluginManager.demo()
 
   async function load_script(file_content: string, file_name_short: string) {
     try {
       // const fn = new Function(file_content)
 
-      const plugin = PLUGIN_LOADER_INSTANCE.loadPlugin(file_content)
+      const plugin = PLUGIN_MANAGER.loadPlugin(file_content)
       if (plugin.onLoad) plugin.onLoad();
 
       // 多级菜单部分
