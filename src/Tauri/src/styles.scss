@@ -26,6 +26,8 @@ html, body, #main, #am-config {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+}
+html, body, #main {
   background: transparent !important;
 }
 
@@ -299,38 +301,90 @@ html, body, #main, #am-config {
   position: relative;
   overflow: hidden;
 
-  textarea {
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
+  background-color: var(--ab-tab-root-bg-color);
+  color: var(--ab-tab-root-tx-color);
 
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 20px;
-    padding: 8px;
-    // border: 1px solid var(--ab-tab-root-bd-color);
-    // border-radius: 4px;  
-    background-color: var(--pre-background-color);
-    color: var(--am-text-color);
-    resize: none;
-    border: none;
-    outline: none;
-    box-shadow: none;
+  * {
+    box-sizing: border-box;
   }
-  textarea.no-save {
-    padding-left: 7px;
-    border-left: 1px solid orange;
+
+  // nav
+  .tab-nav {
+    display: flex;
+    height: 32px;
+    line-height: 32px;
+
+    >div {
+      display: inline-block;
+      padding: 0 12px;
+      cursor: pointer;
+
+      background-color: var(--ab-tab-root-bg-color);
+      &.active {
+        border-bottom: none;
+        background-color: var(--ab-tab-root-hv-color);
+      }
+    }
+
+
   }
-  textarea.error-save {
-    padding-left: 7px;
-    border-left: 1px solid red;
-  }
-  button {
+  .tab-content {
     position: absolute;
-    height: 28px;
-    right: 16px;
-    bottom: 16px;
-    padding: 0 18px;
+    top: 32px; // .tab-nav height
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    >div {
+      width: 100%;
+      height: 100%;
+      padding: 8px;
+      background-color: var(--ab-tab-root-hv-color);
+
+      display: none;
+      &.active {
+        display: block;
+      }
+    }
+  }
+
+  // textarea页 (toml editor)
+  div:has(>textarea) { // textarea parent
+    position: relative;
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 20px;
+      padding: 8px;
+      // border: 1px solid var(--ab-tab-root-bd-color);
+      // border-radius: 4px;  
+      background-color: var(--pre-background-color);
+      color: var(--am-text-color);
+      resize: none;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      box-shadow: none;
+    }
+    textarea.no-save {
+      padding-left: 7px;
+      border-left: 1px solid orange;
+    }
+    textarea.error-save {
+      padding-left: 7px;
+      border-left: 1px solid red;
+    }
+    button {
+      position: absolute;
+      height: 28px;
+      right: 16px;
+      bottom: 16px;
+      padding: 0 18px;
+    }
   }
 }
 

@@ -10,17 +10,61 @@ window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
   if (!el) return
 
-  const textarea = document.createElement('textarea'); el.appendChild(textarea);
+  el.classList.add('tab-root')
+  const tab_nav = document.createElement('div'); el.appendChild(tab_nav); tab_nav.classList.add('tab-nav');
+  const tab_content = document.createElement('div'); el.appendChild(tab_content); tab_content.classList.add('tab-content');
+
+  // #region config
+
+  const tab_nav_1 = document.createElement('div'); tab_nav.appendChild(tab_nav_1); tab_nav_1.classList.add('item');
+    tab_nav_1.setAttribute('index', '0'); tab_nav_1.textContent = 'Config';
+  const tab_content_1 = document.createElement('div'); tab_content.appendChild(tab_content_1); tab_content_1.classList.add('item');
+    tab_content_1.setAttribute('index', '0');
+
+  const textarea = document.createElement('textarea'); tab_content_1.appendChild(textarea);
     textarea.value = await load_config()
   textarea.oninput = () => {
     textarea.classList.add('no-save')
   }
 
-  const save_btn = document.createElement('button'); el.appendChild(save_btn); save_btn.classList.add('btn-2');
+  const save_btn = document.createElement('button'); tab_content_1.appendChild(save_btn); save_btn.classList.add('btn-2');
     save_btn.textContent = 'Save Config'
-
   save_btn.onclick = () => {
     save_config(textarea.value, textarea)
+  }
+
+  // #endregion
+
+  // #region plugin manager
+
+  const tab_nav_2 = document.createElement('div'); tab_nav.appendChild(tab_nav_2); tab_nav_2.classList.add('item');
+    tab_nav_2.setAttribute('index', '1'); tab_nav_2.textContent = 'Plugin Manager';
+  const tab_content_2 = document.createElement('div'); tab_content.appendChild(tab_content_2); tab_content_2.classList.add('item');
+    tab_content_2.setAttribute('index', '1');
+  
+  const test = document.createElement('div'); tab_content_2.appendChild(test);
+    test.textContent = 'Plugin Manager TODO'
+
+  // #endregion
+
+  // 标签栏切换
+  tab_nav_1.classList.add('active');
+  tab_content_1.classList.add('active');
+  for (const nav of tab_nav.querySelectorAll('div.item')) {
+    const index: string|null = nav.getAttribute('index')
+    if (index == null) continue
+    ;(nav as HTMLElement).onclick = () => {
+      for (const nav_item of tab_nav.children) {
+        nav_item.classList.remove('active');
+      }
+      nav.classList.add('active');
+      let content: HTMLElement|null = null
+      for (const content_ of tab_content.children) {
+        content_.classList.remove('active');
+        if (content_.getAttribute('index') === index) content = content_ as HTMLElement;
+      }
+      content?.classList.add('active');
+    }
   }
 })
 

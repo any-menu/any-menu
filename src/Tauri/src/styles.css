@@ -22,6 +22,9 @@ html, body, #main, #am-config {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+}
+
+html, body, #main {
   background: transparent !important;
 }
 
@@ -247,8 +250,48 @@ html, body, #main, #am-config {
   padding: 0px;
   position: relative;
   overflow: hidden;
+  background-color: var(--ab-tab-root-bg-color);
+  color: var(--ab-tab-root-tx-color);
 }
-#am-config textarea {
+#am-config * {
+  box-sizing: border-box;
+}
+#am-config .tab-nav {
+  display: flex;
+  height: 32px;
+  line-height: 32px;
+}
+#am-config .tab-nav > div {
+  display: inline-block;
+  padding: 0 12px;
+  cursor: pointer;
+  background-color: var(--ab-tab-root-bg-color);
+}
+#am-config .tab-nav > div.active {
+  border-bottom: none;
+  background-color: var(--ab-tab-root-hv-color);
+}
+#am-config .tab-content {
+  position: absolute;
+  top: 32px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#am-config .tab-content > div {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  background-color: var(--ab-tab-root-hv-color);
+  display: none;
+}
+#am-config .tab-content > div.active {
+  display: block;
+}
+#am-config div:has(> textarea) {
+  position: relative;
+}
+#am-config div:has(> textarea) textarea {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -260,18 +303,19 @@ html, body, #main, #am-config {
   color: var(--am-text-color);
   resize: none;
   border: none;
+  border-radius: 8px;
   outline: none;
   box-shadow: none;
 }
-#am-config textarea.no-save {
+#am-config div:has(> textarea) textarea.no-save {
   padding-left: 7px;
   border-left: 1px solid orange;
 }
-#am-config textarea.error-save {
+#am-config div:has(> textarea) textarea.error-save {
   padding-left: 7px;
   border-left: 1px solid red;
 }
-#am-config button {
+#am-config div:has(> textarea) button {
   position: absolute;
   height: 28px;
   right: 16px;
