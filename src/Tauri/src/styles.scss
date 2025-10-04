@@ -325,8 +325,6 @@ html, body, #main {
         background-color: var(--ab-tab-root-hv-color);
       }
     }
-
-
   }
   .tab-content {
     position: absolute;
@@ -346,6 +344,14 @@ html, body, #main {
         display: block;
       }
     }
+  }
+
+  // nav-radius
+  .tab-nav>div {
+    border-radius: 6px 6px 0 0;
+  }
+  .tab-nav>div:first-child {
+    border-radius: 0 6px 0 0;
   }
 
   // textarea页 (toml editor)

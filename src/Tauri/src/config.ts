@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // #region config
 
   const tab_nav_1 = document.createElement('div'); tab_nav.appendChild(tab_nav_1); tab_nav_1.classList.add('item');
-    tab_nav_1.setAttribute('index', '0'); tab_nav_1.textContent = 'Config';
+    tab_nav_1.setAttribute('index', '0'); tab_nav_1.textContent = 'Config file';
   const tab_content_1 = document.createElement('div'); tab_content.appendChild(tab_content_1); tab_content_1.classList.add('item');
     tab_content_1.setAttribute('index', '0');
 
@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // #region plugin manager
 
   const tab_nav_2 = document.createElement('div'); tab_nav.appendChild(tab_nav_2); tab_nav_2.classList.add('item');
-    tab_nav_2.setAttribute('index', '1'); tab_nav_2.textContent = 'Plugin Manager';
+    tab_nav_2.setAttribute('index', '1'); tab_nav_2.textContent = 'Plugin manager';
   const tab_content_2 = document.createElement('div'); tab_content.appendChild(tab_content_2); tab_content_2.classList.add('item');
     tab_content_2.setAttribute('index', '1');
   

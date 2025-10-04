@@ -288,6 +288,12 @@ html, body, #main {
 #am-config .tab-content > div.active {
   display: block;
 }
+#am-config .tab-nav > div {
+  border-radius: 6px 6px 0 0;
+}
+#am-config .tab-nav > div:first-child {
+  border-radius: 0 6px 0 0;
+}
 #am-config div:has(> textarea) {
   position: relative;
 }
