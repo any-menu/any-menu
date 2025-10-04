@@ -171,7 +171,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet, get_caret_xy, get_screen_size,
+            greet,
+            get_caret, get_caret_debug, get_screen_size,
             paste, send, get_selected,
             read_file, read_folder, create_file,
         ])
@@ -199,20 +200,22 @@ fn greet(name: &str) -> String {
 // }
 
 #[tauri::command]
-fn get_caret_xy(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32) {
-    // let mut x = 0;
-    // let mut y = 0;
-    // return (x, y);
+fn get_caret(_app_handle: tauri::AppHandle, _uia_sender: State<UiaSender>) -> (i32, i32, String) {
+    let (x, y, str) = get_message();
+    return (x, y, str);
+}
 
+#[tauri::command]
+fn get_caret_debug(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32, String) {
     // uia
     // 向worker线程发消息
     let tx = uia_sender.0.lock().unwrap();
     let _ = tx.send(UiaMsg::PrintElement);
+    
+    let _ = get_uia_by_windows(); 
 
-    let _ = get_uia_by_windows();
-
-    let (x, y) = get_message();
-    return (x, y);
+    let (x, y, str) = get_message();
+    return (x, y, str);
 }
 
 // #endregion

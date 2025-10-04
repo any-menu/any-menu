@@ -208,8 +208,9 @@ import { invoke } from "@tauri-apps/api/core"
 import { global_setting } from '../../../Core/Setting'
 
 global_setting.api.getCursorXY = async () => {
-  const pos: any = await invoke("get_caret_xy");
+  const pos: any = await invoke("get_caret");
   if (typeof pos === 'string') return { x: -1, y: -1 }
+  global_setting.state.selectedText = pos[2] && pos[2].length > 0 ? pos[2] : undefined
   return { x: pos[0], y: pos[1] }
 }
 global_setting.api.getScreenSize = async () => {

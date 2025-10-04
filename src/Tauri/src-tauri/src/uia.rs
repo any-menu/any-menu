@@ -20,23 +20,29 @@
 
 use log::{debug, warn, info, error};
 
+/// 汇总各种方式
+pub fn get_message() -> (i32, i32, String) {
+    let (x, y) = get_win_message();
+    (x, y, get_uia_by_windows_selected())
+}
+
 // #region winapi 方式
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-pub fn get_message() -> (i32, i32) { 
+fn get_win_message() -> (i32, i32) { 
     info!("  > print_msg --------------");
     let mut x = -1;
     let mut y = -1;
 
     #[cfg(target_os = "windows")]
     {
-        if let Some((a, b)) = get_message_getfocus() {
-            x = a; y = b; 
-        };
-        if let Some((a, b)) = get_message_getgui() {
+        // if let Some((a, b)) = get_message_getfocus() {
+        //     x = a; y = b; 
+        // };
+        if let Some((a, b)) = get_win_message_getgui() {
             x = a; y = b;
         };
-        get_message_getforeground(); // 这个不是光标位置而是窗口位置
+        // get_message_getforeground(); // 这个不是光标位置而是窗口位置
         // _get_message_getforeground_gui();
     }
 
@@ -48,7 +54,7 @@ pub fn get_message() -> (i32, i32) {
  * 第一次定位聚焦窗口错误，聚焦到应用本身，第二次开始都是 "没有聚焦的窗口"
  * GPT 说好像只能获取 **当前线程** 的焦点窗口，不利于去获取非本应用的窗口信息
  */
-fn get_message_getfocus() -> Option<(i32, i32)> {
+fn _get_win_message_getfocus() -> Option<(i32, i32)> {
     use winapi::{
         um::winuser::{
             GetFocus,
@@ -83,7 +89,7 @@ fn get_message_getfocus() -> Option<(i32, i32)> {
  * GetGUIThreadInfo 方式，也不好用。
  * 浏览器成功，但VSCode、QQ等失败
  */
-fn get_message_getgui() -> Option<(i32, i32)> {
+fn get_win_message_getgui() -> Option<(i32, i32)> {
     use winapi::shared::windef::POINT;
     use winapi::um::winuser::{
         GetGUIThreadInfo,
@@ -126,7 +132,7 @@ fn get_message_getgui() -> Option<(i32, i32)> {
 
 /** GetForegroundWindow 方式。准确，获取的是活跃窗口的窗口位置
  */
-fn get_message_getforeground() -> Option<(i32, i32)> {
+fn _get_win_message_getforeground() -> Option<(i32, i32)> {
     use winapi::um::winuser::{
         GetCaretPos,
         ClientToScreen,
@@ -409,12 +415,6 @@ fn _test_uia_notepad() {
  */
 #[cfg(target_os = "windows")]
 pub fn get_uia_by_windows() -> Result<(), String> {
-    // use windows::core::{ComInterface, BSTR}; // ComInterface
-    // use windows::Win32::UI::UIAutomation::{
-    //     IUIAutomation, CUIAutomation, IUIAutomationElement, IUIAutomationTextPattern,
-    //     UIA_IsTextPatternAvailablePropertyId, UIA_TextPatternId
-    // };
-
     use windows::{
         core::*,
         // Win32::Foundation::*,
@@ -468,8 +468,8 @@ pub fn get_uia_by_windows() -> Result<(), String> {
         ) {
             Ok(ua) => ua,
             Err(e) => {
-                println!("无法创建 UI Automation 实例: {:?}", e);
                 CoUninitialize();
+                println!("无法创建 UI Automation 实例: {:?}", e);
                 return Err("无法创建 UI Automation 实例".into());
             }
         };
@@ -481,13 +481,14 @@ pub fn get_uia_by_windows() -> Result<(), String> {
                 element
             }
             Err(e) => {
-                println!("无法获取焦点元素: {:?}", e);
                 CoUninitialize();
+                println!("无法获取焦点元素: {:?}", e);
                 return Err("无法获取焦点元素".into());
             }
         };
 
         // 获取元素名称 (Ob Ndd 没有, Notepad是'文本编辑器'，VSC要开阅读模式，QQ是对面名/群名。
+        // 非对话框中，可以选择别人的信息，获取的是整个信息的内容。
         // 因为这个元素不是窗口元素，而是窗口内的输入框的元素，名字缺失可以理解)
         if let Ok(name) = element.CurrentName() {
             println!("元素名称: {}", name);
@@ -576,8 +577,8 @@ pub fn get_uia_by_windows() -> Result<(), String> {
             let value_pattern: IUIAutomationValuePattern = match value_pattern.cast() {
                 Ok(vp) => vp,
                 Err(e) => {
-                    println!("无法转换为 Value Pattern: {:?}", e);
                     CoUninitialize();
+                    println!("无法转换为 Value Pattern: {:?}", e);
                     return Err("无法转换为 Value Pattern".into());
                 }
             };
@@ -598,6 +599,68 @@ pub fn get_uia_by_windows() -> Result<(), String> {
 #[cfg(not(target_os = "windows"))]
 pub fn get_uia_by_windows() -> Result<()> {
     log::error!("目前仅支持 windows 平台"); None
+}
+
+fn get_uia_by_windows_selected() -> String {
+    #[cfg(not(target_os = "windows"))]
+    {
+        return "".to_string();
+    }
+    
+    use windows::{
+        core::*,
+        Win32::System::Com::*,
+        Win32::UI::Accessibility::*
+    };
+
+    unsafe {
+        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
+
+        let ui_automation: IUIAutomation = match CoCreateInstance(
+            &CUIAutomation,
+            None,
+            CLSCTX_INPROC_SERVER,
+        ) {
+            Ok(ua) => ua,
+            Err(_) => { CoUninitialize(); return "".to_string(); }
+        };
+
+        // 获取焦点元素 (可靠)
+        let element = match ui_automation.GetFocusedElement() {
+            Ok(element) => element,
+            Err(_) => { CoUninitialize(); return "".to_string(); }
+        };
+
+        // 文本模式 (Text Pattern)，以获取选中内容和插入符位置 (可靠，Ndd常失灵)
+        let text_pattern = match element.GetCurrentPattern(UIA_TextPatternId) {
+            Ok(tp) => tp,
+            Err(_) => { CoUninitialize(); return "".to_string(); }
+        };
+
+        // 类型转换
+        let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
+            Ok(tp) => tp,
+            Err(_) => { CoUninitialize(); return "".to_string(); }
+        };
+
+        // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)
+        if let Ok(selection) = text_pattern.GetSelection() {
+            let count = match selection.Length() {
+                Ok(c) => c,
+                Err(_) => { CoUninitialize(); return "".to_string(); }
+            };
+
+            for i in 0..count {
+                if let Ok(range) = selection.GetElement(i) {
+                    if let Ok(text) = range.GetText(-1) {
+                        return text.to_string();
+                    }
+                }
+            }
+        }
+
+        CoUninitialize(); return "".to_string();
+    }
 }
 
 // 辅助函数：将控件类型 ID 转换为可读名称
