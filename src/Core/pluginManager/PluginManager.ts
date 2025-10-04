@@ -7,7 +7,8 @@ import { PluginInterface } from './PluginInterface';
  * TODO 转为插件管理器，提供容器，可以去卸载插件 (?)
  */
 export class PluginManager {  
-  //  plugins: PluginInterface[] = [];
+   plugin_list: Record<string, PluginInterface> = {};
+   dict_list: Record<string, PluginInterface> = {};
 
   // 加载并验证插件
   loadPlugin(scriptContent: string): PluginInterface {
@@ -18,12 +19,11 @@ export class PluginManager {
         ${scriptContent}
         return plugin; // 脚本必须定义并返回 plugin 对象
       `);
-      
+
       const plugin = fn() as PluginInterface;
-      
-      // 运行时验证接口
-      this.validatePlugin(plugin);
-      
+      this.validatePlugin(plugin); // 验证接口，错误则抛出错误
+      this.plugin_list[plugin.metadata.id] = plugin;
+
       return plugin;
     } catch (error) {
       throw new Error(`插件加载失败: ${error}`);

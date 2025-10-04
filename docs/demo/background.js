@@ -1,6 +1,7 @@
 const plugin = {
     metadata: {
-        name: 'anymenu-background',
+        id: 'anymenu-background',
+        name: 'md背景色',
         version: '1.0.0',
         author: 'LincZero'
     },

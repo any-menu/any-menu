@@ -12,9 +12,10 @@ export interface PluginInterface {
   onUnload?: () => void;
   
   // 元数据
-  metadata?: {
-    name: string;
+  metadata: {
+    id: string; // 唯一标识符
     version: string;
+    name?: string;
     author?: string;
   };
 }

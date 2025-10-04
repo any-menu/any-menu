@@ -1,6 +1,7 @@
 const plugin = {
     metadata: {
-        name: 'anymenu-date',
+        id: 'anymenu-date',
+        name: '日期',
         version: '1.0.0',
         author: 'LincZero'
     },
