@@ -12,50 +12,61 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!el) return
 
   el.classList.add('tab-root')
-  const tab_nav = document.createElement('div'); el.appendChild(tab_nav); tab_nav.classList.add('tab-nav');
-  const tab_content = document.createElement('div'); el.appendChild(tab_content); tab_content.classList.add('tab-content');
+  const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
+  const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
 
+  // #region mini docs
+  {
+    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+      tab_nav.textContent = 'Mini docs';
+    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+    tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
+
+    const div = document.createElement('div'); tab_content.appendChild(div);
+      div.textContent = `默认使用 Alt + A 打开菜单`
+
+    tab_nav.classList.add('active');
+    tab_content.classList.add('active');
+  }
+  // #endregion
+  
   // #region config
   {
-    const tab_nav_1 = document.createElement('div'); tab_nav.appendChild(tab_nav_1); tab_nav_1.classList.add('item');
-      tab_nav_1.setAttribute('index', '0'); tab_nav_1.textContent = 'Config file';
-    const tab_content_1 = document.createElement('div'); tab_content.appendChild(tab_content_1); tab_content_1.classList.add('item');
-      tab_content_1.setAttribute('index', '0');
+    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+      tab_nav.textContent = 'Config file';
+    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+    tab_nav.setAttribute('index', 'config-file'); tab_content.setAttribute('index', 'config-file');
 
-    const textarea = document.createElement('textarea'); tab_content_1.appendChild(textarea);
+    const textarea = document.createElement('textarea'); tab_content.appendChild(textarea);
       textarea.value = await load_config()
     textarea.oninput = () => {
       textarea.classList.add('no-save')
     }
 
-    const save_btn = document.createElement('button'); tab_content_1.appendChild(save_btn); save_btn.classList.add('btn-2');
+    const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2');
       save_btn.textContent = 'Save Config'
     save_btn.onclick = () => {
       save_config(textarea.value, textarea)
     }
-
-    tab_nav_1.classList.add('active');
-    tab_content_1.classList.add('active');
   }
   // #endregion
 
   // #region plugin manager
   {
-    const tab_nav_2 = document.createElement('div'); tab_nav.appendChild(tab_nav_2); tab_nav_2.classList.add('item');
-      tab_nav_2.setAttribute('index', '1'); tab_nav_2.textContent = 'Plugin manager';
-    const tab_content_2 = document.createElement('div'); tab_content.appendChild(tab_content_2); tab_content_2.classList.add('item');
-      tab_content_2.setAttribute('index', '1');
-    
-    
-    const el_refresh_btn = document.createElement('button'); tab_content_2.appendChild(el_refresh_btn); el_refresh_btn.classList.add('btn-2');
+    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+      tab_nav.textContent = 'Plugin manager';
+    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+    tab_nav.setAttribute('index', 'plugin-manager'); tab_content.setAttribute('index', 'plugin-manager');
+
+    const el_refresh_btn = document.createElement('button'); tab_content.appendChild(el_refresh_btn); el_refresh_btn.classList.add('btn-2');
       el_refresh_btn.textContent = 'Refresh plugin list';
       el_refresh_btn.onclick = () => {
         load_plugins()
       }
       
     function load_plugins() {
-      tab_content_2.querySelectorAll('ul').forEach(e=>e.remove());
-      const el_plugins = document.createElement('ul'); tab_content_2.appendChild(el_plugins);
+      tab_content.querySelectorAll('ul').forEach(e=>e.remove());
+      const el_plugins = document.createElement('ul'); tab_content.appendChild(el_plugins);
       console.log('Plugin len', PLUGIN_MANAGER.plugin_list);
       for (const key in PLUGIN_MANAGER.plugin_list) {
         const plugin = PLUGIN_MANAGER.plugin_list[key];
@@ -67,23 +78,24 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
   // #endregion
 
-  // 标签栏切换
-  for (const nav of tab_nav.querySelectorAll('div.item')) {
+  // #region 标签栏切换
+  for (const nav of tab_nav_container.querySelectorAll('div.item')) {
     const index: string|null = nav.getAttribute('index')
     if (index == null) continue
     ;(nav as HTMLElement).onclick = () => {
-      for (const nav_item of tab_nav.children) {
+      for (const nav_item of tab_nav_container.children) {
         nav_item.classList.remove('active');
       }
       nav.classList.add('active');
       let content: HTMLElement|null = null
-      for (const content_ of tab_content.children) {
+      for (const content_ of tab_content_container.children) {
         content_.classList.remove('active');
         if (content_.getAttribute('index') === index) content = content_ as HTMLElement;
       }
       content?.classList.add('active');
     }
   }
+  // #endregion
 })
 
 export async function load_config() {

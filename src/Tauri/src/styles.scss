@@ -309,7 +309,7 @@ html, body, #main {
   }
 
   // nav
-  .tab-nav {
+  .tab-nav-container {
     display: flex;
     height: 32px;
     line-height: 32px;
@@ -326,7 +326,7 @@ html, body, #main {
       }
     }
   }
-  .tab-content {
+  .tab-content-container {
     position: absolute;
     top: 32px; // .tab-nav height
     bottom: 0;
@@ -347,11 +347,11 @@ html, body, #main {
   }
 
   // nav-radius
-  .tab-nav>div {
+  .tab-nav-container>div {
     border-radius: 6px 6px 0 0;
-  }
-  .tab-nav>div:first-child {
-    border-radius: 0 6px 0 0;
+    &:first-child {
+      border-radius: 0 6px 0 0;
+    }
   }
 
   // textarea页 (toml editor)
