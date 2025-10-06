@@ -12,7 +12,7 @@ import {
   setIcon,
   type MarkdownPostProcessorContext
 } from 'obsidian'
-import { registerABContextMenu } from './contextmenu/index.ob'
+import { registerABContextMenu } from './contextmenu'
 
 export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface
