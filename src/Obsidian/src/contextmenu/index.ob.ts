@@ -89,7 +89,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
           const dom = menu.dom
           if (menuItem.detail && dom) {
             menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
-              tooltip = document.createElement('div'); document.body.appendChild(tooltip);
+              tooltip = document.createElement('div'); dom.appendChild(tooltip);
               tooltip.addClass('ab-contextmenu-tooltip')
               const domRect = dom.getBoundingClientRect()
               tooltip.setAttr('style', `
@@ -111,7 +111,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
             })
             menu.registerDomEvent(dom, 'mouseleave', (evt: MouseEvent) => {
               if (!tooltip) return
-              document.body.removeChild(tooltip)
+              dom.removeChild(tooltip)
               tooltip = undefined
             })
           }

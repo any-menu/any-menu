@@ -220,7 +220,7 @@ export class ABContextMenu {
         let tooltip: HTMLElement|undefined = undefined
         if (item.detail) {
           li.onmouseenter = () => {
-            tooltip = document.createElement('div'); document.body.appendChild(tooltip);
+            tooltip = document.createElement('div'); li.appendChild(tooltip);
             tooltip.classList.add('ab-contextmenu-tooltip')
             const domRect = li.getBoundingClientRect()
             tooltip.setAttribute('style', `
@@ -242,7 +242,7 @@ export class ABContextMenu {
           }
           li.onmouseleave = () => {
             if (!tooltip) return
-            document.body.removeChild(tooltip)
+            li.removeChild(tooltip)
             tooltip = undefined
           }
         }
