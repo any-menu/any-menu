@@ -25,5 +25,6 @@
 		"vite": "^4.5.14"
 	},
 	"dependencies": {
+		"@editableblock/textarea": "1.0.1-beta35"
 	}
 }

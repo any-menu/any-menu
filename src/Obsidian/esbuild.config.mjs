@@ -21,14 +21,14 @@ esbuild.build({
 	banner: {
 		js: banner,
 	},
-	entryPoints: ['./main.ts'],
+	entryPoints: ['./src/main.ts'],
 	bundle: true,
 	external: [
 		'obsidian',
 		...builtins],
 	format: 'cjs',
 	watch: !prod,
-	target: 'es2018',
+	target: 'es2020',
 	logLevel: "info",
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
