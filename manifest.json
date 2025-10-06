@@ -1,0 +1,15 @@
+{
+	"id": "any-menu",
+	"name": "AnyMenu",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
+	"author": "LincZero",
+	"authorUrl": "https://github.com/LincZero",
+	"repo": "https://github.com/any-menu/any-menu",
+	"fundingUrl": {
+		"Support Page": "https://github.com/LincZero#thank-you-very-much-for-your-support",
+		"中国大陆备用链接": "https://linczero-github-io.pages.dev/MdNote_Other/LincZero/#thank-you-very-much-for-your-support"
+	},
+	"isDesktopOnly": false
+}

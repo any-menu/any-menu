@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-any-menu",
 	"version": "1.0.0",
-	"description": "Powerful input method assistant / editor assistant",
+	"description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
 	"author": "LincZero",
 	"authorUrl": "https://github.com/LincZero",
 	"license": "GNU Affero General Public License v3.0",
@@ -9,7 +9,7 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "pnpm copy_style && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"copy_style": "copyfiles --flat ../../src/ABConverter/style/styles.css ../../"
+		"copy_style": "copyfiles --flat ../../src/Core/styles/styles.css ../../"
 	},
 	"keywords": [],
 	"devDependencies": {

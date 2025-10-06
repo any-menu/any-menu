@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "author": "LincZero",
-  "description": "Powerful input method assistant / editor assistant",
+  "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",
   "scripts": {
     "tr:dev": "cd ./src/Tauri && pnpm tauri dev",
