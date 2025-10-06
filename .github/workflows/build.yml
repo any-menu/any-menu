@@ -8,6 +8,34 @@ on:
     branches: [main]
 
 jobs:
+  build-obsidian:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v4
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.10.0
+    - name: env use node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: pnpm
+    - name: build
+      run: |
+        pnpm install --frozen-lockfile
+        pnpm ob:build
+    - name: upload build artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifact
+        path: |
+          manifest.json
+          main.js
+          styles.css
+
   build-tauri:
     strategy:
       fail-fast: false
