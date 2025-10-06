@@ -3,9 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "author": "LincZero",
-  "description": "",
+  "description": "Powerful input method assistant / editor assistant",
   "main": "index.js",
   "scripts": {
+    "tr:dev": "cd ./src/Tauri && pnpm tauri dev",
+    "tr:build": "cd ./src/Tauri && pnpm tauri build",
+    "ob:build": "cd ./src/Obsidian && pnpm build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

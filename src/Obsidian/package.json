@@ -1,0 +1,29 @@
+{
+	"name": "obsidian-any-menu",
+	"version": "1.0.0",
+	"description": "Powerful input method assistant / editor assistant",
+	"author": "LincZero",
+	"authorUrl": "https://github.com/LincZero",
+	"license": "GNU Affero General Public License v3.0",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "pnpm copy_style && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"copy_style": "copyfiles --flat ../../src/ABConverter/style/styles.css ../../"
+	},
+	"keywords": [],
+	"devDependencies": {
+		"@types/node": "^16.18.126",
+		"@typescript-eslint/eslint-plugin": "5.29.0",
+		"@typescript-eslint/parser": "5.29.0",
+		"builtin-modules": "3.3.0",
+		"copyfiles": "^2.4.1",
+		"esbuild": "^0.14.54",
+		"obsidian": "latest",
+		"tslib": "^2.8.1",
+		"typescript": "^4.9.5",
+		"vite": "^4.5.14"
+	},
+	"dependencies": {
+	}
+}
