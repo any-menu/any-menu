@@ -8,6 +8,16 @@ importers:
 
   .: {}
 
+  src/App:
+    dependencies:
+      '@editableblock/textarea':
+        specifier: 1.0.1-beta35
+        version: 1.0.1-beta35
+    devDependencies:
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+
   src/Core:
     dependencies:
       '@editableblock/textarea':

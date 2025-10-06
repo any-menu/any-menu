@@ -23,5 +23,6 @@
       "@/*": ["../*"]
     },
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["../Obsidian/", "../App/"]
 }

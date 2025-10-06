@@ -3,26 +3,32 @@
  * 
  * ## 适配问题
  * 
- * 适配 obsidian 和非 obsidian 环境
+ * - Obsidian 环境:
+ *   - 会需要挂载到原有菜单上 (如编辑器菜单)，以保留原有功能
+ *   - 含Obsidian依赖
+ * - Tauri 环境:
+ *   - 其显示隐藏依赖于窗口的显示/隐藏，而非元素的显示/隐藏
+ *   - 含Tauri依赖
+ * - 通用环境 (包括App):
+ *   - 自定义挂载的html元素
+ *   - 不含任何特定环境依赖
  * 
- * 为什么不统一用非obsidian环境？使模块不用分别适配就能更简单通用
- * obsidian 环境下一些地方用 obsidian 菜单接口的好处:
+ * 为什么在Obsidian环境中，也不统一用非obsidian环境？
  * 
- * - 正文菜单 (非局部) 可以追加选项，而不是覆盖。这样可以保留原有功能 (核心理由)
- * - 样式和软件及主题统一
- * 
- * 而obsidian环境一些局部不使用 ob 接口的好处:
- * 
- * - 样式更自由、功能更灵活。代码的通用不需要另外适配
+ * - 使模块不用分别适配就能更简单通用
+ * - obsidian 环境下一些地方用 obsidian 菜单接口的好处:
+ *   - 正文菜单 (非局部) 可以追加选项，而不是覆盖。这样可以保留原有功能 (核心理由)
+ *   - 样式和软件及主题统一
+ * - 而obsidian环境一些局部不使用 ob 接口的好处:
+ *   - 样式更自由、功能更灵活。代码的通用不需要另外适配
+ *   - Obsidian默认菜单系统自身有bug: 到第三层菜单时，切换二级菜单不会更新三级菜单
  * 
  * ## 性能优化
  * 
  * 菜单有预创建 (性能优) 和动态创建两种，也可以综合 —— 部分动态内容
- * 
- * ## 其他
  */
 
-import { global_setting } from "../Setting"
+import { global_setting } from "../setting"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
@@ -366,20 +372,6 @@ export class ABContextMenu {
     }
   }
 }
-
-// 非AnyBlock的通用环境的原根/正文菜单 (给App用)
-export const root_menu_raw: ContextMenuItems = [
-  { label: '请用快捷键代替', children: [
-    { label: '撤销 (ctrl z)', callback: async () => {} },
-    { label: '重做 (ctrl shift z)', callback: async () => {} },
-    { label: '复制 (ctrl c)', callback: async () => {} },
-    { label: '剪切 (ctrl x)', callback: async () => {} },
-    { label: '黏贴 (ctrl v)', callback: async () => {} },
-    { label: '黏贴为无格式文本 (ctrl shift v)', callback: async () => {} },
-    { label: '删除 (delete)', callback: async () => {} },
-    { label: '全选 (ctrl a)', callback: async () => {} },
-  ] },
-]
 
 // /** 装饰 - 叉 */
 // function input_delete() {

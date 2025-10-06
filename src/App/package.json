@@ -1,0 +1,17 @@
+{
+	"name": "any-menu-app",
+	"version": "1.0.0",
+	"description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
+	"author": "LincZero",
+	"authorUrl": "https://github.com/LincZero",
+	"license": "GNU Affero General Public License v3.0",
+	"main": "main.js",
+	"scripts": {},
+	"keywords": [],
+	"devDependencies": {
+		"tslib": "^2.8.1"
+	},
+	"dependencies": {
+		"@editableblock/textarea": "1.0.1-beta35"
+	}
+}

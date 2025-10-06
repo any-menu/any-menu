@@ -27,5 +27,5 @@
   "include": [
     "**/*.ts"
   ],
-  "exclude": ["../Tauri/", "../App/"]
+  "exclude": ["../Tauri/", "../Obsidian/"]
 }

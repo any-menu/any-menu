@@ -4,7 +4,7 @@ import {
   type MenuItem, type Editor,
   type MarkdownFileInfo
 } from 'obsidian'
-import { ABContextMenu } from '.'
+import { ABContextMenu } from '@/Core/contextmenu/index'
 import { type ContextMenuItems, root_menu } from "@/Core/contextmenu/demo"
 
 // import { ABContextMenu, root_menu_raw, root_menu } from '../../../Pro/src/contextmenu' // [!code hl] obsidian pro
