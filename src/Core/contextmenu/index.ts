@@ -124,7 +124,7 @@ export class ABContextMenu {
   // #region 显示/隐藏菜单
 
   // 显示该菜单
-  protected visual_show(x: number, y: number) {
+  public visual_show(x: number, y: number) {
     if (!this.el_container) return
     this.isShow = true
     this.el_container.style.left = `${x}px`
@@ -136,7 +136,7 @@ export class ABContextMenu {
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
   // 隐藏该菜单
-  protected visual_hide() {
+  public visual_hide() {
     if (!this.el_container) return
     this.isShow = false
     this.el_container.classList.remove('visible')

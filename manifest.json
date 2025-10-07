@@ -11,5 +11,17 @@
 		"Support Page": "https://github.com/LincZero#thank-you-very-much-for-your-support",
 		"中国大陆备用链接": "https://linczero-github-io.pages.dev/MdNote_Other/LincZero/#thank-you-very-much-for-your-support"
 	},
-	"isDesktopOnly": false
+	"isDesktopOnly": false,
+	"hotkeys": [
+		{
+			"id": "any-menu-panel",
+			"name": "展开 any-menu 面板 n",
+			"command": "展开 any-menu 面板 c",
+			"description": "展开 any-menu 面板 d",
+			"hotkey": "Alt+S",
+			"modifiers": ["Mod"],
+			"key": "S",
+			"context": ["app"]
+		}
+	]
 }

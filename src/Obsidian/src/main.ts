@@ -12,7 +12,7 @@ import {
   setIcon,
   type MarkdownPostProcessorContext
 } from 'obsidian'
-import { registerABContextMenu } from './contextmenu'
+import { registerABContextMenu, registerAMContextMenu } from './contextmenu'
 
 export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface
@@ -20,20 +20,9 @@ export default class AnyMenuPlugin extends Plugin {
   async onload() {
     console.log('>>> Loading plugin AnyMenu')
 
-    // 初始化菜单
-    registerABContextMenu(this)
-
-    // 注册一个命令
-    this.addCommand({
-      id: 'any-menu-panel',
-      name: '展开 AnyMenu 面板',
-      callback: () => {
-        // 命令触发时执行的函数
-        console.log('你的命令被执行了！');
-        // 在这里调用你的核心功能
-      },
-      // hotkeys: [] // 通常不在代码里重复定义，而在manifest中声明
-    });
+    // 菜单面板
+    registerABContextMenu(this) // 初始化菜单 - 默认菜单系统
+    registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
   }
 
   async loadSettings() {

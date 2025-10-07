@@ -2,7 +2,9 @@ import {
   App, MarkdownView, Plugin, PluginSettingTab, Setting, Menu,
   TFile, ItemView, WorkspaceLeaf,
   type MenuItem, type Editor,
-  type MarkdownFileInfo
+  type MarkdownFileInfo,
+  EditorPosition,
+  Notice
 } from 'obsidian'
 import { ABContextMenu } from '@/Core/contextmenu/index'
 import { type ContextMenuItems, root_menu } from "@/Core/contextmenu/demo"
@@ -137,7 +139,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
  * 推荐在onload中调用
  */
 export function registerABContextMenu(plugin: Plugin) {
-  const abContextMenu = new ABContextMenu_Ob(plugin, 'editor-menu')
+  const abContextMenu = new ABContextMenu_Ob(plugin, 'editor-menu') // 会 plugin.app.workspace.on('editor-menu', ...)
   abContextMenu.append_data(root_menu)
 }
 
@@ -228,4 +230,202 @@ export function registerABContextMenuDemo(plugin: Plugin) {
     // 4. 在鼠标点击的位置显示菜单
     menu.showAtMouseEvent(event)
   })
+}
+
+// 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
+export function registerAMContextMenu(plugin: Plugin) {
+  const amContextMenu = new ABContextMenu(document.body as HTMLDivElement)
+  amContextMenu.append_data(root_menu)
+
+  // 注册命令
+  plugin.addCommand({
+    id: 'any-menu-panel',
+    name: '展开 AnyMenu 面板',
+    // callback: () => {},
+    editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
+      // 方法1: 使用 editor 对象获取光标位置
+      const cursor = editor.getCursor();
+      console.log('光标位置:', cursor);
+      console.log('行号:', cursor.line);
+      console.log('列号:', cursor.ch);
+      
+      // 显示通知
+      showNotification(plugin, cursor);
+
+      const pos = getCursorPixelPosition(plugin);
+      if (pos) {
+        amContextMenu.visual_show(pos.left + 2, pos.bottom + 2)
+      }
+    }
+    // hotkeys: [] // 通常不在代码里重复定义，而在manifest中声明
+  });
+
+  // 注册工具带
+  plugin.addRibbonIcon('crosshair', '获取光标位置', () => {
+    getCursorPosition(plugin);
+
+    getCursorPixelPosition(plugin);
+  });
+}
+
+function getCursorPosition(plugin: Plugin) {
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  
+  if (activeView) {
+      const editor = activeView.editor;
+      const cursor = editor.getCursor();
+      
+      // 获取光标位置的详细信息
+      const line = cursor.line;
+      const ch = cursor.ch;
+      
+      // 获取光标所在行的文本
+      const lineText = editor.getLine(line);
+      
+      // 获取光标前的文本
+      const textBeforeCursor = lineText.substring(0, ch);
+      
+      // 获取光标后的文本
+      const textAfterCursor = lineText.substring(ch);
+      
+      console.log('详细信息:');
+      console.log('行号:', line);
+      console.log('列号:', ch);
+      console.log('当前行文本:', lineText);
+      console.log('光标前文本:', textBeforeCursor);
+      console.log('光标后文本:', textAfterCursor);
+      
+      showNotification(plugin, cursor);
+  } else {
+      console.log('没有活动的 Markdown 编辑器');
+  }
+}
+
+// 方法3: 获取选区范围（如果有选中文本）
+function getSelectionRange(plugin: Plugin) {
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  
+  if (activeView) {
+      const editor = activeView.editor;
+      
+      // 获取选区的起始和结束位置
+      const from = editor.getCursor('from');
+      const to = editor.getCursor('to');
+      
+      // 获取选中的文本
+      const selectedText = editor.getSelection();
+      
+      console.log('选区信息:');
+      console.log('起始位置:', from);
+      console.log('结束位置:', to);
+      console.log('选中文本:', selectedText);
+      
+      return { from, to, selectedText };
+  }
+}
+
+// 显示通知
+function showNotification(plugin: Plugin, cursor: EditorPosition) {
+  new Notice(`光标位置: 行 ${cursor.line + 1}, 列 ${cursor.ch + 1}`);
+}
+
+function getCursorPixelPosition(plugin: Plugin): {left: number, top: number, right: number, bottom: number}|null {
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  
+  if (activeView) {
+      const editor = activeView.editor;
+      const cursor = editor.getCursor();
+      
+      // 方法1: 使用 CodeMirror 的 coordsAtPos 方法
+      // @ts-ignore - 访问 CodeMirror 的内部方法
+      const cm = editor.cm;
+      if (cm) {
+          // CodeMirror 6 (新版 Obsidian)
+          const coords = cm.coordsAtPos(editor.posToOffset(cursor));
+          
+          if (coords) {
+              console.log('cm pos', coords);
+
+              new Notice(`光标位置: X=${Math.round(coords.left)}px, Y=${Math.round(coords.top)}px`);
+              
+              return {left: coords.left, top: coords.top, right: coords.right, bottom: coords.bottom};
+          }
+      }
+
+      // 方法2: 通过 DOM 元素获取位置
+      const cursorElement = getCursorElement();
+      if (cursorElement) {
+          const rect = cursorElement.getBoundingClientRect();
+          console.log('cursorEl pos', rect);
+
+          return {left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom};
+      }
+  }
+
+  console.warn("get cursor pixel position fail")
+  return null
+}
+
+// 获取光标 DOM 元素
+function getCursorElement(): HTMLElement | null {
+  // 查找 CodeMirror 光标元素
+  const cursor = document.querySelector('.cm-cursor') as HTMLElement;
+  return cursor;
+}
+
+// 获取相对于编辑器的位置
+function getCursorPositionRelativeToEditor(plugin: Plugin) {
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  
+  if (activeView) {
+      const editor = activeView.editor;
+      const cursor = editor.getCursor();
+      
+      // @ts-ignore
+      const cm = editor.cm;
+      if (cm) {
+          const coords = cm.coordsAtPos(editor.posToOffset(cursor));
+          const editorElement = cm.dom;
+          const editorRect = editorElement.getBoundingClientRect();
+          
+          if (coords) {
+              const relativeX = coords.left - editorRect.left;
+              const relativeY = coords.top - editorRect.top;
+              
+              console.log('相对于编辑器的位置:');
+              console.log('X:', relativeX, 'px');
+              console.log('Y:', relativeY, 'px');
+              
+              return { x: relativeX, y: relativeY };
+          }
+      }
+  }
+}
+
+// 获取绝对屏幕位置（相对于页面）
+function getAbsoluteCursorPosition(plugin: Plugin) {
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+  
+  if (activeView) {
+      const editor = activeView.editor;
+      const cursor = editor.getCursor();
+      
+      // @ts-ignore
+      const cm = editor.cm;
+      if (cm) {
+          const coords = cm.coordsAtPos(editor.posToOffset(cursor));
+          
+          if (coords) {
+              // 加上页面滚动偏移
+              const absoluteX = coords.left + window.pageXOffset;
+              const absoluteY = coords.top + window.pageYOffset;
+              
+              console.log('绝对位置（相对于页面）:');
+              console.log('X:', absoluteX, 'px');
+              console.log('Y:', absoluteY, 'px');
+              
+              return { x: absoluteX, y: absoluteY };
+          }
+      }
+  }
 }
