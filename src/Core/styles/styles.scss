@@ -428,19 +428,6 @@ html, body, #main {
 
 /* -------------------------------- 默认 ------------------------------- */
 
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
 #main, #am-config {
   a {
     font-weight: 500;
@@ -498,6 +485,19 @@ html, body, #main {
 /* -------------------------------- 默认并废弃 --------------------------- */
 
 #default_old {
+  :root {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+
   .logo.vite:hover {
     filter: drop-shadow(0 0 2em #747bff);
   }
