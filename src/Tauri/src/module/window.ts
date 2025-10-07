@@ -205,7 +205,7 @@ export async function hideWindow() {
 }
 
 import { invoke } from "@tauri-apps/api/core"
-import { global_setting } from '../../../Core/Setting'
+import { global_setting } from '../../../Core/setting'
 
 global_setting.api.getCursorXY = async () => {
   const pos: any = await invoke("get_caret");

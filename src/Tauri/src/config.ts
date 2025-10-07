@@ -1,7 +1,7 @@
 /** 配置面板相关 */
 
 import { invoke } from '@tauri-apps/api/core';
-import { global_setting } from '../../Core/Setting';
+import { global_setting } from '../../Core/setting';
 import { toml_parse } from '../../Core/contextmenu/demo';
 import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager';
 

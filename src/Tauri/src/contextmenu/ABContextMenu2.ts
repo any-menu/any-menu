@@ -1,5 +1,5 @@
 import { ABContextMenu } from "../../../Core/contextmenu/index"
-import { global_setting } from "../../../Core/Setting"
+import { global_setting } from "../../../Core/setting"
 
 import { hideWindow } from "../module/window"
 import { invoke } from "@tauri-apps/api/core"

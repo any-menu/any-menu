@@ -1,7 +1,7 @@
 /** 核心搜索数据库，内置多种子搜索索引方式 */
 
 import type { AMSearch } from '../seach/index'
-import { global_setting } from '../Setting'
+import { global_setting } from '../setting'
 import { TrieDB, type TrieNode } from './TrieDB'
 import { ReverseIndexDB } from './ReverseIndexDB'
 import pinyin from 'pinyin'

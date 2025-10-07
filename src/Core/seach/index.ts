@@ -1,4 +1,4 @@
-import { global_setting } from "../Setting"
+import { global_setting } from "../setting"
 import { SEARCH_DB } from "./SearchDB"
 
 /**

@@ -5,7 +5,7 @@ import { AMSearch } from "../../../Core/seach"
 import { SEARCH_DB } from "../../../Core/seach/SearchDB"
 import { type ContextMenuItems, toml_parse } from "../../../Core/contextmenu/demo"
 import { PLUGIN_MANAGER, PluginManager } from "../../../Core/pluginManager/PluginManager"
-import { global_setting } from "../../../Core/Setting"
+import { global_setting } from "../../../Core/setting"
 
 /// 初始化菜单
 /// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
