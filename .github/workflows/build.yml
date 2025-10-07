@@ -30,7 +30,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: build-artifact
+        name: obsidiain-any-menu
         path: |
           manifest.json
           main.js

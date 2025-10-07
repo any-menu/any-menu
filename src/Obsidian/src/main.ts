@@ -16,6 +16,15 @@ import { registerABContextMenu, registerAMContextMenu } from './contextmenu'
 import { global_setting } from '@/Core/setting'
 
 global_setting.env = 'obsidian-plugin'
+global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
+  const app = global_setting.other.obsidian_plugin.app
+  if (!app) { console.error('obsidian app对象未初始化'); return }
+
+  el.classList.add("markdown-rendered")  
+
+  const mdrc: MarkdownRenderChild = new MarkdownRenderChild(el); 
+  MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
+}
 
 export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface

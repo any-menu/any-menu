@@ -68,6 +68,7 @@ export const global_setting: {
   /** 通常是any|null类型，是特有环境临时存的东西 */
   other: {
     obsidian_plugin: any|null,
+    renderMarkdown: null|((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>),
   }
 } = {
   env: 'app',
@@ -96,6 +97,7 @@ export const global_setting: {
     sendText: async () => { console.error("需实现 sendText 方法") }
   },
   other: {
-    obsidian_plugin: null
+    obsidian_plugin: null,
+    renderMarkdown: async (): Promise<void> => {},
   }
 }

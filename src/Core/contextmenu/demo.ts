@@ -26,7 +26,7 @@ export const root_menu_demo: ContextMenuItems = [
   {
     label: 'list', children: [
       { label: '列表转表格',
-        detail: 'https://cdn.pkmer.cn/images/202508241625503.png!pkmer', // 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
+        detail: 'md', // 'https://cdn.pkmer.cn/images/202508241625503.png!pkmer', // 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
         callback: 
 `[table]
 
@@ -38,7 +38,7 @@ export const root_menu_demo: ContextMenuItems = [
   - 5
     - 6
     - 7\n\n` },
-      { label: '列表转目录', callback: `[dir]
+      { label: '列表转目录', detail: 'md', callback: `[dir]
 
 - vue-demo/
   - build/， 项目构建(webpack)相关代码
@@ -63,7 +63,7 @@ export const root_menu_demo: ContextMenuItems = [
   {
     label: 'mindmap', children: [
       { label: 'node',
-        detail: 'https://cdn.pkmer.cn/images/202508241625515.png!pkmer',
+        detail: 'md', // 'https://cdn.pkmer.cn/images/202508241625515.png!pkmer',
         callback: `[nodes]
 
 - a
@@ -72,7 +72,7 @@ export const root_menu_demo: ContextMenuItems = [
   - d
     - e
     - f\n\n` },
-      { label: 'plantuml mindmap', callback: `[mindmap]
+      { label: 'plantuml mindmap', detail: 'md', callback: `[mindmap]
 
 - a
   - b
@@ -80,7 +80,7 @@ export const root_menu_demo: ContextMenuItems = [
   - d
     - e
     - f\n\n` },
-      { label: 'pumlWBS', callback: `[list2pumlWBS]
+      { label: 'pumlWBS', detail: 'md', callback: `[list2pumlWBS]
 
 - vue-demo/
   - build/
@@ -98,7 +98,7 @@ export const root_menu_demo: ContextMenuItems = [
     - main.js
   - static/
   - test/\n\n` },
-      { label: 'mermaid', callback: `[mermaid]
+      { label: 'mermaid', detail: 'md', callback: `[mermaid]
 
 - 树结构
   - 基本术语
@@ -111,7 +111,7 @@ export const root_menu_demo: ContextMenuItems = [
   - 二叉树
     - 分支1
     - 分支2\n\n` },
-      { label: 'mermaid mindmap', callback: `[listroot(root((mindmap)))|list2mindmap]
+      { label: 'mermaid mindmap', detail: 'md', callback: `[listroot(root((mindmap)))|list2mindmap]
 
 - Origins
   - Long history
@@ -128,7 +128,7 @@ export const root_menu_demo: ContextMenuItems = [
 - Tools
   - Pen and paper
   - Mermaid\n\n` },
-      { label: 'markmap', callback: `[list2markmap]
+      { label: 'markmap', detail: 'md', callback: `[list2markmap]
 
 - Links
   - [Website](https://markmap.js.org/)
@@ -150,7 +150,7 @@ export const root_menu_demo: ContextMenuItems = [
   // table
   {
     label: 'table', children: [
-      { label: '列表转表格', callback: 
+      { label: '列表转表格', detail: 'md', callback: 
 `[table]
 
 - 1
@@ -161,7 +161,7 @@ export const root_menu_demo: ContextMenuItems = [
   - 5
     - 6
     - 7\n\n` },
-      { label: '合并表格', callback: 
+      { label: '合并表格', detail: 'md', callback: 
 `[exTable]
 
 |*A*| a | < |
@@ -172,31 +172,31 @@ export const root_menu_demo: ContextMenuItems = [
   // heading
   {
     label: 'heading', children: [
-      { label: '标题转表格', callback: async () => console.warn('执行了操作2.2.1') },
+      { label: '标题转表格', detail: 'md', callback: async () => console.warn('执行了操作2.2.1') },
     ]
   },
   // callout
   {
     label: 'callout', children: [
-      { label: 'note', callback: `> [!note]\n> \n> Note demo.\n\n` },
-      { label: 'warning', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
-      { label: 'tip', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
-      { label: 'note_complex', callback: `> [!note]+ title\n> Note demo.\n\n` },
+      { label: 'note', detail: 'md', callback: `> [!note]\n> \n> Note demo.\n\n` },
+      { label: 'warning', detail: 'md', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
+      { label: 'tip', detail: 'md', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
+      { label: 'note_complex', detail: 'md', callback: `> [!note]+ title\n> Note demo.\n\n` },
     ]
   },
   // mdit container
   {
     label: 'mdit container', children: [
-      { label: 'note', callback: `:::note\nNote demo.\n:::\n\n` },
-      { label: 'warning', callback: `:::warning\nWarning demo.\n:::\n\n` },
-      { label: 'tip', callback: `:::tip\nTip demo.\n:::\n\n` },
-      { label: 'note_complex', callback: `:::note+ title\nNote demo.\n:::\n\n` },
+      { label: 'note', detail: 'md', callback: `:::note\n\nNote demo.\n\n:::\n\n` },
+      { label: 'warning', detail: 'md', callback: `:::warning\n\nWarning demo.\n\n:::\n\n` },
+      { label: 'tip', detail: 'md', callback: `:::tip\n\nTip demo.\n\n:::\n\n` },
+      { label: 'note_complex', detail: 'md', callback: `:::note+ title\n\nNote demo.\n\n:::\n\n` },
     ]
   },
   // two layout
   {
     label: 'two layout', children: [
-      { label: 'col', callback: `:::col
+      { label: 'col', detail: 'md', callback: `:::col
 
 @col
 
@@ -211,7 +211,7 @@ text2
 text3
 
 :::\n\n` },
-      { label: 'tabs', callback: `:::tabs
+      { label: 'tabs', detail: 'md', callback: `:::tabs
 
 @tab title1
 

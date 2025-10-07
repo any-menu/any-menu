@@ -305,7 +305,7 @@ function getCursorInfo(plugin: Plugin, editor?: Editor): {
     const coords = cm.coordsAtPos(editor.posToOffset(cursor)) // CodeMirror 6
     
     if (coords) {
-      console.log('cursor xyPosition, cm pos', coords)
+      // console.log('cursor xyPosition, cm pos', coords)
       
       return {
         editor: editor,
@@ -318,7 +318,7 @@ function getCursorInfo(plugin: Plugin, editor?: Editor): {
   const cursorElement = getCursorElement();
   if (cursorElement) {
     const rect = cursorElement.getBoundingClientRect()
-    console.log('cursor xyPosition, cursorEl pos', rect)
+    // console.log('cursor xyPosition, cursorEl pos', rect)
 
     return {
       editor: editor,

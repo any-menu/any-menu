@@ -242,9 +242,17 @@ export class ABContextMenu {
             `)
             // top: ${evt.clientY + 10}px;
             // left: ${evt.clientX + 10}px;
-            const img = document.createElement('img'); tooltip.appendChild(img);
-              img.setAttribute('src', item.detail as string);
-              img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+
+            if (item.detail == "md") { // 一个flag
+              if (typeof item.callback == "string") {
+                void global_setting.other.renderMarkdown?.(item.callback, tooltip)
+              }
+            }
+            else {
+              const img = document.createElement('img'); tooltip.appendChild(img);
+                img.setAttribute('src', item.detail as string);
+                img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+            }
           }
           li.onmouseleave = () => {
             if (!tooltip) return
