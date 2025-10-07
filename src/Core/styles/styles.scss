@@ -166,10 +166,26 @@ html, body, #main {
   --ab-menu-text-color: #CCCCCC;
 }
 
+// 显示/隐藏
+#main>.ab-context-menu {
+  display: block; // [!code hl] Tauri版本默认不为none，其显示隐藏由窗口显示/隐藏控制
+}
+.ab-context-menu {
+  display: none;
+  &.visible {
+    display: block;
+  }
+}
+.ab-context-menu.sub-menu {
+  display: none;
+  &.visible {
+    display: block;
+  }
+}
+
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
-  display: block; // [!code hl] Tauri版本默认不为none，其显示隐藏由窗口显示/隐藏控制
   // left: // set by js
   // top: // set by js
   margin: 0;
@@ -182,10 +198,6 @@ html, body, #main {
   z-index: 10;
   list-style: none;
   padding: 4px;
-
-  &.visible {
-    display: block;
-  }
 
   >ul, >li, >div, >span, >button, >input {
     box-sizing: border-box;
@@ -228,13 +240,9 @@ html, body, #main {
   }
 }
 .ab-context-menu.sub-menu {
-  display: none;
   position: absolute;
   top: -4px; // ul padding
   left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
-  &.visible {
-    display: block;
-  }
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */

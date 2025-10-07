@@ -8,6 +8,7 @@ import {
 } from 'obsidian'
 import { ABContextMenu } from '@/Core/contextmenu/index'
 import { type ContextMenuItems, root_menu } from "@/Core/contextmenu/demo"
+import { global_setting } from '@/Core/setting'
 
 // import { ABContextMenu, root_menu_raw, root_menu } from '../../../Pro/src/contextmenu' // [!code hl] obsidian pro
 // onMounted(() => {
@@ -232,6 +233,15 @@ export function registerABContextMenuDemo(plugin: Plugin) {
   })
 }
 
+global_setting.api.sendText = async (text: string) => {
+  const plugin = global_setting.other.obsidian_plugin
+  if (!plugin) return
+  const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
+  if (!cursorInfo) return
+
+  cursorInfo.editor.replaceSelection(text)
+}
+
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
   const amContextMenu = new ABContextMenu(document.body as HTMLDivElement)
@@ -243,9 +253,9 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: '展开 AnyMenu 面板',
     // callback: () => {},
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
-      const pos = getCursorPosition(plugin, editor);
-      if (pos && pos.left && pos.bottom) {
-        amContextMenu.visual_show(pos.left + 2, pos.bottom + 2)
+      const cursorInfo = getCursorInfo(plugin, editor);
+      if (cursorInfo) {
+        amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
       }
     },
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
@@ -255,17 +265,20 @@ export function registerAMContextMenu(plugin: Plugin) {
 
   // 注册工具带
   plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {
-    const pos = getCursorPosition(plugin)
-    if (pos && pos.left && pos.bottom) {
-      amContextMenu.visual_show(pos.left + 2, pos.bottom + 2)
-    }
+    const cursorInfo = getCursorInfo(plugin)
+    if (cursorInfo) {
+        amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
+      }
   })
 }
 
 /** 获取游标位置
  * @param plugin 有editor优先用editor，没有则尝试通过plugin获取当前活动的editor
  */
-function getCursorPosition(plugin: Plugin, editor?: Editor): {left: number, top: number, right: number, bottom: number}|void {
+function getCursorInfo(plugin: Plugin, editor?: Editor): {
+  editor: Editor,
+  pos: {left: number, top: number, right: number, bottom: number}
+} | void {
   // editor
   if (!editor) {
     const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView); 
@@ -294,7 +307,10 @@ function getCursorPosition(plugin: Plugin, editor?: Editor): {left: number, top:
     if (coords) {
       console.log('cursor xyPosition, cm pos', coords)
       
-      return { left: coords.left, top: coords.top, right: coords.right, bottom: coords.bottom }
+      return {
+        editor: editor,
+        pos: { left: coords.left, top: coords.top, right: coords.right, bottom: coords.bottom }
+      }
     }
   }
 
@@ -304,7 +320,10 @@ function getCursorPosition(plugin: Plugin, editor?: Editor): {left: number, top:
     const rect = cursorElement.getBoundingClientRect()
     console.log('cursor xyPosition, cursorEl pos', rect)
 
-    return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom }
+    return {
+      editor: editor,
+      pos: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom }
+    }
   }
   function getCursorElement(): HTMLElement | null {
     // 查找 CodeMirror 光标元素

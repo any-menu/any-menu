@@ -316,7 +316,18 @@ export class ABContextMenu {
   // #endregion
 
   public async sendText(str: string) {
+    if (global_setting.env === 'app') {
+      console.error('需继承并重载该方法'); this.visual_hide(); return;
+    }
+    else if (global_setting.env === 'obsidian-plugin') {
+      global_setting.api.sendText(str); this.visual_hide(); return;
+    }
+    // 后面是通用 browser 环境
+
     // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
+    // 注意:
+    // - 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
+    // - 但 Tauri 程序中，我们采用了失焦的方式展开菜单
     const activeElement: Element|null = document.activeElement
 
     // 检查该元素是否是可编辑的输入框或文本域
@@ -324,15 +335,10 @@ export class ABContextMenu {
       console.warn('没有活动的元素，将demo文本生成到剪贴板')
       navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
     } else {
-      // 由app重新继承该类并实现
-      // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
-      // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-      if (global_setting.env === 'app') { console.error('需继承并重载该方法'); return }
-
-      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str)
+      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
     }
 
-    this.visual_hide()
+    this.visual_hide(); return;
   }
 
   // -------------------- 使用示例 --------------------

@@ -140,10 +140,27 @@ html, body, #main {
   --ab-menu-text-color: #CCCCCC;
 }
 
+#main > .ab-context-menu {
+  display: block;
+}
+
+.ab-context-menu {
+  display: none;
+}
+.ab-context-menu.visible {
+  display: block;
+}
+
+.ab-context-menu.sub-menu {
+  display: none;
+}
+.ab-context-menu.sub-menu.visible {
+  display: block;
+}
+
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
-  display: block;
   margin: 0;
   min-width: 180px;
   background-color: var(--ab-menu-bg-color);
@@ -153,9 +170,6 @@ html, body, #main {
   z-index: 10;
   list-style: none;
   padding: 4px;
-}
-.ab-context-menu.visible {
-  display: block;
 }
 .ab-context-menu > ul, .ab-context-menu > li, .ab-context-menu > div, .ab-context-menu > span, .ab-context-menu > button, .ab-context-menu > input {
   box-sizing: border-box;
@@ -194,13 +208,9 @@ html, body, #main {
 }
 
 .ab-context-menu.sub-menu {
-  display: none;
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
-}
-.ab-context-menu.sub-menu.visible {
-  display: block;
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */

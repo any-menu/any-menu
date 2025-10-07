@@ -13,12 +13,16 @@ import {
   type MarkdownPostProcessorContext
 } from 'obsidian'
 import { registerABContextMenu, registerAMContextMenu } from './contextmenu'
+import { global_setting } from '@/Core/setting'
+
+global_setting.env = 'obsidian-plugin'
 
 export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface
 
   async onload() {
     console.log('>>> Loading plugin AnyMenu')
+    global_setting.other.obsidian_plugin = this
 
     // 菜单面板
     registerABContextMenu(this) // 初始化菜单 - 默认菜单系统
