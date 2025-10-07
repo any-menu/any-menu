@@ -16,23 +16,11 @@ global_setting.api.sendText = async (str: string) => {
 
 export class ABContextMenu2 extends ABContextMenu {
   public override async sendText(str: string) {
-    // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
-    const activeElement: Element|null = document.activeElement
-
-    // 检查该元素是否是可编辑的输入框或文本域
-    if (!activeElement) {
-      console.warn('没有活动的元素，将demo文本生成到剪贴板')
-      navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
-    } else {
-      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str)
-
-      await global_setting.api.sendText(str)
-    }
-
+    await global_setting.api.sendText(str)
     this.visual_hide()
   }
 
-  protected visual_hide(): void {
+  visual_hide(): void {
     super.visual_hide()
     hideWindow()
   }

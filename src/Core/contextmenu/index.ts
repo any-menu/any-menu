@@ -320,7 +320,7 @@ export class ABContextMenu {
       console.error('需继承并重载该方法'); this.visual_hide(); return;
     }
     else if (global_setting.env === 'obsidian-plugin') {
-      global_setting.api.sendText(str); this.visual_hide(); return;
+      await global_setting.api.sendText(str); this.visual_hide(); return;
     }
     // 后面是通用 browser 环境
 
@@ -335,6 +335,7 @@ export class ABContextMenu {
       console.warn('没有活动的元素，将demo文本生成到剪贴板')
       navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
     } else {
+      await global_setting.api.sendText(str)
       // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
     }
 
