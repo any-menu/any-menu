@@ -247,8 +247,10 @@ export function registerAMContextMenu(plugin: Plugin) {
       if (pos && pos.left && pos.bottom) {
         amContextMenu.visual_show(pos.left + 2, pos.bottom + 2)
       }
-    }
-    // hotkeys: [] // 通常不在代码里重复定义，而在manifest中声明
+    },
+    hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
+      { modifiers: ["Alt"], key: "S" }
+    ]
   });
 
   // 注册工具带
@@ -260,6 +262,9 @@ export function registerAMContextMenu(plugin: Plugin) {
   })
 }
 
+/** 获取游标位置
+ * @param plugin 有editor优先用editor，没有则尝试通过plugin获取当前活动的editor
+ */
 function getCursorPosition(plugin: Plugin, editor?: Editor): {left: number, top: number, right: number, bottom: number}|void {
   // editor
   if (!editor) {
