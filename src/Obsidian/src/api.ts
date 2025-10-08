@@ -2,30 +2,26 @@
 
 import { RequestUrlParam, requestUrl } from 'obsidian'
 
+/**
+ * 与后端交互的 API，此处使用了较为节约成本的 gitee 作为存储和交互的服务器
+ * 暂时用不上的放后面，并进行了一些分类
+ */
 export class API {
   geteeOwner = 'any-menu';
   geteeRepo = 'any-menu';
+  geteeLanguage = 'zh-cn';
+  I18N_ADMIN_TOKEN = '';
+
   constructor() {
   }
 
-  public async version() {
-    const RequestUrlParam: RequestUrlParam = {
-      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/version.json`,
-      method: 'GET'
-    };
-    try {
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      return { 'state': true, 'data': error };
-    }
-  }
+  // #region 查 - 词典相关
 
   // 获取翻译文件
   public async giteeGetTranslation(type: string, id: string, version: string) {
     try {
       const RequestUrlParam: RequestUrlParam = {
-        url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${type}/dict/${id}/zh-cn/${version}.json`,
+        url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${type}/dict/${id}/${this.geteeLanguage}/${version}.json`,
         method: 'GET'
       };
       const response = await requestUrl(RequestUrlParam);
@@ -48,6 +44,83 @@ export class API {
   //     return { 'state': false, 'data': '' };
   //   }
   // }
+
+  // 获取目录
+  public async giteeGetDirectory(type: string) {
+    const RequestUrlParam: RequestUrlParam = {
+      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${type}/directory/${this.geteeLanguage}.json`,
+      method: 'GET'
+    };
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+  }
+
+  // #endregion
+
+  // #region 查 - 文件
+
+  /** 从 Gitee 下载文件
+   * 从 Gitee 下载文件
+   * 这个函数通过 Gitee API 下载指定仓库中的文件。
+   * @param url 文件在 Gitee 仓库中的相对路径
+   * @returns 一个对象，包含状态（state）和数据（data）。如果请求成功，state 为 true，data 为文件内容；如果请求失败，state 为 false，data 为错误信息。
+   */
+  public async giteeDownload(url: string) {
+    try {
+      const RequestUrlParam: RequestUrlParam = {
+        url: url,
+        method: 'GET'
+      };
+      console.log(RequestUrlParam)
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.text };
+    } catch (error) {
+      console.log(error)
+      return { 'state': false, 'data': '' };
+    }
+  }
+
+  /** 从 Gitee 获取文件
+   * 从 Gitee 获取文件
+   * 这个函数通过 Gitee API 获取指定仓库中的文件内容。
+   * @param url 文件在 Gitee 仓库中的相对路径
+   * @returns 一个对象，包含状态（state）和数据（data）。如果请求成功，state 为 true，data 为文件内容；如果请求失败，state 为 false，data 为错误信息。
+   */
+  public async giteeGetFile(url: string) {
+    const RequestUrlParam: RequestUrlParam = {
+      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${url}`,
+      method: 'GET'
+    };
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+
+  }
+
+  // #endregion
+
+  // #region 查 - 状态
+
+  public async version() {
+    const RequestUrlParam: RequestUrlParam = {
+      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/version.json`,
+      method: 'GET'
+    };
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': true, 'data': error };
+    }
+  }
+
   // 获取token
   public async giteeGetToken() {
     const RequestUrlParam: RequestUrlParam = {
@@ -62,42 +135,14 @@ export class API {
       return { 'state': false, 'data': error };
     }
   }
-  // 获取目录
-  /*public async giteeGetDirectory(type: string) {
-    const RequestUrlParam: RequestUrlParam = {
-      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${type}/directory/${this.i18n.settings.I18N_LANGUAGE}.json`,
-      method: 'GET'
-    };
-    try {
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      return { 'state': false, 'data': error };
-    }
-  }*/
 
-  public async giteeGetDirectoryAdmin(type: string, language: string) {
-    const RequestUrlParam: RequestUrlParam = {
-      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${type}/directory/${language}.json`,
-      method: 'GET'
-    };
-    try {
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      return { 'state': false, 'data': error };
-    }
-
-  }
-
-  /*
   public async giteeGetSha(path: string) {
     try {
       const RequestUrlParam: RequestUrlParam = {
         url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/contents/${path}`,
         method: 'GET',
         body: JSON.stringify({
-          access_token: this.i18n.settings.I18N_ADMIN_TOKEN,
+          access_token: this.I18N_ADMIN_TOKEN,
           owner: this.geteeOwner,
           repo: this.geteeRepo,
           path: path
@@ -116,7 +161,7 @@ export class API {
       const RequestUrlParam: RequestUrlParam = {
         url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/contents/${path}`,
         method: 'GET',
-        body: JSON.stringify({ access_token: this.i18n.settings.I18N_ADMIN_TOKEN, owner: this.geteeOwner, repo: this.geteeRepo, path: path }),
+        body: JSON.stringify({ access_token: this.I18N_ADMIN_TOKEN, owner: this.geteeOwner, repo: this.geteeRepo, path: path }),
       };
       const response = await requestUrl(RequestUrlParam);
       return { 'state': true, 'data': response.json };
@@ -124,34 +169,6 @@ export class API {
       return { 'state': false, 'data': error };
     }
   }
-
-  public async giteeGetContributor() {
-    try {
-      const RequestUrlParam: RequestUrlParam = {
-        url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/translation/contributor/zh-cn.json`,
-        method: 'GET'
-      };
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      return { 'state': false, 'data': error };
-    }
-  }
-
-  public async giteeGetReleasesLatest() {
-    try {
-      const RequestUrlParam: RequestUrlParam = {
-        url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/releases/latest`,
-        method: 'GET'
-      };
-      console.log(RequestUrlParam)
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      console.log(error)
-      return { 'state': false, 'data': '' };
-    }
-  }*/
 
   /** 获取 Gitee 仓库的所有 Issue
    * 获取 Gitee 仓库的所有 Issue
@@ -189,6 +206,97 @@ export class API {
       return { 'state': false, 'data': error };
     }
   }
+
+  /** 异步获取 Gitee 用户信息的函数。
+   * 异步获取 Gitee 用户信息的函数。
+   * 
+   * 该函数通过向 Gitee API 发送 GET 请求来获取当前认证用户的基本信息。
+   * 需要在请求头中包含一个有效的 Gitee 访问令牌。
+   * @returns 一个对象，包含获取操作的状态和数据。
+   */
+  public async giteeUser() {
+    const RequestUrlParam: RequestUrlParam = {
+      url: `https://gitee.com/api/v5/user`,
+      method: 'GET',
+      headers: {
+        'Authorization': `token ${this.I18N_ADMIN_TOKEN}`
+      }
+    };
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+  }
+
+  /** 检查用户是否是仓库的成员。
+   * 检查用户是否是仓库的成员。
+   * @param owner 仓库的所有者。
+   * @param repo 仓库的名称。
+   * @param username 要检查的用户名。
+   * @param accessToken 用于身份验证的访问令牌。
+   * @returns 一个对象，包含检查结果的状态和数据。
+   */
+  public async checkUser(username: string) {
+    const RequestUrlParam = {
+      url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/collaborators/${username}`,
+      method: 'GET',
+      headers: {
+        'Authorization': `token ${this.I18N_ADMIN_TOKEN}`
+      },
+      body: JSON.stringify({
+        owner: this.geteeOwner,
+        repo: this.geteeRepo,
+        username: username
+      })
+    };
+  
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      if (response.status === 204) {
+        return { 'state': true, 'data': true };
+      } else {
+        return { 'state': false, 'data': false };
+      }
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+  }
+
+  /** 贡献者 */
+  public async giteeGetContributor() {
+    try {
+      const RequestUrlParam: RequestUrlParam = {
+        url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/translation/contributor/zh-cn.json`,
+        method: 'GET'
+      };
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+  }
+
+  /** 插件本体最新版本 */
+  public async giteeGetReleasesLatest() {
+    try {
+      const RequestUrlParam: RequestUrlParam = {
+        url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/releases/latest`,
+        method: 'GET'
+      };
+      console.log(RequestUrlParam)
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      console.log(error)
+      return { 'state': false, 'data': '' };
+    }
+  }
+
+  // #endregion
+
+  // #region 写
 
   /** 创建一个新的 Gitee Issue
    * 创建一个新的 Gitee Issue
@@ -239,29 +347,29 @@ export class API {
    * @param state 要更新的状态
    * @returns 一个对象，包含状态（state）和数据（data）。如果请求成功，state 为 true，data 为更新后的 Issue 信息；如果请求失败，state 为 false，data 为错误信息。
    */
-  // public async giteePatchIssue(number: string, state: string) {
-  //   const RequestUrlParam: RequestUrlParam = {
-  //     url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/issues/${number}`,
-  //     method: 'PATCH',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Charset': 'UTF-8'
-  //     },
-  //     body: JSON.stringify({
-  //       access_token: this.i18n.settings.I18N_ADMIN_TOKEN,
-  //       owner: this.geteeOwner,
-  //       repo: this.geteeRepo,
-  //       number: number,
-  //       state: state
-  //     }),
-  //   };
-  //   try {
-  //     const response = await requestUrl(RequestUrlParam);
-  //     return { 'state': true, 'data': response.json };
-  //   } catch (error) {
-  //     return { 'state': false, 'data': error };
-  //   }
-  // }
+  public async giteePatchIssue(number: string, state: string) {
+    const RequestUrlParam: RequestUrlParam = {
+      url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/issues/${number}`,
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Charset': 'UTF-8'
+      },
+      body: JSON.stringify({
+        access_token: this.I18N_ADMIN_TOKEN,
+        owner: this.geteeOwner,
+        repo: this.geteeRepo,
+        number: number,
+        state: state
+      }),
+    };
+    try {
+      const response = await requestUrl(RequestUrlParam);
+      return { 'state': true, 'data': response.json };
+    } catch (error) {
+      return { 'state': false, 'data': error };
+    }
+  }
 
   // public async giteePostIssueComments(number: string, body: string) {
   //   try {
@@ -295,47 +403,6 @@ export class API {
   //     return { 'state': false, 'data': error };
   //   }
   // }
-
-  /** 从 Gitee 下载文件
-   * 从 Gitee 下载文件
-   * 这个函数通过 Gitee API 下载指定仓库中的文件。
-   * @param url 文件在 Gitee 仓库中的相对路径
-   * @returns 一个对象，包含状态（state）和数据（data）。如果请求成功，state 为 true，data 为文件内容；如果请求失败，state 为 false，data 为错误信息。
-   */
-  public async giteeDownload(url: string) {
-    try {
-      const RequestUrlParam: RequestUrlParam = {
-        url: url,
-        method: 'GET'
-      };
-      console.log(RequestUrlParam)
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.text };
-    } catch (error) {
-      console.log(error)
-      return { 'state': false, 'data': '' };
-    }
-  }
-
-  /** 从 Gitee 获取文件
-   * 从 Gitee 获取文件
-   * 这个函数通过 Gitee API 获取指定仓库中的文件内容。
-   * @param url 文件在 Gitee 仓库中的相对路径
-   * @returns 一个对象，包含状态（state）和数据（data）。如果请求成功，state 为 true，data 为文件内容；如果请求失败，state 为 false，data 为错误信息。
-   */
-  public async giteeGetFile(url: string) {
-    const RequestUrlParam: RequestUrlParam = {
-      url: `https://gitee.com/${this.geteeOwner}/${this.geteeRepo}/raw/master/${url}`,
-      method: 'GET'
-    };
-    try {
-      const response = await requestUrl(RequestUrlParam);
-      return { 'state': true, 'data': response.json };
-    } catch (error) {
-      return { 'state': false, 'data': error };
-    }
-
-  }
 
   /** 异步创建或更新 Gitee 仓库中的文件内容。
    * 异步创建或更新 Gitee 仓库中的文件内容。
@@ -404,60 +471,5 @@ export class API {
   //   }
   // }
 
-  /** 异步获取 Gitee 用户信息的函数。
-   * 异步获取 Gitee 用户信息的函数。
-   * 
-   * 该函数通过向 Gitee API 发送 GET 请求来获取当前认证用户的基本信息。
-   * 需要在请求头中包含一个有效的 Gitee 访问令牌。
-   * @returns 一个对象，包含获取操作的状态和数据。
-   */
-  // public async giteeUser() {
-  //   const RequestUrlParam: RequestUrlParam = {
-  //     url: `https://gitee.com/api/v5/user`,
-  //     method: 'GET',
-  //     headers: {
-  //       'Authorization': `token ${this.i18n.settings.I18N_ADMIN_TOKEN}`
-  //     }
-  //   };
-  //   try {
-  //     const response = await requestUrl(RequestUrlParam);
-  //     return { 'state': true, 'data': response.json };
-  //   } catch (error) {
-  //     return { 'state': false, 'data': error };
-  //   }
-  // }
-
-  /** 检查用户是否是仓库的成员。
-   * 检查用户是否是仓库的成员。
-   * @param owner 仓库的所有者。
-   * @param repo 仓库的名称。
-   * @param username 要检查的用户名。
-   * @param accessToken 用于身份验证的访问令牌。
-   * @returns 一个对象，包含检查结果的状态和数据。
-   */
-  // public async checkUser(username: string) {
-  //   const RequestUrlParam = {
-  //     url: `https://gitee.com/api/v5/repos/${this.geteeOwner}/${this.geteeRepo}/collaborators/${username}`,
-  //     method: 'GET',
-  //     headers: {
-  //       'Authorization': `token ${this.i18n.settings.I18N_ADMIN_TOKEN}`
-  //     },
-  //     body: JSON.stringify({
-  //       owner: this.geteeOwner,
-  //       repo: this.geteeRepo,
-  //       username: username
-  //     })
-  //   };
-    // 
-  //   try {
-  //     const response = await requestUrl(RequestUrlParam);
-  //     if (response.status === 204) {
-  //       return { 'state': true, 'data': true };
-  //     } else {
-  //       return { 'state': false, 'data': false };
-  //     }
-  //   } catch (error) {
-  //     return { 'state': false, 'data': error };
-  //   }
-  // }
+  // #endregion
 }
