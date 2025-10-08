@@ -42,7 +42,7 @@ export async function initMenu(el: HTMLDivElement) {
     console.warn("Failed to read directory:", error) // debug 环境会走这里，使用硬编码
     try {
       const files: string[]|null = await invoke("read_folder", {
-        path: '../../../docs/demo/'
+        path: '../../../store/dict/'
       })
       if (typeof files !== 'object' || !Array.isArray(files)) {
         throw new Error("Invalid directory listing format")
