@@ -9,6 +9,7 @@ import {
 import { ABContextMenu } from '@/Core/contextmenu/index'
 import { type ContextMenuItems, root_menu } from "@/Core/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
+import { API } from '../api'
 
 // import { ABContextMenu, root_menu_raw, root_menu } from '../../../Pro/src/contextmenu' // [!code hl] obsidian pro
 // onMounted(() => {
@@ -144,13 +145,13 @@ export function registerABContextMenu(plugin: Plugin) {
   abContextMenu.append_data(root_menu)
 }
 
-/** 注册obsidian右键菜单 (Demo)
+/** 注册obsidian右键菜单 (仅Demo，现无用)
  * 
  * by gpt
  * 
  * 推荐在onload中调用
  */
-export function registerABContextMenuDemo(plugin: Plugin) {
+function registerABContextMenuDemo(plugin: Plugin) {
   // 右键菜单 - 文件浏览器
   plugin.registerEvent(
     plugin.app.workspace.on('file-menu', (menu: Menu, file: TFile) => {
@@ -233,15 +234,6 @@ export function registerABContextMenuDemo(plugin: Plugin) {
   })
 }
 
-global_setting.api.sendText = async (text: string) => {
-  const plugin = global_setting.other.obsidian_plugin
-  if (!plugin) return
-  const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
-  if (!cursorInfo) return
-
-  cursorInfo.editor.replaceSelection(text)
-}
-
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
   const amContextMenu = new ABContextMenu(document.body as HTMLDivElement)
@@ -261,7 +253,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
       { modifiers: ["Alt"], key: "S" }
     ]
-  });
+  })
 
   // 注册工具带
   plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {
@@ -270,6 +262,54 @@ export function registerAMContextMenu(plugin: Plugin) {
         amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
       }
   })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // 临时api测试
+  const api = new API()
+
+  plugin.addCommand({
+    id: 'any-menu-api-test',
+    name: 'AnyMenu api 目录测试',
+    callback: async () => {
+      const ret = await api.giteeGetDirectory()
+      console.log('giteeGetDirectory', ret)
+    }
+  })
+
+  plugin.addCommand({
+    id: 'any-menu-api-test2',
+    name: 'AnyMenu api 文件测试',
+    callback: async () => {
+      const ret = await api.giteeGetDict()
+      console.log('giteeGetDict', ret)
+    }
+  })
+}
+
+// #region 通用部分
+
+global_setting.api.sendText = async (text: string) => {
+  const plugin = global_setting.other.obsidian_plugin
+  if (!plugin) return
+  const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
+  if (!cursorInfo) return
+
+  cursorInfo.editor.replaceSelection(text)
 }
 
 /** 获取游标位置
@@ -331,3 +371,5 @@ function getCursorInfo(plugin: Plugin, editor?: Editor): {
     return cursor
   }
 }
+
+// #endregion
