@@ -8,7 +8,7 @@
 
 **AnyMenu —— 一款强大的输入法助手/编辑器助手**
 
-（开发中）
+（开发中，会逐步放出 obsidian 版、windows app 版、其他平台 app 版）
 
 使用 - 基本演示:
 
@@ -138,7 +138,9 @@
 
 ## 鸣谢
 
-(词典/代码参考，帮助)
+(灵感/词典/代码参考，帮助)
 
 - [rime-ice](https://github.com/iDvel/rime-ice) 借用了其 opencc/ 下的 emoji 和 others 字典
 - [kanata](https://github.com/jtroo/kanata) 意义在于让我决定用rust作为后端语言开发此项目
+- [obsidian-i18n](https://github.com/Obsidian-Forge/obsidian-i18n/) 提供了低成本 (使用gitee服务器而非自建服务器) 的云词库设计
+- [any-block pro](https://github.com/any-block/any-block/) 我早期写的多级菜单雏形代码
