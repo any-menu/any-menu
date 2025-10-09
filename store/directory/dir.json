@@ -18,12 +18,6 @@
 		"version": ""
 	},
 	{
-		"id": "anymenu-background",
-		"path": "background.js",
-		"name": "background",
-		"version": ""
-	},
-	{
 		"id": "anymenu-date",
 		"path": "date.js",
 		"name": "date",

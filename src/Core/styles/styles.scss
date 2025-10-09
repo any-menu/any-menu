@@ -406,6 +406,20 @@ html, body, #main {
   }
 }
 
+.dict-table {
+  overflow-x: auto;
+  tbody {
+    overflow-y: auto;
+    tr>td:nth-last-child(1), tr>td:nth-last-child(2) {
+      padding: 0 10px;
+      border-radius: 10px;
+      background-color: gray;
+      color: white;
+      text-align: center;
+    }
+  }
+}
+
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */
 
 /* 适用于 Webkit 内核的浏览器 (Chrome, Safari, Edge 等) */

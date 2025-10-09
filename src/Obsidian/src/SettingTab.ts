@@ -10,6 +10,7 @@ export class AMSettingTab extends PluginSettingTab {
   display(): void {
     const {containerEl} = this;
     const { tab_nav_container, tab_content_container } = initSettingTab_1(containerEl)
+    initSettingTab_2(tab_nav_container, tab_content_container)
 
     const api = new API()
     const plugin = this.plugin
@@ -30,7 +31,5 @@ export class AMSettingTab extends PluginSettingTab {
         console.log('giteeGetDict', ret)
       }
     })
-
-    initSettingTab_2(tab_nav_container, tab_content_container)
   }
 }

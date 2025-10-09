@@ -16,8 +16,8 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   return { tab_nav_container, tab_content_container}
 }
 
+/// 标签栏切换 (需要最后执行)
 export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  // #region 标签栏切换 (需要最后执行)
   for (const nav of tab_nav_container.querySelectorAll('div.item')) {
     const index: string|null = nav.getAttribute('index')
     if (index == null) continue
@@ -34,7 +34,6 @@ export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_con
       content?.classList.add('active');
     }
   }
-  // #endregion
 }
 
 // mini docs (用于在首页显示一些简单的使用说明、链接)
@@ -63,31 +62,50 @@ function initSettingTab_api(tab_nav_container: HTMLElement, tab_content_containe
 
   // 可能包含文字提醒状态 / 表格
   const container = document.createElement('div'); tab_content.appendChild(container);
-
-  const list = document.createElement('ul'); container.appendChild(list);
-  list.textContent = `未加载，请手动点击刷新按钮重试`
-
+  const span = document.createElement('span'); container.appendChild(span);
+  const table = document.createElement('table'); container.appendChild(table);
+    table.classList.add('dict-table');
+  const table_thead = document.createElement('thead'); table.appendChild(table_thead);
+    const tr = document.createElement('tr'); table_thead.appendChild(tr);
+    const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
+    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
+    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
+    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'downloaded';
+    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled';
+  const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh Dict List'
     refresh_btn.onclick = async () => void getDict()
+  table.style.display = 'none'; span.style.display = 'block'; span.textContent = `未加载，请手动点击刷新按钮重试`;
 
+  // 动态加载内容
   void getDict()
   async function getDict() {
-    list.textContent = `加载中...`
+    table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载中...`
+
     const ret = await api.giteeGetDirectory()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
-      list.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
+      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
       return
     }
-    list.innerHTML = ''
+    table.style.display = 'table'; span.style.display = 'none'; span.textContent = '加载成功'
+    table_tbody.innerHTML = ''
     try {
       const dir = ret.data.json as {id: string, path: string, name: string}[]
       dir.forEach(item => {
-        const li = document.createElement('li'); list.appendChild(li);
-        li.textContent = `${item.name} (${item.path}) - ${item.name}`
+        const tr = document.createElement('tr'); table_tbody.appendChild(tr);
+        const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item.id;
+        const td2 = document.createElement('td'); tr.appendChild(td2);
+          const a = document.createElement('a'); td2.appendChild(a);
+          a.href = `${api.giteeBlobUrl}store/dict/${item.path}`
+          a.textContent = item.path
+          a.target = '_blank'
+        const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
+        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '未下载';
+        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用';
       })
     } catch (error) {
-      list.textContent = `加载失败，数据错误`
+      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
     }
   }
 }

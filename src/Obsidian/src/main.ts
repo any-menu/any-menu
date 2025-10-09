@@ -71,7 +71,7 @@ global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlRespo
       },
     }
   } catch (error: any) {
-    console.error('Obsidian request failed:', error);
+    console.error('Obsidian request failed:', error, conf);
     return {
       code: -1,
       msg: error?.message || 'An unknown error occurred in Obsidian request.',
