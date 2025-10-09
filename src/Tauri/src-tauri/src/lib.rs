@@ -117,7 +117,16 @@ pub fn run() {
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
-            let menu = Menu::with_items(app, &[&config_item, &quit_item])?; // 菜单项数组
+
+            // 菜单项数组
+            #[cfg(debug_assertions)]
+            let menu = {
+                // 只在 debug 模式下创建 "Main (Debug)" 菜单项
+                let main_debug_item = MenuItem::with_id(app, "main", "Main (Debug)", true, None::<&str>)?;
+                Menu::with_items(app, &[&main_debug_item, &config_item, &quit_item])?
+            };
+            #[cfg(not(debug_assertions))]
+            let menu = Menu::with_items(app, &[&config_item, &quit_item])?;
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
@@ -131,12 +140,12 @@ pub fn run() {
                     }
                     // 打开配置窗口
                     "config" => {
-                        // 如果配置窗口已存在，直接显示并聚焦
+                        // 如果窗口已存在，直接显示并聚焦
                         if let Some(window) = app.get_webview_window("am-config") {
                             let _ = window.show();
                             let _ = window.set_focus();
                         }
-                        // 如果配置窗口不存在，创建新窗口
+                        // 如果窗口不存在，创建新窗口
                         else {
                             let _config_window = tauri::WebviewWindowBuilder::new(
                                 app,
@@ -148,6 +157,23 @@ pub fn run() {
                             .min_inner_size(400.0, 300.0)
                             .center()
                             .resizable(true)
+                            .build();
+                        }
+                    }
+                    // 仅调试用 (如正常情况无法召唤main窗口时。正常不应使用，缺少一些窗口显示后的后操作)
+                    "main" => {
+                        // 如果窗口已存在，直接显示并聚焦
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                        // 如果窗口不存在，创建新窗口
+                        else {
+                            let _config_window = tauri::WebviewWindowBuilder::new(
+                                app,
+                                "main",
+                                tauri::WebviewUrl::App("index.html".into()), // 或者你的配置页面路径
+                            )
                             .build();
                         }
                     }
