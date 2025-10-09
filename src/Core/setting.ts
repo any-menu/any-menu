@@ -64,7 +64,7 @@ export const global_setting: {
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
-    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>
+    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null> // 统一的网络请求接口，并简化try/catch
   },
   /** 通常是any|null类型，是特有环境临时存的东西 */
   other: {
@@ -112,7 +112,7 @@ export interface UrlRequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: Record<string, string>;
   body?: BodyInit | null;
-  noParseJson?: boolean; // 是否尝试将响应解析为 JSON
+  isParseJson?: boolean; // 是否尝试将响应解析为 JSON
 }
 
 /**
@@ -122,6 +122,7 @@ export interface UrlResponseData {
   text: string;
   json?: any;
   originalResponse: any; // 原始响应对象，用于调试
+  // 可能还有 arrayBuffer headers json status text
 }
 
 /**

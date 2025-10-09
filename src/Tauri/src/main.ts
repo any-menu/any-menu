@@ -45,7 +45,7 @@ global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlRespo
     
     // 尝试解析 JSON，如果失败则回退
     let json = null;
-    if (!conf.noParseJson) {
+    if (conf.isParseJson) {
       try {
         json = JSON.parse(text);
       } catch (e) {
