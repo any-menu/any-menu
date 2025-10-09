@@ -1,9 +1,9 @@
 /**
- * 初始化设置标签页
+ * 初始化设置标签页 (!!! 需要依次调用 initSettingTab_1 和 initSettingTab_2)
  * @param el 
  * @returns 方便继续添加标签项
  */
-export function initSettingTab(el: HTMLElement): { tab_nav_container: HTMLElement, tab_content_container: HTMLElement } {
+export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElement, tab_content_container: HTMLElement } {
   el.classList.add('tab-root')
   const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
   const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
@@ -36,7 +36,11 @@ export function initSettingTab(el: HTMLElement): { tab_nav_container: HTMLElemen
   }
   // #endregion
 
-  // #region 标签栏切换
+  return { tab_nav_container, tab_content_container}
+}
+
+export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  // #region 标签栏切换 (需要最后执行)
   for (const nav of tab_nav_container.querySelectorAll('div.item')) {
     const index: string|null = nav.getAttribute('index')
     if (index == null) continue
@@ -54,6 +58,4 @@ export function initSettingTab(el: HTMLElement): { tab_nav_container: HTMLElemen
     }
   }
   // #endregion
-
-  return { tab_nav_container, tab_content_container}
 }

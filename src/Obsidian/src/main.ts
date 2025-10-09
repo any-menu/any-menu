@@ -44,7 +44,7 @@ global_setting.api.sendText = async (text: string) => {
 
 
 
-import { API } from './api'
+// import { API } from './api'
 
 // global_setting.api.urlRequest = async (url: string, options?: { method?: 'GET'|'POST', headers?: Record<string, string>, body?: any }): Promise<any> => {
 //   const response = await requestUrl({ url, method: options?.method, headers: options?.headers, body: options?.body })
@@ -54,23 +54,7 @@ import { API } from './api'
 // 临时api测试
 /*const api = new API()
 
-plugin.addCommand({
-  id: 'any-menu-api-test',
-  name: 'AnyMenu api 目录测试',
-  callback: async () => {
-    const ret = await api.giteeGetDirectory()
-    console.log('giteeGetDirectory', ret)
-  }
-})
-
-plugin.addCommand({
-  id: 'any-menu-api-test2',
-  name: 'AnyMenu api 文件测试',
-  callback: async () => {
-    const ret = await api.giteeGetDict()
-    console.log('giteeGetDict', ret)
-  }
-})*/
+*/
 
 // #endregion
 

@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { global_setting } from '../../Core/setting';
 import { toml_parse } from '../../Core/contextmenu/demo';
 import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager';
-import { initSettingTab } from '../../Core/SettingTab';
+import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab';
 
 const CONFIG_PATH = './am-user.toml'
 
@@ -12,7 +12,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
   if (!el) return
 
-  const { tab_nav_container, tab_content_container } = initSettingTab(el as HTMLElement)
+  const { tab_nav_container, tab_content_container } = initSettingTab_1(el as HTMLElement)
 
   // #region config
   {
@@ -61,6 +61,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     load_plugins()
   }
   // #endregion
+
+  initSettingTab_2(tab_nav_container, tab_content_container)
 })
 
 export async function load_config() {
