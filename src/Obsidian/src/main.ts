@@ -12,11 +12,15 @@ import {
   setIcon,
   type MarkdownPostProcessorContext
 } from 'obsidian'
-import { registerABContextMenu, registerAMContextMenu } from './contextmenu'
+import { getCursorInfo, registerABContextMenu, registerAMContextMenu } from './contextmenu'
 import { AMSettingTab } from "./SettingTab"
 import { global_setting } from '@/Core/setting'
 
+// #region api 适配 (Ob/App/Other 环境)
+
+import { RequestUrlParam, requestUrl } from 'obsidian'
 global_setting.env = 'obsidian-plugin'
+
 global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
   const app = global_setting.other.obsidian_plugin.app
   if (!app) { console.error('obsidian app对象未初始化'); return }
@@ -26,6 +30,49 @@ global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, 
   const mdrc: MarkdownRenderChild = new MarkdownRenderChild(el); 
   MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
 }
+
+global_setting.api.sendText = async (text: string) => {
+  const plugin = global_setting.other.obsidian_plugin
+  if (!plugin) return
+  const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
+  if (!cursorInfo) return
+
+  cursorInfo.editor.replaceSelection(text)
+}
+
+
+
+
+
+import { API } from './api'
+
+// global_setting.api.urlRequest = async (url: string, options?: { method?: 'GET'|'POST', headers?: Record<string, string>, body?: any }): Promise<any> => {
+//   const response = await requestUrl({ url, method: options?.method, headers: options?.headers, body: options?.body })
+//   return response
+// }
+
+// 临时api测试
+/*const api = new API()
+
+plugin.addCommand({
+  id: 'any-menu-api-test',
+  name: 'AnyMenu api 目录测试',
+  callback: async () => {
+    const ret = await api.giteeGetDirectory()
+    console.log('giteeGetDirectory', ret)
+  }
+})
+
+plugin.addCommand({
+  id: 'any-menu-api-test2',
+  name: 'AnyMenu api 文件测试',
+  callback: async () => {
+    const ret = await api.giteeGetDict()
+    console.log('giteeGetDict', ret)
+  }
+})*/
+
+// #endregion
 
 export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface

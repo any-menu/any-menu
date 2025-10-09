@@ -9,7 +9,6 @@ import {
 import { ABContextMenu } from '@/Core/contextmenu/index'
 import { type ContextMenuItems, root_menu } from "@/Core/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
-import { API } from '../api'
 
 // import { ABContextMenu, root_menu_raw, root_menu } from '../../../Pro/src/contextmenu' // [!code hl] obsidian pro
 // onMounted(() => {
@@ -262,60 +261,14 @@ export function registerAMContextMenu(plugin: Plugin) {
         amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
       }
   })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // 临时api测试
-  const api = new API()
-
-  plugin.addCommand({
-    id: 'any-menu-api-test',
-    name: 'AnyMenu api 目录测试',
-    callback: async () => {
-      const ret = await api.giteeGetDirectory()
-      console.log('giteeGetDirectory', ret)
-    }
-  })
-
-  plugin.addCommand({
-    id: 'any-menu-api-test2',
-    name: 'AnyMenu api 文件测试',
-    callback: async () => {
-      const ret = await api.giteeGetDict()
-      console.log('giteeGetDict', ret)
-    }
-  })
 }
 
 // #region 通用部分
 
-global_setting.api.sendText = async (text: string) => {
-  const plugin = global_setting.other.obsidian_plugin
-  if (!plugin) return
-  const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
-  if (!cursorInfo) return
-
-  cursorInfo.editor.replaceSelection(text)
-}
-
 /** 获取游标位置
  * @param plugin 有editor优先用editor，没有则尝试通过plugin获取当前活动的editor
  */
-function getCursorInfo(plugin: Plugin, editor?: Editor): {
+export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   editor: Editor,
   pos: {left: number, top: number, right: number, bottom: number}
 } | void {

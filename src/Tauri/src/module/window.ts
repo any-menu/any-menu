@@ -207,18 +207,6 @@ export async function hideWindow() {
 import { invoke } from "@tauri-apps/api/core"
 import { global_setting } from '../../../Core/setting'
 
-global_setting.api.getCursorXY = async () => {
-  const pos: any = await invoke("get_caret");
-  if (typeof pos === 'string') return { x: -1, y: -1 }
-  global_setting.state.selectedText = pos[2] && pos[2].length > 0 ? pos[2] : undefined
-  return { x: pos[0], y: pos[1] }
-}
-global_setting.api.getScreenSize = async () => {
-  const pos: any = await invoke("get_screen_size");
-  if (typeof pos === 'string') return { width: -1, height: -1 }
-  return { width: pos[0], height: pos[1] }
-}
-
 /** 缓存菜单尺寸 (仅一级菜单) */
 let menuSize = { width: -1, height: -1 }
 async function cacheMenuSize() {

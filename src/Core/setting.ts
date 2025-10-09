@@ -64,6 +64,7 @@ export const global_setting: {
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
+    urlRequest: (url: string, options?: { method?: 'GET'|'POST', headers?: Record<string, string>, body?: any }) => Promise<any>
   },
   /** 通常是any|null类型，是特有环境临时存的东西 */
   other: {
@@ -91,10 +92,11 @@ export const global_setting: {
     selectedText: undefined
   },
   api: {
-    readFile: async () => { console.error("需实现 readFile 方法"); return '' },
-    getCursorXY: async () => { console.error("需实现 getCursorXY 方法"); return { x: -1, y: -1 } },
-    getScreenSize: async () => { console.error("需实现 getScreenSize 方法"); return { width: -1, height: -1 } },
-    sendText: async () => { console.error("需实现 sendText 方法") }
+    readFile: async () => { console.error("需实现 api.readFile 方法"); return '' },
+    getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
+    getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
+    sendText: async () => { console.error("需实现 api.sendText 方法") },
+    urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null }
   },
   other: {
     obsidian_plugin: null,

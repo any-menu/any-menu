@@ -1,4 +1,32 @@
-import { global_state } from './module/window'
+// #region api适配 (Ob/App/Other 环境)
+import { global_state, hideWindow } from './module/window'
+import { invoke } from "@tauri-apps/api/core"
+
+global_setting.env = 'app'
+
+global_setting.api.getCursorXY = async () => {
+  const pos: any = await invoke("get_caret");
+  if (typeof pos === 'string') return { x: -1, y: -1 }
+  global_setting.state.selectedText = pos[2] && pos[2].length > 0 ? pos[2] : undefined
+  return { x: pos[0], y: pos[1] }
+}
+
+global_setting.api.getScreenSize = async () => {
+  const pos: any = await invoke("get_screen_size");
+  if (typeof pos === 'string') return { width: -1, height: -1 }
+  return { width: pos[0], height: pos[1] }
+}
+
+global_setting.api.sendText = async (str: string) => {
+  // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
+  // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
+  // 这里应该多一个判断。不过这里恒为后者
+  hideWindow()
+  await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
+  // await invoke("paste", { text: 'paste from button' })
+  await invoke("send", { text: str, method: global_setting.config.send_text_method })
+}
+// #endregion
 
 // #region 启动时阅读配置文件
 
@@ -30,8 +58,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 // #endregion
 
 // #region 项目模板 默认的表单功能、与后端沟通
-
-import { invoke } from "@tauri-apps/api/core"
 
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
