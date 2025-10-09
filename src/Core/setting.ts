@@ -60,7 +60,8 @@ export const global_setting: {
    *   获得编辑器对象并使用editor api (又可能是通用浏览器环境、obsidian api、其他) 等
    */
   api: {
-    readFile: (path: string) => Promise<string | unknown>
+    readFile: (path: string) => Promise<string | null>
+    readFolder: (path: string) => Promise<string[]>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
@@ -92,11 +93,12 @@ export const global_setting: {
     selectedText: undefined
   },
   api: {
-    readFile: async () => { console.error("需实现 api.readFile 方法"); return '' },
+    readFile: async () => { console.error("需实现 api.readFile 方法"); return null },
+    readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     sendText: async () => { console.error("需实现 api.sendText 方法") },
-    urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null }
+    urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null },
   },
   other: {
     obsidian_plugin: null,

@@ -10,7 +10,8 @@
 import {
   MarkdownRenderChild, MarkdownRenderer, loadMermaid, Plugin, MarkdownView,
   setIcon,
-  type MarkdownPostProcessorContext
+  type MarkdownPostProcessorContext,
+  type App
 } from 'obsidian'
 import { getCursorInfo, registerABContextMenu, registerAMContextMenu } from './contextmenu'
 import { AMSettingTab } from "./SettingTab"
@@ -90,7 +91,65 @@ export default class AnyMenuPlugin extends Plugin {
 
   async onload() {
     console.log('>>> Loading plugin AnyMenu')
+
+    // #region api 适配2 (Ob/App/Other 环境)
+    // 这部分是需要有 plugin 对象才能进行的初始化
+
     global_setting.other.obsidian_plugin = this
+
+    // 快速调试: 
+    // app.vault.adapter.exists("Template").then((a) => {console.log("---exists", a)})
+    // app.vault.adapter.list("Template").then(a => console.log("---list", a)) // 输出 {files:[], folders:[]} 相对库根的路径
+    global_setting.api.readFolder = async (path: string): Promise<string[]> => {
+      const plugin: any|null = global_setting.other.obsidian_plugin
+      const app = global_setting.other.obsidian_plugin?.app as App|null
+      if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized'); return [] }
+
+      const pluginBaseDir = plugin.manifest.dir
+      const targetPath = `${pluginBaseDir}/${path}`
+
+      try {
+        if (!await app.vault.adapter.exists(targetPath)) {
+          // await app.vault.adapter.mkdir(targetPath);
+          return []
+        }
+
+        const listedFiles = await app.vault.adapter.list(targetPath);
+        const fileNames = listedFiles.files
+          // .map((fullPath: string) => fullPath.split('/').pop())
+          .filter((fileName): fileName is string => !!fileName); // 类型判断器以确保所有元素均为字符串类型
+        const folderNames = listedFiles.folders
+          .map((fullPath: string) => fullPath += '/')
+          .filter((folderName): folderName is string => !!folderName);
+        return [...fileNames, ...folderNames];
+      } catch (error) {
+        console.error(`Failed to read folder at path: ${targetPath}`, error);
+        return [];
+      }
+    }
+
+    global_setting.api.readFile = async (path: string): Promise<string | null> => {
+      const plugin: any|null = global_setting.other.obsidian_plugin
+      const app = global_setting.other.obsidian_plugin?.app as App|null
+      if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized2'); return null }
+
+      const pluginBaseDir = plugin.manifest.dir
+      const targetPath = `${pluginBaseDir}/${path}`
+
+      try {
+        if (!await app.vault.adapter.exists(targetPath)) {
+          return null
+        }
+
+        const file_content: string = await app.vault.adapter.read(path);
+        return file_content;
+      } catch (error) {
+        console.error(`Failed to check file existence at path: ${targetPath}`, error);
+        return null
+      }
+    }
+
+    // #endregion
 
     await this.loadSettings()
     this.addSettingTab(new AMSettingTab(this.app, this))
