@@ -64,7 +64,7 @@ export const global_setting: {
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
-    urlRequest: (url: string, options?: { method?: 'GET'|'POST', headers?: Record<string, string>, body?: any }) => Promise<any>
+    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>
   },
   /** 通常是any|null类型，是特有环境临时存的东西 */
   other: {
@@ -102,4 +102,33 @@ export const global_setting: {
     obsidian_plugin: null,
     renderMarkdown: async (): Promise<void> => {},
   }
+}
+
+/**
+ * 请求配置接口
+ */
+export interface UrlRequestConfig {
+  url: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  headers?: Record<string, string>;
+  body?: BodyInit | null;
+  noParseJson?: boolean; // 是否尝试将响应解析为 JSON
+}
+
+/**
+ * 响应数据接口
+ */
+export interface UrlResponseData {
+  text: string;
+  json?: any;
+  originalResponse: any; // 原始响应对象，用于调试
+}
+
+/**
+ * 统一响应接口
+ */
+export interface UrlResponse {
+  code: number; // 0 表示成功, -1 表示失败
+  data?: UrlResponseData;
+  msg?: string;
 }

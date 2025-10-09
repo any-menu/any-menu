@@ -16,7 +16,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
     tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
 
     const div = document.createElement('div'); tab_content.appendChild(div);
-      div.textContent = `默认使用 Alt + A 打开菜单
+      div.textContent = `默认使用 Alt + A 打开菜单\n
 更多说明和教程浏览仓库: https://github.com/any-menu/any-menu`
 
     tab_nav.classList.add('active');

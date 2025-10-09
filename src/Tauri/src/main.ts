@@ -1,4 +1,5 @@
 // #region api适配 (Ob/App/Other 环境)
+import { global_setting, UrlRequestConfig, UrlResponse } from '../../Core/setting'
 import { global_state, hideWindow } from './module/window'
 import { invoke } from "@tauri-apps/api/core"
 
@@ -25,6 +26,51 @@ global_setting.api.sendText = async (str: string) => {
   await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
   // await invoke("paste", { text: 'paste from button' })
   await invoke("send", { text: str, method: global_setting.config.send_text_method })
+}
+
+global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+  try {
+    const response = await fetch(conf.url, {
+      method: conf.method || 'GET',
+      headers: conf.headers,
+      body: conf.body,
+    });
+
+    // 返回值适配
+    if (!response.ok) {
+      // 处理 HTTP 错误状态 (例如 404, 500)
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const text = await response.text();
+    
+    // 尝试解析 JSON，如果失败则回退
+    let json = null;
+    if (!conf.noParseJson) {
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        json = null;
+      }
+    }
+    return {
+      code: 0,
+      data: {
+        text: text,
+        json: json,
+        originalResponse: response,
+      },
+    };
+  } catch (error: any) {
+    console.error('Fetch request failed:', error);
+    return {
+      code: -1,
+      msg: error?.message || 'An unknown error occurred in fetch request.',
+      data: {
+        text: '',
+        originalResponse: error
+      }
+    };
+  }
 }
 // #endregion
 
@@ -85,7 +131,6 @@ window.addEventListener("DOMContentLoaded", () => {
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { initMenu } from './contextmenu'
-import { global_setting } from '../../Core/setting'
 
 // 前端模块
 window.addEventListener("DOMContentLoaded", () => {

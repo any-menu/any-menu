@@ -14,11 +14,10 @@ import {
 } from 'obsidian'
 import { getCursorInfo, registerABContextMenu, registerAMContextMenu } from './contextmenu'
 import { AMSettingTab } from "./SettingTab"
-import { global_setting } from '@/Core/setting'
+import { global_setting, UrlRequestConfig, UrlResponse } from '@/Core/setting'
 
 // #region api 适配 (Ob/App/Other 环境)
 
-import { RequestUrlParam, requestUrl } from 'obsidian'
 global_setting.env = 'obsidian-plugin'
 
 global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
@@ -40,21 +39,49 @@ global_setting.api.sendText = async (text: string) => {
   cursorInfo.editor.replaceSelection(text)
 }
 
+import { RequestUrlParam, requestUrl } from 'obsidian'
 
+global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+  try {
+    // 参数适配
+    const requestParams: RequestUrlParam = {
+      url: conf.url,
+      method: conf.method || 'GET',
+      headers: conf.headers,
+      body: conf.body as string | ArrayBuffer, // Obsidian `requestUrl` 需要更具体的类型
+    }
 
+    const response = await requestUrl(requestParams);
 
-
-// import { API } from './api'
-
-// global_setting.api.urlRequest = async (url: string, options?: { method?: 'GET'|'POST', headers?: Record<string, string>, body?: any }): Promise<any> => {
-//   const response = await requestUrl({ url, method: options?.method, headers: options?.headers, body: options?.body })
-//   return response
-// }
-
-// 临时api测试
-/*const api = new API()
-
-*/
+    // 返回值适配
+    let json = null;
+    if (!conf.noParseJson) {
+      try {
+        json = response.json;
+      } catch (e) {
+        json = null;
+      }
+    }
+    return {
+      code: 0,
+      data: {
+        text: response.text,
+        json: json,
+        originalResponse: response,
+      },
+    }
+  } catch (error: any) {
+    console.error('Obsidian request failed:', error);
+    return {
+      code: -1,
+      msg: error?.message || 'An unknown error occurred in Obsidian request.',
+      data: {
+        text: '',
+        originalResponse: error
+      }
+    };
+  }
+}
 
 // #endregion
 
