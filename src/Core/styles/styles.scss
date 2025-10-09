@@ -304,7 +304,7 @@ html, body, #main {
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
-#am-config {
+.tab-root {
   padding: 0px;
   position: relative;
   overflow: hidden;
@@ -321,16 +321,17 @@ html, body, #main {
     display: flex;
     height: 32px;
     line-height: 32px;
+    background-color: var(--ab-tab-root-bd-color);
 
     >div {
       display: inline-block;
       padding: 0 12px;
       cursor: pointer;
 
-      background-color: var(--ab-tab-root-bg-color);
+      background-color: var(--ab-tab-root-bd-color);
       &.active {
         border-bottom: none;
-        background-color: var(--ab-tab-root-hv-color);
+        background-color: var(--ab-tab-root-bg-color);
       }
     }
   }
@@ -340,12 +341,13 @@ html, body, #main {
     bottom: 0;
     left: 0;
     right: 0;
+    background-color: var(--ab-tab-root-bg-color);
 
     >div {
       width: 100%;
       height: 100%;
       padding: 8px;
-      background-color: var(--ab-tab-root-hv-color);
+      background-color: var(--ab-tab-root-bg-color);
 
       display: none;
       &.active {

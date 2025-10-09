@@ -13,6 +13,7 @@ import {
   type MarkdownPostProcessorContext
 } from 'obsidian'
 import { registerABContextMenu, registerAMContextMenu } from './contextmenu'
+import { AMSettingTab } from "./SettingTab"
 import { global_setting } from '@/Core/setting'
 
 global_setting.env = 'obsidian-plugin'
@@ -32,6 +33,9 @@ export default class AnyMenuPlugin extends Plugin {
   async onload() {
     console.log('>>> Loading plugin AnyMenu')
     global_setting.other.obsidian_plugin = this
+
+    await this.loadSettings()
+    this.addSettingTab(new AMSettingTab(this.app, this))
 
     // 菜单面板
     registerABContextMenu(this) // 初始化菜单 - 默认菜单系统

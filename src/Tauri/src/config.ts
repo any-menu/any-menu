@@ -4,6 +4,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { global_setting } from '../../Core/setting';
 import { toml_parse } from '../../Core/contextmenu/demo';
 import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager';
+import { initSettingTab } from '../../Core/SettingTab';
 
 const CONFIG_PATH = './am-user.toml'
 
@@ -11,25 +12,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
   if (!el) return
 
-  el.classList.add('tab-root')
-  const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
-  const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
+  const { tab_nav_container, tab_content_container } = initSettingTab(el as HTMLElement)
 
-  // #region mini docs
-  {
-    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-      tab_nav.textContent = 'Mini docs';
-    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-    tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
-
-    const div = document.createElement('div'); tab_content.appendChild(div);
-      div.textContent = `默认使用 Alt + A 打开菜单`
-
-    tab_nav.classList.add('active');
-    tab_content.classList.add('active');
-  }
-  // #endregion
-  
   // #region config
   {
     const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
@@ -75,25 +59,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     }
     load_plugins()
-  }
-  // #endregion
-
-  // #region 标签栏切换
-  for (const nav of tab_nav_container.querySelectorAll('div.item')) {
-    const index: string|null = nav.getAttribute('index')
-    if (index == null) continue
-    ;(nav as HTMLElement).onclick = () => {
-      for (const nav_item of tab_nav_container.children) {
-        nav_item.classList.remove('active');
-      }
-      nav.classList.add('active');
-      let content: HTMLElement|null = null
-      for (const content_ of tab_content_container.children) {
-        content_.classList.remove('active');
-        if (content_.getAttribute('index') === index) content = content_ as HTMLElement;
-      }
-      content?.classList.add('active');
-    }
   }
   // #endregion
 })
