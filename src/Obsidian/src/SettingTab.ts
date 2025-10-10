@@ -27,7 +27,7 @@ export class AMSettingTab extends PluginSettingTab {
       id: 'any-menu-api-test2',
       name: 'AnyMenu api 文件测试',
       callback: async () => {
-        const ret = await api.giteeGetDict()
+        const ret = await api.giteeGetDict('AdQuote.toml')
         console.log('giteeGetDict', ret)
       }
     })

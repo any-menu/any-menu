@@ -55,7 +55,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
 }
 
 const local_dict_list: { // 本地/已下载的词典
-  id: string, path: string, name: string,
+  id: string,
   isDownloaded: boolean, isEnabled: boolean
 }[] = []
 const web_dict_list: { // 可下载/已下载的网络字典
@@ -63,7 +63,7 @@ const web_dict_list: { // 可下载/已下载的网络字典
   isDownloaded: boolean, isEnabled: boolean
 }[] = []
 
-// 网络字典
+/** 网络字典 */
 function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const api = new API()
 
@@ -84,8 +84,8 @@ function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_cont
     }
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
     const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
-    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'downloaded';
-    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled';
+    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'downloaded'; td4.classList.add('btn');
+    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh Dict List'
@@ -109,7 +109,7 @@ function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_cont
       web_dict_list.length = 0 // clear array
       dir.forEach(item => {
         web_dict_list.push({...item, isDownloaded: false, isEnabled: false})
-        const tr = document.createElement('tr'); table_tbody.appendChild(tr);
+        const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item.id);
         if (global_setting.isDebug) {
           const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item.id;
         }
@@ -119,11 +119,11 @@ function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_cont
           a.textContent = item.path
           a.target = '_blank'
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
-        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '未下载';
+        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '未下载'; td4.classList.add('btn');
           td4.onclick = async () => {
             const ret = await api.giteeGetDict(item.path)
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用';
+        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用'; td5.classList.add('btn');
       })
     } catch (error) {
       table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
@@ -131,7 +131,59 @@ function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_cont
   }
 }
 
-// 本地字典
+/** 本地字典 */
 function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = 'Local Dict';
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'local-dict'); tab_content.setAttribute('index', 'local-dict');
+
+  // 可能包含文字提醒状态 / 表格
+  const container = document.createElement('div'); tab_content.appendChild(container);
+  const span = document.createElement('span'); container.appendChild(span);
+  const table = document.createElement('table'); container.appendChild(table);
+    table.classList.add('dict-table');
+  const table_thead = document.createElement('thead'); table.appendChild(table_thead);
+    const tr = document.createElement('tr'); table_thead.appendChild(tr);
+    if (global_setting.isDebug) {
+      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
+    }
+    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
+    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
+    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
+  const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
+  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
+    refresh_btn.textContent = 'Refresh Dict List'
+    refresh_btn.onclick = async () => void getDict()
+  table.style.display = 'none'; span.style.display = 'block'; span.textContent = `未加载，请手动点击刷新按钮重试`;
+
+  // 动态加载内容
+  void getDict()
+  async function getDict() {
+    table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载中...`
+
+    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+    table.style.display = 'table'; span.style.display = 'none'; span.textContent = '加载成功'
+    table_tbody.innerHTML = ''
+    try {
+      local_dict_list.length = 0 // clear array
+      ret.forEach(item => {
+        local_dict_list.push({id: item, isDownloaded: false, isEnabled: false})
+        const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item);
+        if (global_setting.isDebug) {
+          const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item;
+        }
+        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用'; td5.classList.add('btn');
+          td5.setAttribute('target-id', item);
+          td5.onclick = async () => {
+            local_dict_list.forEach(d => {
+              if (d.id === item) d.isEnabled = !d.isEnabled
+              // 然后更新字典对象
+            })
+          }
+      })
+    } catch (error) {
+      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
+    }
+  }
 }

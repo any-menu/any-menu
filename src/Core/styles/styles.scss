@@ -411,7 +411,7 @@ html, body, #main {
   overflow-x: auto;
   tbody {
     overflow-y: auto;
-    tr>td:nth-last-child(1), tr>td:nth-last-child(2) {
+    tr>td.btn {
       padding: 0 10px;
       border-radius: 10px;
       background-color: gray;

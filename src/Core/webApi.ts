@@ -39,11 +39,8 @@ export class API {
 
   // 获取本地目录 (已经下载了哪些词典)
   public async localGetDirectory() {
-    // Ensure plugin data directory exists
-    if (!await app.vault.adapter.exists(pluginDataDir)) {
-      await app.vault.adapter.mkdir(pluginDataDir);
-    }
-    const localFiles = new Set((await app.vault.adapter.list(pluginDataDir)).files.map(f => f.split('/').pop()));
+    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+    return ret
   }
 
   // 获取翻译文件

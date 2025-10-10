@@ -348,7 +348,7 @@ html, body, #main {
 .dict-table tbody {
   overflow-y: auto;
 }
-.dict-table tbody tr > td:nth-last-child(1), .dict-table tbody tr > td:nth-last-child(2) {
+.dict-table tbody tr > td.btn {
   padding: 0 10px;
   border-radius: 10px;
   background-color: gray;
