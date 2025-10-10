@@ -228,5 +228,5 @@ send_text_method = "clipboard"
 search_limit = 500
 
 # 词库路径列表。在debug模式下不使用这个路径，而是硬编码
-dict_paths = "./dict"
+dict_paths = "./dict/"
 `

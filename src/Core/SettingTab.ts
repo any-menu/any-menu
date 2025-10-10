@@ -1,8 +1,9 @@
+import { global_setting } from './setting';
 import { API } from './webApi'
 
 /**
  * 初始化设置标签页 (!!! 需要依次调用 initSettingTab_1 和 initSettingTab_2)
- * @param el 
+ * @param el
  * @returns 方便继续添加标签项
  */
 export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElement, tab_content_container: HTMLElement } {
@@ -11,7 +12,9 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
 
   initSettingTab_miniDocs(tab_nav_container, tab_content_container)
-  initSettingTab_api(tab_nav_container, tab_content_container)
+  // TODO 应该按先本地再云库的顺序依次而非异步更新，1. 后者不是必须加载的 2. 后者需要先检查本地是否已存在
+  initSettingTab_localDict(tab_nav_container, tab_content_container)
+  initSettingTab_webDict(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
 }
@@ -51,8 +54,17 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
   tab_content.classList.add('active');
 }
 
+const local_dict_list: { // 本地/已下载的词典
+  id: string, path: string, name: string,
+  isDownloaded: boolean, isEnabled: boolean
+}[] = []
+const web_dict_list: { // 可下载/已下载的网络字典
+  id: string, path: string, name: string,
+  isDownloaded: boolean, isEnabled: boolean
+}[] = []
+
 // 网络字典
-function initSettingTab_api(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const api = new API()
 
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
@@ -67,7 +79,9 @@ function initSettingTab_api(tab_nav_container: HTMLElement, tab_content_containe
     table.classList.add('dict-table');
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
-    const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
+    if (global_setting.isDebug) {
+      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
+    }
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
     const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
     const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'downloaded';
@@ -92,9 +106,13 @@ function initSettingTab_api(tab_nav_container: HTMLElement, tab_content_containe
     table_tbody.innerHTML = ''
     try {
       const dir = ret.data.json as {id: string, path: string, name: string}[]
+      web_dict_list.length = 0 // clear array
       dir.forEach(item => {
+        web_dict_list.push({...item, isDownloaded: false, isEnabled: false})
         const tr = document.createElement('tr'); table_tbody.appendChild(tr);
-        const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item.id;
+        if (global_setting.isDebug) {
+          const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item.id;
+        }
         const td2 = document.createElement('td'); tr.appendChild(td2);
           const a = document.createElement('a'); td2.appendChild(a);
           a.href = `${api.giteeBlobUrl}store/dict/${item.path}`
@@ -102,10 +120,18 @@ function initSettingTab_api(tab_nav_container: HTMLElement, tab_content_containe
           a.target = '_blank'
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
         const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '未下载';
+          td4.onclick = async () => {
+            const ret = await api.giteeGetDict(item.path)
+          }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用';
       })
     } catch (error) {
       table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
     }
   }
+}
+
+// 本地字典
+function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  
 }

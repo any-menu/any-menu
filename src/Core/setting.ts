@@ -82,7 +82,7 @@ export const global_setting: {
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 500,
-    dict_paths: './dict',
+    dict_paths: './dict/', // obsidian 用户可能比较熟悉于 Template 文件夹
   },
   config_: {
     is_auto_startup: false,
