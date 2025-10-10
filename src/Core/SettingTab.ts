@@ -145,11 +145,8 @@ function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_co
     table.classList.add('dict-table');
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
-    if (global_setting.isDebug) {
-      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
-    }
-    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
-    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
+    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'name';
+    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'path';
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
@@ -170,9 +167,8 @@ function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_co
       ret.forEach(item => {
         local_dict_list.push({id: item, isDownloaded: false, isEnabled: false})
         const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item);
-        if (global_setting.isDebug) {
-          const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item;
-        }
+        const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
+        // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item;
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用'; td5.classList.add('btn');
           td5.setAttribute('target-id', item);
           td5.onclick = async () => {

@@ -100,16 +100,22 @@ export default class AnyMenuPlugin extends Plugin {
     // 快速调试: 
     // app.vault.adapter.exists("Template").then((a) => {console.log("---exists", a)})
     // app.vault.adapter.list("Template").then(a => console.log("---list", a)) // 输出 {files:[], folders:[]} 相对库根的路径
+    // !注意: 使用相对路径时，在控制台是相对于库根路径的，而在插件内是相对于插件目录的
     global_setting.api.readFolder = async (path: string): Promise<string[]> => {
       const plugin: any|null = global_setting.other.obsidian_plugin
       const app = global_setting.other.obsidian_plugin?.app as App|null
       if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized'); return [] }
 
-      const pluginBaseDir = plugin.manifest.dir
-      const targetPath = `${pluginBaseDir}/${path}`
+      // 这里的文件路径有两种策略
+      // - 一是存在库根部 ('/'开头)，直接写就行了
+      // - 二是存在插件目录下 (相对路径)，得加一个 '.obsidian/plugins/<插件名>/' 的前缀
+      const isBasePluginPath = false // TODO 选项
+      const pluginBaseDir = plugin.manifest.dir + '/'
+      const targetPath = (isBasePluginPath) ? `${pluginBaseDir}/${path}` : `${path}`
 
       try {
         if (!await app.vault.adapter.exists(targetPath)) {
+          console.warn('no exists', targetPath);
           // await app.vault.adapter.mkdir(targetPath);
           return []
         }
@@ -138,6 +144,7 @@ export default class AnyMenuPlugin extends Plugin {
 
       try {
         if (!await app.vault.adapter.exists(targetPath)) {
+          console.warn('no exists', targetPath);
           return null
         }
 
