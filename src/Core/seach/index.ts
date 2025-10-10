@@ -13,10 +13,11 @@ export class AMSearch {
   el_suggestion: HTMLElement | null = null
 
   /** 单例模式 */
-  static factory(el?: HTMLElement) {
+  static factory(el?: HTMLElement): AMSearch {
     if (SEARCH_DB.el_search) return SEARCH_DB.el_search
     const instance = new AMSearch(el)
     SEARCH_DB.el_search = instance
+    return instance
   }
 
   /**
@@ -161,15 +162,23 @@ export class AMSearch {
     return result
   }
 
-  show() {
-    if (global_setting.focusStrategy) this.el_input?.focus()
-    
+  show(x?: number, y?: number) {
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env !== 'app') return
+
+    if (this.el) {
+      this.el.style.display = 'block'
+      if (x !== undefined) this.el.style.left = `${x}px`
+      if (y !== undefined) this.el.style.top = `${y}px`
+    }
+    if (global_setting.focusStrategy) this.el_input?.focus()
   }
 
   hide() {
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env !== 'app') return
+
+    if (this.el) this.el.style.display = 'none'
+    this.el_input?.blur()
   }
 }
