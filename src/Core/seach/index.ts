@@ -167,17 +167,24 @@ export class AMSearch {
   private isShow: boolean = false
   
   show(x?: number, y?: number) {
-    if (global_setting.focusStrategy) this.el_input?.focus()
-
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
-    if (global_setting.env == 'app') return
-    this.isShow = true
+    if (global_setting.env == 'app') {
+      if (global_setting.focusStrategy) this.el_input?.focus()
+      return
+    }
 
+    this.isShow = true
     if (this.el) {
       this.el.style.display = 'block'
       if (x !== undefined) this.el.style.left = `${x}px`
       if (y !== undefined) this.el.style.top = `${y}px`
     }
+
+    // 显示后聚焦，否则 focus 无效
+    ;(() => {
+      if (!global_setting.focusStrategy) return
+      this.el_input?.focus()
+    })();
 
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
@@ -187,10 +194,23 @@ export class AMSearch {
   hide() {
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env == 'app') return
-    this.isShow = false
 
+    this.isShow = false
     if (this.el) this.el.style.display = 'none'
     this.el_input?.blur()
+
+    // 隐藏后恢复聚焦
+    ;(() => {
+      if (!global_setting.focusStrategy) return
+      const MarkdownView = require('obsidian').MarkdownView // as typeof import('obsidian').MarkdownView
+      if (!MarkdownView) return
+      const plugin = global_setting.other.obsidian_plugin
+      if (!plugin) return
+      const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!activeView) return
+      const editor = activeView.editor
+      editor.focus()
+    })();
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('mouseup', this.visual_listener_mouseup)
