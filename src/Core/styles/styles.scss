@@ -75,79 +75,7 @@ html, body, #main {
   }
 }
 
-/* -------------------------------- 菜单搜索 --------------------------- */
-
-.am-search {
-  width: 500px;
-  display: inline-block;
-  box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  input.am-search-input {
-    height: 32px;
-    width: 100%;
-    box-sizing: border-box;
-
-    border: none;    
-    outline: none;
-    // box-shadow: none;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-  }
-
-  .am-search-suggestion {
-    width: 500px;
-    box-sizing: border-box;
-    position: absolute;
-    // transform: translate(0, 2px);
-    left: 0;
-    right: 0;
-
-    z-index: 12;
-    padding: 4px;
-    border-radius: 8px;
-    background-color: var(--ab-menu-bg-color);
-    opacity: 0.98;
-    border: 1px solid var(--ab-tab-root-bd-color);
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    max-height: 400px;
-    overflow-y: auto;
-
-    >div.item {
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      min-height: 28px; // (20+8+0)
-      padding: 4px 12px;
-      cursor: pointer;
-      border-radius: 6px;
-
-      &:hover {
-        background-color: var(--ab-tab-root-hv-color);
-      }
-
-      // TODO value 有可能是多行文本，这里最好是有个flag来说明是不是多行，以使用不同样式
-      >.value {
-        text-overflow: ellipsis;
-        white-space: pre-wrap;
-        overflow: hidden;
-        height: auto;
-        min-height: 20px;
-        max-height: 70px; // 三行半
-      }
-      >.key {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        margin-left: 10px;
-        height: 20px;
-      }
-    }
-  }
-}
-
-/* -------------------------------- 菜单 ------------------------------- */
+/* -------------------------------- 多级菜单 ---------------------------- */
 // TODO 目前仅支持深色模式 颜色仿浏览器写的
 
 :root {
@@ -189,8 +117,8 @@ html, body, #main {
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
-  // left: // set by js
-  // top: // set by js
+  left: 0; // override by js
+  top: 32px; // override by js
   margin: 0;
   min-width: 180px;
 
@@ -248,12 +176,82 @@ html, body, #main {
   left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
 }
 
-/* -------------------------------- 输入建议 ----------------------------- */
-/* 主容器样式 */
-.am-search { // .autocomplete-p
+/* -------------------------------- 菜单搜索 --------------------------- */
+
+.am-search {
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
   position: absolute;
   top: 0;
   left: 0;
+
+  input.am-search-input {
+    height: 32px;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0 12px;
+    border: none;
+    outline: none;
+    // box-shadow: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .am-search-suggestion {
+    width: 500px;
+    box-sizing: border-box;
+    position: fixed;
+    // transform: translate(0, 2px);
+    left: 0; // override by js
+    right: 0; // override by js
+
+    z-index: 12;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: var(--ab-menu-bg-color);
+    opacity: 0.98;
+    border: 1px solid var(--ab-tab-root-bd-color);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    max-height: 400px;
+    overflow-y: auto;
+
+    >div.item {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      min-height: 28px; // (20+8+0)
+      padding: 4px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: var(--ab-tab-root-hv-color);
+      }
+
+      // TODO value 有可能是多行文本，这里最好是有个flag来说明是不是多行，以使用不同样式
+      >.value {
+        text-overflow: ellipsis;
+        white-space: pre-wrap;
+        overflow: hidden;
+        height: auto;
+        min-height: 20px;
+        max-height: 70px; // 三行半
+      }
+      >.key {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-left: 10px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+/* -------------------------------- 输入建议 (旧) ------------------------- */
+/* 主容器样式 */
+.am-search { // .autocomplete-p
 
   // #search-input {
   //   width: 100%;
@@ -266,12 +264,7 @@ html, body, #main {
 
   /* 建议列表 */
   .am-search-suggestion { // .autocomplete-items
-    position: absolute;
-    box-sizing: border-box;
     top: 100%;
-    left: 0;
-    right: 0;
-    // margin-top: 2px;
 
     background-color:  var(--ab-menu-bg-color);
     border: 1px solid var(--ab-tab-root-bd-color);

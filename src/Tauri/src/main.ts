@@ -28,6 +28,24 @@ global_setting.api.sendText = async (str: string) => {
   await invoke("send", { text: str, method: global_setting.config.send_text_method })
 }
 
+global_setting.api.readFile = async (path: string) => {
+  const file_content: string|unknown = await invoke("read_file", { path })
+  if (typeof file_content !== 'string') {
+    console.error("Invalid file content format")
+    return null
+  }
+  return file_content
+}
+
+global_setting.api.readFolder = async (path: string) => {
+  const files: string[]|null = await invoke("read_folder", { path })
+  if (typeof files !== 'object' || !Array.isArray(files)) {
+    console.error("Invalid directory listing format", path, files)
+    return []
+  }
+  return files
+}
+
 global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
   try {
     const response = await fetch(conf.url, {

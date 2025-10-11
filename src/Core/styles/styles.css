@@ -65,68 +65,7 @@ html, body, #main {
   bottom: 50px;
 }
 
-/* -------------------------------- 菜单搜索 --------------------------- */
-.am-search {
-  width: 500px;
-  display: inline-block;
-  box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.am-search input.am-search-input {
-  height: 32px;
-  width: 100%;
-  box-sizing: border-box;
-  border: none;
-  outline: none;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-.am-search .am-search-suggestion {
-  width: 500px;
-  box-sizing: border-box;
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 12;
-  padding: 4px;
-  border-radius: 8px;
-  background-color: var(--ab-menu-bg-color);
-  opacity: 0.98;
-  border: 1px solid var(--ab-tab-root-bd-color);
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  max-height: 400px;
-  overflow-y: auto;
-}
-.am-search .am-search-suggestion > div.item {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  min-height: 28px;
-  padding: 4px 12px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-.am-search .am-search-suggestion > div.item:hover {
-  background-color: var(--ab-tab-root-hv-color);
-}
-.am-search .am-search-suggestion > div.item > .value {
-  text-overflow: ellipsis;
-  white-space: pre-wrap;
-  overflow: hidden;
-  height: auto;
-  min-height: 20px;
-  max-height: 70px;
-}
-.am-search .am-search-suggestion > div.item > .key {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  margin-left: 10px;
-  height: 20px;
-}
-
-/* -------------------------------- 菜单 ------------------------------- */
+/* -------------------------------- 多级菜单 ---------------------------- */
 :root {
   --ab-tab-root-bg-color: #0d1117;
   --ab-tab-root-bd-color: #34343f;
@@ -163,6 +102,8 @@ html, body, #main {
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
+  left: 0;
+  top: 32px;
   margin: 0;
   min-width: 180px;
   background-color: var(--ab-menu-bg-color);
@@ -215,20 +156,75 @@ html, body, #main {
   left: calc(0px + 100%);
 }
 
-/* -------------------------------- 输入建议 ----------------------------- */
-/* 主容器样式 */
+/* -------------------------------- 菜单搜索 --------------------------- */
 .am-search {
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
   position: absolute;
   top: 0;
   left: 0;
+}
+.am-search input.am-search-input {
+  height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: none;
+  outline: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.am-search .am-search-suggestion {
+  width: 500px;
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 12;
+  padding: 4px;
+  border-radius: 8px;
+  background-color: var(--ab-menu-bg-color);
+  opacity: 0.98;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.am-search .am-search-suggestion > div.item {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.am-search .am-search-suggestion > div.item:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-search .am-search-suggestion > div.item > .value {
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  overflow: hidden;
+  height: auto;
+  min-height: 20px;
+  max-height: 70px;
+}
+.am-search .am-search-suggestion > div.item > .key {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 10px;
+  height: 20px;
+}
+
+/* -------------------------------- 输入建议 (旧) ------------------------- */
+/* 主容器样式 */
+.am-search {
   /* 建议列表 */
 }
 .am-search .am-search-suggestion {
-  position: absolute;
-  box-sizing: border-box;
   top: 100%;
-  left: 0;
-  right: 0;
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
