@@ -182,9 +182,10 @@ html, body, #main {
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: fixed;
+  top: 0; // override by js
+  left: 0; // override by js
+  z-index: 100; // 高于多级菜单
 
   input.am-search-input {
     height: 32px;
@@ -201,10 +202,10 @@ html, body, #main {
   .am-search-suggestion {
     width: 500px;
     box-sizing: border-box;
-    position: fixed;
+    position: absolute;
     // transform: translate(0, 2px);
-    left: 0; // override by js
-    right: 0; // override by js
+    left: 0;
+    right: 0;
 
     z-index: 12;
     padding: 4px;

@@ -5,6 +5,8 @@
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "type": "module",
   "scripts": {
+    "tr:dev": "pnpm tauri dev",
+    "tr:build": "pnpm tauri build",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

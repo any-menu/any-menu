@@ -69,40 +69,41 @@ export class PluginManager {
     // 用户编写的插件脚本
     const userScript = `\
     const plugin = {
-        metadata: {
-            name: 'TextProcessor',
-            version: '1.0.0',
-            author: 'LincZero'
-        },
-        
-        // 必须实现的方法
-        process(str) {
-            if (!str) return 'Empty input';
-            return str.toUpperCase();
-        },
-        
-        // 可选方法
-        onLoad() {
-            console.log('插件加载完成');
-        },
-        
-        onUnload() {
-            console.log('插件卸载');
-        }
+      metadata: {
+        id: 'text-processor',
+        name: 'TextProcessor',
+        version: '1.0.0',
+        author: 'LincZero'
+      },
+      
+      // 必须实现的方法
+      async process(str) {
+        if (!str) return 'Empty input';
+        return str.toUpperCase();
+      },
+      
+      // 可选方法
+      onLoad() {
+        console.log('插件加载完成');
+      },
+      
+      onUnload() {
+        console.log('插件卸载');
+      }
     };
     `;
 
     try {
-        const plugin = loader.loadPlugin(userScript);
-        
-        // 调用插件
-        if (plugin.onLoad) plugin.onLoad();
+      const plugin = loader.loadPlugin(userScript);
+      
+      // 调用插件
+      if (plugin.onLoad) plugin.onLoad();
 
-        const result = await plugin.process('hello world');
-        console.log(result); // "HELLO WORLD"
-        if (plugin.onUnload) plugin.onUnload();
+      const result = await plugin.process('hello world');
+      console.log(result); // "HELLO WORLD"
+      if (plugin.onUnload) plugin.onUnload();
     } catch (error) {
-        console.error('插件错误:', error);
+      console.error('插件错误:', error);
     }
   }
 }

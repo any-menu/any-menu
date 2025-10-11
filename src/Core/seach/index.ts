@@ -167,6 +167,8 @@ export class AMSearch {
   private isShow: boolean = false
   
   show(x?: number, y?: number) {
+    if (global_setting.focusStrategy) this.el_input?.focus()
+
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
     if (global_setting.env == 'app') return
     this.isShow = true
@@ -176,7 +178,6 @@ export class AMSearch {
       if (x !== undefined) this.el.style.left = `${x}px`
       if (y !== undefined) this.el.style.top = `${y}px`
     }
-    if (global_setting.focusStrategy) this.el_input?.focus()
 
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)

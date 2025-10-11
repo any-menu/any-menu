@@ -161,9 +161,10 @@ html, body, #main {
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  z-index: 100;
 }
 .am-search input.am-search-input {
   height: 32px;
@@ -177,7 +178,7 @@ html, body, #main {
 .am-search .am-search-suggestion {
   width: 500px;
   box-sizing: border-box;
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   z-index: 12;
