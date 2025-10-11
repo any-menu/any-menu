@@ -33,5 +33,5 @@ esbuild.build({
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
 	outfile: '../../main.js',
-	minify: false,
+	minify: false, // 自带词典时 9.2MB -> 8.0MB, 不自带词典时: 略
 }).catch(() => process.exit(1));

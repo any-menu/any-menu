@@ -121,7 +121,7 @@ function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_cont
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
         const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '未下载'; td4.classList.add('btn');
           td4.onclick = async () => {
-            const ret = await api.giteeGetDict(item.path)
+            // const ret = await api.giteeGetDict(item.path)
           }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '未启用'; td5.classList.add('btn');
       })

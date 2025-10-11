@@ -5,7 +5,7 @@
  * 也是 api.request 的二次封装
  */
 
-import { global_setting, UrlRequestConfig, UrlResponse } from './setting'
+import { global_setting } from './setting'
 
 /**
  * 与后端交互的 API，此处使用了较为节约成本的 gitee 作为存储和交互的服务器

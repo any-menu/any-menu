@@ -70,7 +70,9 @@ html, body, #main {
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .am-search input.am-search-input {
   height: 32px;
@@ -216,7 +218,9 @@ html, body, #main {
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 主容器样式 */
 .am-search {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   /* 建议列表 */
 }
 .am-search .am-search-suggestion {

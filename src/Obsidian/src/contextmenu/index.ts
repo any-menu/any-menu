@@ -9,7 +9,7 @@ export * from './ABContextMenu_Ob'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
-  // const amSearch = AMSearch.factory(document.body as HTMLElement)
+  const amSearch = AMSearch.factory(document.body as HTMLElement)
   const amContextMenu = new ABContextMenu(document.body as HTMLDivElement)
   amContextMenu.append_data(root_menu)
 
@@ -21,8 +21,8 @@ export function registerAMContextMenu(plugin: Plugin) {
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
       const cursorInfo = getCursorInfo(plugin, editor);
       if (cursorInfo) {
-        // amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-        amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
+        amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
+        amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
       }
     },
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
@@ -34,8 +34,8 @@ export function registerAMContextMenu(plugin: Plugin) {
   plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {
     const cursorInfo = getCursorInfo(plugin)
     if (cursorInfo) {
-      // amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-      amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
+      amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
+      amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
     }
   })
 }

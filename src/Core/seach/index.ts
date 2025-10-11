@@ -162,9 +162,14 @@ export class AMSearch {
     return result
   }
 
+  // ------------- 显示隐藏 -------------
+
+  private isShow: boolean = false
+  
   show(x?: number, y?: number) {
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
-    if (global_setting.env !== 'app') return
+    if (global_setting.env == 'app') return
+    this.isShow = true
 
     if (this.el) {
       this.el.style.display = 'block'
@@ -172,13 +177,39 @@ export class AMSearch {
       if (y !== undefined) this.el.style.top = `${y}px`
     }
     if (global_setting.focusStrategy) this.el_input?.focus()
+
+    window.addEventListener('click', this.visual_listener_click)
+    window.addEventListener('mouseup', this.visual_listener_mouseup)
+    window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
   hide() {
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
-    if (global_setting.env !== 'app') return
+    if (global_setting.env == 'app') return
+    this.isShow = false
 
     if (this.el) this.el.style.display = 'none'
     this.el_input?.blur()
+
+    window.removeEventListener('click', this.visual_listener_click)
+    window.removeEventListener('mouseup', this.visual_listener_mouseup)
+    window.removeEventListener('keydown', this.visual_listener_keydown)
+  }
+
+  // 动态事件组。菜单显示时注册，隐藏时销毁
+  // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单
+  visual_listener_click = (ev: MouseEvent) => {
+    if (!this.el) return
+    if (!this.isShow) return
+    if (this.el.contains(ev.target as Node)) return
+    this.hide()
+  }
+  visual_listener_mouseup = (ev: MouseEvent) => {
+    if (!this.isShow) return
+    if (ev.button === 2) this.hide()
+  }
+  visual_listener_keydown = (ev: KeyboardEvent) => {
+    if (!this.isShow) return
+    if (ev.key === 'Escape') this.hide()
   }
 }

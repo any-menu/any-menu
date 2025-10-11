@@ -81,7 +81,9 @@ html, body, #main {
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
 
   input.am-search-input {
     height: 32px;
@@ -249,7 +251,9 @@ html, body, #main {
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 主容器样式 */
 .am-search { // .autocomplete-p
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
 
   // #search-input {
   //   width: 100%;

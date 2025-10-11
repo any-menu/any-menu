@@ -180,6 +180,8 @@ export default class AnyMenuPlugin extends Plugin {
 	}
 
   onunload() {
+    document.body.querySelectorAll('.ab-context-menu').forEach(el => el.remove())
+    document.body.querySelectorAll('.am-search').forEach(el => el.remove())
     console.log('<<< Unloading plugin AnyMenu')
   }
 }
