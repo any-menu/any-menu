@@ -115,7 +115,7 @@ export default class AnyMenuPlugin extends Plugin {
 
       try {
         if (!await app.vault.adapter.exists(targetPath)) {
-          console.warn('no exists', targetPath);
+          console.warn('no exists:', targetPath, ', isBasePluginPath:', isBasePluginPath);
           // await app.vault.adapter.mkdir(targetPath);
           return []
         }
@@ -139,12 +139,16 @@ export default class AnyMenuPlugin extends Plugin {
       const app = global_setting.other.obsidian_plugin?.app as App|null
       if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized2'); return null }
 
-      const pluginBaseDir = plugin.manifest.dir
-      const targetPath = `${pluginBaseDir}/${path}`
+      // 这里的文件路径有两种策略
+      // - 一是存在库根部 ('/'开头)，直接写就行了
+      // - 二是存在插件目录下 (相对路径)，得加一个 '.obsidian/plugins/<插件名>/' 的前缀
+      const isBasePluginPath = false // TODO 选项
+      const pluginBaseDir = plugin.manifest.dir + '/'
+      const targetPath = (isBasePluginPath) ? `${pluginBaseDir}/${path}` : `${path}`
 
       try {
         if (!await app.vault.adapter.exists(targetPath)) {
-          console.warn('no exists', targetPath);
+          console.warn('no exists:', targetPath, ', isBasePluginPath:', isBasePluginPath);
           return null
         }
 
@@ -164,8 +168,6 @@ export default class AnyMenuPlugin extends Plugin {
     // 菜单面板 - 元素
     registerABContextMenu(this) // 初始化菜单 - 默认菜单系统
     registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
-
-    // 菜单面板 - 内容
   }
 
   async loadSettings() {
