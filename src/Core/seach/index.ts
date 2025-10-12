@@ -1,6 +1,10 @@
 import { global_setting } from "../setting"
 import { SEARCH_DB } from "./SearchDB"
 
+// 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错
+// 当然，tauri app 中不应该调用 require
+declare var require: any;
+
 /**
  * AnyMenu 的 k-v 搜索框
  * 
@@ -202,6 +206,7 @@ export class AMSearch {
     // 隐藏后恢复聚焦
     ;(() => {
       if (!global_setting.focusStrategy) return
+      if (typeof require == 'undefined') return
       const MarkdownView = require('obsidian').MarkdownView // as typeof import('obsidian').MarkdownView
       if (!MarkdownView) return
       const plugin = global_setting.other.obsidian_plugin
