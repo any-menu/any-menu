@@ -33,19 +33,19 @@ label = "mdit container"
 [[categories.children]]
 label = "note"
 detail = "md"
-callback = ":::note\nNote demo.\n:::\n\n"
+callback = ":::note\n\nNote demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "warning"
 detail = "md"
-callback = ":::warning\nWarning demo.\n:::\n\n"
+callback = ":::warning\n\nWarning demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "tip"
 detail = "md"
-callback = ":::tip\nTip demo.\n:::\n\n"
+callback = ":::tip\n\nTip demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "note_complex"
 detail = "md"
-callback = ":::note+ title\nNote demo.\n:::\n\n"
+callback = ":::note+ title\n\nNote demo.\n\n:::\n\n"

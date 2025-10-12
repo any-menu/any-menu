@@ -352,10 +352,22 @@ html, body, #main {
 .dict-table tbody tr > td.btn {
   padding: 0 10px;
   border-radius: 10px;
-  background-color: gray;
-  color: white;
   text-align: center;
   cursor: pointer;
+  background-color: gray;
+  color: white;
+}
+.dict-table tbody tr > td.btn[color=green] {
+  background-color: #67C23A;
+  color: white;
+}
+.dict-table tbody tr > td.btn[color=red] {
+  background-color: #F56C6C;
+  color: white;
+}
+.dict-table tbody tr > td.btn[color=blue] {
+  background-color: #409EFF;
+  color: white;
 }
 
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */

@@ -412,10 +412,23 @@ html, body, #main {
     tr>td.btn {
       padding: 0 10px;
       border-radius: 10px;
-      background-color: gray;
-      color: white;
       text-align: center;
       cursor: pointer;
+
+      background-color: gray;
+      color: white;
+      &[color="green"] {
+        background-color: #67C23A;
+        color: white;
+      }
+      &[color="red"] {
+        background-color: #F56C6C;
+        color: white;
+      }
+      &[color="blue"] {
+        background-color: #409EFF;
+        color: white;
+      }
     }
   }
 }

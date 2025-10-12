@@ -3,12 +3,19 @@ import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { API } from "@/Core/webApi";
 
 export class AMSettingTab extends PluginSettingTab {
+  isInitialized = false
+
   constructor(app: App, private plugin: any) {
     super(app, plugin);
   }
 
   display(): void {
-    const {containerEl} = this;
+    // display() 会重复触发，不要重复添加一些内容
+    if (this.isInitialized) return
+    this.isInitialized = true
+    const { containerEl } = this;
+    containerEl.innerHTML = ""
+
     const { tab_nav_container, tab_content_container } = initSettingTab_1(containerEl)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
