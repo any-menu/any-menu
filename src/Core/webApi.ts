@@ -17,32 +17,31 @@ export class API {
   giteeOwner = 'any-menu';
   giteeRepo = 'any-menu';
   giteeBranch = 'main';
+  // apiUrl / 加 token 通常有更高的速度 (1000次/h)，普通 url 则很容易出现 403
   giteeBaseUrl = `https://gitee.com/${this.giteeOwner}/${this.giteeRepo}/raw/${this.giteeBranch}/`; // raw是原文本，blob是网页
   giteeBlobUrl = `https://gitee.com/${this.giteeOwner}/${this.giteeRepo}/blob/${this.giteeBranch}/`; // raw是原文本，blob是网页
-  giteeApiUrl = `https://gitee.com/api/v5/repos/${this.giteeOwner}/${this.giteeRepo}/`; // 后面的子api一般有: contents issue collaborators releases 等
+  giteeApiUrl = `https://gitee.com/api/v5/repos/${this.giteeOwner}/${this.giteeRepo}/`;
+  // 后面的子api一般有: contents issue collaborators releases raw 等，见: https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoRawPath
+  // https://gitee.com/api/v5/repos/{owner}/{repo}/raw/{path}
   
-  path = `store/dict/`
-  giteeLanguage = 'zh-cn';
-  I18N_ADMIN_TOKEN = '';
+  giteeToken: string|null = '6ca4bf01f660cc1b4fdc98f14aaff4f9'; // onlyReadApi x
+  // path = `store/dict/`
+  // giteeLanguage = 'zh-cn';
+  // I18N_ADMIN_TOKEN = '';
 
   constructor() {
   }
-
-  // #region 查 - 词典相关
 
   // 获取网络目录 (有那些词典可以下载)
   public async giteeGetDirectory() {
     return await global_setting.api.urlRequest({
       url: `${this.giteeBaseUrl}store/directory/dir.json`,
       method: 'GET',
+      ...(!this.giteeToken ? {} : { headers: {
+        "Authorization": `Bearer ${this.giteeToken}`
+      }}),
       isParseJson: true
     });
-  }
-
-  // 获取本地目录 (已经下载了哪些词典)
-  public async localGetDirectory() {
-    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    return ret
   }
 
   // 获取网络文件内容
@@ -50,8 +49,74 @@ export class API {
     return await global_setting.api.urlRequest({
       url: `${this.giteeBaseUrl}store/dict/${relPath}`,
       method: 'GET',
-      isParseJson: false
+      ...(!this.giteeToken ? {} : { headers: {
+        "Authorization": `Bearer ${this.giteeToken}`
+      }}),
+      isParseJson: false,
     });
+  }
+
+  // 获取网络目录 (有那些词典可以下载)
+  public async giteeGetDirectory3() {
+    const res = await global_setting.api.urlRequest({
+      url: `${this.giteeApiUrl}contents/store/directory/dir.json?ref=${this.giteeBranch}`,
+      method: 'GET',
+      ...(!this.giteeToken ? {} : { headers: {
+        "Authorization": `Bearer ${this.giteeToken}`
+      }}),
+      isParseJson: true,
+    })
+
+    console.log('giteeGetDirectory3 res', res)
+
+    // if (res && res.data && res.data.text) {
+    //   // Gitee API returns content base64 encoded, so we need to decode it.
+    //   // Assuming global_setting.api.base64Decode exists and works with ArrayBuffer.
+    //   // The result of base64Decode should be a string to be parsed as JSON.
+    //   const decodedContent = global_setting.api.base64Decode(res.data.text);
+    //   try {
+    //     res.data = JSON.parse(decodedContent);
+    //   } catch (e) {
+    //     console.error("Failed to parse decoded directory content", e);
+    //     res.code = -1; // Indicate failure
+    //     res.data = null;
+    //   }
+    // }
+    return res;
+  }
+
+  // 获取网络文件内容
+  public async giteeGetDict3(relPath: string) {
+    const res = await global_setting.api.urlRequest({
+      url: `${this.giteeApiUrl}contents/store/dict/${relPath}?ref=${this.giteeBranch}`,
+      method: 'GET',
+      ...(!this.giteeToken ? {} : { headers: {
+        "Authorization": `Bearer ${this.giteeToken}`
+      }}),
+      isParseJson: true // The API response is JSON
+    })
+
+    console.log('giteeGetDict3 res', res)
+
+    // if (res && res.data && res.data.content) {
+    //   // Content is base64 encoded
+    //   const decodedContent = global_setting.api.base64Decode(res.data.content);
+    //   // The original giteeGetDict returned a raw text string, so we simulate that.
+    //   // The wrapper object from urlRequest is modified to contain the decoded text.
+    //   if (res.data.text === undefined) {
+    //       res.data.text = decodedContent;
+    //   }
+    // } else if (res && res.code === 0 && !res.data) {
+    //     // Handle case where file might be empty
+    //     res.data = { text: '' };
+    // }
+    return res;
+  }
+
+  // 获取本地目录 (已经下载了哪些词典)
+  public async localGetDirectory() {
+    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+    return ret
   }
 
   /**
@@ -69,5 +134,4 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}/${relPath}`, ret.data.text);
   }
 
-  // #endregion
 }
