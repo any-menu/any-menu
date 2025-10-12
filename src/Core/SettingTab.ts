@@ -76,8 +76,8 @@ function local_dict_list_onChange() {
   // 去修改 web_dict_list 的 isDownloaded isEnabled
   // 并运行 initMenuData
 }
-function local_dict_list_add() {}
-function local_dict_list_remove() {}
+// function local_dict_list_add() {}
+// function local_dict_list_remove() {}
 
 /** 网络字典 */
 async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
@@ -145,7 +145,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           } else {
             td4.textContent = '未下载'; td4.setAttribute('color', 'gray');
           }
-          td4.onclick = async (ev) => {
+          td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
               global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${item.relPath}`).then(success => {
@@ -222,7 +222,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
         const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '卸载'; td4.classList.add('btn');
           td4.textContent = '已下载'; td4.setAttribute('color', 'green');
-          td4.onclick = async (ev) => {
+          td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color !== 'green') { console.error('Unreachable'); return }
             global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${relPath}`).then(success => {
@@ -239,11 +239,6 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
             })
           }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
-          td5.onclick = async () => {
-            local_dict_list.forEach(d => {
-              // 然后更新字典对象
-            })
-          }
       })
       local_dict_list_onChange()
     } catch (error) {
