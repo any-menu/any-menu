@@ -1,4 +1,7 @@
-// take from: https://github.com/Obsidian-Forge/obsidian-i18n/
+/**
+ * @deprecated 旧版 API，弃用。现在用 Core/webApi.ts 代替
+ * take from: https://github.com/Obsidian-Forge/obsidian-i18n/
+ */
 
 import { RequestUrlParam, requestUrl } from 'obsidian'
 

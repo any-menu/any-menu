@@ -8,6 +8,8 @@
 import { global_setting } from './setting'
 
 /**
+ * gitee api (二次封装 base api (网络与本地文件读写))
+ * 
  * 与后端交互的 API，此处使用了较为节约成本的 gitee 作为存储和交互的服务器
  * 暂时用不上的放后面，并进行了一些分类
  */
@@ -43,13 +45,28 @@ export class API {
     return ret
   }
 
-  // 获取翻译文件
-  public async giteeGetDict(path: string) {
+  // 获取网络文件内容
+  public async giteeGetDict(relPath: string) {
     return await global_setting.api.urlRequest({
-      url: `${this.giteeBaseUrl}store/dict/${path}`,
+      url: `${this.giteeBaseUrl}store/dict/${relPath}`,
       method: 'GET',
       isParseJson: false
     });
+  }
+
+  /**
+   * 从 Gitee 下载词典文件到本地
+   * @param relPath 词典文件的相对路径，例如 'example.json'
+   * @returns {Promise<boolean>} 下载并写入成功返回 true，否则返回 false
+   */
+  public async downloadDict(relPath: string): Promise<boolean> {
+    const ret = await this.giteeGetDict(relPath);
+    if (ret === null || ret.code !== 0 || !ret.data) {
+      console.error(`Failed to download dict from Gitee: ${relPath}`, ret);
+      return false;
+    }
+
+    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}/${relPath}`, ret.data.text);
   }
 
   // #endregion

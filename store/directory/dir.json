@@ -3,42 +3,49 @@
 		"id": "anymenu-AdQuote",
 		"path": "AdQuote.toml",
 		"name": "AdQuote",
+		"detail": "简要的功能描述",
 		"version": "话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
 	},
 	{
 		"id": "anymenu-AnyBlock.toml",
 		"path": "AnyBlock.toml",
 		"name": "AnyBlock",
+		"detail": "",
 		"version": ""
 	},
 	{
 		"id": "anymenu-background",
 		"path": "background.js",
 		"name": "background",
+		"detail": "",
 		"version": ""
 	},
 	{
 		"id": "anymenu-date",
 		"path": "date.js",
 		"name": "date",
+		"detail": "",
 		"version": ""
 	},
 	{
 		"id": "anymenu-emojis_general",
-		"path": "emojis_general.js",
+		"path": "emojis_general.json",
 		"name": "emojis_general",
+		"detail": "",
 		"version": ""
 	},
 	{
 		"id": "anymenu-others",
 		"path": "others.txt",
 		"name": "others",
+		"detail": "",
 		"version": ""
 	},
 	{
 		"id": "anymenu-ybq",
 		"path": "ybq.json",
 		"name": "颜表情",
+		"detail": "",
 		"version": ""
 	}
 ]

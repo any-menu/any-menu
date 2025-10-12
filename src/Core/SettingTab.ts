@@ -53,7 +53,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
   tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
 
   const div = document.createElement('div'); tab_content.appendChild(div);
-    div.textContent = `默认使用 Alt + A 打开菜单\n
+    div.textContent = `默认使用 Alt + S 打开菜单 (可以在设置中修改快捷键)\n
 更多说明和教程浏览仓库: https://github.com/any-menu/any-menu`
 
   tab_nav.classList.add('active');
@@ -71,9 +71,13 @@ const web_dict_list: { // 可下载/已下载的网络字典
   name: string, // 注册名
   isDownloaded: boolean, isEnabled: boolean
 }[] = []
+// TODO 封装成一个插件管理容器类就最好的，然后封装下面三个:
 function local_dict_list_onChange() {
   // 去修改 web_dict_list 的 isDownloaded isEnabled
+  // 并运行 initMenuData
 }
+function local_dict_list_add() {}
+function local_dict_list_remove() {}
 
 /** 网络字典 */
 async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
@@ -141,8 +145,32 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           } else {
             td4.textContent = '未下载'; td4.setAttribute('color', 'gray');
           }
-          td4.onclick = async () => {
-            // const ret = await api.giteeGetDict(item.path)
+          td4.onclick = async (ev) => {
+            const color = td4.getAttribute('color')
+            if (color === 'green') { // 已下载，需要卸载
+              global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${item.relPath}`).then(success => {
+                if (!success) {
+                  td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
+                  return
+                }
+                td4.textContent = '已卸载'; td4.setAttribute('color', 'gray');
+                const index = local_dict_list.findIndex(d => d.relPath === item.relPath)
+                if (index >= 0) {
+                  local_dict_list.splice(index, 1)
+                  local_dict_list_onChange()
+                }
+              })
+            } else { // 未下载/下载失败
+              api.downloadDict(item.relPath).then(success => {
+                if (!success) {
+                  td4.textContent = '下载失败'; td4.setAttribute('color', 'red');
+                  return
+                }
+                td4.textContent = '已下载'; td4.setAttribute('color', 'green');
+                local_dict_list.push({path: `${global_setting.config.dict_paths}/${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
+                local_dict_list_onChange()
+              })
+            }
           }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
       })
@@ -168,6 +196,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'name';
     const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'path';
+    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'uninstall'; td4.classList.add('btn');
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
@@ -185,17 +214,33 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     table_tbody.innerHTML = ''
     try {
       local_dict_list.length = 0 // clear array
-      ret.forEach(item => {
+      ret.forEach((item: string) => {
         const relPath = item.replace(global_setting.config.dict_paths, '')
         local_dict_list.push({path: item, relPath: relPath, isDownloaded: false, isEnabled: false})
         const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item);
         const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
-        const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item;
+        const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
+        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '卸载'; td4.classList.add('btn');
+          td4.textContent = '已下载'; td4.setAttribute('color', 'green');
+          td4.onclick = async (ev) => {
+            const color = td4.getAttribute('color')
+            if (color !== 'green') { console.error('Unreachable'); return }
+            global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${relPath}`).then(success => {
+              if (!success) {
+                td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
+                return
+              }
+              tr.remove()
+              const index = local_dict_list.findIndex(d => d.relPath === relPath)
+              if (index >= 0) {
+                local_dict_list.splice(index, 1)
+                local_dict_list_onChange()
+              }
+            })
+          }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
-          td5.setAttribute('target-id', item);
           td5.onclick = async () => {
             local_dict_list.forEach(d => {
-              if (d.path === item) d.isEnabled = !d.isEnabled
               // 然后更新字典对象
             })
           }

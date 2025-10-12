@@ -58,10 +58,14 @@ export const global_setting: {
    * - 读写文件，可能是: 开发阶段的node fs模块、tauri后端、obsidian api等
    * - 输出文本，可能是: windows环境sendText api、剪贴板、
    *   获得编辑器对象并使用editor api (又可能是通用浏览器环境、obsidian api、其他) 等
+   * 
+   * 所有的 relPath 均基于 "不基于" config.dict_paths 目录进行，如果要进 dict_paths 自行拼接
    */
   api: {
-    readFile: (path: string) => Promise<string | null>
-    readFolder: (path: string) => Promise<string[]>
+    readFile: (relPath: string) => Promise<string | null>
+    readFolder: (relPath: string) => Promise<string[]>
+    writeFile: (relPath: string, content: string) => Promise<boolean>
+    deleteFile: (relPath: string) => Promise<boolean>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     sendText: (text: string) => Promise<void>
@@ -95,6 +99,8 @@ export const global_setting: {
   api: {
     readFile: async () => { console.error("需实现 api.readFile 方法"); return null },
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
+    writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
+    deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     sendText: async () => { console.error("需实现 api.sendText 方法") },
