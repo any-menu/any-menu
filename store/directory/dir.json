@@ -25,7 +25,7 @@
 	},
 	{
 		"id": "anymenu-hanzipianpan",
-		"path": "HanziPianPan.txt",
+		"path": "HanZiPianPan.txt",
 		"name": "汉字偏旁",
 		"detail": "",
 		"author": "",
@@ -41,7 +41,7 @@
 	},
 	{
 		"id": "anymenu-chemistry",
-		"path": "chemistry.txt",
+		"path": "Chemistry.txt",
 		"name": "化学式",
 		"detail": "",
 		"author": "",
