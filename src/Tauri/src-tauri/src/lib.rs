@@ -5,12 +5,14 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-use std::thread;
 
-use std::sync::{
-    mpsc::{self, Sender, Receiver},
-    // Arc,
-    Mutex,
+use std::{
+    thread,
+    sync::{
+        mpsc::{self, Sender, Receiver},
+        // Arc,
+        Mutex,
+    }
 };
 use tauri::State;
 use uiautomation::{
@@ -110,6 +112,7 @@ pub fn run() {
 
     // Tauri 主程序
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init()) // HTTP 请求插件
         .manage(uia_sender) // 依赖注入，注入到Tauri State管理
         .plugin(log_plugin) // 日志插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件

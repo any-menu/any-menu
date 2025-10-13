@@ -18,6 +18,11 @@
     "log:default",
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
-    "global-shortcut:allow-unregister"
+    "global-shortcut:allow-unregister",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://*.tauri.app" }],
+      "deny": [{ "url": "https://private.tauri.app" }]
+    }
   ]
 }

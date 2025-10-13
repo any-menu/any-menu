@@ -1,6 +1,7 @@
 import { global_setting, UrlRequestConfig, UrlResponse } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
 import { invoke } from "@tauri-apps/api/core"
+import { fetch } from '@tauri-apps/plugin-http';
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
@@ -47,7 +48,58 @@ export function initApi() {
     return files
   }
 
+  // 后端为 Tauri 时使用
+  // 参考: https://v2.tauri.app/zh-cn/plugin/http-client/ https://v2.tauri.app/zh-cn/reference/javascript/http/
+  // 这里的 tauri_fetch 是一个 rust 后端 api，试图与 fetch web api 尽量接近和兼容，一般情况下可当作 fetch 使用
   global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+    try {
+      const response:any = 0
+      // const response2 = await fetch(conf.url)
+      // , {
+      //   method: conf.method || 'GET',
+      //   headers: conf.headers,
+      //   body: conf.body,
+      // });
+
+      // 返回值适配
+      if (!response.ok) {
+        // 处理 HTTP 错误状态 (例如 404, 500)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const text = await response.text(); // .data?
+      
+      // 尝试解析 JSON，如果失败则回退
+      let json = null;
+      if (conf.isParseJson) {
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          json = null;
+        }
+      }
+      return {
+        code: 0,
+        data: {
+          text: text,
+          json: json,
+          originalResponse: response,
+        },
+      };
+    } catch (error: any) {
+      console.error('Fetch request failed:', error);
+      return {
+        code: -1,
+        msg: error?.message || 'An unknown error occurred in fetch request.',
+        data: {
+          text: '',
+          originalResponse: error
+        }
+      };
+    }
+  }
+
+  // 后端为 nodejs 时使用 (这里不要使用tauri的fetch)
+  const old = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
     try {
       const response = await fetch(conf.url, {
         method: conf.method || 'GET',

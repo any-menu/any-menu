@@ -28,6 +28,7 @@ tauri-plugin-log = { version = "2", features = ["colored"] } # 日志
 fern = "0.7.1" # 日志高亮
 log = "0.4.28" # 日志门面
 chrono = "0.4.42" # 日期时间
+tauri-plugin-http = "2"
 
 # 全局快捷键
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
