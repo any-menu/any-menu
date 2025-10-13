@@ -85,6 +85,11 @@ global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlRespo
   }
 }
 
+global_setting.api.getCursorXY = async (): Promise<{ x: number, y: number }> => {
+  console.warn("obsidian 版需要 plugin 和 editor 上下文，应使用 getCursorInfo() 代替")
+  return { x: -1, y: -1 }
+}
+
 // #endregion
 
 export default class AnyMenuPlugin extends Plugin {

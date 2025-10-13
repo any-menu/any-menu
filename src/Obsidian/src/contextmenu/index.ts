@@ -4,6 +4,7 @@ import {
 import { ABContextMenu } from '@/Core/contextmenu/index'
 import { AMSearch } from "@/Core/seach"
 import { initMenuData } from "@/Core/seach/initTool"
+import { global_setting } from '@/Core/setting'
 // import { root_menu } from "@/Core/contextmenu/demo"
 
 export * from './ABContextMenu_Ob'
@@ -68,9 +69,10 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   const cursor = editor.getCursor(); // {line, ch}
 
   // selected
-  const from = editor.getCursor('from')
-  const to = editor.getCursor('to')
+  // const from = editor.getCursor('from')
+  // const to = editor.getCursor('to')
   const selectedText = editor.getSelection()
+  global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
 
   // xyPosition - 方法1, CodeMirror 的 coordsAtPos
   // @ts-ignore

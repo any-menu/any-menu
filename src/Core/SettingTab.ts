@@ -53,7 +53,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
   tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
 
   const div = document.createElement('div'); tab_content.appendChild(div);
-    div.textContent = `默认使用 Alt + S 打开菜单 (可以在设置中修改快捷键)\n
+    div.textContent = `默认使用 Alt + A/S 打开菜单 (可以在设置中修改快捷键)\n
 更多说明和教程浏览仓库: https://github.com/any-menu/any-menu\n
 
 !!! 当前插件不完善: 设置面板修改过后需要重启插件/软件才能生效`

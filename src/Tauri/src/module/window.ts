@@ -222,6 +222,9 @@ async function cacheMenuSize() {
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
   // 获取当前选择的文本
+  // 这里应废弃，这里的 selectedText 会被后面的 getCursorXY 覆盖
+  // 前者使用的是剪切板，但剪切板ctrl+c到内容改变之间太慢了，无法判断延时时间
+  // 后者使用的是Win32::UI::Accessibility，速度快且准确
   invoke("get_selected").then((selected: any) => {
     if (!selected || typeof selected !== 'string') return
     global_setting.state.selectedText = selected.length > 0 ? selected : undefined
