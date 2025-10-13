@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from 'builtin-modules'
+import builtins from 'builtin-modules';
+import fs from "fs";
 
 const banner =
 `/*
@@ -11,27 +12,36 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = (process.argv[2] === 'production');
 
-esbuild.build({
-	plugins: [
-		// esbuildSvelte({
-		// 	compilerOptions: { css: true },
-		// 	preprocess: sveltePreprocess(),
-		// })
-	],
-	banner: {
-		js: banner,
-	},
-	entryPoints: ['./src/main.ts'],
-	bundle: true,
-	external: [
-		'obsidian',
-		...builtins],
-	format: 'cjs',
-	watch: !prod,
-	target: 'es2020',
-	logLevel: "info",
-	sourcemap: prod ? false : 'inline',
-	treeShaking: true,
-	outfile: '../../main.js',
-	minify: false, // 自带词典时 9.2MB -> 8.0MB, 不自带词典时: 略
-}).catch(() => process.exit(1));
+(async () => {
+	const result = await esbuild.build({
+		plugins: [
+			// esbuildSvelte({
+			// 	compilerOptions: { css: true },
+			// 	preprocess: sveltePreprocess(),
+			// })
+		],
+		banner: {
+			js: banner,
+		},
+		entryPoints: ['./src/main.ts'],
+		bundle: true,
+		external: [
+			'obsidian',
+			...builtins
+		],
+		format: 'cjs',
+		watch: !prod,
+		target: 'es2020',
+		logLevel: "info",
+		sourcemap: prod ? false : 'inline',
+		treeShaking: true,
+		outfile: '../../main.js',
+		minify: true, // 9.4MB -> 8.1MB
+		metafile: true, // 依赖大小分析
+	}).catch(() => process.exit(1));
+
+	// 将 metafile 写入磁盘，生成结果可使用 https://esbuild.github.io/analyze/ 进行分析查看
+	fs.writeFileSync("esbuild-meta.json", JSON.stringify(result.metafile, null, 2));
+
+	console.log("Build finished. Metafile written to esbuild-meta.json");
+})();
