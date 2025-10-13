@@ -1,0 +1,143 @@
+# take from https://www.latexlive.com/
+
+[[categories]]
+label = "数据矩阵"
+
+[[categories.children]]
+label = "矩阵"
+key = "matrix 矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{matrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{matrix}
+$$
+'''
+
+[[categories.children]]
+label = "矩阵"
+key = "matrix 矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{matrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{matrix}
+$$
+'''
+
+[[categories.children]]
+label = "方括号矩阵"
+key = "bmatrix 方括号矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{bmatrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{bmatrix}
+$$
+'''
+
+[[categories.children]]
+label = "圆括号矩阵"
+key = "pmatrix 圆括号矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{pmatrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{pmatrix}
+$$
+'''
+
+[[categories.children]]
+label = "单竖线矩阵"
+key = "vmatrix 单竖线矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{vmatrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{vmatrix}
+$$
+'''
+
+[[categories.children]]
+label = "双竖线矩阵"
+key = "Vmatrix 双竖线矩阵"
+detail = "md"
+callback = '''
+$$
+\begin{Vmatrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{Vmatrix}
+$$
+'''
+
+[[categories.children]]
+label = "左单括号矩阵"
+key = "matrix 左单括号矩阵"
+detail = "md"
+callback = '''
+$$
+\left\{\begin{matrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{matrix}\right.
+$$
+'''
+
+[[categories.children]]
+label = "右单括号矩阵"
+key = "matrix 右单括号矩阵"
+detail = "md"
+callback = '''
+$$
+\left.\begin{matrix}
+1 & 4 & 7\\
+2 & 5 & 8\\
+3 & 6 & 9
+\end{matrix}\right\}
+$$
+'''
+
+[[categories.children]]
+label = "条件等式"
+key = "cases 条件等式"
+detail = "md"
+callback = '''
+$$
+\begin{cases}
+y<0 & \text{ if } x<0 \\
+y=0 & \text{ if } x=0 \\
+y>0 & \text{ if } x>0
+\end{cases}
+$$
+'''
+
+[[categories.children]]
+label = "多行对齐等式"
+key = "cases 多行对齐等式"
+detail = "md"
+callback = '''
+$$
+\begin{align*}
+11 & 22 \\
+3 & 4
+\end{align*}
+$$
+'''

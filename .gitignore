@@ -6,9 +6,6 @@ backup/
 tmp/
 temp/
 
-# debug时会在运行目录生成该临时配置文件
-am-user.toml
-
 # Obsidian
 main.js
 /styles.css

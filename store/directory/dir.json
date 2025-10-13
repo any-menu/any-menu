@@ -1,51 +1,114 @@
 [
 	{
-		"id": "anymenu-AdQuote",
-		"path": "AdQuote.toml",
-		"name": "AdQuote",
-		"detail": "简要的功能描述",
-		"version": "话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
-	},
-	{
-		"id": "anymenu-AnyBlock.toml",
-		"path": "AnyBlock.toml",
-		"name": "AnyBlock",
-		"detail": "",
-		"version": ""
-	},
-	{
-		"id": "anymenu-background",
-		"path": "background.js",
-		"name": "background",
-		"detail": "",
-		"version": ""
-	},
-	{
-		"id": "anymenu-date",
-		"path": "date.js",
-		"name": "date",
-		"detail": "",
-		"version": ""
+		"id": "anymenu-markdown",
+		"path": "Markdown.toml",
+		"name": "Markdown",
+		"detail": "输入常用 markdown 片段",
+		"author": "LincZero",
+		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-emojis_general",
 		"path": "emojis_general.json",
 		"name": "emojis_general",
 		"detail": "",
-		"version": ""
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-diezi",
+		"path": "HanZiDieZi.txt",
+		"name": "汉字叠字",
+		"detail": "",
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-hanzipianpan",
+		"path": "HanziPianPan.txt",
+		"name": "汉字偏旁",
+		"detail": "",
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-jpName",
+		"path": "jpName.txt",
+		"name": "著名表演艺术家",
+		"detail": "",
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-chemistry",
+		"path": "chemistry.txt",
+		"name": "化学式",
+		"detail": "",
+		"author": "",
+		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-others",
 		"path": "others.txt",
 		"name": "others",
 		"detail": "",
-		"version": ""
+		"author": "",
+		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-ybq",
 		"path": "ybq.json",
 		"name": "颜表情",
+		"detail": "颜表情",
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-AdQuote",
+		"path": "AdQuote.toml",
+		"name": "AdQuote",
+		"detail": "GFM Alert / Obsidian Callout / MarkdownIt GFM",
+		"author": "LincZero",
+		"version": "1.0.0 话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
+	},
+	{
+		"id": "anymenu-AnyBlock.toml",
+		"path": "AnyBlock.toml",
+		"name": "AnyBlock",
+		"detail": "(需要先安装 AnyBlock)",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-LaTeX",
+		"path": "LaTeX.yaml",
+		"name": "LaTeX",
+		"detail": "取自 Obsidian 插件 Latex Suite 的片段，临时去除了正则和函数功能",
+		"author": "",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-LaTeX_md",
+		"path": "LaTeX_md.toml",
+		"name": "LaTeX_md",
+		"detail": "适用于 Markdown 的 LaTeX 片段",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-background",
+		"path": "background.js",
+		"name": "background",
 		"detail": "",
-		"version": ""
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-date",
+		"path": "date.js",
+		"name": "date",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
 	}
 ]

@@ -1,0 +1,39 @@
+[[categories]]
+label = "表格"
+detail = "md"
+callback = '''
+|     |     |
+| --- | --- |
+|     |     |
+
+'''
+
+[[categories]]
+label = "代码块"
+detail = "md"
+callback = '''
+```
+
+```
+
+'''
+
+[[categories]]
+label = "数学块"
+detail = "md"
+callback = '''
+$$
+
+$$
+
+'''
+
+[[categories]]
+label = "脚注"
+detail = "md"
+callback = '''
+[^1]
+
+[^1]: 
+
+'''

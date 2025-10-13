@@ -1,0 +1,308 @@
+# take from obsidian plugin: Latex Suite
+# 原片段是js片段来的，keyword 可以是正则，而 title 后可以是字符串或函数
+# 暂时删除了函数和正则的片段，使其成为一个标准的 yml。至于正则和函数，后续再考虑软件适配正则的能力
+[
+	# Math mode
+	# {keyword: "mk", title: "$$0$", options: "tA"},
+	# {keyword: "dm", title: "$$\n$0\n$$", options: "tAw"},
+	# {keyword: "beg", title: "\\begin{$0}\n$1\n\\end{$0}", options: "mA"},
+
+  # Dashes
+	# {keyword: "--", title: "–", options: "tA"},
+	# {keyword: "–-", title: "—", options: "tA"},
+	# {keyword: "—-", title: "---", options: "tA"},
+
+  # Greek letters 希腊字母
+	{keyword: "@a", title: "\\alpha", options: "mA"},
+	{keyword: "@b", title: "\\beta", options: "mA"},
+	{keyword: "@g", title: "\\gamma", options: "mA"},
+	{keyword: "@G", title: "\\Gamma", options: "mA"},
+	{keyword: "@d", title: "\\delta", options: "mA"},
+	{keyword: "@D", title: "\\Delta", options: "mA"},
+	{keyword: "@e", title: "\\epsilon", options: "mA"},
+	{keyword: ":e", title: "\\varepsilon", options: "mA"},
+	{keyword: "@z", title: "\\zeta", options: "mA"},
+	{keyword: "@t", title: "\\theta", options: "mA"},
+	{keyword: "@T", title: "\\Theta", options: "mA"},
+	{keyword: ":t", title: "\\vartheta", options: "mA"},
+	{keyword: "@i", title: "\\iota", options: "mA"},
+	{keyword: "@k", title: "\\kappa", options: "mA"},
+	{keyword: "@l", title: "\\lambda", options: "mA"},
+	{keyword: "@L", title: "\\Lambda", options: "mA"},
+	{keyword: "@s", title: "\\sigma", options: "mA"},
+	{keyword: "@S", title: "\\Sigma", options: "mA"},
+	{keyword: "@u", title: "\\upsilon", options: "mA"},
+	{keyword: "@U", title: "\\Upsilon", options: "mA"},
+	{keyword: "@o", title: "\\omega", options: "mA"},
+	{keyword: "@O", title: "\\Omega", options: "mA"},
+	{keyword: "ome", title: "\\omega", options: "mA"},
+	{keyword: "Ome", title: "\\Omega", options: "mA"},
+
+	# Text environment 文本环境
+	{keyword: "text", title: "\\text{$0}$1", options: "mA"},
+	{keyword: "\"", title: "\\text{$0}$1", options: "mA"},
+
+	# Basic operations 基本运算符
+	{keyword: "sr", title: "^{2}", options: "mA"},
+	{keyword: "cb", title: "^{3}", options: "mA"},
+	{keyword: "rd", title: "^{$0}$1", options: "mA"},
+	{keyword: "_", title: "_{$0}$1", options: "mA"},
+	{keyword: "sts", title: "_\\text{$0}", options: "mA"},
+	{keyword: "sq", title: "\\sqrt{ $0 }$1", options: "mA"},
+	{keyword: "//", title: "\\frac{$0}{$1}$2", options: "mA"},
+	{keyword: "ee", title: "e^{ $0 }$1", options: "mA"},
+	{keyword: "invs", title: "^{-1}", options: "mA"},
+	#{keyword: /([A-Za-z])(\d)/, title: "[[0]]_{[[1]]}", options: "rmA", description: "Auto letter subscript", priority: -1},
+
+	#{keyword: /([^\\])(exp|log|ln)/, title: "[[0]]\\[[1]]", options: "rmA"},
+	{keyword: "conj", title: "^{*}", options: "mA"},
+	{keyword: "Re", title: "\\mathrm{Re}", options: "mA"},
+	{keyword: "Im", title: "\\mathrm{Im}", options: "mA"},
+	{keyword: "bf", title: "\\mathbf{$0}", options: "mA"},
+	{keyword: "rm", title: "\\mathrm{$0}$1", options: "mA"},
+
+	# Linear algebra 线性代数
+	#{keyword: /([^\\])(det)/, title: "[[0]]\\[[1]]", options: "rmA"},
+	{keyword: "trace", title: "\\mathrm{Tr}", options: "mA"},
+
+	# More operations 更多操作
+	{keyword: "([a-zA-Z])hat", title: "\\hat{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z])bar", title: "\\bar{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z])dot", title: "\\dot{[[0]]}", options: "rmA", priority: -1},
+	{keyword: "([a-zA-Z])ddot", title: "\\ddot{[[0]]}", options: "rmA", priority: 1},
+	{keyword: "([a-zA-Z])tilde", title: "\\tilde{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z])und", title: "\\underline{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z])vec", title: "\\vec{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z]),\\.", title: "\\mathbf{[[0]]}", options: "rmA"},
+	{keyword: "([a-zA-Z])\\.,", title: "\\mathbf{[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}),\\.", title: "\\boldsymbol{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK})\\.,", title: "\\boldsymbol{\\[[0]]}", options: "rmA"},
+
+	{keyword: "hat", title: "\\hat{$0}$1", options: "mA"},
+	{keyword: "bar", title: "\\bar{$0}$1", options: "mA"},
+	{keyword: "dot", title: "\\dot{$0}$1", options: "mA", priority: -1},
+	{keyword: "ddot", title: "\\ddot{$0}$1", options: "mA"},
+	{keyword: "cdot", title: "\\cdot", options: "mA"},
+	{keyword: "tilde", title: "\\tilde{$0}$1", options: "mA"},
+	{keyword: "und", title: "\\underline{$0}$1", options: "mA"},
+	{keyword: "vec", title: "\\vec{$0}$1", options: "mA"},
+
+	# More auto letter subscript 更多字母缩写?
+	#{keyword: /([A-Za-z])_(\d\d)/, title: "[[0]]_{[[1]]}", options: "rmA"},
+	#{keyword: /\\hat{([A-Za-z])}(\d)/, title: "\\hat{[[0]]}_{[[1]]}", options: "rmA"},
+	#{keyword: /\\vec{([A-Za-z])}(\d)/, title: "\\vec{[[0]]}_{[[1]]}", options: "rmA"},
+	#{keyword: /\\mathbf{([A-Za-z])}(\d)/, title: "\\mathbf{[[0]]}_{[[1]]}", options: "rmA"},
+
+	{keyword: "xnn", title: "x_{n}", options: "mA"},
+	{keyword: "\\xii", title: "x_{i}", options: "mA", priority: 1},
+	{keyword: "xjj", title: "x_{j}", options: "mA"},
+	{keyword: "xp1", title: "x_{n+1}", options: "mA"},
+	{keyword: "ynn", title: "y_{n}", options: "mA"},
+	{keyword: "yii", title: "y_{i}", options: "mA"},
+	{keyword: "yjj", title: "y_{j}", options: "mA"},
+
+	# Symbols
+	{keyword: "ooo", title: "\\infty", options: "mA"},
+	{keyword: "sum", title: "\\sum", options: "mA"},
+	{keyword: "prod", title: "\\prod", options: "mA"},
+	{keyword: "\\sum", title: "\\sum_{${0:i}=${1:1}}^{${2:N}} $3", options: "m"},
+	{keyword: "\\prod", title: "\\prod_{${0:i}=${1:1}}^{${2:N}} $3", options: "m"},
+	{keyword: "lim", title: "\\lim_{ ${0:n} \\to ${1:\\infty} } $2", options: "mA"},
+	{keyword: "+-", title: "\\pm", options: "mA"},
+	{keyword: "-+", title: "\\mp", options: "mA"},
+	{keyword: "...", title: "\\dots", options: "mA"},
+	{keyword: "nabl", title: "\\nabla", options: "mA"},
+	{keyword: "del", title: "\\nabla", options: "mA"},
+	{keyword: "xx", title: "\\times", options: "mA"},
+	{keyword: "**", title: "\\cdot", options: "mA"},
+	{keyword: "para", title: "\\parallel", options: "mA"},
+
+	{keyword: "===", title: "\\equiv", options: "mA"},
+	{keyword: "!=", title: "\\neq", options: "mA"},
+	{keyword: ">=", title: "\\geq", options: "mA"},
+	{keyword: "<=", title: "\\leq", options: "mA"},
+	{keyword: ">>", title: "\\gg", options: "mA"},
+	{keyword: "<<", title: "\\ll", options: "mA"},
+	{keyword: "simm", title: "\\sim", options: "mA"},
+	{keyword: "sim=", title: "\\simeq", options: "mA"},
+	{keyword: "prop", title: "\\propto", options: "mA"},
+
+
+	{keyword: "<->", title: "\\leftrightarrow ", options: "mA"},
+	{keyword: "->", title: "\\to", options: "mA"},
+	{keyword: "!>", title: "\\mapsto", options: "mA"},
+	{keyword: "=>", title: "\\implies", options: "mA"},
+	{keyword: "=<", title: "\\impliedby", options: "mA"},
+
+	{keyword: "and", title: "\\cap", options: "mA"},
+	{keyword: "orr", title: "\\cup", options: "mA"},
+	{keyword: "inn", title: "\\in", options: "mA"},
+	{keyword: "notin", title: "\\not\\in", options: "mA"},
+	{keyword: "\\\\\\", title: "\\setminus", options: "mA"},
+	{keyword: "sub=", title: "\\subseteq", options: "mA"},
+	{keyword: "sup=", title: "\\supseteq", options: "mA"},
+	{keyword: "eset", title: "\\emptyset", options: "mA"},
+	{keyword: "set", title: "\\{ $0 \\}$1", options: "mA"},
+	{keyword: "e\\xi sts", title: "\\exists", options: "mA", priority: 1},
+
+	{keyword: "LL", title: "\\mathcal{L}", options: "mA"},
+	{keyword: "HH", title: "\\mathcal{H}", options: "mA"},
+	{keyword: "CC", title: "\\mathbb{C}", options: "mA"},
+	{keyword: "RR", title: "\\mathbb{R}", options: "mA"},
+	{keyword: "ZZ", title: "\\mathbb{Z}", options: "mA"},
+	{keyword: "NN", title: "\\mathbb{N}", options: "mA"},
+
+	# Handle spaces and backslashes
+
+	# Snippet variables can be used as shortcuts when writing snippets.
+	# For example, ${GREEK} below is shorthand for "alpha|beta|gamma|Gamma|delta|..."
+	# You can edit snippet variables under the Advanced snippet settings section.
+
+	{keyword: "([^\\\\])(${GREEK})", title: "[[0]]\\[[1]]", options: "rmA", description: "Add backslash before Greek letters"},
+	{keyword: "([^\\\\])(${SYMBOL})", title: "[[0]]\\[[1]]", options: "rmA", description: "Add backslash before symbols"},
+
+	# Insert space after Greek letters and symbols
+	{keyword: "\\\\(${GREEK}|${SYMBOL}|${MORE_SYMBOLS})([A-Za-z])", title: "\\[[0]] [[1]]", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) sr", title: "\\[[0]]^{2}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) cb", title: "\\[[0]]^{3}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) rd", title: "\\[[0]]^{$0}$1", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) hat", title: "\\hat{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) dot", title: "\\dot{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) bar", title: "\\bar{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) vec", title: "\\vec{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) tilde", title: "\\tilde{\\[[0]]}", options: "rmA"},
+	{keyword: "\\\\(${GREEK}|${SYMBOL}) und", title: "\\underline{\\[[0]]}", options: "rmA"},
+
+
+	# Derivatives and integrals
+	#{keyword: "par", title: "\\frac{ \\partial ${0:y} }{ \\partial ${1:x} } $2", options: "m"},
+	#{keyword: /pa([A-Za-z])([A-Za-z])/, title: "\\frac{ \\partial [[0]] }{ \\partial [[1]] } ", options: "rm"},
+	{keyword: "ddt", title: "\\frac{d}{dt} ", options: "mA"},
+
+	#{keyword: /([^\\])int/, title: "[[0]]\\int", options: "mA", priority: -1},
+	{keyword: "\\int", title: "\\int $0 \\, d${1:x} $2", options: "m"},
+	{keyword: "dint", title: "\\int_{${0:0}}^{${1:1}} $2 \\, d${3:x} $4", options: "mA"},
+	{keyword: "oint", title: "\\oint", options: "mA"},
+	{keyword: "iint", title: "\\iint", options: "mA"},
+	{keyword: "iiint", title: "\\iiint", options: "mA"},
+	{keyword: "oinf", title: "\\int_{0}^{\\infty} $0 \\, d${1:x} $2", options: "mA"},
+	{keyword: "infi", title: "\\int_{-\\infty}^{\\infty} $0 \\, d${1:x} $2", options: "mA"},
+
+
+	# Trigonometry
+	#{keyword: /([^\\])(arcsin|sin|arccos|cos|arctan|tan|csc|sec|cot)/, title: "[[0]]\\[[1]]", options: "rmA", description: "Add backslash before trig funcs"},
+
+	#{keyword: /\\(arcsin|sin|arccos|cos|arctan|tan|csc|sec|cot)([A-Za-gi-z])/,
+	# title: "\\[[0]] [[1]]", options: "rmA",
+	# description: "Add space after trig funcs. Skips letter h to allow sinh, cosh, etc."},
+
+	#{keyword: /\\(sinh|cosh|tanh|coth)([A-Za-z])/,
+	# title: "\\[[0]] [[1]]", options: "rmA",
+	# description: "Add space after hyperbolic trig funcs"},
+
+
+	# Visual operations
+	{keyword: "U", title: "\\underbrace{ ${VISUAL} }_{ $0 }", options: "mA"},
+	{keyword: "O", title: "\\overbrace{ ${VISUAL} }^{ $0 }", options: "mA"},
+	{keyword: "B", title: "\\underset{ $0 }{ ${VISUAL} }", options: "mA"},
+	{keyword: "C", title: "\\cancel{ ${VISUAL} }", options: "mA"},
+	{keyword: "K", title: "\\cancelto{ $0 }{ ${VISUAL} }", options: "mA"},
+	{keyword: "S", title: "\\sqrt{ ${VISUAL} }", options: "mA"},
+
+
+	# Physics
+	{keyword: "kbt", title: "k_{B}T", options: "mA"},
+	{keyword: "msun", title: "M_{\\odot}", options: "mA"},
+
+	# Quantum mechanics
+	{keyword: "dag", title: "^{\\dagger}", options: "mA"},
+	{keyword: "o+", title: "\\oplus ", options: "mA"},
+	{keyword: "ox", title: "\\otimes ", options: "mA"},
+	{keyword: "bra", title: "\\bra{$0} $1", options: "mA"},
+	{keyword: "ket", title: "\\ket{$0} $1", options: "mA"},
+	{keyword: "brk", title: "\\braket{ $0 | $1 } $2", options: "mA"},
+	{keyword: "outer", title: "\\ket{${0:\\psi}} \\bra{${0:\\psi}} $1", options: "mA"},
+
+	# Chemistry
+	{keyword: "pu", title: "\\pu{ $0 }", options: "mA"},
+	{keyword: "cee", title: "\\ce{ $0 }", options: "mA"},
+	{keyword: "he4", title: "{}^{4}_{2}He ", options: "mA"},
+	{keyword: "he3", title: "{}^{3}_{2}He ", options: "mA"},
+	{keyword: "iso", title: "{}^{${0:4}}_{${1:2}}${2:He}", options: "mA"},
+
+
+	# Environments
+	{keyword: "pmat", title: "\\begin{pmatrix}\n$0\n\\end{pmatrix}", options: "MA"},
+	{keyword: "bmat", title: "\\begin{bmatrix}\n$0\n\\end{bmatrix}", options: "MA"},
+	{keyword: "Bmat", title: "\\begin{Bmatrix}\n$0\n\\end{Bmatrix}", options: "MA"},
+	{keyword: "vmat", title: "\\begin{vmatrix}\n$0\n\\end{vmatrix}", options: "MA"},
+	{keyword: "Vmat", title: "\\begin{Vmatrix}\n$0\n\\end{Vmatrix}", options: "MA"},
+	{keyword: "matrix", title: "\\begin{matrix}\n$0\n\\end{matrix}", options: "MA"},
+
+	{keyword: "pmat", title: "\\begin{pmatrix}$0\\end{pmatrix}", options: "nA"},
+	{keyword: "bmat", title: "\\begin{bmatrix}$0\\end{bmatrix}", options: "nA"},
+	{keyword: "Bmat", title: "\\begin{Bmatrix}$0\\end{Bmatrix}", options: "nA"},
+	{keyword: "vmat", title: "\\begin{vmatrix}$0\\end{vmatrix}", options: "nA"},
+	{keyword: "Vmat", title: "\\begin{Vmatrix}$0\\end{Vmatrix}", options: "nA"},
+	{keyword: "matrix", title: "\\begin{matrix}$0\\end{matrix}", options: "nA"},
+
+	{keyword: "cases", title: "\\begin{cases}\n$0\n\\end{cases}", options: "mA"},
+	{keyword: "align", title: "\\begin{align}\n$0\n\\end{align}", options: "mA"},
+	{keyword: "array", title: "\\begin{array}\n$0\n\\end{array}", options: "mA"},
+
+
+	# Brackets
+	{keyword: "avg", title: "\\langle $0 \\rangle $1", options: "mA"},
+	{keyword: "norm", title: "\\lvert $0 \\rvert $1", options: "mA", priority: 1},
+	{keyword: "Norm", title: "\\lVert $0 \\rVert $1", options: "mA", priority: 1},
+	{keyword: "ceil", title: "\\lceil $0 \\rceil $1", options: "mA"},
+	{keyword: "floor", title: "\\lfloor $0 \\rfloor $1", options: "mA"},
+	{keyword: "mod", title: "|$0|$1", options: "mA"},
+	{keyword: "(", title: "(${VISUAL})", options: "mA"},
+	{keyword: "[", title: "[${VISUAL}]", options: "mA"},
+	{keyword: "{", title: "{${VISUAL}}", options: "mA"},
+	{keyword: "(", title: "($0)$1", options: "mA"},
+	{keyword: "{", title: "{$0}$1", options: "mA"},
+	{keyword: "[", title: "[$0]$1", options: "mA"},
+	{keyword: "lr(", title: "\\left( $0 \\right) $1", options: "mA"},
+	{keyword: "lr{", title: "\\left\\{ $0 \\right\\} $1", options: "mA"},
+	{keyword: "lr[", title: "\\left[ $0 \\right] $1", options: "mA"},
+	{keyword: "lr|", title: "\\left| $0 \\right| $1", options: "mA"},
+	{keyword: "lra", title: "\\left< $0 \\right> $1", options: "mA"},
+
+
+	# Misc
+
+	# Automatically convert standalone letters in text to math (except a, A, I).
+	# (Un-comment to enable)
+	# {keyword: /([^'])\b([B-HJ-Zb-z])\b([\n\s.,?!:'])/, title: "[[0]]$[[1]]$[[2]]", options: "tA"},
+
+	# Automatically convert Greek letters in text to math.
+	# {keyword: "(${GREEK})([\\n\\s.,?!:'])", title: "$\\[[0]]$[[1]]", options: "rtAw"},
+
+	# Automatically convert text of the form "x=2" and "x=n+1" to math.
+	# {keyword: /([A-Za-z]=\d+)([\n\s.,?!:'])/, title: "$[[0]]$[[1]]", options: "rtAw"},
+	# {keyword: /([A-Za-z]=[A-Za-z][+-]\d+)([\n\s.,?!:'])/, title: "$[[0]]$[[1]]", options: "tAw"},
+
+
+	# Snippet titles can have placeholders.
+	{keyword: "tayl", title: "${0:f}(${1:x} + ${2:h}) = ${0:f}(${1:x}) + ${0:f}'(${1:x})${2:h} + ${0:f}''(${1:x}) \\frac{${2:h}^{2}}{2!} + \\dots$3", options: "mA", description: "Taylor expansion"},
+
+	# Snippet titles can also be JavaScript functions.
+	# See the documentation for more information.
+	# {keyword: /iden(\d)/, title: (match) => {
+	# 	const n = match[1];
+	# 
+	# 	let arr = [];
+	# 	for (let j = 0; j < n; j++) {
+	# 		arr[j] = [];
+	# 		for (let i = 0; i < n; i++) {
+	# 			arr[j][i] = (i === j) ? 1 : 0;
+	# 		}
+	# 	}
+	# 
+	# 	let output = arr.map(el => el.join(" & ")).join(" \\\\\n");
+	# 	output = `\\begin{pmatrix}\n${output}\n\\end{pmatrix}`;
+	# 	return output;
+	# }, options: "mA", description: "N x N identity matrix"},
+]
