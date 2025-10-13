@@ -150,7 +150,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
-              global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${item.relPath}`).then(success => {
+              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.relPath}`).then(success => {
                 if (!success) {
                   td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
                   return
@@ -169,7 +169,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                   return
                 }
                 td4.textContent = '已下载'; td4.setAttribute('color', 'green');
-                local_dict_list.push({path: `${global_setting.config.dict_paths}/${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
+                local_dict_list.push({path: `${global_setting.config.dict_paths}${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
                 local_dict_list_onChange()
               })
             }
@@ -227,7 +227,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
           td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color !== 'green') { console.error('Unreachable'); return }
-            global_setting.api.deleteFile(`${global_setting.config.dict_paths}/${relPath}`).then(success => {
+            global_setting.api.deleteFile(`${global_setting.config.dict_paths}${relPath}`).then(success => {
               if (!success) {
                 td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
                 return

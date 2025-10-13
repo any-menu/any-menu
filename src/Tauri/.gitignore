@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# debug时会在运行目录生成该临时配置文件
+/src-tauri/am-user.toml
+/src-tauri/dict/

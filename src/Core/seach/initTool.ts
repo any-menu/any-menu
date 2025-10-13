@@ -25,18 +25,17 @@ export async function initMenuData(myMenu: ABContextMenu) {
       fillDB_by_file(file_path)
     }
   } catch (error) {
+    console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
     // debug 环境会走这里，使用硬编码 // 且这里写的硬编码应该在 src/Tauri 下而非项目根目录运行
-    console.warn("Failed to read directory:", error)
-    try {
-      const files: string[] = await global_setting.api.readFolder('../../../store/dict/')
-      if (!files || files.length === 0) throw new Error("No files found2")
-      for (const file_path of files) {
-        fillDB_by_file(file_path)
-      }
-    } catch (error) {
-      console.error("Failed to read directory:", error)
-      
-    }
+    // try {
+    //   const files: string[] = await global_setting.api.readFolder('../../../store/dict/')
+    //   if (!files || files.length === 0) throw new Error("No files found2")
+    //   for (const file_path of files) {
+    //     fillDB_by_file(file_path)
+    //   }
+    // } catch (error) {
+    //   console.error("Failed to read directory:", error)
+    // }
   }
 
   async function fillDB_by_file(file_path: string) {

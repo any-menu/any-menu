@@ -35,8 +35,10 @@ use text::{
 mod file;
 use file::{
     read_file,
-    create_file,
     read_folder,
+    create_file,
+    write_file,
+    delete_file
 };
 
 
@@ -203,7 +205,7 @@ pub fn run() {
             greet,
             get_caret, get_caret_debug, get_screen_size,
             paste, send, get_selected,
-            read_file, read_folder, create_file,
+            read_file, read_folder, create_file, write_file, delete_file,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

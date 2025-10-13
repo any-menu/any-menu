@@ -131,7 +131,7 @@ export class API {
       return false;
     }
 
-    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}/${relPath}`, ret.data.text);
+    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${relPath}`, ret.data.text);
   }
 
 }

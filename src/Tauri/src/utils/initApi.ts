@@ -30,8 +30,8 @@ export function initApi() {
     await invoke("send", { text: str, method: global_setting.config.send_text_method })
   }
 
-  global_setting.api.readFile = async (path: string) => {
-    const file_content: string|unknown = await invoke("read_file", { path })
+  global_setting.api.readFile = async (relPath: string) => {
+    const file_content: string|unknown = await invoke("read_file", { path: relPath })
     if (typeof file_content !== 'string') {
       console.error("Invalid file content format")
       return null
@@ -39,13 +39,21 @@ export function initApi() {
     return file_content
   }
 
-  global_setting.api.readFolder = async (path: string) => {
-    const files: string[]|null = await invoke("read_folder", { path })
+  global_setting.api.readFolder = async (relPath: string) => {
+    const files: string[]|null = await invoke("read_folder", { path: relPath })
     if (typeof files !== 'object' || !Array.isArray(files)) {
-      console.error("Invalid directory listing format", path, files)
+      console.error("Invalid directory listing format", relPath, files)
       return []
     }
     return files
+  }
+
+  global_setting.api.writeFile = async (relPath: string, content: string): Promise<boolean> => {
+    return await invoke("write_file", { path: relPath, content });
+  }
+
+  global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {
+    return await invoke("delete_file", { path: relPath });
   }
 
   // 后端为 Tauri 时使用

@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::Path;
 
 #[tauri::command]
 pub fn read_file(path: &str) -> Option<String> {
@@ -9,17 +10,6 @@ pub fn read_file(path: &str) -> Option<String> {
         Err(e) => {
             log::error!("读取文件 {} 时出错: {}", path, e);
             None
-        }
-    }
-}
-
-#[tauri::command]
-pub fn create_file(path: &str, content: &str) -> bool {
-    match fs::write(path, content) {
-        Ok(_) => true,
-        Err(e) => {
-            log::error!("创建文件 {} 时出错: {}", path, e);
-            false
         }
     }
 }
@@ -43,4 +33,63 @@ pub fn read_folder(path: &str) -> Option<Vec<String>> {
     }
 
     Some(file_paths)
+}
+
+#[tauri::command]
+pub fn create_file(path: &str, content: &str) -> bool {
+    match fs::write(path, content) {
+        Ok(_) => true,
+        Err(e) => {
+            log::error!("创建文件 {} 时出错: {}", path, e);
+            false
+        }
+    }
+}
+
+#[tauri::command]
+/// 写入内容到指定文件。
+/// 如果目录不存在，则会创建目录
+/// 如果文件不存在，则会创建新文件。
+/// 如果文件已存在，则会覆盖所有内容。
+///
+/// # Arguments
+///
+/// * `path` - 文件的完整路径
+/// * `content` - 要写入的字符串内容
+///
+/// # Returns
+///
+/// * `bool` - 操作成功返回 `true`，失败则返回 `false`
+pub fn write_file(path: &str, content: &str) -> bool {
+    let file_path = Path::new(path);
+
+    // 获取文件所在的父目录
+    if let Some(parent_dir) = file_path.parent() {
+        // 如果父目录不存在，则使用 create_dir_all 创建它
+        // create_dir_all 会递归创建所有不存在的父目录
+        if let Err(e) = fs::create_dir_all(parent_dir) {
+            log::error!("创建目录 {} 时出错: {}", parent_dir.display(), e);
+            return false;
+        }
+    }
+
+    // 现在目录肯定存在了，可以安全地写入文件
+    match fs::write(file_path, content) {
+        Ok(_) => true,
+        Err(e) => {
+            log::error!("写入文件 {} 时出错: {}", path, e);
+            false
+        }
+    }
+}
+
+#[tauri::command]
+pub fn delete_file(path: &str) -> bool {
+    match fs::remove_file(path) {
+        Ok(_) => true,
+        Err(e) => {
+            log::error!("删除文件 {} 时出错: {}", path, e);
+            false
+        }
+    }
 }

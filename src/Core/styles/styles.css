@@ -345,6 +345,7 @@ html, body, #main {
 
 .dict-table {
   overflow-x: auto;
+  width: 100%;
 }
 .dict-table tbody {
   overflow-y: auto;
