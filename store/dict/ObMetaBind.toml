@@ -1,0 +1,213 @@
+# take from https://github.com/mProjectsCode/obsidian-meta-bind-plugin/blob/14ae691c7f113c27ee905966337c8f79fcde391f/packages/core/src/utils/InputFieldExamples.ts
+
+[[categories]]
+label = "Input Field"
+
+[[categories.children]]
+label = "date"
+key = "date 日期1"
+detail = "md"
+callback = '`INPUT[date:exampleProperty]`'
+
+[[categories.children]]
+label = "datePicker"
+key = "datePicker 日期2"
+detail = "md"
+callback = '`INPUT[datePicker:exampleProperty]`'
+
+[[categories.children]]
+label = "dateTime"
+key = "dateTime 日期+时间"
+detail = "md"
+callback = '`INPUT[dateTime:exampleProperty]`'
+
+[[categories.children]]
+label = "time"
+key = "time 时间"
+detail = "md"
+callback = '`INPUT[time:exampleProperty]`'
+
+[[categories.children]]
+label = "number"
+key = "number 单行数字输入"
+detail = "md"
+callback = '`INPUT[number:exampleProperty]`'
+
+[[categories.children]]
+label = "text"
+key = "text 单行文本框"
+detail = "md"
+callback = '`INPUT[text:exampleProperty]`'
+
+[[categories.children]]
+label = "textArea 多行文本框"
+key = "textArea"
+detail = "md"
+callback = '`INPUT[textArea:exampleProperty]`'
+
+[[categories.children]]
+label = "editor"
+key = "editor Markdown编辑框"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[editor:exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "imageListSuggester"
+key = "imageListSuggester 选择图片"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[imageListSuggester(optionQuery("")):exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "imageSuggester"
+key = "imageSuggester 选择图片"
+detail = "md"
+callback = '`INPUT[imageSuggester(optionQuery("")):exampleProperty]`'
+
+[[categories.children]]
+label = "inlineList"
+key = "inlineList 添加到列表"
+detail = "md"
+callback = '`INPUT[inlineList:exampleProperty]`'
+
+[[categories.children]]
+label = "inlineListSuggester"
+key = "inlineListSuggester 从建议项添加到列表"
+detail = "md"
+callback = '`INPUT[inlineListSuggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
+
+[[categories.children]]
+label = "inlineSelect"
+key = "inlineSelect 从建议项添加到列表"
+detail = "md"
+callback = '`INPUT[inlineSelect(option(apple), option(banana), option(lemon)):exampleProperty]`'
+
+[[categories.children]]
+label = "list"
+key = "list"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[list:exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "listSuggester"
+key = "listSuggester"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[listSuggester(option(apple), option(banana), option(lemon)):exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "suggester"
+key = "suggester 从建议项选择"
+detail = "md"
+callback = '`INPUT[suggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
+
+[[categories.children]]
+label = "select"
+key = "select 单选框"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[select(option(apple), option(banana), option(lemon)):exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "multiSelect"
+key = "multiSelect 多选框"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[multiSelect(option(apple), option(banana), option(lemon)):exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "slider"
+key = "slider 进度条"
+detail = "md"
+callback = '`INPUT[slider(addLabels):exampleProperty]`'
+
+[[categories.children]]
+label = "progressBar"
+key = "progressBar 进度条"
+detail = "md"
+callback = '''
+```meta-bind
+INPUT[progressBar:exampleProperty]
+```
+'''
+
+[[categories.children]]
+label = "toggle"
+key = "toggle 开关"
+detail = "md"
+callback = '`INPUT[toggle:exampleProperty]`'
+
+[[categories]]
+label = "View Field"
+
+[[categories.children]]
+label = "Image"
+key = "Image"
+detail = "md"
+callback = '`VIEW[{imageExampleProperty}][image]`'
+
+[[categories.children]]
+label = "Link"
+key = "Link"
+detail = "md"
+callback = '`VIEW[{linkExampleProperty}][link]`'
+
+[[categories.children]]
+label = "Markdown"
+key = "Markdown"
+detail = "md"
+callback = '`VIEW[**some markdown** {markdownExampleProperty}][text(renderMarkdown)]`'
+
+[[categories.children]]
+label = "Math"
+key = "Math"
+detail = "md"
+callback = '`VIEW[{mathExampleProperty} + 2][math]`'
+
+[[categories.children]]
+label = "Text"
+key = "Text"
+detail = "md"
+callback = '`VIEW[some text {textExampleProperty}][text]`'
+
+[[categories]]
+label = "Inline Button"
+callback = '`BUTTON[example-id]`'
+
+[[categories]]
+label = "Button"
+callback = '''
+```meta-bind-button
+label: This is a button
+icon: ""
+style: default
+class: ""
+cssStyle: ""
+backgroundImage: ""
+tooltip: ""
+id: ""
+hidden: false
+actions: []
+
+```
+'''

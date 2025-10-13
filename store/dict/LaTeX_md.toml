@@ -18,20 +18,6 @@ $$
 '''
 
 [[categories.children]]
-label = "矩阵"
-key = "matrix 矩阵"
-detail = "md"
-callback = '''
-$$
-\begin{matrix}
-1 & 4 & 7\\
-2 & 5 & 8\\
-3 & 6 & 9
-\end{matrix}
-$$
-'''
-
-[[categories.children]]
 label = "方括号矩阵"
 key = "bmatrix 方括号矩阵"
 detail = "md"

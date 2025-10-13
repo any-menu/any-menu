@@ -10,7 +10,7 @@
 	{
 		"id": "anymenu-emojis_general",
 		"path": "emojis_general.json",
-		"name": "emojis_general",
+		"name": "emojis_通用",
 		"detail": "",
 		"author": "",
 		"version": "1.0.0"
@@ -50,7 +50,7 @@
 	{
 		"id": "anymenu-others",
 		"path": "others.txt",
-		"name": "others",
+		"name": "其他杂项",
 		"detail": "",
 		"author": "",
 		"version": "1.0.0"
@@ -66,16 +66,24 @@
 	{
 		"id": "anymenu-AdQuote",
 		"path": "AdQuote.toml",
-		"name": "AdQuote",
+		"name": "Alert块/Callout块",
 		"detail": "GFM Alert / Obsidian Callout / MarkdownIt GFM",
 		"author": "LincZero",
 		"version": "1.0.0 话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
 	},
 	{
-		"id": "anymenu-AnyBlock.toml",
+		"id": "anymenu-AnyBlock",
 		"path": "AnyBlock.toml",
 		"name": "AnyBlock",
 		"detail": "(需要先安装 AnyBlock)",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-ObMetaBind",
+		"path": "ObMetaBind.toml",
+		"name": "MetaBind",
+		"detail": "(需要在 obsidian 环境且安装 MetaBind)",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -98,7 +106,7 @@
 	{
 		"id": "anymenu-background",
 		"path": "background.js",
-		"name": "background",
+		"name": "文字背景",
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
@@ -106,7 +114,7 @@
 	{
 		"id": "anymenu-date",
 		"path": "date.js",
-		"name": "date",
+		"name": "日期",
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
