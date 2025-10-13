@@ -121,17 +121,18 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
-            let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 新增配置菜单项
+            let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
+            let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 配置菜单项
 
             // 菜单项数组
             #[cfg(debug_assertions)]
             let menu = {
                 // 只在 debug 模式下创建 "Main (Debug)" 菜单项
                 let main_debug_item = MenuItem::with_id(app, "main", "Main (Debug)", true, None::<&str>)?;
-                Menu::with_items(app, &[&main_debug_item, &config_item, &quit_item])?
+                Menu::with_items(app, &[&main_debug_item, &config_item, &restart_item, &quit_item])?
             };
             #[cfg(not(debug_assertions))]
-            let menu = Menu::with_items(app, &[&config_item, &quit_item])?;
+            let menu = Menu::with_items(app, &[&config_item, &restart_item, &quit_item])?;
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
@@ -139,9 +140,13 @@ pub fn run() {
                 .menu(&menu) // 加载菜单项数组
                 // .show_menu_on_left_click(true) // 左键也能展开菜单
                 .on_menu_event(|app, event| match event.id.as_ref() {
-                    // 菜单事件
+                    // 退出应用
                     "quit" => {
                         app.exit(0);
+                    }
+                    // 重启应用
+                    "restart" => {
+                        app.restart();
                     }
                     // 打开配置窗口
                     "config" => {
