@@ -56,7 +56,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
     div.textContent = `默认使用 Alt + S 打开菜单 (可以在设置中修改快捷键)\n
 更多说明和教程浏览仓库: https://github.com/any-menu/any-menu\n
 
-!!! 当前插件不完善: 设置面板修改过后需要重启插件才能生效`
+!!! 当前插件不完善: 设置面板修改过后需要重启插件/软件才能生效`
 
   tab_nav.classList.add('active');
   tab_content.classList.add('active');

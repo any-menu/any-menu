@@ -130,73 +130,73 @@ export async function initMenuData(myMenu: ABContextMenu) {
 
   // #endregion
 
-  // #region 多级展开菜单
-  myMenu.append_data([
-    {
-      label: 'Markdown',
-      children: [
-        { label: "表格" },
-        { label: "引用" },
-        { label: "代码块" },
-        { label: "公式块" },
-        { label: "有序列表" },
-        { label: "无序列表" },
-        { label: "---" },
-        { label: "标题" },
-        { label: "分割线" },
-        { label: "粗体" },
-        { label: "斜体" },
-      ]
-    },
-    {
-      label: 'Mermaid',
-      children: [
-        { label: "待补充" }
-      ]
-    },
-    {
-      label: '代码片段',
-      children: [
-        { label: "待补充" }
-      ]
-    },
-    {
-      label: '自定义短语',
-      children: [
-        { label: "待补充" }
-      ]
-    },
-    {
-      label: 'Plantuml',
-      children: [
-        { label: "待补充" }
-      ]
-    },
-    {
-      label: 'Emoji',
-      children: [
-        { label: "Too many. You should use the search bar." }
-      ]
-    },
-    {
-      label: '颜表情',
-      children: [
-        { label: "Too many. You should use the search bar." }
-      ]
-    },
-    {
-      label: '表情包', // 以及svg icon。这功能会用到本体存储，要么app版才支持，要么这里应该需要联网查询。
-      children: [
-        { label: "Too many. You should use the search bar." }
-      ]
-    },
-    // {
-    //   label: '最近', // 缓存最近通过菜单插入的内容项
-    //   children: [
-    //     { label: "Too many. You should use the search bar." }
-    //   ]
-    // },
-  ])
+  // #region 多级展开菜单 弃用默认菜单，必须由词典提供
+  // myMenu.append_data([
+  //   {
+  //     label: 'Markdown',
+  //     children: [
+  //       { label: "表格" },
+  //       { label: "引用" },
+  //       { label: "代码块" },
+  //       { label: "公式块" },
+  //       { label: "有序列表" },
+  //       { label: "无序列表" },
+  //       { label: "---" },
+  //       { label: "标题" },
+  //       { label: "分割线" },
+  //       { label: "粗体" },
+  //       { label: "斜体" },
+  //     ]
+  //   },
+  //   {
+  //     label: 'Mermaid',
+  //     children: [
+  //       { label: "待补充" }
+  //     ]
+  //   },
+  //   {
+  //     label: '代码片段',
+  //     children: [
+  //       { label: "待补充" }
+  //     ]
+  //   },
+  //   {
+  //     label: '自定义短语',
+  //     children: [
+  //       { label: "待补充" }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Plantuml',
+  //     children: [
+  //       { label: "待补充" }
+  //     ]
+  //   },
+  //   {
+  //     label: 'Emoji',
+  //     children: [
+  //       { label: "Too many. You should use the search bar." }
+  //     ]
+  //   },
+  //   {
+  //     label: '颜表情',
+  //     children: [
+  //       { label: "Too many. You should use the search bar." }
+  //     ]
+  //   },
+  //   {
+  //     label: '表情包', // 以及svg icon。这功能会用到本体存储，要么app版才支持，要么这里应该需要联网查询。
+  //     children: [
+  //       { label: "Too many. You should use the search bar." }
+  //     ]
+  //   },
+  //   // {
+  //   //   label: '最近', // 缓存最近通过菜单插入的内容项
+  //   //   children: [
+  //   //     { label: "Too many. You should use the search bar." }
+  //   //   ]
+  //   // },
+  // ])
 
   // #endregion
 

@@ -42,6 +42,7 @@ global_setting.api.sendText = async (text: string) => {
 
 import { RequestUrlParam, requestUrl } from 'obsidian'
 
+// 后端为 obsidian 时使用
 global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
   try {
     // 参数适配
