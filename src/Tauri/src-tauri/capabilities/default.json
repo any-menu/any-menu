@@ -21,7 +21,7 @@
     "global-shortcut:allow-unregister",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://*.tauri.app" }],
+      "allow": [{ "url": "https://gitee.com/*" }, { "url": "https://api.github.com/*" }],
       "deny": [{ "url": "https://private.tauri.app" }]
     }
   ]

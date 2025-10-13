@@ -1,7 +1,7 @@
 import { global_setting, UrlRequestConfig, UrlResponse } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
 import { invoke } from "@tauri-apps/api/core"
-import { fetch } from '@tauri-apps/plugin-http';
+import { fetch as tauri_fetch } from '@tauri-apps/plugin-http';
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
@@ -53,13 +53,11 @@ export function initApi() {
   // 这里的 tauri_fetch 是一个 rust 后端 api，试图与 fetch web api 尽量接近和兼容，一般情况下可当作 fetch 使用
   global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
     try {
-      const response:any = 0
-      // const response2 = await fetch(conf.url)
-      // , {
-      //   method: conf.method || 'GET',
-      //   headers: conf.headers,
-      //   body: conf.body,
-      // });
+      const response = await tauri_fetch(conf.url, {
+        method: conf.method || 'GET',
+        headers: conf.headers,
+        body: conf.body,
+      });
 
       // 返回值适配
       if (!response.ok) {
