@@ -12,11 +12,13 @@
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "node": "^22.20.0",
     "tslib": "^2.8.1"
   },
   "dependencies": {
     "@editableblock/textarea": "1.0.1-beta35",
+    "js-yaml": "^4.1.0",
     "pinyin": "^4.0.0",
     "smol-toml": "^1.4.2"
   }

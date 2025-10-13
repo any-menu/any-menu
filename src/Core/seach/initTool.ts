@@ -5,6 +5,7 @@ import { global_setting } from "../setting"
 import { SEARCH_DB } from "./SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { type ContextMenuItems, toml_parse } from "../contextmenu/demo"
+import * as yaml from 'js-yaml';
 
 /// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
 /// 这里也要区分是 搜索框数据 / 静态菜单数据 / 动态菜单数据
@@ -54,7 +55,7 @@ export async function initMenuData(myMenu: ABContextMenu) {
     }
 
     let file_content: string|null = ''
-    if (['toml', 'csv', 'txt', 'json', 'js'].includes(file_ext)) {
+    if (['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
       file_content = await global_setting.api.readFile(file_path)
       if (typeof file_content !== 'string') {
         throw new Error("Invalid file content format")
@@ -70,6 +71,8 @@ export async function initMenuData(myMenu: ABContextMenu) {
       void fillDB_by_csv(file_content, file_name_short)
     } else if (file_ext === 'json') {
       void fillDB_by_json(file_content, file_name_short)
+    } else if (file_ext === 'yaml' || file_ext === 'yml') {
+      void fillDB_by_yaml(file_content, file_name_short)
     } else if (file_ext === 'js') {
       void load_script(file_content, file_name_short)
     } else { // 无关文件
@@ -118,8 +121,21 @@ export async function initMenuData(myMenu: ABContextMenu) {
   async function fillDB_by_json(file_content: string, file_name_short: string) {
     try {
       const jsonData = JSON.parse(file_content)
-      let records: {key: string, value: string}[] = jsonData.map((item: any) => {
-        return { key: item["keyword"], value: item["title"], name: item["description"] }
+      let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
+        return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
+        // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
+      })
+      SEARCH_DB.add_data_by_json(records, file_name_short)
+    } catch (error) {
+      console.error("Parse error:", error)
+    }
+  }
+
+  async function fillDB_by_yaml(file_content: string, file_name_short: string) {
+    try {
+      const yamlData: any = yaml.load(file_content)
+      let records: {key: string, value: string, name?: string}[] = yamlData.map((item: any) => {
+        return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
         // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
       })
       SEARCH_DB.add_data_by_json(records, file_name_short)
