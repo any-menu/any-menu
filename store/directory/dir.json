@@ -64,6 +64,14 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-mermaid_md",
+		"path": "Mermaid_md.toml",
+		"name": "Mermaid_md",
+		"detail": "markdown mermaid",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "anymenu-AdQuote",
 		"path": "AdQuote.toml",
 		"name": "Alert块/Callout块",
@@ -117,6 +125,14 @@
 		"name": "日期",
 		"detail": "",
 		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-table",
+		"path": "table.js",
+		"name": "cNrN生成表格",
+		"detail": "",
+		"author": "槑头脑",
 		"version": "1.0.0"
 	}
 ]

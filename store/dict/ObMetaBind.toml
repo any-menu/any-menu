@@ -40,8 +40,8 @@ detail = "md"
 callback = '`INPUT[text:exampleProperty]`'
 
 [[categories.children]]
-label = "textArea 多行文本框"
-key = "textArea"
+label = "textArea"
+key = "textArea 多行文本框"
 detail = "md"
 callback = '`INPUT[textArea:exampleProperty]`'
 
