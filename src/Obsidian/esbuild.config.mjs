@@ -36,7 +36,7 @@ const prod = (process.argv[2] === 'production');
 		sourcemap: prod ? false : 'inline',
 		treeShaking: true,
 		outfile: '../../main.js',
-		minify: true, // 9.4MB -> 8.1MB
+		minify: false, // 9.4MB -> 8.1MB
 		metafile: true, // 依赖大小分析
 	}).catch(() => process.exit(1));
 

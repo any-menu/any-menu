@@ -1,6 +1,6 @@
 import { ABContextMenu2 } from "../contextmenu/ABContextMenu2"
-import { AMSearch } from "../../../Core/seach"
-import { initMenuData } from "../../../Core/seach/initTool"
+import { AMSearch } from "../../../Core/panel/search"
+import { initMenuData } from "../../../Core/panel/search/initTool"
 
 /// 初始化菜单
 /// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成

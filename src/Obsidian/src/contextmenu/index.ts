@@ -1,11 +1,11 @@
 import {
   MarkdownView, Plugin, type Editor
 } from 'obsidian'
-import { ABContextMenu } from '@/Core/contextmenu/index'
-import { AMSearch } from "@/Core/seach"
-import { initMenuData } from "@/Core/seach/initTool"
+import { ABContextMenu } from '@/Core/panel/contextmenu/index'
+import { AMSearch } from "@/Core/panel/search"
+import { initMenuData } from "@/Core/panel/search/initTool"
 import { global_setting } from '@/Core/setting'
-// import { root_menu } from "@/Core/contextmenu/demo"
+// import { root_menu } from "@/Core/panel/contextmenu/demo"
 
 export * from './ABContextMenu_Ob'
 

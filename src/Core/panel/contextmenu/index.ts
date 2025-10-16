@@ -28,7 +28,7 @@
  * 菜单有预创建 (性能优) 和动态创建两种，也可以综合 —— 部分动态内容
  */
 
-import { global_setting } from "../setting"
+import { global_setting } from "../../setting"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"

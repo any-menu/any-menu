@@ -1,4 +1,4 @@
-import { ABContextMenu } from "../../../Core/contextmenu/index"
+import { ABContextMenu } from "../../../Core/panel/contextmenu/index"
 import { global_setting } from "../../../Core/setting"
 
 import { hideWindow } from "../module/window"

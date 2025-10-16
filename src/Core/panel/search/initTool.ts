@@ -1,9 +1,9 @@
 /** 依赖于搜索框和多级菜单 */
 
 import { ABContextMenu } from "../contextmenu"
-import { global_setting } from "../setting"
+import { global_setting } from "../../setting"
 import { SEARCH_DB } from "./SearchDB"
-import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
+import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
 import { type ContextMenuItems, toml_parse } from "../contextmenu/demo"
 import * as yaml from 'js-yaml';
 

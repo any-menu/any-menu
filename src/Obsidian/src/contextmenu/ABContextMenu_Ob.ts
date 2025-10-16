@@ -5,8 +5,8 @@ import {
   TFile,
 } from 'obsidian'
 
-import { ABContextMenu } from "@/Core/contextmenu"
-import { root_menu, type ContextMenuItems } from "@/Core/contextmenu/demo"
+import { ABContextMenu } from "@/Core/panel/contextmenu"
+import { root_menu, type ContextMenuItems } from "@/Core/panel/contextmenu/demo"
 
 /**
  * 用于obsidian原菜单上的追加。
