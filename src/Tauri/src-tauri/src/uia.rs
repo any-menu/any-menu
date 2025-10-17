@@ -21,9 +21,9 @@
 use log::{debug, warn, info, error};
 
 /// 汇总各种方式
-pub fn get_message() -> (i32, i32, String) {
+pub fn get_message() -> (i32, i32, String, String) {
     let (x, y) = get_win_message();
-    (x, y, get_uia_by_windows_selected())
+    (x, y, get_uia_by_windows_selected(), get_uia_by_windows_winname())
 }
 
 // #region winapi 方式
@@ -599,6 +599,28 @@ pub fn get_uia_by_windows() -> Result<(), String> {
 #[cfg(not(target_os = "windows"))]
 pub fn get_uia_by_windows() -> Result<()> {
     log::error!("目前仅支持 windows 平台"); None
+}
+
+fn get_uia_by_windows_winname() -> String {
+    #[cfg(not(target_os = "windows"))]
+    {
+        return "".to_string();
+    }
+
+    use windows::Win32::UI::WindowsAndMessaging::*;
+    unsafe {
+        // 获取当前焦点窗口 (可靠)
+        let hwnd = GetForegroundWindow();
+
+        // 获取窗口标题 (可靠, 通常是用 ` - ` 连接的一连串字符，Notepad和QQ则是同名)
+        let mut title_flag = [0u16; 512];
+        let len = GetWindowTextW(hwnd, &mut title_flag);
+        if len > 0 {
+            let title_str = String::from_utf16_lossy(&title_flag[..len as usize]);
+            return title_str;
+        }
+        "".to_string()
+    }
 }
 
 fn get_uia_by_windows_selected() -> String {

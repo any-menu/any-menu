@@ -25,7 +25,7 @@ import { AMSearch } from './search/index'
 import { ABContextMenu } from './contextmenu/index'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
-let focus_in: 'search'|'menu' = 'search'
+// let focus_in: 'search'|'menu' = 'search'
 
 export class AMPanel {
   static factory(el: HTMLElement) {

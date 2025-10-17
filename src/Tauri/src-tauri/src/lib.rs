@@ -236,13 +236,13 @@ fn greet(name: &str) -> String {
 // }
 
 #[tauri::command]
-fn get_caret(_app_handle: tauri::AppHandle, _uia_sender: State<UiaSender>) -> (i32, i32, String) {
-    let (x, y, str) = get_message();
-    return (x, y, str);
+fn get_caret(_app_handle: tauri::AppHandle, _uia_sender: State<UiaSender>) -> (i32, i32, String, String) {
+    let (x, y, str, win_name) = get_message();
+    return (x, y, str, win_name);
 }
 
 #[tauri::command]
-fn get_caret_debug(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32, String) {
+fn get_caret_debug(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32, String, String) {
     // uia
     // 向worker线程发消息
     let tx = uia_sender.0.lock().unwrap();
@@ -250,8 +250,8 @@ fn get_caret_debug(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) 
     
     let _ = get_uia_by_windows(); 
 
-    let (x, y, str) = get_message();
-    return (x, y, str);
+    let (x, y, str, win_name) = get_message();
+    return (x, y, str, win_name);
 }
 
 // #endregion

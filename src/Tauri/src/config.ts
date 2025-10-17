@@ -158,4 +158,7 @@ search_limit = 500
 
 # 词库路径列表。在debug模式下不使用这个路径，而是硬编码
 dict_paths = "./dict/"
+
+# app软件版本不在obsidian窗口中响应 (针对同时安装ob插件版和app版的情况)
+app_no_use_in_ob = true
 `
