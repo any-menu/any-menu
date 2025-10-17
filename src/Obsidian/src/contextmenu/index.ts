@@ -24,7 +24,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   // 注册命令
   plugin.addCommand({
     id: 'any-menu-panel',
-    name: '展开 AnyMenu 面板',
+    name: '展开 AnyMenu 面板 - 主搜索框',
     // callback: () => {},
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
       const cursorInfo = getCursorInfo(plugin, editor);
@@ -34,7 +34,7 @@ export function registerAMContextMenu(plugin: Plugin) {
       }
     },
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
-      { modifiers: ["Alt"], key: "S" }
+      { modifiers: ["Alt"], key: "A" }
     ]
   })
 

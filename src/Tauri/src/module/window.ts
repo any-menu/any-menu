@@ -34,13 +34,13 @@ function registerShortcuts() {
     if (event.state !== 'Pressed') return // Pressed/Released
 
     console.log('Shortcut triggered1', event)
-    toggleWindow()
+    void toggleWindow()
   })
   register('Alt+A', (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
 
     console.log('Shortcut triggered2', event)
-    toggleWindow()
+    void toggleWindow()
   })
 }
 
@@ -194,7 +194,6 @@ function initAutoHide() {
   })
 }
 
-import { invoke } from "@tauri-apps/api/core"
 import { global_setting } from '../../../Core/setting'
 
 /** 缓存菜单尺寸 (仅一级菜单) */
@@ -212,13 +211,15 @@ async function cacheMenuSize() {
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow() {
   // 获取当前选择的文本
-  // 这里应废弃，这里的 selectedText 会被后面的 getCursorXY 覆盖
-  // 前者使用的是剪切板，但剪切板ctrl+c到内容改变之间太慢了，无法判断延时时间
-  // 后者使用的是Win32::UI::Accessibility，速度快且准确
-  invoke("get_selected").then((selected: any) => {
-    if (!selected || typeof selected !== 'string') return
-    global_setting.state.selectedText = selected.length > 0 ? selected : undefined
-  });
+  // @deprecated 这里应废弃
+  // - 这里的 selectedText 会被后面的 getCursorXY 覆盖
+  //   前者使用的是剪切板，但剪切板ctrl+c到内容改变之间太慢了，无法判断延时时间
+  //   后者使用的是Win32::UI::Accessibility，速度快且准确
+  // - 而且应该先获取光标和窗口信息，如果 app_no_use_in_ob/白名单 选项触发，就不应该执行 ctrl+c 及任何操作，避免覆盖操作
+  // invoke("get_selected").then((selected: any) => {
+  //   if (!selected || typeof selected !== 'string') return
+  //   global_setting.state.selectedText = selected.length > 0 ? selected : undefined
+  // });
 
   // step1. 鼠标位置 (类似于quciker app)
   const appWindow = getCurrentWindow()
@@ -236,10 +237,10 @@ async function showWindow() {
     console.error('getCursorXY failed, use mouse position instead')
     cursor2 = cursor
   }
-  // 其他负数表示不应该使用光标坐标，且不应该显示窗口 (如 app_no_use_in_ob 选项)
+  // 其他负数表示不应该使用光标坐标，且不应该显示窗口 (如 app_no_use_in_ob/白名单 选项)
   else if (cursor2.x < 0 || cursor2.y < 0) {
-    console.log('app_no_use_in_ob option enabled, do not show window in Obsidian')
-    return
+    console.warn('app_no_use_in_ob option enabled, do not show window in Obsidian. but feat in todo')
+    cursor2 = cursor
   }
   // 正常获取到
   else {
