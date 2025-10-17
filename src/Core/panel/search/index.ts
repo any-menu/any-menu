@@ -1,6 +1,6 @@
 import { global_setting } from "../../setting"
 import { SEARCH_DB } from "./SearchDB"
-import { createDom_suggestion } from "./suggestion"
+import { AMSuggestion } from "./suggestion"
 
 // 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错
 // 当然，tauri app 中不应该调用 require
@@ -15,7 +15,7 @@ export class AMSearch {
   el_parent: HTMLElement | null = null
   el: HTMLElement | null = null
   el_input: HTMLInputElement | null = null
-  el_suggestion: HTMLElement | null = null
+  amSuggestion: AMSuggestion | null = null
 
   /** 单例模式 */
   static factory(el?: HTMLElement): AMSearch {
@@ -53,7 +53,7 @@ export class AMSearch {
       this.el_input.type = 'text'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
-    createDom_suggestion(this.el_input, this.el)
+    this.amSuggestion = AMSuggestion.factory(this.el_input, this.el)
   }
 
   // ------------- 显示隐藏 -------------
@@ -62,6 +62,7 @@ export class AMSearch {
   
   show(x?: number, y?: number) {
     if (this.el_input) this.el_input.value = ''
+    if (this.amSuggestion) this.amSuggestion.hide()
 
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
     if (global_setting.env == 'app') {
@@ -89,6 +90,7 @@ export class AMSearch {
 
   hide() {
     if (this.el_input) this.el_input.value = ''
+    if (this.amSuggestion) this.amSuggestion.hide()
 
     // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
     if (global_setting.env == 'app') return
