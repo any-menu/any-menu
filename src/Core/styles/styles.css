@@ -46,9 +46,11 @@ html, body, #main {
   height: 26px;
   padding: 0 !important;
   z-index: 1;
-  background: transparent;
   border: none;
   box-shadow: none;
+  outline: none;
+  background: transparent;
+  color: var(--am-text-color);
 }
 #main > button:hover {
   background: rgba(0, 0, 0, 0.2);
@@ -173,6 +175,8 @@ html, body, #main {
   padding: 0 12px;
   border: none;
   outline: none;
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 .am-search .am-search-suggestion {
@@ -414,10 +418,6 @@ html, body, #main {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
 #main button, #am-config button {
   cursor: pointer;

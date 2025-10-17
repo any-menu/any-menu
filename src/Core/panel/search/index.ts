@@ -1,5 +1,6 @@
 import { global_setting } from "../../setting"
 import { SEARCH_DB } from "./SearchDB"
+import { createDom_suggestion } from "./suggestion"
 
 // 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错
 // 当然，tauri app 中不应该调用 require
@@ -52,118 +53,7 @@ export class AMSearch {
       this.el_input.type = 'text'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
-    this.createDom_suggestion(this.el)
-  }
-
-  // 输入建议
-  createDom_suggestion(el_input_parent: HTMLElement) {
-    const p_this = this
-
-    // el_suggestion
-    this.el_suggestion = document.createElement('div'); el_input_parent.appendChild(this.el_suggestion);
-      this.el_suggestion.classList.add('am-search-suggestion');
-      // this.el_suggestion.setAttribute("id", "autocomplete-list"); // 同一时间应该只会存在一个建议列表
-      this.el_suggestion.style.display = 'none' // 没有匹配项就隐藏
-
-    // 键盘选择项追踪
-    let currentFocus: number = -1
-    // 添加高亮样式到选中项
-    function addActive(list: NodeListOf<Element>) {
-      if (!list || list.length == 0) return false
-      removeActive(list)
-
-      if (currentFocus >= list.length) currentFocus = 0
-      if (currentFocus < 0) currentFocus = (list.length - 1)
-      list[currentFocus].classList.add("autocomplete-active") // 添加高亮
-      list[currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
-    }
-    // 移除所有项的高亮样式
-    function removeActive(list: NodeListOf<Element>) {
-      for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("autocomplete-active");
-      }
-    }
-
-    // input事件 - 输入
-    let search_result: {
-      key: string;
-      value: string;
-    }[] = []
-    this.el_input?.addEventListener('input', (ev) => {
-      const target = ev.target as HTMLInputElement
-      search_result = this.search(target.value)
-
-      // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
-      currentFocus = 0
-      const el_items = p_this.el_suggestion!.querySelectorAll(":scope>div.item")
-      addActive(el_items)
-    })
-
-    // input事件 - 键盘按键
-    this.el_input?.addEventListener('keydown', (ev) => {
-      let el_items: NodeListOf<HTMLElement>|undefined
-      el_items = p_this.el_suggestion!.querySelectorAll(":scope>div.item")
-      if (!el_items) return
-
-      if (ev.key == 'ArrowDown') { // Down 切换选项
-        currentFocus++
-        addActive(el_items);
-      } else if (ev.key == 'ArrowUp') { // Up 切换选项
-        currentFocus--
-        addActive(el_items);
-      } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
-        if (currentFocus > -1) {
-          ev.preventDefault()
-          if (el_items) el_items[currentFocus].click()
-        }
-      } else if (ev.key == 'Tab') { // Tab 不应用，仅将内容填入输入框
-        if (currentFocus > -1) {
-          ev.preventDefault()
-          if (el_items && search_result.length) p_this.el_input!.value = search_result[currentFocus].value
-        }
-      }
-    })
-  }
-
-  // 执行搜索、并修改输入建议
-  public search(query: string): {key: string, value: string}[] {
-    if (this.el_suggestion == null) return []
-
-    let result: {key: string, value: string}[] = []
-    if (global_setting.config.search_engine === 'trie') {
-      result = SEARCH_DB.query_by_trie(query)
-    } else if (global_setting.config.search_engine === 'reverse') {
-      result = SEARCH_DB.query_by_reverse(query)
-    } else {
-      console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
-      return []
-    }
-    // console.log(`query [${query}]: `, result)
-
-    // 数量检查
-    if (result.length === 0) {
-      this.el_suggestion.innerHTML = ''; this.el_suggestion.style.display = 'none';
-      return []
-    }
-    // if (result.length == 50) {} // 达到上限
-
-    // 添加到建议列表
-    this.el_suggestion.innerHTML = ''; this.el_suggestion.style.display = 'block';
-    for (const item of result) {
-      const div = document.createElement('div'); this.el_suggestion.appendChild(div); div.classList.add('item')
-      const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
-        div_value.textContent = item.value
-      const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
-        div_key.textContent = item.key
-
-      div.onclick = () => {
-        this.el_input!.value = ''
-        this.el_suggestion!.innerHTML = ''; this.el_suggestion!.style.display = 'none';
-        void global_setting.api.sendText(item.value)
-      }
-    }
-
-    return result
+    createDom_suggestion(this.el_input, this.el)
   }
 
   // ------------- 显示隐藏 -------------
@@ -171,7 +61,9 @@ export class AMSearch {
   private isShow: boolean = false
   
   show(x?: number, y?: number) {
-    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
+    if (this.el_input) this.el_input.value = ''
+
+    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
     if (global_setting.env == 'app') {
       if (global_setting.focusStrategy) this.el_input?.focus()
       return
@@ -196,7 +88,9 @@ export class AMSearch {
   }
 
   hide() {
-    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到
+    if (this.el_input) this.el_input.value = ''
+
+    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
     if (global_setting.env == 'app') return
 
     this.isShow = false

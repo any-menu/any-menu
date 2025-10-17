@@ -41,7 +41,7 @@ html, body, #main {
     pointer-events: auto;
   }
 
-  // debug模式下才显示，置顶按钮
+  // 置顶按钮 (debug模式下才显示)
   >button {
     position: absolute;
     box-sizing: border-box;
@@ -52,9 +52,11 @@ html, body, #main {
 
     padding: 0 !important;
     z-index: 1;
-    background: transparent;
     border: none;
     box-shadow: none;
+    outline: none;
+    background: transparent;
+    color: var(--am-text-color);
 
     &:hover {
       background: rgba(0, 0, 0, 0.2);
@@ -195,6 +197,8 @@ html, body, #main {
     padding: 0 12px;
     border: none;
     outline: none;
+    color: var(--am-text-color);
+    background-color: var(--am-background-color);
     // box-shadow: none;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   }
@@ -482,10 +486,10 @@ html, body, #main {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    color: var(--am-text-color);
-    background-color: var(--am-background-color);
-    transition: border-color 0.25s;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    // color: var(--am-text-color);
+    // background-color: var(--am-background-color);
+    // transition: border-color 0.25s;
+    // box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
   }
 
   button {
