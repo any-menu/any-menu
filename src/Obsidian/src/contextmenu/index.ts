@@ -1,8 +1,9 @@
 import {
   MarkdownView, Plugin, type Editor
 } from 'obsidian'
-import { ABContextMenu } from '@/Core/panel/contextmenu/index'
-import { AMSearch } from "@/Core/panel/search"
+import { AMPanel } from '@/Core/panel/'
+// import { ABContextMenu } from '@/Core/panel/contextmenu/index'
+// import { AMSearch } from "@/Core/panel/search"
 import { initMenuData } from "@/Core/panel/search/initTool"
 import { global_setting } from '@/Core/setting'
 // import { root_menu } from "@/Core/panel/contextmenu/demo"
@@ -12,8 +13,9 @@ export * from './ABContextMenu_Ob'
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
   // 搜索框和多极菜单 - 元素
-  const amSearch = AMSearch.factory(document.body as HTMLElement)
-  const amContextMenu = new ABContextMenu(document.body as HTMLDivElement)
+  const { amSearch, amContextMenu } = AMPanel.factory(document.body as HTMLElement)
+  // const amSearch = AMSearch.factory(document.body as HTMLElement)
+  // const amContextMenu = new ABContextMenu(document.body as HTMLElement)
 
   // 搜索框和多极菜单 - 数据内容
   void initMenuData(amContextMenu)

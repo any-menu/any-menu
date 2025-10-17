@@ -59,7 +59,7 @@ export class ABContextMenu {
 
   /// 可选一个挂载对象来预创建菜单，用于自动销毁，防止内存泄露和重复监听 (如果多个复用元素共用菜单或更菜单则不需要传入)
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
-  public el_parent: HTMLDivElement|undefined
+  public el_parent: HTMLElement|undefined
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
   public el_container: HTMLDivElement|undefined
   /// 当前菜单是否处于显示状态
@@ -67,7 +67,7 @@ export class ABContextMenu {
 
   // 创建一个菜单实例
   constructor(
-    el_parent?: HTMLDivElement,
+    el_parent?: HTMLElement,
     menuItems?: ContextMenuItems,
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
     // 或改成 "菜单位置" 功能性更强
