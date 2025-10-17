@@ -7,13 +7,15 @@ import { toggleWindow } from './window'
 const APP_BLACKLIST = [
   '- Obsidian v',
 ]
+// 白名单
+// AnyMenu
 
 const SHORTCUT_1 = 'Alt+A';
 // const SHORTCUT_2 = 'CommandOrControl+Space';
 
 /** 注册事件监听 - 聚焦窗口改变 */
 export function setupAppChangeListener() {
-  if (global_setting)
+  // if (global_setting)
 
   listen('active-app-changed', (event) => {
     const appName = event.payload
@@ -35,14 +37,19 @@ export function setupAppChangeListener() {
  * @param {string | null} appName - 当前激活的应用名称 (来自 Rust)
  */
 async function updateShortcuts(appName: string) {
-  if (!appName) return
+  // 检查是否在黑名单内
+  let isInBlacklist = false
+  for (const app_block of APP_BLACKLIST) {
+    if (appName.includes(app_block)) {
+      isInBlacklist = true
+      break
+    }
+  }
 
-  // 检查是否在白名单内
-  const isInBlacklist = APP_BLACKLIST.includes(appName)
-
-  // 以 'Alt+A' 为例
+  // 动态注册或注销全局快捷键
   try {
     const altAIsRegistered = await isRegistered(SHORTCUT_1) as boolean
+    // console.log(`Updating shortcut state for app: ${appName}, isInBlacklist: ${isInBlacklist}, altAIsRegistered: ${altAIsRegistered}`)
 
     // 在黑名单 (不应注册快捷键)
     if (isInBlacklist) {
@@ -57,7 +64,8 @@ async function updateShortcuts(appName: string) {
       // 如果快捷键未注册，则注册它
       if (!altAIsRegistered) {
         console.log(`Registering ${SHORTCUT_1} for app: ${appName}`)
-        await register(SHORTCUT_1, () => {
+        await register(SHORTCUT_1, (event) => {
+          if (event.state !== 'Pressed') return // Pressed/Released
           void toggleWindow()
         })
       }

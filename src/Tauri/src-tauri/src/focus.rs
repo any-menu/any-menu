@@ -43,7 +43,7 @@ pub fn init_focus_check(app_handle: tauri::AppHandle) {
 
                 // 这里可以根据 window_title 判断是否在黑名单内
                 // 并注册或注销全局快捷键
-                println!("Active window changed: {}", window_title);
+                // println!("Active window changed: {}", window_title);
 
                 // 向 JS 前端发送事件
                 app_handle.emit("active-app-changed", window_title).unwrap();
