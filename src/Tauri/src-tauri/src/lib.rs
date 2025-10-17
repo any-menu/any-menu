@@ -40,7 +40,7 @@ use file::{
     write_file,
     delete_file
 };
-
+mod focus;
 
 // #region uia thread
 
@@ -120,6 +120,9 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
+            // focus 模块
+            focus::init_focus_check(app.app_handle().clone());
+
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 配置菜单项

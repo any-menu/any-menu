@@ -4,11 +4,12 @@
  * 窗口显示/隐藏相关
  */
 
-import { register } from '@tauri-apps/plugin-global-shortcut'
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
-
 import { SEARCH_DB } from '../../../Core/panel/search/SearchDB'
+
+import { setupAppChangeListener } from './focus'
+setupAppChangeListener()
 
 export const global_state: {
   isPin: boolean // 是否置顶
@@ -26,26 +27,9 @@ window.addEventListener("DOMContentLoaded", () => {
   initClickThroughBehavior()
   cacheMenuSize()
 })
-registerShortcuts()
-
-/** 注册全局快捷键 */
-function registerShortcuts() {
-  register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
-    if (event.state !== 'Pressed') return // Pressed/Released
-
-    console.log('Shortcut triggered1', event)
-    void toggleWindow()
-  })
-  register('Alt+A', (event) => {
-    if (event.state !== 'Pressed') return // Pressed/Released
-
-    console.log('Shortcut triggered2', event)
-    void toggleWindow()
-  })
-}
 
 /** 窗口切换是否显示 */
-async function toggleWindow() {  
+export async function toggleWindow() {  
   try {
     const appWindow = getCurrentWindow()
     // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
