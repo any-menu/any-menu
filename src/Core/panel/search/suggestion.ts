@@ -45,9 +45,8 @@ export class AMSuggestion {
 
     // input事件 - 键盘按键
     el_input.addEventListener('keydown', (ev) => {
-      let el_items: NodeListOf<HTMLElement>|undefined
-      el_items = el_suggestion.querySelectorAll(":scope>div.item")
-      if (!el_items) return
+      let el_items: NodeListOf<HTMLElement> = el_suggestion.querySelectorAll(":scope>div.item")
+      if (!el_items || el_items.length == 0) return
 
       if (ev.key == 'ArrowDown') { // Down 切换选项
         this.updateVFocus(el_items, 'down')

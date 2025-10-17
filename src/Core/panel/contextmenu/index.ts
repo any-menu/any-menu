@@ -326,7 +326,7 @@ export class ABContextMenu {
 
   public async sendText(str: string) {
     if (global_setting.env === 'app') {
-      console.error('需继承并重载该方法'); this.visual_hide(); return;
+      await global_setting.api.sendText(str); this.visual_hide(); return;
     }
     else if (global_setting.env === 'obsidian-plugin') {
       await global_setting.api.sendText(str); this.visual_hide(); return;
