@@ -217,16 +217,17 @@ async function showWindow() {
   let cursor2_flag = false // 是否成功获取到光标坐标
   // console.log('光标坐标:', cursor);
   // -1 表示获取不到光标坐标，可以使用鼠标坐标
-  if (cursor2.x == -1 || cursor2.y == -1) {
+  if (cursor2.x < 0 || cursor2.y < 0) {
     console.error('getCursorXY failed, use mouse position instead')
     cursor2 = cursor
   }
+  // 弃用。改为黑名单注销全局快捷键的方式
   // 其他负数表示不应该使用光标坐标，且不应该显示窗口 (如 app_no_use_in_ob/白名单 选项)
-  else if (cursor2.x < 0 || cursor2.y < 0) {
-    console.warn('app_no_use_in_ob option enabled, do not show window in Obsidian. but feat in todo')
-    cursor2 = cursor
-  }
-  // 正常获取到
+  // else if (cursor2.x < 0 || cursor2.y < 0) {
+  //   console.warn('app_no_use_in_ob option enabled, do not show window in Obsidian. but feat in todo')
+  //   cursor2 = cursor
+  // }
+  // 正常获取
   else {
     cursor2_flag = true
     cursor.x = cursor2.x; cursor.y = cursor2.y;

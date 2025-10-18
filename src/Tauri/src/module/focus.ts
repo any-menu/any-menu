@@ -4,9 +4,9 @@ import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-sh
 import { toggleWindow } from './window'
 
 // 黑名单
-const APP_BLACKLIST = [
-  '- Obsidian v',
-]
+// let APP_BLACKLIST = [
+//   '- Obsidian v',
+// ]
 // 白名单
 // AnyMenu
 
@@ -15,8 +15,6 @@ const SHORTCUT_1 = 'Alt+A';
 
 /** 注册事件监听 - 聚焦窗口改变 */
 export function setupAppChangeListener() {
-  // if (global_setting)
-
   listen('active-app-changed', (event) => {
     const appName = event.payload
     if (typeof appName !== 'string') {
@@ -39,7 +37,7 @@ export function setupAppChangeListener() {
 async function updateShortcuts(appName: string) {
   // 检查是否在黑名单内
   let isInBlacklist = false
-  for (const app_block of APP_BLACKLIST) {
+  for (const app_block of global_setting.config.app_black_list) {
     if (appName.includes(app_block)) {
       isInBlacklist = true
       break

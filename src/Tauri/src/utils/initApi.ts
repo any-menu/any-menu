@@ -14,15 +14,16 @@ export function initApi() {
       return { x: -1, y: -1 }
     }
 
+    // 弃用。改为黑名单注销全局快捷键的方式
     // 通过窗口名，处理软件版本与插件版本的冲突问题
     // 如果不开启 app_no_use_in_ob，则会是全局快捷键的 app 版本优先，快捷键冲突时召唤的是 app 的菜单
     // 反之则 ob 的插件版本优先
     // pos 示例: AnyMenu简单的上下文 - MdNote_Public - Obsidian v1.9.10
-    if (global_setting.config.app_no_use_in_ob && pos[3] && pos[3].length > 0) {
-      if (pos[3].includes('- Obsidian v')) {
-        return { x: -2, y: -2 }
-      }
-    }
+    // if (global_setting.config.app_no_use_in_ob && pos[3] && pos[3].length > 0) {
+    //   if (pos[3].includes('- Obsidian v')) {
+    //     return { x: -2, y: -2 }
+    //   }
+    // }
 
     global_setting.state.selectedText = pos[2] && pos[2].length > 0 ? pos[2] : undefined
     return { x: pos[0], y: pos[1] }

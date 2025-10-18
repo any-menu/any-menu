@@ -40,8 +40,8 @@ export const global_setting: {
     search_limit: number,
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
-    // app软件版本不在obsidian窗口中响应 (针对同时安装ob插件版和app版的情况)
-    app_no_use_in_ob: boolean,
+    // app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
+    app_black_list: string[],
   },
   config_: { // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
     is_auto_startup: boolean, // 是否开机自启
@@ -89,7 +89,7 @@ export const global_setting: {
     send_text_method: 'clipboard',
     search_limit: 500,
     dict_paths: './dict/', // obsidian 用户可能比较熟悉于 Template 文件夹
-    app_no_use_in_ob: true,
+    app_black_list: ['- Obsidian v']
   },
   config_: {
     is_auto_startup: false,
