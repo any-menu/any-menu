@@ -26,15 +26,35 @@ jobs:
       run: |
         pnpm install --frozen-lockfile
         pnpm ob:build
-    - name: upload build artifact
+    # 整体放进压缩包
+    # - name: upload build artifact
+    #   if: always()
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: obsidiain-any-menu
+    #     path: |
+    #       manifest.json
+    #       main.js
+    #       styles.css
+    # 单独上传各个文件作为 artifact
+    - name: upload artifact1
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: obsidiain-any-menu
-        path: |
-          manifest.json
-          main.js
-          styles.css
+        name: main.js
+        path: main.js
+    - name: upload artifact2
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: manifest.json
+        path: manifest.json
+    - name: upload artifact3
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: styles.css
+        path: styles.css
 
   build-tauri:
     strategy:
@@ -78,24 +98,31 @@ jobs:
         working-directory: ./src/Tauri
         run: pnpm tauri build
       
-      # - name: Upload artifacts (Windows)
-      #   if: matrix.platform == 'windows-latest'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: any-menu-windows
-      #     path: ./src/Tauri/src-tauri/target/release/bundle/
+      - name: Get Artifact Paths # 找到构建产物的确切路径
+        if: matrix.platform == 'windows-latest'
+        id: get_paths
+        run: |
+          # 找到 .msi 文件的完整路径并设置为 output
+          $msiPath = (Get-Item -Path "./src/Tauri/src-tauri/target/release/bundle/msi/*.msi").FullName
+          echo "msi_path=$msiPath" >> $env:GITHUB_OUTPUT
+          
+          # 找到 .exe 文件的完整路径并设置为 output
+          $exePath = (Get-Item -Path "./src/Tauri/src-tauri/target/release/bundle/nsis/*.exe").FullName
+          echo "exe_path=$exePath" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
       - name: Upload MSI artifact (Windows)
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: any-menu-windows-msi
-          path: ./src/Tauri/src-tauri/target/release/bundle/msi/*.msi
+          path: ${{ steps.get_paths.outputs.msi_path }}
       - name: Upload NSIS artifact (Windows)
         if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: any-menu-windows-nsis
-          path: ./src/Tauri/src-tauri/target/release/bundle/nsis/*.exe
+          path: ${{ steps.get_paths.outputs.exe_path }}
       
       - name: Upload artifacts (Linux)
         if: matrix.platform == 'ubuntu-latest'
@@ -115,3 +142,39 @@ jobs:
     #         ./src/Tauri/src-tauri/target/release/bundle/**/*.deb
     #     env:
     #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-release:
+    name: Create Release
+    # 仅当检测到推送的是 'v' 开头的 tag 时才运行
+    # if: startsWith(github.ref, 'refs/tags/v')
+    # 仅当推送的是 tag 时才运行
+    if: startsWith(github.ref, 'refs/tags/')
+    # 需要等待两个 build job 都成功
+    needs: [build-obsidian, build-tauri]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # 将所有构建产物下载到 'dist' 目录
+          # 这将创建 'dist/obsidiain-any-menu'、'dist/any-menu-windows-msi' 等子目录
+          path: ./dist
+      
+      - name: Create Release
+        # 使用 softprops/action-gh-release 的 v2 版本
+        uses: softprops/action-gh-release@v2
+        with:
+          # 从下载的产物目录中收集所有文件
+          files: |
+            ./dist/main.js/main.js
+            ./dist/manifest.json/manifest.json
+            ./dist/styles.css/styles.css
+            ./dist/any-menu-windows-msi/*
+            ./dist/any-menu-windows-nsis/*
+            # 如果/当 Linux 构建被重新启用时，取消此行的注释
+            # ./dist/any-menu-linux/*
+          # 自动生成 release notes
+          generate_release_notes: true
+        env:
+          # GITHUB_TOKEN 是由 GitHub Actions 自动提供的
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
