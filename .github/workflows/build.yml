@@ -141,8 +141,8 @@ jobs:
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
-          prerelease: false # 标记为正式版
-          makeLatest: true  # 标记为 "Latest"
+          prerelease: false # 是否预发布
+          makeLatest: true  # 是否最后一个版本
 
       # 场景二：release 到正式版 tag
       - name: Create or Update Beta Release
@@ -155,13 +155,19 @@ jobs:
           body: | # 固定的 Release 描述
             非手动的 beta 版本，与手动 beta 版本不同的是，每次 commit 都会更新。
             这也导致了这个版本有可能是存在bug的，不可用的。仅供测试使用
+
+            > 下载 tips:
+            > 
+            > - obsidian 用户下载 main、mainifest、styles 三个文件。或更推荐使用 brat 进行安装
+            > - windows 用户下载 msi 或 nsis 文件
+            > - linux 等其他平台开发中
           artifacts: |
             ./dist/obsidian-any-menu/*
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           commit: ${{ github.sha }} # 将 release 关联到最新的 commit
-          generateReleaseNotes: true # 自动根据 commits 生成 release notes
+          # generateReleaseNotes: true # 自动根据 commits 生成 release notes
           allowUpdates: true # 允许更新已存在的 release
           replacesArtifacts: true # 替换掉旧的产物文件
-          prerelease: true  # 标记为 "Pre-release"
-          makeLatest: false # 不要标记为 "Latest"
+          prerelease: true  # 是否预发布
+          makeLatest: false # 是否最后一个版本
