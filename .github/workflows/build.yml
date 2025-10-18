@@ -154,7 +154,7 @@ jobs:
           name: 'Beta Release (risk)' # 固定的 Release 标题
           body: | # 固定的 Release 描述
             非手动的 beta 版本，与手动 beta 版本不同的是，每次 commit 都会更新。
-            这也导致了这个版本有可能是存在bug的，不可用的。仅供测试使用
+            这也导致了这个版本有可能是存在bug或不可用的。仅供测试使用
 
             > 下载 tips:
             > 

@@ -25,9 +25,13 @@ global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, 
   const app = global_setting.other.obsidian_plugin.app
   if (!app) { console.error('obsidian app对象未初始化'); return }
 
-  el.classList.add("markdown-rendered")  
+  el.classList.add("markdown-rendered")
 
-  const mdrc: MarkdownRenderChild = new MarkdownRenderChild(el); 
+  const mdrc: MarkdownRenderChild = new MarkdownRenderChild(el);
+  if (ctx) ctx.addChild(mdrc);
+  else if (global_setting.other.obsidian_ctx) {
+    ;(global_setting.other.obsidian_ctx as MarkdownPostProcessorContext).addChild(mdrc);
+  }
   MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
 }
 
@@ -221,6 +225,14 @@ export default class AnyMenuPlugin extends Plugin {
     // 菜单面板 - 元素
     registerABContextMenu(this) // 初始化菜单 - 默认菜单系统
     registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
+
+    // 通过后处理器获取ctx对象
+    this.registerMarkdownPostProcessor((
+      el: HTMLElement, 
+      ctx: MarkdownPostProcessorContext
+    ) => {
+      global_setting.other.obsidian_ctx = ctx
+    })
   }
 
   async loadSettings() {

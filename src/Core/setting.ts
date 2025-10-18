@@ -76,6 +76,7 @@ export const global_setting: {
   /** 通常是any|null类型，是特有环境临时存的东西 */
   other: {
     obsidian_plugin: any|null,
+    obsidian_ctx: any|null, // type: MarkdownPostProcessorContext
     renderMarkdown: null|((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>),
   }
 } = {
@@ -111,6 +112,7 @@ export const global_setting: {
   },
   other: {
     obsidian_plugin: null,
+    obsidian_ctx: null,
     renderMarkdown: async (): Promise<void> => {},
   }
 }
