@@ -112,10 +112,8 @@ jobs:
 
   create-release:
     name: Create Release
-    # if: startsWith(github.ref, 'refs/tags/v') # 仅当检测到推送的是 'v' 开头的 tag 时才运行
-    if: startsWith(github.ref, 'refs/tags/')    # 仅当推送的是 tag 时才运行
-    # 需要等待两个 build job 都成功
-    needs: [build-obsidian, build-tauri]
+    if: github.event_name == 'push' # 跳过PR
+    needs: [build-obsidian, build-tauri] # 需要等待两个 build job 都成功
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -125,21 +123,31 @@ jobs:
           # 这将创建 'dist/obsidian-any-menu'、'dist/any-menu-windows-msi' 等子目录
           path: ./dist
       
+      # 场景一：release 到固定的 beta tag
       - name: Create Release
-        # 使用 softprops/action-gh-release 的 v2 版本
-        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') # 有tag
+        uses: ncipollo/release-action@v1
         with:
-          # 从下载的产物目录中收集所有文件
-          files: |
-            ./dist/obsidian-any-menu/main.js
-            ./dist/obsidian-any-menu/manifest.json
-            ./dist/obsidian-any-menu/styles.css
-            ./dist/any-menu-windows-msi/*
-            ./dist/any-menu-windows-nsis/*
-            # 如果/当 Linux 构建被重新启用时，取消此行的注释
-            # ./dist/any-menu-linux/*
-          # 自动生成 release notes
-          generate_release_notes: true
-        env:
-          # GITHUB_TOKEN 是由 GitHub Actions 自动提供的
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
+          name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
+          artifacts: './dist/*'
+          generateReleaseNotes: true # 自动根据 commits 生成 release notes
+          prerelease: false # 标记为正式版
+          makeLatest: true # 标记为 "Latest"
+
+      # 场景二：release 到正式版 tag
+      - name: Create or Update Beta Release
+        if: github.ref == 'refs/heads/main' # 没有tag
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: 'Beta' # 固定的 tag 名
+          name: 'Beta Release (risk)' # 固定的 Release 标题
+          body: "beta 版本，可能包含不稳定或实验性功能，仅供测试使用" # 固定的 Release 描述
+          artifacts: './dist/*' # 上传 'dist' 目录下的所有文件
+          commit: ${{ github.sha }} # 将 release 关联到最新的 commit
+          allowUpdates: true # 允许更新已存在的 release
+          replacesArtifacts: true # 替换掉旧的产物文件
+          prerelease: true # 标记为 "Pre-release"
+          makeLatest: false # 不要标记为 "Latest"
