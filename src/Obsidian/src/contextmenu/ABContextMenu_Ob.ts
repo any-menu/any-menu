@@ -38,9 +38,9 @@ export class ABContextMenu_Ob extends ABContextMenu {
     super(undefined, menuItems)
   }
 
-  override attach(targetElement: HTMLElement | string): void {
+  override bind_emitArea(targetElement: HTMLElement | string): void {
     // 预创建菜单版本
-    if (this.el_container) return super.attach(targetElement)
+    if (this.el_container) return super.bind_emitArea(targetElement)
 
     return
   }

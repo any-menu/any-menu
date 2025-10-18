@@ -45,6 +45,10 @@ export class AMSuggestion {
 
     // input事件 - 键盘按键
     el_input.addEventListener('keydown', (ev) => {
+      if (el_input.value.trim() === '') {
+        this.hide()
+        return
+      }
       let el_items: NodeListOf<HTMLElement> = el_suggestion.querySelectorAll(":scope>div.item")
       if (!el_items || el_items.length == 0) return
 
@@ -88,7 +92,7 @@ export class AMSuggestion {
     // if (result.length == 50) {} // 达到上限
 
     // 添加到建议列表
-    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'block';
+    this.show()
     for (const item of result) {
       const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item')
       const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
@@ -106,6 +110,10 @@ export class AMSuggestion {
     return result
   }
 
+  show() {
+    const el_suggestion = this.el_suggestion
+    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'block';
+  }
   hide() {
     const el_suggestion = this.el_suggestion
     el_suggestion.innerHTML = ''; el_suggestion.style.display = 'none';

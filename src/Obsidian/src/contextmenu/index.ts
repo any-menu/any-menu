@@ -30,7 +30,7 @@ export function registerAMContextMenu(plugin: Plugin) {
       const cursorInfo = getCursorInfo(plugin, editor);
       if (cursorInfo) {
         amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-        amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
+        amContextMenu.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
       }
     },
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
@@ -43,7 +43,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     const cursorInfo = getCursorInfo(plugin)
     if (cursorInfo) {
       amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-      amContextMenu.visual_show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
+      amContextMenu.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
     }
   })
 }

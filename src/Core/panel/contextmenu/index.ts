@@ -77,7 +77,7 @@ export class ABContextMenu {
 
     // 创建菜单 DOM (默认隐藏)
     this.el_container = document.createElement('div'); el_parent.appendChild(this.el_container); this.el_container.classList.add('ab-context-menu', 'root-menu');
-    this.visual_hide()
+    this.hide()
 
     // 禁止右键切换光标。不阻止默认菜单和冒泡，不禁止菜单，仅禁止聚焦
     // 原因：聚焦切换到菜单内可能引起ab块重渲染，导致挂钩生命到ab块的菜单消失，而不挂钩生命到ab块则菜单项功能可能引起bug
@@ -92,10 +92,53 @@ export class ABContextMenu {
     if (menuItems) this.append_data(menuItems)
   }
 
+  // #region 显示/隐藏菜单
+
+  // 显示该菜单
+  public show(x: number, y: number) {
+    if (!this.el_container) return
+    this.isShow = true
+    this.el_container.style.left = `${x}px`
+    this.el_container.style.top = `${y}px`
+    this.el_container.classList.add('visible')
+
+    window.addEventListener('click', this.visual_listener_click)
+    window.addEventListener('mouseup', this.visual_listener_mouseup)
+    window.addEventListener('keydown', this.visual_listener_keydown)
+  }
+  // 隐藏该菜单
+  public hide() {
+    if (!this.el_container) return
+    this.isShow = false
+    this.el_container.classList.remove('visible')
+
+    window.removeEventListener('click', this.visual_listener_click)
+    window.removeEventListener('mouseup', this.visual_listener_mouseup)
+    window.removeEventListener('keydown', this.visual_listener_keydown)
+  }
+  // 动态事件组。菜单显示时注册，隐藏时销毁
+  // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单
+  visual_listener_click = (ev: MouseEvent) => {
+    if (!this.el_container) return
+    if (!this.isShow) return
+    if (this.el_container.contains(ev.target as Node)) return
+    this.hide()
+  }
+  visual_listener_mouseup = (ev: MouseEvent) => {
+    if (!this.isShow) return
+    if (ev.button === 2) this.hide()
+  }
+  visual_listener_keydown = (ev: KeyboardEvent) => {
+    if (!this.isShow) return
+    if (ev.key === 'Escape') this.hide()
+  }
+
+  // #endregion
+
   /** 在目标上监听 contextmenu 事件，并显示该菜单 (仅非 App 环境)
    * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
    */
-  public attach(targetElement: HTMLElement | string) {
+  public bind_emitArea(targetElement: HTMLElement | string) {
     if (typeof targetElement == 'string') return
 
     targetElement.addEventListener('contextmenu', (ev: MouseEvent) => {
@@ -118,52 +161,9 @@ export class ABContextMenu {
         y -= offsetY
       }
 
-      this.visual_show(x, y)
+      this.show(x, y)
     })
   }
-
-  // #region 显示/隐藏菜单
-
-  // 显示该菜单
-  public visual_show(x: number, y: number) {
-    if (!this.el_container) return
-    this.isShow = true
-    this.el_container.style.left = `${x}px`
-    this.el_container.style.top = `${y}px`
-    this.el_container.classList.add('visible')
-
-    window.addEventListener('click', this.visual_listener_click)
-    window.addEventListener('mouseup', this.visual_listener_mouseup)
-    window.addEventListener('keydown', this.visual_listener_keydown)
-  }
-  // 隐藏该菜单
-  public visual_hide() {
-    if (!this.el_container) return
-    this.isShow = false
-    this.el_container.classList.remove('visible')
-
-    window.removeEventListener('click', this.visual_listener_click)
-    window.removeEventListener('mouseup', this.visual_listener_mouseup)
-    window.removeEventListener('keydown', this.visual_listener_keydown)
-  }
-  // 动态事件组。菜单显示时注册，隐藏时销毁
-  // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单
-  visual_listener_click = (ev: MouseEvent) => {
-    if (!this.el_container) return
-    if (!this.isShow) return
-    if (this.el_container.contains(ev.target as Node)) return
-    this.visual_hide()
-  }
-  visual_listener_mouseup = (ev: MouseEvent) => {
-    if (!this.isShow) return
-    if (ev.button === 2) this.visual_hide()
-  }
-  visual_listener_keydown = (ev: KeyboardEvent) => {
-    if (!this.isShow) return
-    if (ev.key === 'Escape') this.visual_hide()
-  }
-
-  // #endregion
 
   // #region 添加菜单项
 
@@ -218,7 +218,7 @@ export class ABContextMenu {
               if (result && typeof result === 'string') {
                 this.sendText(result)
               }
-              this.visual_hide()
+              this.hide()
             })
           }
         }
@@ -310,7 +310,7 @@ export class ABContextMenu {
         ev.preventDefault()
         // 获取隐藏值 (提示值)
         header_callback(header_input.value)
-        this.visual_hide()
+        this.hide()
       }
       // if (ev.key === 'Escape') { // 按esc不应用值
       //   ev.preventDefault()
@@ -326,10 +326,10 @@ export class ABContextMenu {
 
   public async sendText(str: string) {
     if (global_setting.env === 'app') {
-      await global_setting.api.sendText(str); this.visual_hide(); return;
+      await global_setting.api.sendText(str); this.hide(); return;
     }
     else if (global_setting.env === 'obsidian-plugin') {
-      await global_setting.api.sendText(str); this.visual_hide(); return;
+      await global_setting.api.sendText(str); this.hide(); return;
     }
     // 后面是通用 browser 环境
 
@@ -348,7 +348,7 @@ export class ABContextMenu {
       // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
     }
 
-    this.visual_hide(); return;
+    this.hide(); return;
   }
 
   // -------------------- 使用示例 --------------------
@@ -384,7 +384,7 @@ export class ABContextMenu {
       targetArea.style.justifyContent = 'center'
       targetArea.innerText = '在这里右键试试'
 
-      myMenu.attach(targetArea)
+      myMenu.bind_emitArea(targetArea)
     }
   }
 }

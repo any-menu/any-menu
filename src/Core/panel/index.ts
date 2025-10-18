@@ -33,4 +33,14 @@ export class AMPanel {
     const amContextMenu = new ABContextMenu(el)
     return { amSearch, amContextMenu }
   }
+
+  /** 绑定到input事件
+   * 
+   * 流程上: 先去找匹配项/看input是否为空
+   * - 若有内容，则方向键控制搜索建议
+   * - 若无内容，则方向键控制多层菜单
+   */
+  // static bind_input() {
+
+  // }
 }
