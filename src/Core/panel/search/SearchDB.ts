@@ -1,6 +1,5 @@
 /** 核心搜索数据库，内置多种子搜索索引方式 */
 
-import type { AMSearch } from './index'
 import { global_setting } from '../../setting'
 import { TrieDB, type TrieNode } from './TrieDB'
 import { ReverseIndexDB } from './ReverseIndexDB'
@@ -28,8 +27,6 @@ class SearchDB {
   trie: TrieDB // 前缀树
   reverse: ReverseIndexDB // FuzzySearchEngine
   hash: undefined
-  // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
-  amSearch: AMSearch | null = null
 
   constructor() {
     // if (global_setting.config.search_engine == 'trie') {

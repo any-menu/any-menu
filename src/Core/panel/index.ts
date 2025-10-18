@@ -27,11 +27,27 @@ import { ABContextMenu } from './contextmenu/index'
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
 
+// 单例模式下使用，否则不使用
+export const global_el: {
+  amSearch: AMSearch | null,
+  amContextMenu: ABContextMenu | null
+} = {
+  amSearch: null,
+  amContextMenu: null
+}
+
+/** AMPanel 使用单例模式管理 */
 export class AMPanel {
+  /** 单例模式 */
   static factory(el: HTMLElement) {
-    const amSearch = AMSearch.factory(el)
-    const amContextMenu = ABContextMenu.factory(el, undefined, amSearch.el_input ?? undefined)
-    return { amSearch, amContextMenu }
+    if (!global_el.amSearch) {
+      global_el.amSearch = AMSearch.factory(el)
+    }
+    if (!global_el.amContextMenu) {
+      global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
+    }
+
+    return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 
   /** 绑定到input事件

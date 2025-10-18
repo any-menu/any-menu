@@ -105,11 +105,11 @@ export class ABContextMenu {
   // #region 显示/隐藏菜单
 
   // 显示该菜单
-  public show(x: number, y: number) {
+  public show(x?: number, y?: number) {
     if (!this.el_container) return
     this.isShow = true
-    this.el_container.style.left = `${x}px`
-    this.el_container.style.top = `${y}px`
+    if (x) this.el_container.style.left = `${x}px`
+    if (y) this.el_container.style.top = `${y}px`
     this.el_container.classList.add('visible')
 
     this.updateVFocus(undefined, 'clean')
