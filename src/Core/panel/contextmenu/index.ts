@@ -222,10 +222,11 @@ export class ABContextMenu {
         el_items[this.currentFocus].dispatchEvent(mouseEvent)
         // el_items = ...
         // this.updateVFocus(el_items, '0');
+        // 如果是根部 updateVFocus(undefined, 'clean')
       } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
         if (this.currentFocus > -1) {
           ev.preventDefault()
-          // if (el_items) el_items[this.currentFocus].click()
+          el_items[this.currentFocus].click()
         }
       }
     })
@@ -260,9 +261,17 @@ export class ABContextMenu {
     removeVFocus(list)
 
     // 循环选择 (可选，或改为置顶/底后不再移动)
-    if (flag === 'clean') return
-    if (this.currentFocus >= list.length) this.currentFocus = 0
-    if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
+    // 使用 -1 排外的循环策略 (-2最后一个 -> -1不选 -> 0第一个)
+    if (flag === 'clean') {
+      this.currentFocus = -1
+      return
+    }
+    if (this.currentFocus == -1 || this.currentFocus == list.length) {
+      this.currentFocus = -1
+      return
+    }
+    else if (this.currentFocus >= list.length) this.currentFocus = 0
+    else if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
 
     list[this.currentFocus].classList.add("focus-active") // 添加高亮
     list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
