@@ -25,15 +25,26 @@ export class AMSuggestion {
     this.hide()
   }
 
+  show() {
+    const el_suggestion = this.el_suggestion
+    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'block';
+  }
+  hide() {
+    const el_suggestion = this.el_suggestion
+    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'none';
+  }
+
+  // #region 输入更新、方向键、虚拟聚焦/高亮项管理
+
   // 绑定到input元素
   bind_input(el_input: HTMLInputElement) {
     const el_suggestion = this.el_suggestion
-
-    // input事件 - 输入
     let search_result: {
       key: string;
       value: string;
     }[] = []
+
+    // input事件 - 输入
     el_input.addEventListener('input', (ev) => {
       const target = ev.target as HTMLInputElement
       search_result = this.search(el_suggestion, target.value)
@@ -45,10 +56,12 @@ export class AMSuggestion {
 
     // input事件 - 键盘按键
     el_input.addEventListener('keydown', (ev) => {
+      // 无内容时，由多级菜单接管事件
       if (el_input.value.trim() === '') {
         this.hide()
         return
       }
+
       let el_items: NodeListOf<HTMLElement> = el_suggestion.querySelectorAll(":scope>div.item")
       if (!el_items || el_items.length == 0) return
 
@@ -69,6 +82,44 @@ export class AMSuggestion {
       }
     })
   }
+
+  // 键盘选择项追踪，初始不起作用
+  private currentFocus: number = -1
+
+  /** 更新虚拟聚焦项 (选中项)
+   * @param flag
+   * - 空，使用当前的currentFocus值
+   * - '0'，选中第一项
+   * - 'up'，选中上一项 (可循环选择)
+   * - 'down'，选中下一项 (可循环选择)
+   */
+  private updateVFocus(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
+    if (flag === '0') this.currentFocus = 0
+    else if (flag === 'down') this.currentFocus++
+    else if (flag === 'up') this.currentFocus--
+    else if (flag === 'clean') this.currentFocus = -1
+    else throw new Error("unreachable")
+
+    if (!list || list.length == 0) return false
+    removeVFocus(list)
+
+    // 循环选择 (可选，或改为置顶/底后不再移动)
+    if (flag === 'clean') return
+    if (this.currentFocus >= list.length) this.currentFocus = 0
+    if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
+
+    list[this.currentFocus].classList.add("autocomplete-active") // 添加高亮
+    list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
+
+    // 移除所有项的聚焦样式
+    function removeVFocus(list: NodeListOf<Element>) {
+      for (let i = 0; i < list.length; i++) {
+        list[i].classList.remove("autocomplete-active");
+      }
+    }
+  }
+
+  // #endregion
 
   search(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
     if (el_suggestion == null) return []
@@ -108,50 +159,5 @@ export class AMSuggestion {
     }
 
     return result
-  }
-
-  show() {
-    const el_suggestion = this.el_suggestion
-    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'block';
-  }
-  hide() {
-    const el_suggestion = this.el_suggestion
-    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'none';
-  }
-
-  // --------------------------- 高亮项管理 ---------------------------------
-
-  // 键盘选择项追踪，初始
-  currentFocus: number = -1
-
-  /** 更新虚拟聚焦项 (选中项)
-   * @param flag
-   * - 空，使用当前的currentFocus值
-   * - '0'，选中第一项
-   * - 'up'，选中上一项 (可循环选择)
-   * - 'down'，选中下一项 (可循环选择)
-   */
-  updateVFocus(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
-    if (flag === '0') this.currentFocus = 0
-    else if (flag === 'down') this.currentFocus++
-    else if (flag === 'up') this.currentFocus--
-    else if (flag === 'clean') this.currentFocus = -1
-    else throw new Error("unreachable")
-
-    if (!list || list.length == 0) return false
-    removeVFocus(list)
-
-    if (flag === 'clean') return
-    if (this.currentFocus >= list.length) this.currentFocus = 0
-    if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
-    list[this.currentFocus].classList.add("autocomplete-active") // 添加高亮
-    list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
-
-    // 移除所有项的聚焦样式
-    function removeVFocus(list: NodeListOf<Element>) {
-      for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("autocomplete-active");
-      }
-    }
   }
 }

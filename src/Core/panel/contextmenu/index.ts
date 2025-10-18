@@ -65,6 +65,16 @@ export class ABContextMenu {
   /// 当前菜单是否处于显示状态
   private isShow: boolean = false
 
+  static factory(
+    el_parent?: HTMLElement,
+    menuItems?: ContextMenuItems,
+    el_input?: HTMLInputElement,
+  ): ABContextMenu {
+    const abContextMenu = new ABContextMenu(el_parent, menuItems)
+    if (el_input) abContextMenu.bind_arrowKeyArea(el_input)
+    return abContextMenu
+  }
+
   // 创建一个菜单实例
   constructor(
     el_parent?: HTMLElement,
@@ -164,6 +174,76 @@ export class ABContextMenu {
       this.show(x, y)
     })
   }
+
+  // #region 方向键、虚拟聚焦/高亮项管理
+
+  /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
+  bind_arrowKeyArea(el_input: HTMLInputElement) {
+    el_input.addEventListener('input', (ev) => {
+
+    })
+
+    let el_items: NodeListOf<HTMLElement>|undefined
+
+    el_input.addEventListener('keydown', (ev) => {
+      // 有内容时，由搜索框建议栏接管事件
+      if (el_input.value.trim() != '') {
+        // this.updateVFocus('clean') // 不需要，可能会有筛选搜索的功能
+        return
+      }
+
+      if (!this.el_container) return
+      el_items = this.el_container.querySelectorAll(":scope>li") // li 可能有 .has-children
+
+      if (ev.key == 'ArrowDown') { // Down 切换选项
+        this.updateVFocus(el_items, 'down')
+      } else if (ev.key == 'ArrowUp') { // Up 切换选项
+        this.updateVFocus(el_items, 'up');
+      } else if (ev.key == 'ArrowLeft') { // Left 切换选项
+        // el_items = ...
+        // this.updateVFocus(el_items, 'down')
+      } else if (ev.key == 'ArrowRight') { // Right 切换选项
+        // el_items = ...
+        // this.updateVFocus(el_items, '0');
+      } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+        if (this.currentFocus > -1) {
+          ev.preventDefault()
+          // if (el_items) el_items[this.currentFocus].click()
+        }
+      }
+    })
+  }
+
+  // 键盘选择项追踪，初始不起作用
+  private currentFocus: number = -1
+
+  private updateVFocus(list: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+    if (flag === '0') this.currentFocus = 0
+    else if (flag === 'down') this.currentFocus++
+    else if (flag === 'up') this.currentFocus--
+    else if (flag === 'clean') this.currentFocus = -1
+    else throw new Error("unreachable")
+
+    if (!list || list.length == 0) return false
+    removeVFocus(list)
+
+    // 循环选择 (可选，或改为置顶/底后不再移动)
+    if (flag === 'clean') return
+    if (this.currentFocus >= list.length) this.currentFocus = 0
+    if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
+
+    list[this.currentFocus].classList.add("autocomplete-active") // 添加高亮
+    list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
+
+    // 移除所有项的聚焦样式
+    function removeVFocus(list: NodeListOf<Element>) {
+      for (let i = 0; i < list.length; i++) {
+        list[i].classList.remove("autocomplete-active");
+      }
+    }
+  }
+
+  // #endregion
 
   // #region 添加菜单项
 
@@ -372,7 +452,7 @@ export class ABContextMenu {
     ]
 
     // 创建菜单实例
-    const myMenu = new ABContextMenu(document.body as HTMLDivElement, menuItems)
+    const myMenu = ABContextMenu.factory(document.body as HTMLDivElement, menuItems)
 
     // 找到一个目标元素并附加菜单
     const targetArea = document.getElementById('my-app') // 假设你的应用挂载点是 #my-app

@@ -9,7 +9,7 @@ export async function initMenu(el: HTMLElement) {
   // 搜索框和多级菜单 - 元素
   const { amContextMenu } = AMPanel.factory(el)
   // AMSearch.factory(el)
-  // const myMenu = new ABContextMenu(el)
+  // const myMenu = ABContextMenu.factory(el)
   // myMenu.append_headerEditor('header test', ()=>{})
 
   // 搜索框和多极菜单 - 数据内容

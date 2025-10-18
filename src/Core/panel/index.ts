@@ -30,7 +30,7 @@ import { ABContextMenu } from './contextmenu/index'
 export class AMPanel {
   static factory(el: HTMLElement) {
     const amSearch = AMSearch.factory(el)
-    const amContextMenu = new ABContextMenu(el)
+    const amContextMenu = ABContextMenu.factory(el, undefined, amSearch.el_input ?? undefined)
     return { amSearch, amContextMenu }
   }
 

@@ -15,7 +15,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   // 搜索框和多极菜单 - 元素
   const { amSearch, amContextMenu } = AMPanel.factory(document.body as HTMLElement)
   // const amSearch = AMSearch.factory(document.body as HTMLElement)
-  // const amContextMenu = new ABContextMenu(document.body as HTMLElement)
+  // const amContextMenu = ABContextMenu.factory(document.body as HTMLElement)
 
   // 搜索框和多极菜单 - 数据内容
   void initMenuData(amContextMenu)
