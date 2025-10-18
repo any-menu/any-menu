@@ -29,7 +29,7 @@ class SearchDB {
   reverse: ReverseIndexDB // FuzzySearchEngine
   hash: undefined
   // 全局的 AMSearch 实例 (仅单例模式下有用，如果场景有多个AMSeach，此处应该恒为null)
-  el_search: AMSearch | null = null
+  amSearch: AMSearch | null = null
 
   constructor() {
     // if (global_setting.config.search_engine == 'trie') {

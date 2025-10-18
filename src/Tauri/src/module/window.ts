@@ -261,7 +261,7 @@ async function showWindow() {
   await appWindow.setFocus() // 聚焦窗口
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 
-  if (SEARCH_DB.el_search != null) SEARCH_DB.el_search.show() // 显示&聚焦搜索框、建议栏
+  if (SEARCH_DB.amSearch != null) SEARCH_DB.amSearch.show() // 显示&聚焦搜索框、建议栏
 }
 
 /** 隐藏窗口 */
@@ -273,5 +273,5 @@ export async function hideWindow() {
 
   await appWindow.hide(); global_state.isWindowVisible = false;
 
-  if (SEARCH_DB.el_search != null) SEARCH_DB.el_search.hide() // 隐藏&失焦搜索框、建议栏
+  if (SEARCH_DB.amSearch != null) SEARCH_DB.amSearch.hide() // 隐藏&失焦搜索框、建议栏
 }

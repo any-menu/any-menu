@@ -19,9 +19,9 @@ export class AMSearch {
 
   /** 单例模式 */
   static factory(el?: HTMLElement): AMSearch {
-    if (SEARCH_DB.el_search) return SEARCH_DB.el_search
+    if (SEARCH_DB.amSearch) return SEARCH_DB.amSearch
     const instance = new AMSearch(el)
-    SEARCH_DB.el_search = instance
+    SEARCH_DB.amSearch = instance
     return instance
   }
 
