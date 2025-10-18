@@ -137,7 +137,10 @@ jobs:
           token: ${{ secrets.ANYMENU }}
           # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
           name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
-          artifacts: './dist/*'
+          artifacts: |
+            ./dist/obsidian-any-menu/*
+            ./dist/any-menu-windows-msi/*
+            ./dist/any-menu-windows-nsis/*
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
           prerelease: false # 标记为正式版
           makeLatest: true  # 标记为 "Latest"
@@ -153,7 +156,10 @@ jobs:
           body: | # 固定的 Release 描述
             非手动的 beta 版本，与手动 beta 版本不同的是，每次 commit 都会更新。
             这也导致了这个版本有可能是存在bug的，不可用的。仅供测试使用
-          artifacts: './dist/*' # 上传 'dist' 目录下的所有文件
+          artifacts: |
+            ./dist/obsidian-any-menu/*
+            ./dist/any-menu-windows-msi/*
+            ./dist/any-menu-windows-nsis/*
           commit: ${{ github.sha }} # 将 release 关联到最新的 commit
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
           allowUpdates: true # 允许更新已存在的 release
