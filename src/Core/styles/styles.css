@@ -67,7 +67,6 @@ html, body, #main {
   bottom: 50px;
 }
 
-/* -------------------------------- 多级菜单 ---------------------------- */
 :root {
   --ab-tab-root-bg-color: #0d1117;
   --ab-tab-root-bd-color: #34343f;
@@ -83,6 +82,7 @@ html, body, #main {
   --ab-menu-text-color: #CCCCCC;
 }
 
+/* -------------------------------- 多级菜单 ---------------------------- */
 #main > .ab-context-menu {
   display: block;
 }
@@ -93,7 +93,6 @@ html, body, #main {
 .ab-context-menu.visible {
   display: block;
 }
-
 .ab-context-menu.sub-menu {
   display: none;
 }
@@ -101,6 +100,12 @@ html, body, #main {
   display: block;
 }
 
+/** 基本样式
+ * - ab-context-menu.root-menu
+ *   - li.has-children
+ *     - content
+ *     - ab-context-menu.sub-menu (并嵌套)
+ */
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
@@ -127,11 +132,15 @@ html, body, #main {
   font-size: 14px;
   cursor: pointer;
 }
+.ab-context-menu > ul .left, .ab-context-menu > li .left, .ab-context-menu > div .left, .ab-context-menu > span .left, .ab-context-menu > button .left, .ab-context-menu > input .left {
+  margin-right: 10px;
+}
 .ab-context-menu > ul:hover, .ab-context-menu > li:hover, .ab-context-menu > div:hover, .ab-context-menu > span:hover, .ab-context-menu > button:hover, .ab-context-menu > input:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.ab-context-menu > ul .left, .ab-context-menu > li .left, .ab-context-menu > div .left, .ab-context-menu > span .left, .ab-context-menu > button .left, .ab-context-menu > input .left {
-  margin-right: 10px;
+.ab-context-menu > ul.focus-active, .ab-context-menu > li.focus-active, .ab-context-menu > div.focus-active, .ab-context-menu > span.focus-active, .ab-context-menu > button.focus-active, .ab-context-menu > input.focus-active {
+  background-color: var(--am-bright-color) !important;
+  color: #ffffff;
 }
 .ab-context-menu input {
   padding: 4px 4px;
@@ -142,23 +151,22 @@ html, body, #main {
   color: currentColor;
 }
 
-.ab-context-menu .has-children {
+.ab-context-menu > .has-children {
   position: relative;
 }
-.ab-context-menu .has-children::before {
+.ab-context-menu > .has-children::before {
   content: "▶";
   float: right;
   font-size: 12px;
   margin-top: 2px;
 }
-
-.ab-context-menu.sub-menu {
+.ab-context-menu > .has-children > .ab-context-menu.sub-menu {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
 }
 
-/* -------------------------------- 菜单搜索 --------------------------- */
+/* -------------------------------- 搜索栏 ------------------------------- */
 .am-search {
   width: 500px;
   display: inline-block;
@@ -223,11 +231,8 @@ html, body, #main {
   height: 20px;
 }
 
-/* -------------------------------- 输入建议 (旧) ------------------------- */
-/* 主容器样式 */
-.am-search {
-  /* 建议列表 */
-}
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 建议列表 */
 .am-search .am-search-suggestion {
   top: 100%;
   background-color: var(--ab-menu-bg-color);
@@ -255,7 +260,7 @@ html, body, #main {
 .am-search .am-search-suggestion > div:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.am-search .am-search-suggestion > div.autocomplete-active {
+.am-search .am-search-suggestion > div.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }

@@ -55,7 +55,7 @@ export class ABContextMenu_App extends ABContextMenu {
                 EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, item.callback as string)
               }
 
-              this.visual_hide()
+              this.hide()
             })
           }
           // b3. 自定义事件
@@ -63,7 +63,7 @@ export class ABContextMenu_App extends ABContextMenu {
             const callback = item.callback
             li.addEventListener('click', () => {
               callback()
-              this.visual_hide()
+              this.hide()
             })
           }
         }

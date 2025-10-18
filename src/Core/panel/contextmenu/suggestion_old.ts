@@ -90,14 +90,14 @@ export function input_suggestion(el_input: HTMLInputElement, el_container: HTMLE
     removeActive(list) // 先移除所有高亮
     if (currentFocus >= list.length) currentFocus = 0
     if (currentFocus < 0) currentFocus = (list.length - 1)
-    list[currentFocus].classList.add("autocomplete-active") // 添加高亮
+    list[currentFocus].classList.add("focus-active") // 添加高亮
     list[currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
   }
 
   // 移除所有项的高亮样式
   function removeActive(list: HTMLCollectionOf<Element>) {
     for (let i = 0; i < list.length; i++) {
-      list[i].classList.remove("autocomplete-active");
+      list[i].classList.remove("focus-active");
     }
   }
 

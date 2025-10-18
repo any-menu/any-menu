@@ -72,12 +72,12 @@ export class AMSuggestion {
       } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
         if (this.currentFocus > -1) {
           ev.preventDefault()
-          if (el_items) el_items[this.currentFocus].click()
+          el_items[this.currentFocus].click()
         }
       } else if (ev.key == 'Tab') { // Tab 不应用，仅将内容填入输入框
         if (this.currentFocus > -1) {
           ev.preventDefault()
-          if (el_items && search_result.length) el_input.value = search_result[this.currentFocus].value
+          if (search_result.length) el_input.value = search_result[this.currentFocus].value
         }
       }
     })
@@ -108,13 +108,13 @@ export class AMSuggestion {
     if (this.currentFocus >= list.length) this.currentFocus = 0
     if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
 
-    list[this.currentFocus].classList.add("autocomplete-active") // 添加高亮
+    list[this.currentFocus].classList.add("focus-active") // 添加高亮
     list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
 
     // 移除所有项的聚焦样式
     function removeVFocus(list: NodeListOf<Element>) {
       for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("autocomplete-active");
+        list[i].classList.remove("focus-active");
       }
     }
   }

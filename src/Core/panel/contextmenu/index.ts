@@ -112,6 +112,8 @@ export class ABContextMenu {
     this.el_container.style.top = `${y}px`
     this.el_container.classList.add('visible')
 
+    this.updateVFocus(undefined, 'clean')
+
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
     window.addEventListener('keydown', this.visual_listener_keydown)
@@ -121,6 +123,9 @@ export class ABContextMenu {
     if (!this.el_container) return
     this.isShow = false
     this.el_container.classList.remove('visible')
+
+    console.log('准备隐藏多级菜单')
+    this.updateVFocus(undefined, 'clean')
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('mouseup', this.visual_listener_mouseup)
@@ -199,10 +204,22 @@ export class ABContextMenu {
         this.updateVFocus(el_items, 'down')
       } else if (ev.key == 'ArrowUp') { // Up 切换选项
         this.updateVFocus(el_items, 'up');
-      } else if (ev.key == 'ArrowLeft') { // Left 切换选项
-        // el_items = ...
-        // this.updateVFocus(el_items, 'down')
       } else if (ev.key == 'ArrowRight') { // Right 切换选项
+        const mouseEvent = new MouseEvent('mouseenter', {
+          // bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+        el_items[this.currentFocus].dispatchEvent(mouseEvent)
+        // el_items = ...
+        // this.updateVFocus(el_items, '0');
+      } else if (ev.key == 'ArrowLeft') { // Left 切换选项
+        const mouseEvent = new MouseEvent('mouseleave', {
+          // bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+        el_items[this.currentFocus].dispatchEvent(mouseEvent)
         // el_items = ...
         // this.updateVFocus(el_items, '0');
       } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
@@ -217,7 +234,22 @@ export class ABContextMenu {
   // 键盘选择项追踪，初始不起作用
   private currentFocus: number = -1
 
-  private updateVFocus(list: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+  private updateVFocus(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+    if (!list) {
+      if (!this.el_container) return
+      list = this.el_container.querySelectorAll(":scope>li")
+    }
+
+    // 清理之前的hover状态
+    if (this.currentFocus >= 0 && list[this.currentFocus]) {
+      const mouseEvent = new MouseEvent('mouseleave', {
+        // bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+      list[this.currentFocus].dispatchEvent(mouseEvent)
+    }
+
     if (flag === '0') this.currentFocus = 0
     else if (flag === 'down') this.currentFocus++
     else if (flag === 'up') this.currentFocus--
@@ -232,13 +264,13 @@ export class ABContextMenu {
     if (this.currentFocus >= list.length) this.currentFocus = 0
     if (this.currentFocus < 0) this.currentFocus = (list.length - 1)
 
-    list[this.currentFocus].classList.add("autocomplete-active") // 添加高亮
+    list[this.currentFocus].classList.add("focus-active") // 添加高亮
     list[this.currentFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
 
     // 移除所有项的聚焦样式
     function removeVFocus(list: NodeListOf<Element>) {
       for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("autocomplete-active");
+        list[i].classList.remove("focus-active");
       }
     }
   }

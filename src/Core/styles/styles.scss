@@ -77,9 +77,7 @@ html, body, #main {
   }
 }
 
-/* -------------------------------- 多级菜单 ---------------------------- */
 // TODO 目前仅支持深色模式 颜色仿浏览器写的
-
 :root {
   --ab-tab-root-bg-color: #0d1117;  // #ffffff;
   --ab-tab-root-bd-color: #34343f;  // #e0e0e0;
@@ -99,7 +97,9 @@ html, body, #main {
   --ab-menu-text-color: #CCCCCC;
 }
 
-// 显示/隐藏
+/* -------------------------------- 多级菜单 ---------------------------- */
+
+// 显示/隐藏 (跨平台问题)
 #main>.ab-context-menu {
   display: block; // [!code hl] Tauri版本默认不为none，其显示隐藏由窗口显示/隐藏控制
 }
@@ -108,14 +108,21 @@ html, body, #main {
   &.visible {
     display: block;
   }
-}
-.ab-context-menu.sub-menu {
-  display: none;
-  &.visible {
-    display: block;
+
+  &.sub-menu {
+    display: none;
+    &.visible {
+      display: block;
+    }
   }
 }
 
+/** 基本样式
+ * - ab-context-menu.root-menu
+ *   - li.has-children
+ *     - content
+ *     - ab-context-menu.sub-menu (并嵌套)
+ */
 .ab-context-menu {
   box-sizing: border-box;
   position: fixed;
@@ -142,12 +149,16 @@ html, body, #main {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
+    .left {
+      margin-right: 10px;
+    }
+
     &:hover {
       background-color: var(--ab-tab-root-hv-color);
     }
-
-    .left {
-      margin-right: 10px;
+    &.focus-active {
+      background-color: var(--am-bright-color) !important; // 优先于 :hover
+      color: #ffffff;
     }
   }
   input {
@@ -160,10 +171,8 @@ html, body, #main {
   }
 }
 
-.ab-context-menu.root-menu {}
-
 // 嵌套处理
-.ab-context-menu .has-children {
+.ab-context-menu>.has-children {
   position: relative;
   &::before {
     content: "▶";
@@ -171,14 +180,14 @@ html, body, #main {
     font-size: 12px;
     margin-top: 2px;
   }
-}
-.ab-context-menu.sub-menu {
-  position: absolute;
-  top: -4px; // ul padding
-  left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
+  >.ab-context-menu.sub-menu {
+    position: absolute;
+    top: -4px; // ul padding
+    left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
+  }
 }
 
-/* -------------------------------- 菜单搜索 --------------------------- */
+/* -------------------------------- 搜索栏 ------------------------------- */
 
 .am-search {
   width: 500px;
@@ -254,54 +263,41 @@ html, body, #main {
   }
 }
 
-/* -------------------------------- 输入建议 (旧) ------------------------- */
-/* 主容器样式 */
-.am-search { // .autocomplete-p
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 建议列表 */
+.am-search .am-search-suggestion {
+  // .autocomplete-items
+  top: 100%;
 
-  // #search-input {
-  //   width: 100%;
-  //   padding: 10px;
-  //   font-size: 16px;
-  //   border: 1px solid #ccc;
-  //   border-radius: 4px;
-  //   box-sizing: border-box; /* 保证padding不会影响宽度 */
-  // }
+  background-color:  var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  padding: 4px;
+  z-index: 100;    
+  max-height: 260px; // (28*9+8+0)
+  overflow-y: auto;
 
-  /* 建议列表 */
-  .am-search-suggestion { // .autocomplete-items
-    top: 100%;
+  /* 建议列表项 */
+  >div {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 28px; // (20+8+0)
+    max-height: 98px; // 三行半
+    margin: 0;
+    padding: 4px 12px;
+    line-height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    // border-bottom: 1px solid var(--ab-tab-root-bd-color);
 
-    background-color:  var(--ab-menu-bg-color);
-    border: 1px solid var(--ab-tab-root-bd-color);
-    border-radius: 8px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    padding: 4px;
-    z-index: 100;    
-    max-height: 260px; // (28*9+8+0)
-    overflow-y: auto;
-
-    /* 建议列表项 */
-    >div {
-      box-sizing: border-box;
-      width: 100%;
-      min-height: 28px; // (20+8+0)
-      max-height: 98px; // 三行半
-      margin: 0;
-      padding: 4px 12px;
-      line-height: 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      // border-bottom: 1px solid var(--ab-tab-root-bd-color);
-
-      &:hover {
-        background-color: var(--ab-tab-root-hv-color);
-      }
-
-      &.autocomplete-active {
-        background-color: var(--am-bright-color) !important;
-        color: #ffffff;
-      }
+    &:hover {
+      background-color: var(--ab-tab-root-hv-color);
+    }
+    &.focus-active {
+      background-color: var(--am-bright-color) !important; // 优先于 :hover
+      color: #ffffff;
     }
   }
 }
