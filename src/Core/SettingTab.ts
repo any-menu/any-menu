@@ -108,19 +108,19 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh Dict List'
     refresh_btn.onclick = async () => void getDict()
-  table.style.display = 'none'; span.style.display = 'block'; span.textContent = `未加载，请手动点击刷新按钮重试`;
+  table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载中...`
+    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载中...`
 
     const ret = await api.giteeGetDirectory()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
-      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
       return
     }
-    table.style.display = 'table'; span.style.display = 'none'; span.textContent = '加载成功'
+    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = '加载成功'
     table_tbody.innerHTML = ''
     try {
       const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
@@ -177,7 +177,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
       })
     } catch (error) {
-      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
     }
   }
 }
@@ -204,15 +204,15 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh Dict List'
     refresh_btn.onclick = async () => void getDict()
-  table.style.display = 'none'; span.style.display = 'block'; span.textContent = `未加载，请手动点击刷新按钮重试`;
+  table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载中...`
+    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载中...`
 
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    table.style.display = 'table'; span.style.display = 'none'; span.textContent = '加载成功'
+    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = '加载成功'
     table_tbody.innerHTML = ''
     try {
       local_dict_list.length = 0 // clear array
@@ -244,7 +244,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
       })
       local_dict_list_onChange()
     } catch (error) {
-      table.style.display = 'none'; span.style.display = 'block'; span.textContent = `加载失败，数据错误`
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
     }
   }
 }

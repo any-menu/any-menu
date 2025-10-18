@@ -100,20 +100,13 @@ html, body, #main {
 /* -------------------------------- 多级菜单 ---------------------------- */
 
 // 显示/隐藏 (跨平台问题)
-#main>.ab-context-menu {
-  display: block; // [!code hl] Tauri版本默认不为none，其显示隐藏由窗口显示/隐藏控制
-}
-.ab-context-menu {
-  display: none;
-  &.visible {
-    display: block;
+.ab-context-menu:not(#main > .ab-context-menu) { // app 版恒显示
+  &:not(.visible) {
+    display: none;
   }
 
-  &.sub-menu {
+  &.sub-menu:not(.visible) {
     display: none;
-    &.visible {
-      display: block;
-    }
   }
 }
 
@@ -131,6 +124,12 @@ html, body, #main {
   margin: 0;
   min-width: 180px;
 
+  // 一列满了再下一列，如果想平均分布则用 columns 而非这个
+  display: grid;
+  grid-auto-flow: column; // 横向排列
+  grid-template-rows: repeat(8, auto); // 每列最多n个
+  gap: 0 0;
+
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -139,9 +138,11 @@ html, body, #main {
   list-style: none;
   padding: 4px;
 
+  // 多级菜单项
   >ul, >li, >div, >span, >button, >input {
     box-sizing: border-box;
     width: 100%;
+    min-width: 180px;
     min-height: 28px; // (20+8+0)
     margin: 0;
     padding: 4px 12px;
@@ -458,6 +459,11 @@ html, body, #main {
 }
 
 /* -------------------------------- 默认 ------------------------------- */
+
+// 用 am-hide 代替 display: none 与恢复，避免不知道恢复成 block or table or grid 等
+.am-hide {
+  display: none !important;
+}
 
 #main, #am-config {
   a {

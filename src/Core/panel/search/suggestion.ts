@@ -27,11 +27,11 @@ export class AMSuggestion {
 
   show() {
     const el_suggestion = this.el_suggestion
-    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'block';
+    el_suggestion.innerHTML = ''; el_suggestion.classList.remove('am-hide');
   }
   hide() {
     const el_suggestion = this.el_suggestion
-    el_suggestion.innerHTML = ''; el_suggestion.style.display = 'none';
+    el_suggestion.innerHTML = ''; el_suggestion.classList.add('am-hide');
   }
 
   // #region 输入更新、方向键、虚拟聚焦/高亮项管理

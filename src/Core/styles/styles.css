@@ -83,21 +83,11 @@ html, body, #main {
 }
 
 /* -------------------------------- 多级菜单 ---------------------------- */
-#main > .ab-context-menu {
-  display: block;
-}
-
-.ab-context-menu {
+.ab-context-menu:not(#main > .ab-context-menu):not(.visible) {
   display: none;
 }
-.ab-context-menu.visible {
-  display: block;
-}
-.ab-context-menu.sub-menu {
+.ab-context-menu:not(#main > .ab-context-menu).sub-menu:not(.visible) {
   display: none;
-}
-.ab-context-menu.sub-menu.visible {
-  display: block;
 }
 
 /** 基本样式
@@ -113,6 +103,10 @@ html, body, #main {
   top: 32px;
   margin: 0;
   min-width: 180px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(8, auto);
+  gap: 0 0;
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -124,6 +118,7 @@ html, body, #main {
 .ab-context-menu > ul, .ab-context-menu > li, .ab-context-menu > div, .ab-context-menu > span, .ab-context-menu > button, .ab-context-menu > input {
   box-sizing: border-box;
   width: 100%;
+  min-width: 180px;
   min-height: 28px;
   margin: 0;
   padding: 4px 12px;
@@ -403,6 +398,10 @@ html, body, #main {
 }
 
 /* -------------------------------- 默认 ------------------------------- */
+.am-hide {
+  display: none !important;
+}
+
 #main a, #am-config a {
   font-weight: 500;
   color: #646cff;

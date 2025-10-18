@@ -68,7 +68,7 @@ export class AMSearch {
 
     this.isShow = true
     if (this.el) {
-      this.el.style.display = 'block'
+      this.el.classList.remove('am-hide')
       if (x !== undefined) this.el.style.left = `${x}px`
       if (y !== undefined) this.el.style.top = `${y}px`
     }
@@ -92,7 +92,7 @@ export class AMSearch {
     if (global_setting.env == 'app') return
 
     this.isShow = false
-    if (this.el) this.el.style.display = 'none'
+    if (this.el) this.el.classList.add('am-hide')
     this.el_input?.blur()
 
     // 隐藏后恢复聚焦
