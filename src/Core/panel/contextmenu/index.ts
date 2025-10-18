@@ -184,7 +184,7 @@ export class ABContextMenu {
 
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   bind_arrowKeyArea(el_input: HTMLInputElement) {
-    el_input.addEventListener('input', (ev) => {
+    el_input.addEventListener('input', () => {
 
     })
 

@@ -1,5 +1,4 @@
 import { global_setting } from "../../setting"
-import { SEARCH_DB } from "./SearchDB"
 import { AMSuggestion } from "./suggestion"
 
 // 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错
