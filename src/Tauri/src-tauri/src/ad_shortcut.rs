@@ -7,6 +7,7 @@ use rdev::{
     grab, listen, simulate, Event, EventType, Key
 };
 use std::{cell::Cell, thread, time};
+use tauri::Emitter;
 
 /** 无法拦截原行为，会阻塞 */
 pub fn _init_ad_shortcut() {
@@ -36,7 +37,7 @@ pub fn _init_ad_shortcut() {
 }
 
 /** 可以拦截原行为，会阻塞 */
-pub fn init_ad_shortcut() {
+pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_active = Cell::new(false);         // 是否激活 Caps 层
     let caps_active_used = Cell::new(false);    // 是否使用过激活后的 Caps 层
     let skip_next_caps_event = Cell::new(false);// 跳过一次原 Caps 行为
@@ -89,6 +90,11 @@ pub fn init_ad_shortcut() {
             if event.event_type == EventType::KeyPress(Key::KeyF) {
                 println!("Caps+F detected!");
                 // 这里可以用 tauri::api::process::Command 或 tauri::window.emit 通知前端
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyN) || event.event_type == EventType::KeyPress(Key::KeyM) {
+                println!("Caps+N/M detected!");
+                app_handle.emit("active-window-toggle", ()).unwrap();
                 return None
             }
             return None

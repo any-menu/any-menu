@@ -25,9 +25,12 @@ export function setupAppChangeListener() {
     // console.log('Active app changed:', appName)
     updateShortcuts(appName)
   })
-
   // 启动时手动触发一次 (或让后端启动时发送一次)
   updateShortcuts('')
+
+  listen('active-window-toggle', () => {
+    void toggleWindow()
+  })
 }
 
 /**

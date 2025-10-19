@@ -81,6 +81,8 @@ Official dictionaries/scripts are continuously being expanded. You can also full
   - Visual output, especially when using the Obsidian version, you can see the Markdown rendering result of the corresponding output content.
 - Search Box
   - In addition to using the multi-level menu, you can also quickly find and output the content you want through the search box.
+- Advanced Shortcuts (Caps+)
+  - Utilizes non-traditional system shortcuts like `Caps+` and `'+`, with a pre-configured Vim-like scheme by default. [Documentation](./docs/zh/adShortcut/README.md)
 - Others
   - There are also some immature, in-development, or planned features. See [Miscellaneous](./docs/zh/Miscellaneous.md).
 

@@ -111,12 +111,6 @@ pub fn run() {
         start_uia_worker(rx);
     });
 
-    // 高级快捷键模块 - 独立线程
-    std::thread::spawn(|| {
-        // ad_shortcut::_init_ad_shortcut();
-        ad_shortcut::init_ad_shortcut();
-    });
-
     // Tauri 主程序
     tauri::Builder::default()
         .plugin(tauri_plugin_http::init()) // HTTP 请求插件
@@ -125,8 +119,14 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
-            // focus 模块 (被全局快捷键黑白名单依赖)
+            // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程
             focus::init_focus_check(app.app_handle().clone());
+
+            // 高级快捷键模块 - 独立线程
+            let app_handle2 = app.app_handle().clone();
+            std::thread::spawn(|| {
+                ad_shortcut::init_ad_shortcut(app_handle2);
+            });
 
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
