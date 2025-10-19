@@ -37,8 +37,9 @@ pub fn _init_ad_shortcut() {
 
 /** 可以拦截原行为，会阻塞 */
 pub fn init_ad_shortcut() {
-    let caps_active = Cell::new(false); // 是否激活 Caps 层
-    let skip_next_caps_event = Cell::new(false); // 跳过一次原 Caps 行为
+    let caps_active = Cell::new(false);         // 是否激活 Caps 层
+    let caps_active_used = Cell::new(false);    // 是否使用过激活后的 Caps 层
+    let skip_next_caps_event = Cell::new(false);// 跳过一次原 Caps 行为
 
     // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，表示可以多次且并发调用
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
@@ -57,30 +58,33 @@ pub fn init_ad_shortcut() {
         // CapsLock 状态
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
             caps_active.set(true);
+            caps_active_used.set(false);
             return None // 禁用 CapsLock 键
         }
         if event.event_type == EventType::KeyRelease(Key::CapsLock) {
             caps_active.set(false);
+            if !caps_active_used.get() { // 没用过，则正常大小写切换
+                skip_next_caps_event.set(true);
+                let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
+                thread::sleep(time::Duration::from_millis(10));
+                let _ = simulate(&EventType::KeyPress(Key::CapsLock));
+                thread::sleep(time::Duration::from_millis(10));
+            }
             return Some(event) // 禁用 CapsLock 键
         }
 
         // Caps+N
         if caps_active.get() {
+            caps_active_used.set(true);
             // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
             // 不知道为什么，+Esc的识别总是不够灵敏
             if event.event_type == EventType::KeyRelease(Key::Escape) {
-                // println!("Caps+ESC detected!");
                 skip_next_caps_event.set(true);
-
                 let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::CapsLock));
-                return None
 
-                // return Some(Event {
-                //     event_type: EventType::KeyPress(Key::CapsLock),
-                //     ..event.clone()
-                // })
+                return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyF) {
                 println!("Caps+F detected!");
