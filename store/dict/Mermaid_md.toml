@@ -449,6 +449,7 @@ test_req4 - derives -> test_req5
 test_req5 - refines -> test_req6
 test_entity3 - verifies -> test_req5
 test_req <- copies - test_entity2
+```
 '''
 
 [[categories]]
@@ -673,6 +674,7 @@ block
     %% columns auto (default)
     l m n o p q r
   end
+```
 '''
 
 [[categories]]
@@ -705,6 +707,7 @@ packet
 144-159: "Urgent Pointer"
 160-191: "(Options and Padding)"
 192-255: "Data (variable length)"
+```
 '''
 
 [[categories]]
@@ -719,6 +722,7 @@ callback = '''
 kanban
 todo[Todo]
   id3[Update Database Function]@{ ticket: MC-2037, assigned: 'knsv', priority: 'High' }
+```
 '''
 
 [[categories.children]]
@@ -750,6 +754,7 @@ kanban
 
   id12[Can't reproduce]
     id3[Weird flickering in Firefox]
+```
 '''
 
 [[categories]]
@@ -772,6 +777,7 @@ architecture-beta
     db:L -- R:server
     disk1:T -- B:server
     disk2:T -- B:db
+```
 '''
 
 [[categories]]
@@ -801,6 +807,7 @@ radar-beta
   curve c1{1,2,3,4,5}
   curve c2{5,4,3,2,1}
   curve c3{3,3,3,3,3}
+```
 '''
 
 [[categories]]
@@ -823,4 +830,5 @@ treemap-beta
 "Category B"
     "Item B1": 15
     "Item B2": 25
+```
 '''
