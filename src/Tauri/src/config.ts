@@ -9,7 +9,7 @@ import { invoke } from "@tauri-apps/api/core"
 
 initApi()
 
-const CONFIG_PATH = './am-user.toml'
+const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
 
 window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");

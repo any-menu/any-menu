@@ -134,5 +134,13 @@
 		"detail": "",
 		"author": "槑头脑",
 		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-md-title-linter",
+		"path": "md_title_linter.js",
+		"name": "清除md中的标题加粗和链接",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
 	}
 ]
