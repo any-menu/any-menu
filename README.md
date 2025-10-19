@@ -27,6 +27,8 @@
 
 ### 词典教程
 
+![](./docs/assets/cloud_dict.png)
+
 - (脚本会被认作也是一种特殊的词典)
 - 见 [自定义词典](./docs/zh/dict/)
   - [1. 在线下载 AnyMenu 词典](./docs/zh/dict/1.%20在线下载词典.md)
