@@ -28,7 +28,8 @@ tauri-plugin-log = { version = "2", features = ["colored"] } # 日志插件
 fern = "0.7.1" # 日志高亮
 log = "0.4.28" # 日志门面
 chrono = "0.4.42" # 日期时间
-tauri-plugin-http = "2" # HTTP 请求插件 (在线词典/脚本使用)
+tauri-plugin-http = "2" # HTTP 请求插件 (用于在线词典/脚本)
+rdev = { version = "0.5.3", features = ["unstable_grab"] } # 监听和发送跨平台鼠键 (用于高级快捷键)
 
 # PC端
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
@@ -36,7 +37,7 @@ tauri-plugin-global-shortcut = "2" # 全局快捷键插件
 
 # winapi (windows) 端
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] } # 剪切板等
+winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] } # (用于剪切板等)
 uiautomation = { version = "0.24.0", features = ["input", "process", "clipboard"] }
 windows = { version = "0.62.1", features = [
     "Win32_Foundation",

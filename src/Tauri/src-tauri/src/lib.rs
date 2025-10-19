@@ -114,6 +114,7 @@ pub fn run() {
     start_uia_worker(rx);
 
     // 高级快捷键模块
+    // ad_shortcut::_init_ad_shortcut();
     ad_shortcut::init_ad_shortcut();
 
     // Tauri 主程序
