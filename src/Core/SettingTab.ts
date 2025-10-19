@@ -86,7 +86,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const api = new API()
 
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = 'Online Dict';
+    tab_nav.textContent = 'Online dict';
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'web-dict'); tab_content.setAttribute('index', 'web-dict');
 
@@ -106,7 +106,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
-    refresh_btn.textContent = 'Refresh Dict List'
+    refresh_btn.textContent = 'Refresh dict list'
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 
@@ -185,7 +185,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
 /** 本地字典 */
 async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = 'Local Dict';
+    tab_nav.textContent = 'Local dict';
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'local-dict'); tab_content.setAttribute('index', 'local-dict');
 
@@ -202,7 +202,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
-    refresh_btn.textContent = 'Refresh Dict List'
+    refresh_btn.textContent = 'Refresh dict list'
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 

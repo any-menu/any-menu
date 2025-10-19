@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2');
-      save_btn.textContent = 'Save Config'
+      save_btn.textContent = 'Save config'
     save_btn.onclick = () => {
       save_config(textarea.value, textarea)
     }
