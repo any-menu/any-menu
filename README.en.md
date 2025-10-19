@@ -6,20 +6,34 @@
 
 # AnyMenu —— InputMethod Assistant / Editor Assistant
 
+## What is AnyMenu?
+
+- Positioning
+    - A cross-platform, lightweight, fast, and customizable **Input Method Companion / Editor Companion** focused on text editing environments.
+- Multi-platform
+    - Obsidian Plugin
+    - Cross-platform application
+- Main function
+    - Used to enhance input method or editor functionality, quickly generate templates, and provide auto-completion
+- Specific functions
+    - quick panel(multi-level menu, search box, mini editor), hot string (developing)
+    - quick text input, modify selected text
+    - custom dict/script, cloud dict/script
+    - quick gpt
+
 ## Usage / Tutorial
 
 ### Usage Demo / Tutorial
 
 After configuring the dictionary, you can use it as follows:
 
+Quick Input Template:
+
 ![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
 
+The app version can be used in any text environment:
+
 ![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
-
-(Default shortcut for Obsidian: Alt+S, default shortcut for the app: Alt+A. All shortcuts can be adjusted in the settings panel.)
-(The different shortcuts are currently necessary because installing the same shortcut for both would cause conflicts.)
-
-(In Obsidian, you can also press Ctrl+P and type 'anymenu' to invoke it via command, but this is not recommended as the command method is slower.)
 
 ### Dictionary Tutorial
 
@@ -31,14 +45,6 @@ After configuring the dictionary, you can use it as follows:
   - [2. Manually Download AnyMenu Dictionaries](./docs/zh/dict/2.%20Manual%20Dictionary%20Download.md) (For use in offline environments / network issues / online marketplace unavailable / downloading unaudited third-party dictionaries)
   - [3. Writing AnyMenu Dictionaries](./docs/zh/dict/3.%20Writing%20Dictionaries.md)
   - [4. Uploading Custom AnyMenu Dictionaries](./docs/zh/dict/4.%20Uploading%20Dictionaries.md)
-
-## What is AnyMenu?
-
-Positioning: A cross-platform, lightweight, fast, and customizable **Input Method Companion / Editor Companion** focused on text editing environments.
-
-Used to enhance input method or editor functionality, quickly generate templates, and provide auto-completion.
-
-Multi-platform: Supports use as an Obsidian plugin and also as a cross-platform standalone application.
 
 ## Features
 
@@ -68,6 +74,7 @@ Official dictionaries/scripts are continuously being expanded. You can also full
 - Input Text / Transform Text
   - Provides quick input template functionality and the ability to transform selected text into corresponding text based on certain rules.
 - Quick Panel Invocation
+  - Default: `Alt+A` (configurable)
   - Not just an Obsidian plugin, but also an App version.
     In the App version, you can summon the same menu in any text editor environment, using the same operation logic to enhance your input method and current editor.
 - Multi-level Menu Module
