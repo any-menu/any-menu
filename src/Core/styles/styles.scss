@@ -100,7 +100,7 @@ html, body, #main {
 /* -------------------------------- 多级菜单 ---------------------------- */
 
 // 显示/隐藏 (跨平台问题)
-.ab-context-menu:not(#main > .ab-context-menu) { // app 版恒显示
+.am-context-menu:not(#main > .am-context-menu) { // app 版恒显示
   &:not(.visible) {
     display: none;
   }
@@ -111,12 +111,12 @@ html, body, #main {
 }
 
 /** 基本样式
- * - ab-context-menu.root-menu
+ * - am-context-menu.root-menu
  *   - li.has-children
  *     - content
- *     - ab-context-menu.sub-menu (并嵌套)
+ *     - am-context-menu.sub-menu (并嵌套)
  */
-.ab-context-menu {
+.am-context-menu {
   box-sizing: border-box;
   position: fixed;
   left: 0; // override by js
@@ -173,7 +173,7 @@ html, body, #main {
 }
 
 // 嵌套处理
-.ab-context-menu>.has-children {
+.am-context-menu>.has-children {
   position: relative;
   &::before {
     content: "▶";
@@ -181,7 +181,7 @@ html, body, #main {
     font-size: 12px;
     margin-top: 2px;
   }
-  >.ab-context-menu.sub-menu {
+  >.am-context-menu.sub-menu {
     position: absolute;
     top: -4px; // ul padding
     left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦

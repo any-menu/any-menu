@@ -185,7 +185,7 @@ let menuSize = { width: -1, height: -1 }
 async function cacheMenuSize() {
   await new Promise(resolve => setTimeout(resolve, 500)) // 延时等待渲染完成
   const el_search = document.querySelector('#main>.am-search');
-  const el_menu = document.querySelector('#main>.ab-context-menu');
+  const el_menu = document.querySelector('#main>.am-context-menu');
 
   menuSize.height = (el_search?.clientHeight ?? 0) + (el_menu?.clientHeight ?? 0)
   menuSize.width = Math.max(el_search?.clientWidth ?? 0, el_menu?.clientWidth ?? 0)

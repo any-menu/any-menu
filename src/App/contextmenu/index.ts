@@ -102,7 +102,7 @@ export class ABContextMenu_App extends ABContextMenu {
         // 菜单项的子菜单
         if (item.children) {
           li.classList.add('has-children')
-          const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('ab-context-menu', 'sub-menu');
+          const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
           li_list(li_ul, item.children)
           li.addEventListener('mouseenter', () => {
             li_ul.classList.add('visible')

@@ -55,7 +55,7 @@ import type { ContextMenuItems, ContextMenuItem } from "./demo"
  */
 export class ABContextMenu {
   // - el_parent/body
-  //   - el_container .ab-context-menu
+  //   - el_container .am-context-menu
 
   /// 可选一个挂载对象来预创建菜单，用于自动销毁，防止内存泄露和重复监听 (如果多个复用元素共用菜单或更菜单则不需要传入)
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
@@ -86,7 +86,7 @@ export class ABContextMenu {
     if (!el_parent) return
 
     // 创建菜单 DOM (默认隐藏)
-    this.el_container = document.createElement('div'); el_parent.appendChild(this.el_container); this.el_container.classList.add('ab-context-menu', 'root-menu');
+    this.el_container = document.createElement('div'); el_parent.appendChild(this.el_container); this.el_container.classList.add('am-context-menu', 'root-menu');
     this.hide()
 
     // 禁止右键切换光标。不阻止默认菜单和冒泡，不禁止菜单，仅禁止聚焦
@@ -300,10 +300,10 @@ export class ABContextMenu {
   /** 添加菜单项 - 操作糖，快捷添加一组按键
    * 
    * DOM:
-   * - .ab-context-menu.root-menu (ul/div, el_container)
+   * - .am-context-menu.root-menu (ul/div, el_container)
    *   - li
    *   - li.has-children
-   *     - .ab-context-menu.sub-menu (ul/div, el_container)
+   *     - .am-context-menu.sub-menu (ul/div, el_container)
    *       - li
    */
   append_data(menuItems: ContextMenuItems) {
@@ -386,7 +386,7 @@ export class ABContextMenu {
         // 菜单项的子菜单
         if (item.children) {
           li.classList.add('has-children')
-          const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('ab-context-menu', 'sub-menu');
+          const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
           li_list(li_ul, item.children)
           li.addEventListener('mouseenter', () => {
             li_ul.classList.add('visible')
@@ -408,7 +408,7 @@ export class ABContextMenu {
    * 其中输入框回车或点击建议栏应用，ESC和失焦不应用 (TODO 手机版应该得失焦应用吧)
    */
   append_headerEditor(header_old: string, header_callback: (header_new: string) => void) {
-    const header_r = document.createElement('div'); header_r.classList.add('ab-context-menu-header');
+    const header_r = document.createElement('div'); header_r.classList.add('am-context-menu-header');
     const header_span = document.createElement('span'); header_r.appendChild(header_span); header_span.classList.add('left');
     header_span.textContent = 'header: '
     const header_input = document.createElement('input'); header_r.appendChild(header_input);

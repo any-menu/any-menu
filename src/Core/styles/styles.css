@@ -83,20 +83,20 @@ html, body, #main {
 }
 
 /* -------------------------------- 多级菜单 ---------------------------- */
-.ab-context-menu:not(#main > .ab-context-menu):not(.visible) {
+.am-context-menu:not(#main > .am-context-menu):not(.visible) {
   display: none;
 }
-.ab-context-menu:not(#main > .ab-context-menu).sub-menu:not(.visible) {
+.am-context-menu:not(#main > .am-context-menu).sub-menu:not(.visible) {
   display: none;
 }
 
 /** 基本样式
- * - ab-context-menu.root-menu
+ * - am-context-menu.root-menu
  *   - li.has-children
  *     - content
- *     - ab-context-menu.sub-menu (并嵌套)
+ *     - am-context-menu.sub-menu (并嵌套)
  */
-.ab-context-menu {
+.am-context-menu {
   box-sizing: border-box;
   position: fixed;
   left: 0;
@@ -115,7 +115,7 @@ html, body, #main {
   list-style: none;
   padding: 4px;
 }
-.ab-context-menu > ul, .ab-context-menu > li, .ab-context-menu > div, .ab-context-menu > span, .ab-context-menu > button, .ab-context-menu > input {
+.am-context-menu > ul, .am-context-menu > li, .am-context-menu > div, .am-context-menu > span, .am-context-menu > button, .am-context-menu > input {
   box-sizing: border-box;
   width: 100%;
   min-width: 180px;
@@ -127,17 +127,17 @@ html, body, #main {
   font-size: 14px;
   cursor: pointer;
 }
-.ab-context-menu > ul .left, .ab-context-menu > li .left, .ab-context-menu > div .left, .ab-context-menu > span .left, .ab-context-menu > button .left, .ab-context-menu > input .left {
+.am-context-menu > ul .left, .am-context-menu > li .left, .am-context-menu > div .left, .am-context-menu > span .left, .am-context-menu > button .left, .am-context-menu > input .left {
   margin-right: 10px;
 }
-.ab-context-menu > ul:hover, .ab-context-menu > li:hover, .ab-context-menu > div:hover, .ab-context-menu > span:hover, .ab-context-menu > button:hover, .ab-context-menu > input:hover {
+.am-context-menu > ul:hover, .am-context-menu > li:hover, .am-context-menu > div:hover, .am-context-menu > span:hover, .am-context-menu > button:hover, .am-context-menu > input:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.ab-context-menu > ul.focus-active, .ab-context-menu > li.focus-active, .ab-context-menu > div.focus-active, .ab-context-menu > span.focus-active, .ab-context-menu > button.focus-active, .ab-context-menu > input.focus-active {
+.am-context-menu > ul.focus-active, .am-context-menu > li.focus-active, .am-context-menu > div.focus-active, .am-context-menu > span.focus-active, .am-context-menu > button.focus-active, .am-context-menu > input.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }
-.ab-context-menu input {
+.am-context-menu input {
   padding: 4px 4px;
   border: none;
   border-bottom: solid 1px var(--ab-tab-root-bd-color);
@@ -146,16 +146,16 @@ html, body, #main {
   color: currentColor;
 }
 
-.ab-context-menu > .has-children {
+.am-context-menu > .has-children {
   position: relative;
 }
-.ab-context-menu > .has-children::before {
+.am-context-menu > .has-children::before {
   content: "▶";
   float: right;
   font-size: 12px;
   margin-top: 2px;
 }
-.ab-context-menu > .has-children > .ab-context-menu.sub-menu {
+.am-context-menu > .has-children > .am-context-menu.sub-menu {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
