@@ -1,4 +1,4 @@
-import {App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom} from "obsidian"
+import {App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice} from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 // import { API } from "@/Core/webApi";
 
@@ -19,6 +19,15 @@ export class AMSettingTab extends PluginSettingTab {
     const { tab_nav_container, tab_content_container } = initSettingTab_1(containerEl)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
+    containerEl.createEl('button',
+      { text: 'Refresh Plugin', cls: 'am-ob-setting-btn' },
+      (el) => {
+        el.onclick = async () => {
+          await this.restartPlugin()
+        }
+      }
+    )
+
     // const api = new API()
     // const plugin = this.plugin
     // plugin.addCommand({
@@ -38,5 +47,17 @@ export class AMSettingTab extends PluginSettingTab {
     //     console.log('giteeGetDict', ret)
     //   }
     // })
+  }
+
+  private async restartPlugin(): Promise<void> {
+    const plugin = this.plugin;
+    const app = this.app;
+
+    await (app as any).plugins.disablePlugin(plugin.manifest.id)  // 禁用当前插件
+    await (app as any).plugins.enablePlugin(plugin.manifest.id)   // 启用当前插件
+    
+    
+    new Notice('插件已成功重启') // 可选
+    this.display() // (可选) 重新刷新设置面板
   }
 }

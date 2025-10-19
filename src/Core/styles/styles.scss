@@ -343,9 +343,12 @@ html, body, #main {
     right: 0;
     background-color: var(--ab-tab-root-bg-color);
 
+    // 标签页正文内容
     >div {
       width: 100%;
       height: 100%;
+      overflow: auto;
+
       padding: 8px;
       white-space: pre-wrap;
       background-color: var(--ab-tab-root-bg-color);
@@ -411,6 +414,9 @@ html, body, #main {
   width: 100%;
   tbody {
     overflow-y: auto;
+    tr>td {
+      white-space: pre;
+    }
     tr>td.btn {
       padding: 0 10px;
       border-radius: 10px;
@@ -456,6 +462,14 @@ html, body, #main {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #5a5e60; /* 鼠标悬停时滑块的颜色 */
+}
+
+/* -------------------------------- Obsidian 专用 ----------------------- */
+
+.am-ob-setting-btn { // 也会受到 .tab-root button 影响
+  z-index: 4;
+  left: 16px !important;
+  right: auto !important;
 }
 
 /* -------------------------------- 默认 ------------------------------- */
