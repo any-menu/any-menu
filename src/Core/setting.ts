@@ -42,6 +42,8 @@ export const global_setting: {
     dict_paths: string,
     // app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
     app_black_list: string[],
+    // app是否使用高级快捷键，TODO 未起作用
+    app_ad_shortcut: boolean,
   },
   config_: { // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
     is_auto_startup: boolean, // 是否开机自启
@@ -90,7 +92,8 @@ export const global_setting: {
     send_text_method: 'clipboard',
     search_limit: 500,
     dict_paths: './dict/', // obsidian 用户可能比较熟悉于 Template 文件夹
-    app_black_list: ['- Obsidian v']
+    app_black_list: ['- Obsidian v'],
+    app_ad_shortcut: true,
   },
   config_: {
     is_auto_startup: false,

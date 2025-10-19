@@ -84,7 +84,30 @@ Official dictionaries/scripts are continuously being expanded. You can also full
 - Others
   - There are also some immature, in-development, or planned features. See [Miscellaneous](./docs/zh/Miscellaneous.md).
 
-### Highlights
+### Differences Between Plugin Version and App Version
+
+> [!warning]
+> Regarding Simultaneous Installation:
+> 
+> - **Setup Method 1 (Default)**: The App version will automatically add Obsidian to its blocklist.
+> - **Setup Method 2**: You can modify the `app_black_list` setting in the App version to remove Obsidian from the blocklist.
+>
+> Resulting Behavior:
+> 
+> - In the default setup, if both the Plugin and App versions are installed, the same hotkey will prioritize the Plugin version. (Corresponds to Setup Method 1)
+> - You might prefer installing only the App version without the Plugin version. (Corresponds to Setup Method 2)
+> - Alternatively, you can assign different hotkeys to each, allowing flexible use within Obsidian based on the situation. (Corresponds to Setup Method 2)
+
+| Feature                          | Plugin version | App version |
+| -------------------------------- | -------------- | ----------- |
+| Multilevel menu                  | ✅             | ✅         |
+| Search Box                       | ✅             | ✅         |
+| Advanced Hotkeys (Caps+)         | ❌             | ✅         |
+| Better Selected Text Capture     | ✅             | ✅         |
+| Better Full Editor Text Capture  | ✅             | ❌         |
+| Performance                      |                | Potentially better |
+
+## Highlights
 
 Given that tools like Quicker and uTools already exist, what are the advantages compared to similar products? See below and [What Quick Input/Auto-completion Solutions Exist?](./docs/zh/Comparison.md)
 
