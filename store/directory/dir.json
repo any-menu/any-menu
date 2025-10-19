@@ -138,7 +138,7 @@
 	{
 		"id": "anymenu-md-title-linter",
 		"path": "md_title_linter.js",
-		"name": "清除md中的标题加粗和链接",
+		"name": "清除md标题样式冗余",
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
