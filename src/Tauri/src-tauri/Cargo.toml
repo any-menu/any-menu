@@ -1,9 +1,9 @@
 [package]
 name = "any-menu-app"
 version = "0.1.0"
-description = "A Tauri App"
+description = "A powerful input method assistant / editor assistant"
 authors = ["LincZero"]
-edition = "2021"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -22,21 +22,21 @@ tauri = { version = "2", features = [ "tray-icon" ] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-enigo = "0.6"
+enigo = "0.6" # 模拟输入
 once_cell = "1.21.3"
-tauri-plugin-log = { version = "2", features = ["colored"] } # 日志
+tauri-plugin-log = { version = "2", features = ["colored"] } # 日志插件
 fern = "0.7.1" # 日志高亮
 log = "0.4.28" # 日志门面
 chrono = "0.4.42" # 日期时间
-tauri-plugin-http = "2"
+tauri-plugin-http = "2" # HTTP 请求插件 (在线词典/脚本使用)
 
-# 全局快捷键
+# PC端
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-global-shortcut = "2"
+tauri-plugin-global-shortcut = "2" # 全局快捷键插件
 
-# winapi (windows) 复制黏贴等
+# winapi (windows) 端
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] }
+winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] } # 剪切板等
 uiautomation = { version = "0.24.0", features = ["input", "process", "clipboard"] }
 windows = { version = "0.62.1", features = [
     "Win32_Foundation",

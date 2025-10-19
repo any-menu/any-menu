@@ -41,6 +41,7 @@ use file::{
     delete_file
 };
 mod focus;
+mod ad_shortcut;
 
 // #region uia thread
 
@@ -73,13 +74,6 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // uia
-    // 新增：初始化channel
-    let (tx, rx) = mpsc::channel::<UiaMsg>();
-    let uia_sender = UiaSender(Mutex::new(tx));
-    // 启动worker线程，传递receiver
-    start_uia_worker(rx);
-
     // 日志插件
     let colors = fern::colors::ColoredLevelConfig {
         error: fern::colors::Color::Red,
@@ -112,6 +106,16 @@ pub fn run() {
         // ))*/
         .build();
 
+    // uia
+    // 新增：初始化channel
+    let (tx, rx) = mpsc::channel::<UiaMsg>();
+    let uia_sender = UiaSender(Mutex::new(tx));
+    // 启动worker线程，传递receiver
+    start_uia_worker(rx);
+
+    // 高级快捷键模块
+    ad_shortcut::init_ad_shortcut();
+
     // Tauri 主程序
     tauri::Builder::default()
         .plugin(tauri_plugin_http::init()) // HTTP 请求插件
@@ -120,7 +124,7 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
-            // focus 模块
+            // focus 模块 (被全局快捷键黑白名单依赖)
             focus::init_focus_check(app.app_handle().clone());
 
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
