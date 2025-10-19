@@ -4,12 +4,11 @@
  */
 
 use rdev::{
-    grab,
-    listen, Event, EventType, Key
+    grab, listen, simulate, Event, EventType, Key
 };
-use std::cell::Cell;
+use std::{cell::Cell, thread, time};
 
-/** 无法拦截原行为 */
+/** 无法拦截原行为，会阻塞 */
 pub fn _init_ad_shortcut() {
     let mut caps_active = false;  // 是否激活 Caps 层
     let mut caps_pressed = false; // 是否阻止 CapsLock 原行为
@@ -36,7 +35,7 @@ pub fn _init_ad_shortcut() {
     }).unwrap();
 }
 
-/** 可以拦截原行为 */
+/** 可以拦截原行为，会阻塞 */
 pub fn init_ad_shortcut() {
     let caps_active = Cell::new(false); // 是否激活 Caps 层
     let skip_next_caps_event = Cell::new(false); // 跳过一次原 Caps 行为
@@ -44,19 +43,41 @@ pub fn init_ad_shortcut() {
     // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，表示可以多次且并发调用
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
     let callback = move |event: Event| -> Option<Event> {
+        // 避免捕获自身模拟的虚拟按键
+        if skip_next_caps_event.get() {
+            if event.event_type == EventType::KeyRelease(Key::CapsLock) {
+                return Some(event)
+            }
+            if event.event_type == EventType::KeyPress(Key::CapsLock) {
+                skip_next_caps_event.set(false);
+                return Some(event)
+            }
+        }
+
+        // CapsLock 状态
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
             caps_active.set(true);
             return None // 禁用 CapsLock 键
         }
         if event.event_type == EventType::KeyRelease(Key::CapsLock) {
             caps_active.set(false);
-            return None // 禁用 CapsLock 键
+            return Some(event) // 禁用 CapsLock 键
         }
+
+        // Caps+N
         if caps_active.get() {
+            // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
+            // 不知道为什么，+Esc的识别总是不够灵敏
             if event.event_type == EventType::KeyRelease(Key::Escape) {
-                // 伪造 CapsLock 按下和释放事件，来切换大小写
+                // println!("Caps+ESC detected!");
                 skip_next_caps_event.set(true);
-                // Some(Event {
+
+                let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
+                thread::sleep(time::Duration::from_millis(10));
+                let _ = simulate(&EventType::KeyPress(Key::CapsLock));
+                return None
+
+                // return Some(Event {
                 //     event_type: EventType::KeyPress(Key::CapsLock),
                 //     ..event.clone()
                 // })
@@ -68,6 +89,7 @@ pub fn init_ad_shortcut() {
             }
             return None
         }
+
         Some(event)
     };
     if let Err(error) = grab(callback) {

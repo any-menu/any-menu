@@ -54,20 +54,18 @@ enum UiaMsg {
 }
 
 fn start_uia_worker(rx: Receiver<UiaMsg>) {
-    thread::spawn(move || {
-        // 初始化 uiautomation
-        let automation = UIAutomation::new().unwrap();
-        let walker = automation.get_control_view_walker().unwrap();
+    // 初始化 uiautomation
+    let automation = UIAutomation::new().unwrap();
+    let walker = automation.get_control_view_walker().unwrap();
 
-        loop {
-            match rx.recv() {
-                Ok(UiaMsg::PrintElement) => {
-                    let _ = get_uia_focused(&walker, &automation, 0);
-                }
-                Err(_) => break,
+    loop {
+        match rx.recv() {
+            Ok(UiaMsg::PrintElement) => {
+                let _ = get_uia_focused(&walker, &automation, 0);
             }
+            Err(_) => break,
         }
-    });
+    }
 }
 
 // #endregion
@@ -106,16 +104,18 @@ pub fn run() {
         // ))*/
         .build();
 
-    // uia
-    // 新增：初始化channel
+    // uia 模块 - 独立线程
     let (tx, rx) = mpsc::channel::<UiaMsg>();
     let uia_sender = UiaSender(Mutex::new(tx));
-    // 启动worker线程，传递receiver
-    start_uia_worker(rx);
+    thread::spawn(move || { // 传递receiver
+        start_uia_worker(rx);
+    });
 
-    // 高级快捷键模块
-    // ad_shortcut::_init_ad_shortcut();
-    ad_shortcut::init_ad_shortcut();
+    // 高级快捷键模块 - 独立线程
+    std::thread::spawn(|| {
+        // ad_shortcut::_init_ad_shortcut();
+        ad_shortcut::init_ad_shortcut();
+    });
 
     // Tauri 主程序
     tauri::Builder::default()
