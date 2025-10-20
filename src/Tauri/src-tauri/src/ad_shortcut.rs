@@ -1,10 +1,34 @@
 /** 高级快捷键
  * 
  * 常规的系统级快捷键使用 Tauri 的快捷键插件即可，但非系统级快捷键要自己处理
+ * 
+ * ## 一些bug问题 - Shift+LeftArrow为例:
+ * 
+ * ```rust
+ * # rdev::simulate 的版本存在问题
+ * # simulate() 发出按键后，在按键按下前会自动松开Shift键，松开对应键后再自动按回Shift键。导致Shift键环境丢失
+ * # 感觉 rdev 没有设计成能很好地支持快捷键
+ * let _ = simulate(&EventType::KeyPress(Key::ShiftLeft));
+ * let _ = simulate(&EventType::KeyPress(Key::LeftArrow));
+ * let _ = simulate(&EventType::KeyRelease(Key::LeftArrow));
+ * let _ = simulate(&EventType::KeyRelease(Key::ShiftLeft));
+ * ```
+ *
+ * ```rust
+ * #enigo.key 的版本正常，不区分左右Ctrl/Shift
+ * let mut enigo = Enigo::new(&Settings::default()).unwrap();
+ * let _ = enigo.key(enigo::Key::Shift, Press);
+ * let _ = enigo.key(enigo::Key::LeftArrow, Click);
+ * let _ = enigo.key(enigo::Key::Shift, Release);
+ * ```
  */
 
 use rdev::{
     grab, listen, simulate, Event, EventType, Key
+};
+use enigo::{
+    Enigo, Keyboard, Settings,
+    Direction::{Click, Press, Release},
 };
 use std::{cell::Cell, thread, time};
 use tauri::Emitter;
@@ -38,7 +62,8 @@ pub fn _init_ad_shortcut() {
 
 /** 可以拦截原行为，会阻塞
  * 
- * 一些机制: KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
+ * 一些机制: 
+ * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
  */
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_active = Cell::new(false);         // 是否激活 Caps 层
@@ -50,24 +75,38 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let callback = move |event: Event| -> Option<Event> {
         // 不处理非按键事件 (鼠标 滚动 按钮等)
         match event.event_type {
-            EventType::KeyPress(_) => {} // println!("KeyDown {:?}", key);
-            EventType::KeyRelease(_) => {}
+            EventType::KeyPress(key) => { println!("KeyDown {:?}", key); } // println!("KeyDown {:?}", key);
+            EventType::KeyRelease(key) => { println!("KeUp   {:?}", key); }
             _ => { return Some(event) }
         }
-
-        // 模拟按键 - 语法糖
-        let simu = |event_type: &EventType| {
-            virtual_event_flag.set(true);
-            let _ = simulate(event_type);
-            virtual_event_flag.set(false);
-            // let delay = time::Duration::from_millis(20);
-            // thread::sleep(delay);
-        };
 
         // 避免捕获自身模拟的虚拟按键
         if virtual_event_flag.get() {
             return Some(event)
         }
+
+        // 模拟按键 - 语法糖
+        // let simu = |event_type: &EventType| { // 如 simu(&EventType::KeyRelease(Key::CapsLock));
+        //     virtual_event_flag.set(true);
+        //     let _ = simulate(event_type);
+        //     virtual_event_flag.set(false);
+        //     // let delay = time::Duration::from_millis(20);
+        //     // thread::sleep(delay);
+        // };
+        // let simu2 = |key: Key| { // 如 simu2(Key::CapsLock);
+        //     virtual_event_flag.set(true);
+        //     let _ = simulate(&EventType::KeyPress(key));
+        //     let _ = simulate(&EventType::KeyRelease(key));
+        //     virtual_event_flag.set(false);
+        //     // let delay = time::Duration::from_millis(20);
+        //     // thread::sleep(delay);
+        // };
+        let mut enigo = Enigo::new(&Settings::default()).unwrap();
+        let mut simu3 = |key: enigo::Key, direction: enigo::Direction| {
+            virtual_event_flag.set(true);
+            let _ = enigo.key(key, direction);
+            virtual_event_flag.set(false);
+        };
 
         // CapsLock 状态
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
@@ -94,20 +133,31 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             // 不知道为什么，+Esc的识别总是不够灵敏
             if event.event_type == EventType::KeyRelease(Key::Escape) {
                 virtual_event_flag.set(true);
-                simu(&EventType::KeyRelease(Key::CapsLock));
-                thread::sleep(time::Duration::from_millis(10));
-                simu(&EventType::KeyPress(Key::CapsLock));
-
+                simu3(enigo::Key::CapsLock, Press);
+                simu3(enigo::Key::CapsLock, Release);
                 return None
             }
-            if event.event_type == EventType::KeyPress(Key::KeyI) { simu(&EventType::KeyPress(Key::Backspace)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyO) { simu(&EventType::KeyPress(Key::Delete)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyU) { simu(&EventType::KeyPress(Key::UpArrow)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyJ) { simu(&EventType::KeyPress(Key::LeftArrow)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyK) { simu(&EventType::KeyPress(Key::DownArrow)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { simu(&EventType::KeyPress(Key::RightArrow)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyH) { simu(&EventType::KeyPress(Key::Home)); return None }
-            if event.event_type == EventType::KeyPress(Key::SemiColon) { simu(&EventType::KeyPress(Key::End)); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyI) { simu3(enigo::Key::Backspace, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyO) { simu3(enigo::Key::Delete, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyU) { simu3(enigo::Key::UpArrow, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyJ) { simu3(enigo::Key::LeftArrow, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyK) { simu3(enigo::Key::DownArrow, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyL) { simu3(enigo::Key::RightArrow, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyH) { simu3(enigo::Key::Home, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::SemiColon) { simu3(enigo::Key::End, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::Num7) || event.event_type == EventType::KeyPress(Key::KeyY) {
+                simu3(enigo::Key::Control, Press);
+                simu3(enigo::Key::Home, Click);
+                simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::Comma) {
+                simu3(enigo::Key::Control, Press);
+                simu3(enigo::Key::End, Click);
+                simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::Space) { simu3(enigo::Key::Return, Click); return None }
             if event.event_type == EventType::KeyPress(Key::KeyD) {
                 println!("Caps+D detected!"); return None
             }
@@ -141,9 +191,3 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         println!("Error: {:?}", error)
     }
 }
-
-// fn simu(event_type: &EventType) {
-//     let _ = simulate(event_type);
-//     // let delay = time::Duration::from_millis(20);
-//     // thread::sleep(delay);
-// }
