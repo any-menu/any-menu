@@ -107,7 +107,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             if event.event_type == EventType::KeyPress(Key::KeyK) { simu(&EventType::KeyPress(Key::DownArrow)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyL) { simu(&EventType::KeyPress(Key::RightArrow)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyH) { simu(&EventType::KeyPress(Key::Home)); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { simu(&EventType::KeyPress(Key::End)); return None }
+            if event.event_type == EventType::KeyPress(Key::SemiColon) { simu(&EventType::KeyPress(Key::End)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyD) {
                 println!("Caps+D detected!"); return None
             }
@@ -126,8 +126,13 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 app_handle.emit("active-window-toggle", ()).unwrap();
                 return None
             }
-            println!("ignore Caps+* {:?}", event.event_type);
-            return None
+
+            // Caps+未分配 (可能是Key，或Ctrl/Shift)，或松开按键，不处理
+            // if let EventType::KeyPress(_) = event.event_type {
+            //     println!("ignore Caps+* {:?}", event.event_type);
+            //     return None
+            // }
+            return Some(event)
         }
 
         Some(event)

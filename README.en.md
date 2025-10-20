@@ -112,7 +112,7 @@ Official dictionaries/scripts are continuously being expanded. You can also full
 Among them
 
 - "Better Selected Text Capture" is related to whether the text processing and replacement functions can be used.
-- "Better Full Editor Text Capture" is related to whether functions such as finding the next matching text, multiple cursors, and full-text AI can be utilized.
+- "Better Full Editor Text Capture" is related to whether functions such as finding the next matching text, multiple cursors, and full-text AI can be utilized. Even the ability to call some of the software's own APIs is possible.
 
 ## Highlights
 
