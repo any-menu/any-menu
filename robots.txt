@@ -1,0 +1,4 @@
+User-agent:*
+Disallow:
+
+Sitemap: https://any-menu.github.io/any-menu/sitemap.xml
