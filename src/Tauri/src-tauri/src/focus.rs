@@ -10,9 +10,6 @@ use tauri::Emitter;
  * 在线程外获取 AppHandle，它是线程安全的 (Send + Sync)
  */
 pub fn init_focus_check(app_handle: tauri::AppHandle) {
-    // 
-    // let app_handle = app.handle();
-
     // 启动一个后台线程来监控活动窗口
     std::thread::spawn(move || {
         use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowTextW};

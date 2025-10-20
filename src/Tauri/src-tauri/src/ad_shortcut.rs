@@ -177,7 +177,10 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 // 此时要按一下 Caps 恢复正常
                 // 
                 // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+                // 
+                // 在解决这个bug之前，这里会强制松开Caps层
                 app_handle.emit("active-window-toggle", ()).unwrap();
+                caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
                 return None
             }
 
