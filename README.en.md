@@ -109,6 +109,11 @@ Official dictionaries/scripts are continuously being expanded. You can also full
 | Better Full Editor Text Capture  | ✅             | ❌         |
 | Performance                      |                | Potentially better |
 
+Among them
+
+- "Better Selected Text Capture" is related to whether the text processing and replacement functions can be used.
+- "Better Full Editor Text Capture" is related to whether functions such as finding the next matching text, multiple cursors, and full-text AI can be utilized.
+
 ## Highlights
 
 Given that tools like Quicker and uTools already exist, what are the advantages compared to similar products? See below and [What Quick Input/Auto-completion Solutions Exist?](./docs/zh/Comparison.md)

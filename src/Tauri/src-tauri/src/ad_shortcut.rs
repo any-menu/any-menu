@@ -48,6 +48,13 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，表示可以多次且并发调用
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
     let callback = move |event: Event| -> Option<Event> {
+        // 不处理非按键事件 (鼠标 滚动 按钮等)
+        match event.event_type {
+            EventType::KeyPress(_) => {} // println!("KeyDown {:?}", key);
+            EventType::KeyRelease(_) => {}
+            _ => { return Some(event) }
+        }
+
         // 模拟按键 - 语法糖
         let simu = |event_type: &EventType| {
             virtual_event_flag.set(true);
@@ -56,11 +63,6 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             // let delay = time::Duration::from_millis(20);
             // thread::sleep(delay);
         };
-
-        // 如果是按下键则打印 (debug)
-        // if let EventType::KeyPress(key) = event.event_type {
-        //     println!("KeyDown {:?}", key);
-        // }
 
         // 避免捕获自身模拟的虚拟按键
         if virtual_event_flag.get() {
@@ -98,18 +100,29 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
                 return None
             }
+            if event.event_type == EventType::KeyPress(Key::KeyI) { simu(&EventType::KeyPress(Key::Backspace)); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyO) { simu(&EventType::KeyPress(Key::Delete)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyU) { simu(&EventType::KeyPress(Key::UpArrow)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyJ) { simu(&EventType::KeyPress(Key::LeftArrow)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyK) { simu(&EventType::KeyPress(Key::DownArrow)); return None }
             if event.event_type == EventType::KeyPress(Key::KeyL) { simu(&EventType::KeyPress(Key::RightArrow)); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyH) { simu(&EventType::KeyPress(Key::Home)); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyL) { simu(&EventType::KeyPress(Key::End)); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyD) {
+                println!("Caps+D detected!"); return None
+            }
             if event.event_type == EventType::KeyPress(Key::KeyF) {
-                println!("Caps+F detected!");
-                return None
+                println!("Caps+F detected!"); return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyN) || event.event_type == EventType::KeyPress(Key::KeyM) {
                 println!("Caps+N/M detected!");
                 // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
                 // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+                // 
+                // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+                // 此时要按一下 Caps 恢复正常
+                // 
+                // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
                 app_handle.emit("active-window-toggle", ()).unwrap();
                 return None
             }
