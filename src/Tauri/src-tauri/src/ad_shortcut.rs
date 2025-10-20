@@ -30,7 +30,7 @@ use enigo::{
     Enigo, Keyboard, Settings,
     Direction::{Click, Press, Release},
 };
-use std::{cell::Cell, thread, time};
+use std::{cell::Cell, sync::{Arc, Mutex}, thread, time};
 use tauri::Emitter;
 
 /** 无法拦截原行为，会阻塞 */
@@ -70,13 +70,17 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_active_used = Cell::new(false);    // 是否使用过激活后的 Caps 层
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
+    let enigo_instance = Arc::new(Mutex::new(
+        Enigo::new(&Settings::default()).expect("Failed to create Enigo instance")
+    ));
+
     // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，表示可以多次且并发调用
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
     let callback = move |event: Event| -> Option<Event> {
         // 不处理非按键事件 (鼠标 滚动 按钮等)
         match event.event_type {
-            EventType::KeyPress(key) => { println!("KeyDown {:?}", key); } // println!("KeyDown {:?}", key);
-            EventType::KeyRelease(key) => { println!("KeUp   {:?}", key); }
+            EventType::KeyPress(_) => {} // println!("KeyDown {:?}", key);
+            EventType::KeyRelease(_) => {}
             _ => { return Some(event) }
         }
 
@@ -101,7 +105,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         //     // let delay = time::Duration::from_millis(20);
         //     // thread::sleep(delay);
         // };
-        let mut enigo = Enigo::new(&Settings::default()).unwrap();
+        let mut enigo = enigo_instance.lock().unwrap();
         let mut simu3 = |key: enigo::Key, direction: enigo::Direction| {
             virtual_event_flag.set(true);
             let _ = enigo.key(key, direction);
