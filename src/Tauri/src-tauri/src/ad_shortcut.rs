@@ -27,8 +27,7 @@ use rdev::{
     grab, listen, simulate, Event, EventType, Key
 };
 use enigo::{
-    Enigo, Keyboard, Settings,
-    Direction::{Click, Press, Release},
+    Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
 };
 use std::{cell::Cell, sync::{Arc, Mutex}, thread, time};
 use tauri::Emitter;
@@ -68,6 +67,9 @@ pub fn _init_ad_shortcut() {
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_active = Cell::new(false);         // 是否激活 Caps 层
     let caps_active_used = Cell::new(false);    // 是否使用过激活后的 Caps 层
+
+    let caps_cursor_active = Cell::new(false);  // 是否激活 Caps_cursor 层
+
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
     let enigo_instance = Arc::new(Mutex::new(
@@ -130,7 +132,12 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             return Some(event) // 禁用 CapsLock 键
         }
 
-        // Caps+*
+        // Caps+C+，鼠标层
+        if caps_active.get() && caps_cursor_active.get() {
+
+        }
+
+        // #region Caps+*
         if caps_active.get() {
             caps_active_used.set(true);
             // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
@@ -139,6 +146,24 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 virtual_event_flag.set(true);
                 simu3(enigo::Key::CapsLock, Press);
                 simu3(enigo::Key::CapsLock, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyC) {
+                caps_cursor_active.set(true); return None
+            }
+            if event.event_type == EventType::KeyRelease(Key::KeyC) {
+                caps_cursor_active.set(false); return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyB) {
+                // 临时连续点击
+                virtual_event_flag.set(true);
+                let _ = enigo.button(enigo::Button::Left, Click);
+                virtual_event_flag.set(false);
+                let delay = time::Duration::from_millis(100);
+                thread::sleep(delay);
+                return None
+            }
+            if event.event_type == EventType::KeyRelease(Key::KeyB) {
                 return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyI) { simu3(enigo::Key::Backspace, Click); return None }
@@ -150,23 +175,27 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             if event.event_type == EventType::KeyPress(Key::KeyH) { simu3(enigo::Key::Home, Click); return None }
             if event.event_type == EventType::KeyPress(Key::SemiColon) { simu3(enigo::Key::End, Click); return None }
             if event.event_type == EventType::KeyPress(Key::Num7) || event.event_type == EventType::KeyPress(Key::KeyY) {
-                simu3(enigo::Key::Control, Press);
-                simu3(enigo::Key::Home, Click);
-                simu3(enigo::Key::Control, Release);
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Home, Click); simu3(enigo::Key::Control, Release);
                 return None
             }
             if event.event_type == EventType::KeyPress(Key::Comma) {
-                simu3(enigo::Key::Control, Press);
-                simu3(enigo::Key::End, Click);
-                simu3(enigo::Key::Control, Release);
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::End, Click); simu3(enigo::Key::Control, Release);
                 return None
             }
             if event.event_type == EventType::KeyPress(Key::Space) { simu3(enigo::Key::Return, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyD) {
-                println!("Caps+D detected!"); return None
+            if event.event_type == EventType::KeyPress(Key::KeyD) || event.event_type == EventType::KeyPress(Key::KeyG) {
+                // TODO 长按层
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::LeftArrow, Click);
+                let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+                simu3(enigo::Key::Shift, Press); simu3(enigo::Key::RightArrow, Click); simu3(enigo::Key::Shift, Release); simu3(enigo::Key::Control, Release);
+                return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyF) {
-                println!("Caps+F detected!"); return None
+                // TODO 长按层
+                simu3(enigo::Key::Home, Click);
+                let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+                simu3(enigo::Key::Shift, Press); simu3(enigo::Key::End, Click); simu3(enigo::Key::Shift, Release);
+                return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyN) || event.event_type == EventType::KeyPress(Key::KeyM) {
                 println!("Caps+N/M detected!");
@@ -191,6 +220,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             // }
             return Some(event)
         }
+        // #endregion
 
         Some(event)
     };
