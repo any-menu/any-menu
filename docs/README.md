@@ -1,6 +1,77 @@
-<div align="center" style="margin-bottom: 20px">
-  <img width="35%" src="./docs/assets/icon.png">
-</div>
+---
+# icon use https://fontawesome.com/icons
+# layout: OldLayout
+home: true
+title: AnyMenu
+icon: home
+heroText: AnyMenu
+tagline: A powerful input method assistant / editor assistant
+heroStyle:
+  min-height: 450px
+heroImage: /assets/icon.png
+
+actions:
+  - text: Introduce
+    icon: book
+    link: "#What is AnyMenu"
+  - text: Demo
+    icon: list
+    link: ./README.show.md
+
+features:
+  - title: Quick Search Box
+    icon: magnifying-glass
+    details: Quickly search and locate custom templates and custom phrases
+
+  - title: Quick Menu
+    icon: bars
+    details: The quick multi-level menu allows for visual creation of custom templates
+
+  - title: Hotkeys - Advanced
+    icon: keyboard
+    details: Supports unconventional system hotkeys like Caps+L, adding flexibility and functionality
+    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+
+  - title: Quick Cursor
+    icon: i-cursor
+    details: AnyCaps enables quick cursor and command operations using unconventional hotkeys, featuring a built-in wim-like system
+    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+
+  # - title: Quick Hotstrings (In Development)
+  #   icon: font
+  #   details: AnyCaps can use unconventional hotkeys for quick cursor and command operations
+
+  - title: Multi-platform, Highly Compatible, Unified
+    icon: bolt
+    details: Supports Obsidian plugin / Standalone desktop application. Use the same editing logic across any text editing environment, including plain/rich text editors, web pages, chat input boxes, etc.
+
+  - title: High Performance, Compact Size
+    icon: bolt-lightning
+    details: The App version is developed in Rust with WebView for display, delivering a performant, aesthetically pleasing, and lightweight user experience
+
+  - title: Simple and Easy to Use
+    icon: box-open
+    details: Easy to use out-of-the-box, requires no configuration, simple syntax, quick to get started
+
+  - title: Rich, Well-structured Documentation
+    icon: book
+    details: Provides aesthetically pleasing online documentation with illustrated explanations for each plugin sub-feature
+
+  # - title: Online Experience Available
+  #   icon: flask-vial
+  #   details: Provides an online App version for experiencing and testing online
+  #   link: https://any-block.github.io/any-block/
+
+  - title: Expand easy, Online Dictionaries/Scripts
+    icon: cloud
+    details: Comes with a dictionary/script marketplace, collecting user-defined dictionaries/scripts from the community. Access and use numerous extensions without needing to write or develop them yourself, offering rich and diverse functionality
+    link: https://any-menu.github.io/any-menu/zh/dict/
+
+  - title: Expand flexibilitye, Custom Dictionary/Script
+    icon: plug
+    details: Beyond downloading and using others' dictionaries and scripts, you can also create custom dictionaries and scripts
+    link: https://any-menu.github.io/any-menu/zh/dict/
+---
 
 [中文](./README.md) | [English](./README.en.md)
 
@@ -42,15 +113,15 @@ After configuring the dictionary, you can use it as follows:
 
 Quick Input Template:
 
-![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
+![](./assets/PixPin_2025-10-04_09-45-58.gif)
 
 The app version can be used in any text environment:
 
-![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
+![](./assets/PixPin_2025-10-04_09-38-24.gif)
 
 You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
 
-![](./docs/assets/cloud_dict.png)
+![](./assets/cloud_dict.png)
 
 ## Features
 

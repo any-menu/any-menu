@@ -1,6 +1,77 @@
-<div align="center" style="margin-bottom: 20px">
-  <img width="35%" src="./docs/assets/icon.png">
-</div>
+---
+# icon use https://fontawesome.com/icons
+# layout: OldLayout
+home: true
+title: AnyMenu
+icon: home
+heroText: AnyMenu
+tagline: 一款强大的输入法助手/编辑器助手
+heroStyle:
+  min-height: 450px
+heroImage: /assets/icon.png
+
+actions:
+  - text: Introduce
+    icon: book
+    link: "#什么是AnyMenu"
+  - text: Demo
+    icon: list
+    link: ./README.show.md
+
+features:
+  - title: 快捷搜索框
+    icon: magnifying-glass
+    details: 快速搜索定位到自定义模板、自定义短语
+
+  - title: 快捷菜单
+    icon: bars
+    details: 快捷多级菜单能可视化地创建自定义模板
+
+  - title: 快捷键-高级
+    icon: keyboard
+    details: 可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
+    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+
+  - title: 快捷游标
+    icon: i-cursor
+    details: AnyCaps 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 wim 系统
+    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+
+  # - title: 快捷热串 (开发中)
+  #   icon: font
+  #   details: AnyCaps 能使用非常规快捷键来快捷操作输入游标和命令
+
+  - title: 多平台, 高通用，统一
+    icon: bolt
+    details: 支持 Obsidian 插件 / 电脑独立应用软件。你可以在任意文本编辑环境中使用相同的一套编辑逻辑，包括纯文本/富文本编辑器、网页、聊天输入框等
+
+  - title: 性能强悍，体积小巧
+    icon: bolt-lightning
+    details: App 版使用 Rust 进行开发，WebView 进行显示，更你带来性能、美观、轻量的用户体验
+
+  - title: 简单易用
+    icon: box-open
+    details: 开箱易用、无需配置，语法简单，可快速入门
+
+  - title: 文档丰富, 好用
+    icon: book
+    details: 提供了美观的在线文档，为每一种插件子功能都进行了图文说明
+
+  # - title: 可在线体验
+  #   icon: flask-vial
+  #   details: 提供了在线App版本，允许在线体验、测试
+  #   link: https://any-block.github.io/any-block/
+
+  - title: 扩展简单，在线词典/脚本
+    icon: cloud
+    details: 自带词典/脚本市场，会收录社区中用户自定义的词典/脚本，很多扩展你都无需编写和开发即可寻找和使用，功能丰富多样
+    link: https://any-menu.github.io/any-menu/zh/dict/
+
+  - title: 扩展灵活，自定义词典/脚本
+    icon: plug
+    details: 除了走线下载使用别人的词典和脚本外，你也可以自定义词典和自定义脚本
+    link: https://any-menu.github.io/any-menu/zh/dict/
+---
 
 [中文](./README.md) | [English](./README.en.md)
 
@@ -24,15 +95,15 @@
 ## 文档 (使用 / 教程 / 示例)
 
 - [文档主页](https://any-menu.github.io/any-menu/README.zh.md)
-- [快键键-高级、快捷光标 (Caps+方案)](./docs/zh/adShortcut/README.md)
-- [词典](./docs/zh/dict/)
+- [快键键-高级、快捷光标 (Caps+方案)](./zh/adShortcut/README.md)
+- [词典](./zh/dict/)
   (脚本会被认作也是一种特殊的词典)
-  - [1. 在线下载 AnyMenu 词典](./docs/zh/dict/1.%20在线下载词典.md)
-  - [2. 手动下载 AnyMenu 词典](./docs/zh/dict/2.%20手动下载词典.md) (如在离线环境下使用 / 出现网络问题 / 在线市场无法使用 / 下载未经审核的第三方词典)
-  - [3. 编写 AnyMenu 词典](./docs/zh/dict/3.%20编写词典.md)
-  - [4. 上传自定义的 AnyMenu 词典](./docs/zh/dict/4.%20上传词典.md)
+  - [1. 在线下载 AnyMenu 词典](./zh/dict/1.%20在线下载词典.md)
+  - [2. 手动下载 AnyMenu 词典](./zh/dict/2.%20手动下载词典.md) (如在离线环境下使用 / 出现网络问题 / 在线市场无法使用 / 下载未经审核的第三方词典)
+  - [3. 编写 AnyMenu 词典](./zh/dict/3.%20编写词典.md)
+  - [4. 上传自定义的 AnyMenu 词典](./zh/dict/4.%20上传词典.md)
 - 相关文章
-  - [痛点之不同编辑器环境逻辑不同](./docs/zh/痛点-不同平台逻辑不同.md)
+  - [痛点之不同编辑器环境逻辑不同](./zh/痛点-不同平台逻辑不同.md)
 
 ## 一些图文/演示
 
@@ -40,15 +111,15 @@
 
 快捷输入模板:
 
-![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
+![](./assets/PixPin_2025-10-04_09-45-58.gif)
 
 App版可以在任何文本环境下使用:
 
-![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
+![](./assets/PixPin_2025-10-04_09-38-24.gif)
 
 可以下载和管理在线词典/脚本，也可以手动编写、管理和自定义他们
 
-![](./docs/assets/cloud_dict.png)
+![](./assets/cloud_dict.png)
 
 ## 功能
 
@@ -88,7 +159,7 @@ App版可以在任何文本环境下使用:
 - 高级快捷键 (Caps+)
   - 使用 `Caps+` `'+` 等非传统的系统快捷键，并默认配置了一套类 vim 方案
 - 其他
-  - 还有一些未成熟的、或开发中的、计划中的，见 [杂项](./docs/zh/杂项.md)
+  - 还有一些未成熟的、或开发中的、计划中的，见 [杂项](./zh/杂项.md)
 
 ### 插件版与App版的区别
 
@@ -120,7 +191,7 @@ App版可以在任何文本环境下使用:
 
 ## 亮点
 
-都已经有像 quicker 和 utools 这样的工具了，与同类产品相比，优势是什么？见下，与 [有哪些快捷输入/自动补全方案？](./docs/zh/对比.md)
+都已经有像 quicker 和 utools 这样的工具了，与同类产品相比，优势是什么？见下，与 [有哪些快捷输入/自动补全方案？](./zh/对比.md)
 
 - 零门槛
   - 不是输入链最短最快的 (最快的是输入法短语，以及热字符串的方案，但有门槛)
