@@ -4,7 +4,7 @@
 
 [中文](./README.md) | [English](./README.en.md)
 
-# AnyMenu —— InputMethod Assistant / Editor Assistant
+# AnyMenu —— A powerful assistant for inputMethod / editor
 
 ## What is AnyMenu
 

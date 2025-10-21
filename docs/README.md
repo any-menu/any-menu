@@ -5,7 +5,10 @@ home: true
 title: AnyMenu
 icon: home
 heroText: AnyMenu
-tagline: A powerful input method assistant / editor assistant
+# tagline带图片时，文本最好长点能换行，否则空间分配不美观
+tagline: |
+  A powerful input method assistant / editor assistant, 
+  Integrates a variety of quick input tools that can be used in a general text environment
 heroStyle:
   min-height: 450px
 heroImage: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon-alpha.png
@@ -76,7 +79,7 @@ features:
 
 [中文](./README.md) | [English](./README.en.md)
 
-# AnyMenu —— InputMethod Assistant / Editor Assistant
+# AnyMenu —— A powerful assistant for inputMethod / editor
 
 ## What is AnyMenu
 

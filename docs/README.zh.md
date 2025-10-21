@@ -5,11 +5,14 @@ home: true
 title: AnyMenu
 icon: home
 heroText: AnyMenu
-tagline: 一款强大的输入法助手/编辑器助手
+# tagline带图片时，文本最好长点能换行，否则空间分配不美观
+tagline: |
+  一款强大的输入法助手/编辑器助手，
+  集成了多种可以在通用文本环境下使用的快捷输入工具
 heroStyle:
   min-height: 450px
 heroImage: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon-alpha.png
-heroImageDark: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon.png
+heroImageDark: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon-alpha.png
 
 actions:
   - text: Introduce
