@@ -23,26 +23,34 @@ actions:
     link: ./README.show.md
 
 features:
-  - title: 快捷搜索框
+  - title: 快捷输入
+    icon: italic
+    details: 快捷输入文本、短语、符号、图标、模板等，可通过快捷搜索、快捷菜单、高级快捷键等方式进行
+
+  - title: 快捷转换
+    icon: repeat # or shuffle
+    details: 除了直接输出，还可以选中文本后根据内容转换。可以用于智能标点、智能标签对、文本指令、格式化、翻译、GPT等
+
+  - title: 快捷搜索
     icon: magnifying-glass
-    details: 快速搜索定位到自定义模板、自定义短语
+    details: 快捷搜索框。快速搜索定位到自定义模板、自定义短语
 
   - title: 快捷菜单
     icon: bars
-    details: 快捷多级菜单能可视化地创建自定义模板
+    details: 快捷多级菜单能可视化地查看和调用输入模板和命令等，部分环境中也能可视化地预查看文本模板的渲染结果
 
-  - title: 快捷键-高级
+  - title: 快捷组合键 - 高级
     icon: keyboard
-    details: 可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
+    details: 高级快捷键。可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
     link: ./zh/adShortcut/
 
   - title: 快捷游标
     icon: i-cursor
-    details: AnyCaps 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 wim 系统
+    details: 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 vim 系统
     link: ./zh/adShortcut/
 
   # - title: 快捷热串 (开发中)
-  #   icon: font
+  #   icon: font or quote-left or strikethrough
   #   details: AnyCaps 能使用非常规快捷键来快捷操作输入游标和命令
 
   - title: 多平台, 高通用，统一
@@ -128,43 +136,53 @@ App版可以在任何文本环境下使用:
 
 ## 功能
 
-这里会按不同的模块来介绍 (分成多个类别/抽象类别)
+### 核心功能
+
+[table]
+
+- 快捷输入
+  - 快捷输入自定义文本、短语、模板等
+- 快捷转换
+  - 将选中文本通过一定规则转换为对应文本的功能，可用于智能标点、智能标签对、文本指令、格式化、翻译、GPT等
+- 快捷面板
+  - 默认 `Alt+A` (可设置)，像 utools 和 quicker 那样随时随地召唤面板
+- 快捷多级菜单
+  - 可视化输出，特别是使用 Obsidian 版本时，可以看到输出内容对应的 Markdown 渲染结果
+- 快捷搜索框
+  - 除了使用多级菜单，你也可以通过搜索框快速查找你想输出的内容并输出
+- 快捷键 - 高级 (Caps+)
+  - 使用 `Caps+` `'+` 等非传统的系统快捷键，去使用命令，避免全局快捷键拥挤
+- 快捷游标
+  - 使用高级快捷键，默认配置了一套基于类 `Caps+` 方式的类 vim 方案
+- 多平台，高通用，统一
+  - 不仅仅是 Obsidian 插件，也有 App 版本
+    App 版本中，你可以在任何文本类编辑器环境中召唤相同的菜单，使用相同的操作逻辑，来增强你的输入法和当前的编辑器
+- 其他
+  - 还有一些未成熟的、或开发中的、计划中的，见 [杂项](./zh/杂项.md)
 
 ### 词典/脚本市场模块
 
-目前的官方支持的词典:
+目前官方支持的词典: (仅列举部分)
 
-- (短语类)
-  - emoji
-  - 颜表情
-- (Markdown Demo)
-  - Markdown
-  - Mermaid demo
-  - AnyBlock 插件 demo
-  - MetaBind 插件 demo
-- (脚本类)
-  - 输出当前日期时间
-  - Markdown格式化
-  - Markdwon快速添加自定义 HTML 标签
+```mermaid
+mindmap
+  root(AnyMenu)
+    (短语类)
+      emoji
+      颜色表
+    (Markdown demo)
+      Markdown 模板
+      Mermaid 模板
+      AnyBlock 插件模板
+      MetaBind 插件模板
+    (脚本类)
+      输出当前日期时间
+      Markdown格式化
+      Markdown标签对
+      HTML标签对
+```
 
 官方词典/脚本正在不断扩充中，你也完全可以编写你自己的自定义词典/脚本
-
-### 更多功能
-
-- 输入文本/转换文本
-  - 提供快捷输入模板功能、提供将选中文本通过一定规则转换为对应文本的功能
-- 快速唤出面板
-  - 默认 `Alt+A` (可设置)
-  - 不仅仅是 Obsidian 插件，也有 App 版本
-    App 版本中，你可以在任何文本类编辑器环境中召唤相同的菜单，使用相同的操作逻辑，来增强你的输入法和当前的编辑器
-- 多级菜单模块
-  - 可视化输出，特别是使用 Obsidian 版本时，可以看到输出内容对应的 Markdown 渲染结果
-- 搜索框
-  - 除了使用多级菜单，你也可以通过搜索框快速查找你想输出的内容并输出
-- 高级快捷键 (Caps+)
-  - 使用 `Caps+` `'+` 等非传统的系统快捷键，并默认配置了一套类 vim 方案
-- 其他
-  - 还有一些未成熟的、或开发中的、计划中的，见 [杂项](./zh/杂项.md)
 
 ### 插件版与App版的区别
 

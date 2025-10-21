@@ -57,41 +57,53 @@ You can download and manage online dictionaries/scripts, or you can manually cre
 
 Features will be introduced by different modules (categorized into multiple groups/abstract categories).
 
+### Core Features
+
+[table]
+
+- Quick Input
+  - Custom text, phrases, templates, etc., for quick input
+- Quick Conversion
+  - Convert selected text into corresponding text based on certain rules. Can be used for smart punctuation, smart tag pairs, text commands, formatting, translation, GPT, and more
+- Quick Panel
+  - Default shortcut: `Alt+A` (configurable). Summon the panel anytime, anywhere, similar to utools and quicker
+- Quick Multi-level Menu
+  - Visual output, especially when using the Obsidian version, allowing you to see the Markdown-rendered result of the output content
+- Quick Search Box
+  - In addition to using the multi-level menu, you can also quickly find and output desired content via the search box
+- Shortcuts - Advanced (Caps+)
+  - Use non-traditional system shortcuts like `Caps+` or `'+` to execute commands, avoiding crowded global shortcuts
+- Quick Cursor
+  - Utilizes advanced shortcuts, with a default configuration of a vim-like scheme based on the `Caps+` approach
+- Multi-platform, High Compatibility, Unified
+  - Not just an Obsidian plugin but also available as a standalone app
+    In the app version, you can summon the same menu in any text-based editor environment, using the same operational logic to enhance your input method and current editor
+- Others
+  - Additional features that are under development, in progress, or planned can be found in [Miscellaneous](./docs/zh/杂项.md)
+
 ### Dictionary / Script Marketplace Module
 
-Currently officially supported dictionaries:
+Currently officially supported dictionaries: (Just a few examples are listed.)
 
-- (Phrase Type)
-  - emoji
-  - Kaomoji (Text Emoticons)
-- (Markdown Demo)
-  - Markdown
-  - Mermaid demo
-  - AnyBlock plugin demo
-  - MetaBind plugin demo
-- (Script Type)
-  - Output current date and time
-  - Markdown formatting
-  - Quickly add custom HTML tags in Markdown
+```mermaid
+mindmap
+  root(AnyMenu)
+    (Phrase Type)
+      emoji
+      Kaomoji (Text Emoticons)
+    (Markdown Demo)
+      Markdown demo
+      Mermaid demo
+      AnyBlock plugin demo
+      MetaBind plugin demo
+    (Script Type)
+      Output current date and time
+      Markdown formatting
+      Markdown tags
+      HTML tags
+```
 
 Official dictionaries/scripts are continuously being expanded. You can also fully write your own custom dictionaries/scripts.
-
-### More Features
-
-- Input Text / Transform Text
-  - Provides quick input template functionality and the ability to transform selected text into corresponding text based on certain rules.
-- Quick Panel Invocation
-  - Default: `Alt+A` (configurable)
-  - Not just an Obsidian plugin, but also an App version.
-    In the App version, you can summon the same menu in any text editor environment, using the same operation logic to enhance your input method and current editor.
-- Multi-level Menu Module
-  - Visual output, especially when using the Obsidian version, you can see the Markdown rendering result of the corresponding output content.
-- Search Box
-  - In addition to using the multi-level menu, you can also quickly find and output the content you want through the search box.
-- Advanced Shortcuts (Caps+)
-  - Utilizes non-traditional system shortcuts like `Caps+` and `'+`, with a pre-configured Vim-like scheme by default
-- Others
-  - There are also some immature, in-development, or planned features. See [Miscellaneous](./docs/zh/Miscellaneous.md).
 
 ### Differences Between Plugin Version and App Version
 
