@@ -27,6 +27,8 @@ Hence, AnyMenu was born – a powerful Input Method Assistant / Editor Assistant
   In Typora, the default shortcut for switching between source code/live preview mode is `Ctrl+/`,
   whereas in Obsidian, the default shortcut is `Alt+E`.
 
+There are also some rather annoying issues. When editing Markdown in VSCode, the Ctrl+Shift+V shortcut for pasting plain text is instead used to open the preview function.
+
 ### Different menus and toolbar
 
 - This includes different right-click context menus, different toolbars, etc. This is easy to understand.
