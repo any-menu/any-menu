@@ -24,7 +24,7 @@
 ## 文档 (使用 / 教程 / 示例)
 
 - [文档主页](https://any-menu.github.io/any-menu/README.zh.md)
-- [快键键-高级、快捷光标 (Caps+方案)](./docs/zh/adShortcut/README.md)
+- [快键键-高级、快捷光标 (Caps+方案)](./docs/zh/quick_keys/README.md)
 - [词典](./docs/zh/dict/)
   (脚本会被认作也是一种特殊的词典)
   - [1. 在线下载 AnyMenu 词典](./docs/zh/dict/1.%20在线下载词典.md)

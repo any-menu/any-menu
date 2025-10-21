@@ -24,7 +24,7 @@
 ## Document (using / tutorial / example)
 
 - [Document Homepage](https://any-menu.github.io/any-menu/README.md)
-- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./docs/zh/adShortcut/README.md)
+- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./docs/zh/quick_keys/README.md)
 - [Dictionaries](./docs/zh/dict/)
   (Scripts are also considered a special type of dictionary.)
   - [1. Download AnyMenu Dictionaries Online](./docs/zh/dict/1.%20Online%20Dictionary%20Download.md)

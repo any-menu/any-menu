@@ -42,12 +42,12 @@ features:
   - title: 快捷组合键 - 高级
     icon: keyboard
     details: 高级快捷键。可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
-    link: ./zh/adShortcut/
+    link: ./zh/quick_keys/
 
   - title: 快捷游标
     icon: i-cursor
     details: 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 vim 系统
-    link: ./zh/adShortcut/
+    link: ./zh/quick_keys/
 
   # - title: 快捷热串 (开发中)
   #   icon: font or quote-left or strikethrough
@@ -107,7 +107,7 @@ features:
 ## 文档 (使用 / 教程 / 示例)
 
 - [文档主页](https://any-menu.github.io/any-menu/README.zh.md)
-- [快键键-高级、快捷光标 (Caps+方案)](./zh/adShortcut/README.md)
+- [快键键-高级、快捷光标 (Caps+方案)](./zh/quick_keys/README.md)
 - [词典](./zh/dict/)
   (脚本会被认作也是一种特殊的词典)
   - [1. 在线下载 AnyMenu 词典](./zh/dict/1.%20在线下载词典.md)

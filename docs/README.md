@@ -42,12 +42,12 @@ features:
   - title: Quick Keys - Ad
     icon: keyboard
     details: Hotkeys - Advanced. Supports unconventional system hotkeys like Caps+L, adding flexibility and functionality
-    link: ./zh/adShortcut/
+    link: ./zh/quick_keys/
 
   - title: Quick Cursor
     icon: i-cursor
     details: Enables quick cursor and command operations using unconventional hotkeys, featuring a built-in vim-like system
-    link: ./zh/adShortcut/
+    link: ./zh/quick_keys/
 
   # - title: Quick Hotstrings (In Development)
   #   icon: font or quote-left or strikethrough
@@ -107,7 +107,7 @@ features:
 ## Document (using / tutorial / example)
 
 - [Document Homepage](https://any-menu.github.io/any-menu/README.md)
-- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/adShortcut/README.md)
+- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/quick_keys/README.md)
 - [Dictionaries](./zh/dict/)
   (Scripts are also considered a special type of dictionary.)
   - [1. Download AnyMenu Dictionaries Online](./zh/dict/1.%20Online%20Dictionary%20Download.md)
