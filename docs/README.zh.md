@@ -8,7 +8,7 @@ heroText: AnyMenu
 tagline: 一款强大的输入法助手/编辑器助手
 heroStyle:
   min-height: 450px
-heroImage: ./assets/icon.png
+heroImage: https://github.com/any-menu/any-menu/blob/main/docs/assets/icon.png
 
 actions:
   - text: Introduce
