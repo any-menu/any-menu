@@ -30,12 +30,12 @@ features:
   - title: Hotkeys - Advanced
     icon: keyboard
     details: Supports unconventional system hotkeys like Caps+L, adding flexibility and functionality
-    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+    link: ./zh/adShortcut/
 
   - title: Quick Cursor
     icon: i-cursor
     details: AnyCaps enables quick cursor and command operations using unconventional hotkeys, featuring a built-in wim-like system
-    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+    link: ./zh/adShortcut/
 
   # - title: Quick Hotstrings (In Development)
   #   icon: font
@@ -65,12 +65,12 @@ features:
   - title: Expand easy, Online Dictionaries/Scripts
     icon: cloud
     details: Comes with a dictionary/script marketplace, collecting user-defined dictionaries/scripts from the community. Access and use numerous extensions without needing to write or develop them yourself, offering rich and diverse functionality
-    link: https://any-menu.github.io/any-menu/zh/dict/
+    link: ./zh/dict/
 
   - title: Expand flexibilitye, Custom Dictionary/Script
     icon: plug
     details: Beyond downloading and using others' dictionaries and scripts, you can also create custom dictionaries and scripts
-    link: https://any-menu.github.io/any-menu/zh/dict/
+    link: ./zh/dict/
 ---
 
 [中文](./README.md) | [English](./README.en.md)

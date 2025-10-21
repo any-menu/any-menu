@@ -8,7 +8,7 @@ heroText: AnyMenu
 tagline: 一款强大的输入法助手/编辑器助手
 heroStyle:
   min-height: 450px
-heroImage: /assets/icon.png
+heroImage: ./assets/icon.png
 
 actions:
   - text: Introduce
@@ -30,12 +30,12 @@ features:
   - title: 快捷键-高级
     icon: keyboard
     details: 可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
-    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+    link: ./zh/adShortcut/
 
   - title: 快捷游标
     icon: i-cursor
     details: AnyCaps 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 wim 系统
-    link: https://any-menu.github.io/any-menu/zh/adShortcut/
+    link: ./zh/adShortcut/
 
   # - title: 快捷热串 (开发中)
   #   icon: font
@@ -65,12 +65,12 @@ features:
   - title: 扩展简单，在线词典/脚本
     icon: cloud
     details: 自带词典/脚本市场，会收录社区中用户自定义的词典/脚本，很多扩展你都无需编写和开发即可寻找和使用，功能丰富多样
-    link: https://any-menu.github.io/any-menu/zh/dict/
+    link: ./zh/dict/
 
   - title: 扩展灵活，自定义词典/脚本
     icon: plug
     details: 除了走线下载使用别人的词典和脚本外，你也可以自定义词典和自定义脚本
-    link: https://any-menu.github.io/any-menu/zh/dict/
+    link: ./zh/dict/
 ---
 
 [中文](./README.md) | [English](./README.en.md)
