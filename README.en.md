@@ -33,6 +33,7 @@
   - [4. Uploading Custom AnyMenu Dictionaries](./docs/zh/dict/4.%20Uploading%20Dictionaries.md)
 - Related articles
   - [Pain Point: Different Editor Environments Have Different Logics](./docs/en/DifferentEditor.md)
+  - [What are the quick input / auto-completion solutions, and how do they compare?](./docs/zh/对比.md)
 
 ## Usage / Tutorial / Demo
 

@@ -8,7 +8,7 @@ heroText: AnyMenu
 tagline: A powerful input method assistant / editor assistant
 heroStyle:
   min-height: 450px
-heroImage: /assets/icon.png
+heroImage: ./assets/icon.png
 
 actions:
   - text: Introduce
@@ -95,15 +95,16 @@ features:
 ## Document (using / tutorial / example)
 
 - [Document Homepage](https://any-menu.github.io/any-menu/README.md)
-- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./docs/zh/adShortcut/README.md)
-- [Dictionaries](./docs/zh/dict/)
+- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/adShortcut/README.md)
+- [Dictionaries](./zh/dict/)
   (Scripts are also considered a special type of dictionary.)
-  - [1. Download AnyMenu Dictionaries Online](./docs/zh/dict/1.%20Online%20Dictionary%20Download.md)
-  - [2. Manually Download AnyMenu Dictionaries](./docs/zh/dict/2.%20Manual%20Dictionary%20Download.md) (For use in offline environments / network issues / online marketplace unavailable / downloading unaudited third-party dictionaries)
-  - [3. Writing AnyMenu Dictionaries](./docs/zh/dict/3.%20Writing%20Dictionaries.md)
-  - [4. Uploading Custom AnyMenu Dictionaries](./docs/zh/dict/4.%20Uploading%20Dictionaries.md)
+  - [1. Download AnyMenu Dictionaries Online](./zh/dict/1.%20Online%20Dictionary%20Download.md)
+  - [2. Manually Download AnyMenu Dictionaries](./zh/dict/2.%20Manual%20Dictionary%20Download.md) (For use in offline environments / network issues / online marketplace unavailable / downloading unaudited third-party dictionaries)
+  - [3. Writing AnyMenu Dictionaries](./zh/dict/3.%20Writing%20Dictionaries.md)
+  - [4. Uploading Custom AnyMenu Dictionaries](./zh/dict/4.%20Uploading%20Dictionaries.md)
 - Related articles
-  - [Pain Point: Different Editor Environments Have Different Logics](./docs/en/DifferentEditor.md)
+  - [Pain Point: Different Editor Environments Have Different Logics](./en/DifferentEditor.md)
+  - [What are the quick input / auto-completion solutions, and how do they compare?](./zh/对比.md)
 
 ## Usage / Tutorial / Demo
 
@@ -161,7 +162,7 @@ Official dictionaries/scripts are continuously being expanded. You can also full
 - Advanced Shortcuts (Caps+)
   - Utilizes non-traditional system shortcuts like `Caps+` and `'+`, with a pre-configured Vim-like scheme by default
 - Others
-  - There are also some immature, in-development, or planned features. See [Miscellaneous](./docs/zh/Miscellaneous.md).
+  - There are also some immature, in-development, or planned features. See [Miscellaneous](./zh/Miscellaneous.md).
 
 ### Differences Between Plugin Version and App Version
 
@@ -193,7 +194,7 @@ Among them
 
 ## Highlights
 
-Given that tools like Quicker and uTools already exist, what are the advantages compared to similar products? See below and [What Quick Input/Auto-completion Solutions Exist?](./docs/zh/Comparison.md)
+Given that tools like Quicker and uTools already exist, what are the advantages compared to similar products? See below and [What Quick Input/Auto-completion Solutions Exist?](./zh/Comparison.md)
 
 - Zero Barrier to Entry
   - It's not the one with the shortest or fastest input chain (the fastest are input method phrases and hotstring solutions, but they have a steeper learning curve).
