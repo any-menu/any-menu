@@ -29,7 +29,7 @@ use rdev::{
 use enigo::{
     Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
 };
-use std::{cell::Cell, sync::{Arc, Mutex}, thread, time};
+use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time};
 use tauri::Emitter;
 
 /** 无法拦截原行为，会阻塞 */
@@ -65,8 +65,8 @@ pub fn _init_ad_shortcut() {
  * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
  */
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
-    let caps_active = Cell::new(false);         // 是否激活 Caps 层
-    let caps_active_used = Cell::new(false);    // 是否使用过^该层
+    let caps_active = Cell::new(false);             // 是否激活 Caps 层
+    let caps_active_used = Cell::new(false);        // 是否使用过^该层
     let caps_cursor_active = Cell::new(false);      // 是否激活 Caps_cursor 层
     let caps_cursor_active_used = Cell::new(false); // 是否使用过^该层
 
@@ -114,6 +114,20 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             virtual_event_flag.set(false);
         };
 
+        // 为什么要定义这个函数: Caps+C后，无论先松Caps还是先松C，都应视为退出光标层
+        fn caps_cursor_quit(
+            enigo: &mut MutexGuard<'_, Enigo>, 
+            caps_cursor_active: &Cell<bool>, 
+            caps_cursor_active_used: &Cell<bool>
+        ) {
+            if !caps_cursor_active.get() { return }
+            if !caps_cursor_active_used.get() { // 没用过，则单击
+                let _ = enigo.button(enigo::Button::Left, Click);
+            }
+            caps_cursor_active_used.set(false);
+            caps_cursor_active.set(false);
+        }
+
         // Caps+* 层进出
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
             caps_active.set(true);
@@ -121,7 +135,6 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             return None // 禁用 CapsLock 键
         }
         if event.event_type == EventType::KeyRelease(Key::CapsLock) {
-            caps_cursor_active.set(false); // 还要松开所有子层
             if !caps_active_used.get() { // 没用过，则正常大小写切换
                 virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
@@ -129,6 +142,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 let _ = simulate(&EventType::KeyPress(Key::CapsLock));
                 virtual_event_flag.set(false);
             }
+            caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used);
             caps_active_used.set(false);
             caps_active.set(false);
             return Some(event) // 禁用 CapsLock 键
@@ -180,11 +194,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 return None
             }
             if event.event_type == EventType::KeyRelease(Key::KeyC) {
-                if !caps_cursor_active_used.get() { // 没用过，则单击
-                    let _ = enigo.button(enigo::Button::Left, Click);
-                }
-                caps_cursor_active_used.set(false);
-                caps_cursor_active.set(false);
+                caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used);
                 return Some(event)
             }
 
