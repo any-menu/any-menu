@@ -17,15 +17,16 @@ heroImageDark: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/ma
 actions:
   - text: Introduce
     icon: book
-    link: "#什么是AnyMenu"
-  - text: Demo
-    icon: list
-    link: ./README.show.md
+    link: "#什么是anymenu"
+  # - text: Demo
+  #   icon: list
+  #   link: ./README.show.md
 
 features:
   - title: 快捷输入
     icon: italic
     details: 快捷输入文本、短语、符号、图标、模板等，可通过快捷搜索、快捷菜单、高级快捷键等方式进行
+    link: ./zh/quick_input/
 
   - title: 快捷转换
     icon: repeat # or shuffle
@@ -34,19 +35,20 @@ features:
   - title: 快捷搜索
     icon: magnifying-glass
     details: 快捷搜索框。快速搜索定位到自定义模板、自定义短语
+    link: ./zh/quick_search/
 
   - title: 快捷菜单
     icon: bars
     details: 快捷多级菜单能可视化地查看和调用输入模板和命令等，部分环境中也能可视化地预查看文本模板的渲染结果
 
-  - title: 快捷组合键 - 高级
+  - title: 快捷超级组合键
     icon: keyboard
-    details: 高级快捷键。可以使用 Caps+L 等非常规系统快捷键，增添灵活性和功能性
+    details: 可以使用如 Caps+L 这种非常规系统快捷键代替传统快捷键。增添灵活性和功能性，避免全局快捷键区拥挤
     link: ./zh/quick_keys/
 
   - title: 快捷游标
     icon: i-cursor
-    details: 能使用非常规快捷键来快捷操作输入游标和命令，自带了一套类 vim 系统
+    details: 能使用如 Caps+L 这种非常规快捷键来快捷操作输入游标和命令，自带了一套类 vim 系统
     link: ./zh/quick_keys/
 
   # - title: 快捷热串 (开发中)
@@ -108,6 +110,7 @@ features:
 
 - [文档主页](https://any-menu.github.io/any-menu/README.zh.md)
 - [快键键-高级、快捷光标 (Caps+方案)](./zh/quick_keys/README.md)
+  - [AnyCaps 设计方案](./zh/quick_keys/Tutorial.md)
 - [词典](./zh/dict/)
   (脚本会被认作也是一种特殊的词典)
   - [1. 在线下载 AnyMenu 词典](./zh/dict/1.%20在线下载词典.md)
@@ -115,24 +118,8 @@ features:
   - [3. 编写 AnyMenu 词典](./zh/dict/3.%20编写词典.md)
   - [4. 上传自定义的 AnyMenu 词典](./zh/dict/4.%20上传词典.md)
 - 相关文章
-  - [痛点之不同编辑器环境逻辑不同](./zh/痛点-不同平台逻辑不同.md)
-  - [有哪些快捷输入/自动补全方案，比较](./zh/对比.md)
-
-## 一些图文/演示
-
-当你配置好词典后，就可以像下面这样用了
-
-快捷输入模板:
-
-![](./assets/PixPin_2025-10-04_09-45-58.gif)
-
-App版可以在任何文本环境下使用:
-
-![](./assets/PixPin_2025-10-04_09-38-24.gif)
-
-可以下载和管理在线词典/脚本，也可以手动编写、管理和自定义他们
-
-![](./assets/cloud_dict.png)
+  - [痛点之不同编辑器环境逻辑不同](./zh/article/痛点-不同平台逻辑不同.md)
+  - [有哪些快捷输入/自动补全方案，比较](./zh/quick_input/对比.md)
 
 ## 功能
 
@@ -184,7 +171,23 @@ mindmap
 
 官方词典/脚本正在不断扩充中，你也完全可以编写你自己的自定义词典/脚本
 
-### 插件版与App版的区别
+## 部分功能的图文演示
+
+当你配置好词典后，就可以像下面这样用了
+
+快捷输入模板:
+
+![](./assets/PixPin_2025-10-04_09-45-58.gif)
+
+App版可以在任何文本环境下使用:
+
+![](./assets/PixPin_2025-10-04_09-38-24.gif)
+
+可以下载和管理在线词典/脚本，也可以手动编写、管理和自定义他们
+
+![](./assets/cloud_dict.png)
+
+## 插件版与App版的区别
 
 > [!warning]
 > 同时安装问题
@@ -214,7 +217,7 @@ mindmap
 
 ## 亮点
 
-都已经有像 quicker 和 utools 这样的工具了，与同类产品相比，优势是什么？见下，与 [有哪些快捷输入/自动补全方案？](./zh/对比.md)
+都已经有像 quicker 和 utools 这样的工具了，与同类产品相比，优势是什么？见下，与 [有哪些快捷输入/自动补全方案？](./zh/quick_input/对比.md)
 
 - 零门槛
   - 不是输入链最短最快的 (最快的是输入法短语，以及热字符串的方案，但有门槛)

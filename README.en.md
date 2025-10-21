@@ -32,26 +32,8 @@
   - [3. Writing AnyMenu Dictionaries](./docs/zh/dict/3.%20Writing%20Dictionaries.md)
   - [4. Uploading Custom AnyMenu Dictionaries](./docs/zh/dict/4.%20Uploading%20Dictionaries.md)
 - Related articles
-  - [Pain Point: Different Editor Environments Have Different Logics](./docs/en/DifferentEditor.md)
-  - [What are the quick input / auto-completion solutions, and how do they compare?](./docs/zh/对比.md)
-
-## Usage / Tutorial / Demo
-
-## Some graphics and text / presentations
-
-After configuring the dictionary, you can use it as follows:
-
-Quick Input Template:
-
-![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
-
-The app version can be used in any text environment:
-
-![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
-
-You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
-
-![](./docs/assets/cloud_dict.png)
+  - [Pain Point: Different Editor Environments Have Different Logics](./docs/en/article/DifferentEditor.md)
+  - [What are the quick input / auto-completion solutions, and how do they compare?](./docs/zh/quick_input/对比.md)
 
 ## Features
 
@@ -105,7 +87,23 @@ mindmap
 
 Official dictionaries/scripts are continuously being expanded. You can also fully write your own custom dictionaries/scripts.
 
-### Differences Between Plugin Version and App Version
+## Graphic and textual demonstrations of some functions
+
+After configuring the dictionary, you can use it as follows:
+
+Quick Input Template:
+
+![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
+
+The app version can be used in any text environment:
+
+![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
+
+You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
+
+![](./docs/assets/cloud_dict.png)
+
+## Differences Between Plugin Version and App Version
 
 > [!warning]
 > Regarding Simultaneous Installation:

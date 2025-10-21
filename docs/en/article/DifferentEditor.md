@@ -10,9 +10,15 @@ Pain point: different editor environments have different logics. These logics in
 - Different menus!
 - Different features!
 
+## How to Solve This Problem
+
+Actually, you might realize that some of these features can be achieved completely independently of the editor! I can completely extract these functions and turn them into an independent Input Method Assistant / Editor Assistant!
+
+Hence, AnyMenu was born – a powerful Input Method Assistant / Editor Assistant that can be used with any text-based editor and input method.
+
 ## Examples
 
-Different shortcuts:
+### Different shortcuts
 
 - Code editors:
   In VSCode, the default shortcut for "Select Next Occurrence of Selected Text" is `Ctrl+D`,
@@ -21,11 +27,12 @@ Different shortcuts:
   In Typora, the default shortcut for switching between source code/live preview mode is `Ctrl+/`,
   whereas in Obsidian, the default shortcut is `Alt+E`.
 
-Different menus:
+### Different menus and toolbar
 
 - This includes different right-click context menus, different toolbars, etc. This is easy to understand.
+- Like the built-in features and plugins of Obsidian/Typora/SiYuan, which provide functions such as the insertion menu/toolbars
 
-Different features:
+### Different features
 
 - Some editor environments support tab indentation and automatic indentation on new lines, while others do not.
 - Some editors support multiple cursors, while others do not.
@@ -36,8 +43,18 @@ Some features cannot be resolved through configuration, while others require con
 - For example, shortcuts. Gradually modifying the shortcuts in each editor to make them consistent can very likely lead to numerous shortcut conflicts.
 - For example, input templates. This includes code snippets, Markdown templates, and commonly used phrase templates. If configured in one editor, other editors need to be configured separately. Configuring them in input methods that support custom phrases is also very limited (some don't support multi-line phrases, some have quantity limits, and you must remember the corresponding key values).
 
-## How to Solve This Problem
+## Specific Examples - Template Insertion Function  
 
-Actually, you might realize that some of these features can be achieved completely independently of the editor! I can completely extract these functions and turn them into an independent Input Method Assistant / Editor Assistant!
+Typora uses: Template functionality and slash commands from the **obgnail/typora_plugin**  
 
-Hence, AnyMenu was born – a powerful Input Method Assistant / Editor Assistant that can be used with any text-based editor and input method.
+![](../../assets/df-typora.png)  
+
+Obsidian uses: Plugins such as **Template/QuickerAdd** and **QuickShare/Latex Suite**  
+
+VSCode uses: Built-in **User Snippets**  
+
+- Use `Ctrl+Shift+P` and type **Configure User Snippets** to access them  
+  - Can be set for specific languages and used in corresponding files  
+  - Can choose **New Global Snippets File** to apply across all files  
+
+AnyMenu aims to unify their shortcut experience, UI experience, and even configuration experience (via synchronized and unified custom phrase library files or cloud-based phrase libraries, ensuring seamless use even when switching computers).

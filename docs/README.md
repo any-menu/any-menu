@@ -17,15 +17,16 @@ heroImageDark: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/ma
 actions:
   - text: Introduce
     icon: book
-    link: "#What is AnyMenu"
-  - text: Demo
-    icon: list
-    link: ./README.show.md
+    link: "#what-is-anymenu"
+  # - text: Demo
+  #   icon: list
+  #   link: ./README.show.md
 
 features:
   - title: Quick Input
     icon: italic
     details: Quickly input text, phrases, symbols, icons, templates, etc. These can be done through quick search, quick menus, and advanced shortcut keys.
+    link: ./zh/quick_input/
 
   - title: Quick Conversion
     icon: repeat # or shuffle
@@ -34,19 +35,20 @@ features:
   - title: Quick Search
     icon: magnifying-glass
     details: Quick serach box. Quickly search and locate custom templates and custom phrases
+    link: ./zh/quick_search/
 
   - title: Quick Menu
     icon: bars
     details: The quick multi-level menu enables users to visually view and invoke input templates, commands, etc. In some environments, it also allows for the visual preview of the rendered results of text templates.
 
-  - title: Quick Keys - Ad
+  - title: Quick Super Keys
     icon: keyboard
-    details: Hotkeys - Advanced. Supports unconventional system hotkeys like Caps+L, adding flexibility and functionality
+    details: Instead of using traditional shortcut keys, you can use unconventional system shortcuts such as "Caps+L". This adds flexibility and functionality while avoiding overcrowding the global shortcut key area.
     link: ./zh/quick_keys/
 
   - title: Quick Cursor
     icon: i-cursor
-    details: Enables quick cursor and command operations using unconventional hotkeys, featuring a built-in vim-like system
+    details: It can use unconventional shortcut keys such as Caps+L to quickly operate the input cursor and commands, and comes with a set of Vim-like system functions.
     link: ./zh/quick_keys/
 
   # - title: Quick Hotstrings (In Development)
@@ -108,6 +110,7 @@ features:
 
 - [Document Homepage](https://any-menu.github.io/any-menu/README.md)
 - [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/quick_keys/README.md)
+  - [AnyCaps 设计方案](./zh/quick_keys/Tutorial.md)
 - [Dictionaries](./zh/dict/)
   (Scripts are also considered a special type of dictionary.)
   - [1. Download AnyMenu Dictionaries Online](./zh/dict/1.%20Online%20Dictionary%20Download.md)
@@ -115,26 +118,8 @@ features:
   - [3. Writing AnyMenu Dictionaries](./zh/dict/3.%20Writing%20Dictionaries.md)
   - [4. Uploading Custom AnyMenu Dictionaries](./zh/dict/4.%20Uploading%20Dictionaries.md)
 - Related articles
-  - [Pain Point: Different Editor Environments Have Different Logics](./en/DifferentEditor.md)
-  - [What are the quick input / auto-completion solutions, and how do they compare?](./zh/对比.md)
-
-## Usage / Tutorial / Demo
-
-## Some graphics and text / presentations
-
-After configuring the dictionary, you can use it as follows:
-
-Quick Input Template:
-
-![](./assets/PixPin_2025-10-04_09-45-58.gif)
-
-The app version can be used in any text environment:
-
-![](./assets/PixPin_2025-10-04_09-38-24.gif)
-
-You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
-
-![](./assets/cloud_dict.png)
+  - [Pain Point: Different Editor Environments Have Different Logics](./en/article/DifferentEditor.md)
+  - [What are the quick input / auto-completion solutions, and how do they compare?](./zh/quick_input/对比.md)
 
 ## Features
 
@@ -188,7 +173,23 @@ mindmap
 
 Official dictionaries/scripts are continuously being expanded. You can also fully write your own custom dictionaries/scripts.
 
-### Differences Between Plugin Version and App Version
+## Graphic and textual demonstrations of some functions
+
+After configuring the dictionary, you can use it as follows:
+
+Quick Input Template:
+
+![](./assets/PixPin_2025-10-04_09-45-58.gif)
+
+The app version can be used in any text environment:
+
+![](./assets/PixPin_2025-10-04_09-38-24.gif)
+
+You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
+
+![](./assets/cloud_dict.png)
+
+## Differences Between Plugin Version and App Version
 
 > [!warning]
 > Regarding Simultaneous Installation:

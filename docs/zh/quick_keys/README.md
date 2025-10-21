@@ -37,3 +37,7 @@ AnyCaps 是 LincZero 大佬设计一套使用 Caps 等其他按键的类 vim 方
 
 - `Caps+M`: Open any **Menu**
 - `Caps+N`: Open mini **Note**
+
+## 设置
+
+该功能默认开启，你可以单独关闭这个功能，对应选项: `app_ad_shortcut = false`
