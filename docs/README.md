@@ -8,7 +8,7 @@ heroText: AnyMenu
 tagline: A powerful input method assistant / editor assistant
 heroStyle:
   min-height: 450px
-heroImage: https://github.com/any-menu/any-menu/blob/main/docs/assets/icon.png
+heroImage: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon.png
 
 actions:
   - text: Introduce
