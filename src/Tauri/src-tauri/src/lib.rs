@@ -72,7 +72,7 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // 日志插件
+    // 日志插件。release 模式无需高亮 (一般也会禁用掉控制台输出)
     let colors = fern::colors::ColoredLevelConfig {
         error: fern::colors::Color::Red,
         warn: fern::colors::Color::Yellow,
@@ -80,6 +80,7 @@ pub fn run() {
         debug: fern::colors::Color::Blue,
         trace: fern::colors::Color::Cyan,
     };
+    #[cfg(debug_assertions)]
     let log_plugin = tauri_plugin_log::Builder::new()
         .level(log::LevelFilter::Debug) // 日志级别
         .with_colors(colors) // 日志高亮
@@ -102,6 +103,10 @@ pub fn run() {
         //         file_name: None,
         //     },
         // ))*/
+        .build();
+    #[cfg(not(debug_assertions))]
+    let log_plugin = tauri_plugin_log::Builder::new()
+        .level(log::LevelFilter::Debug)
         .build();
 
     // uia 模块 - 独立线程
