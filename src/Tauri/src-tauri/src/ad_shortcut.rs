@@ -181,22 +181,24 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         }
 
         // Space 空格层 进出
-        if event.event_type == EventType::KeyPress(Key::Space) {
-            space_active.set(true);
-            space_active_used.set(false);
-            return None // 禁用原行为
-        }
-        if event.event_type == EventType::KeyRelease(Key::Space) {
-            if !space_active_used.get() { // 没用过，恢复原行为
-                virtual_event_flag.set(true);
-                let _ = simulate(&EventType::KeyRelease(Key::Space));
-                thread::sleep(time::Duration::from_millis(10));
-                let _ = simulate(&EventType::KeyPress(Key::Space));
-                virtual_event_flag.set(false);
+        if !caps_active.get() {
+            if event.event_type == EventType::KeyPress(Key::Space) {
+                space_active.set(true);
+                space_active_used.set(false);
+                return None // 禁用原行为
             }
-            space_active_used.set(false);
-            space_active.set(false);
-            return Some(event)
+            if event.event_type == EventType::KeyRelease(Key::Space) {
+                if !space_active_used.get() { // 没用过，恢复原行为
+                    virtual_event_flag.set(true);
+                    let _ = simulate(&EventType::KeyRelease(Key::Space));
+                    thread::sleep(time::Duration::from_millis(10));
+                    let _ = simulate(&EventType::KeyPress(Key::Space));
+                    virtual_event_flag.set(false);
+                }
+                space_active_used.set(false);
+                space_active.set(false);
+                return Some(event)
+            }
         }
 
         // #endregion
