@@ -331,8 +331,8 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             let mut sign_r: Option<&'static str> = None; // 右符号
             let mut sign_l_move: u16 = 1;
             if event.event_type == EventType::KeyPress(Key::KeyY) { sign_l = Some("“"); sign_r = Some("”"); }
-            if event.event_type == EventType::KeyPress(Key::KeyU) { sign_l = Some("'"); sign_r = Some("'"); }
-            if event.event_type == EventType::KeyPress(Key::KeyI) { sign_l = Some("\""); sign_r = Some("\""); }
+            if event.event_type == EventType::KeyPress(Key::KeyU) { sign_l = Some("\""); sign_r = Some("\""); }
+            if event.event_type == EventType::KeyPress(Key::KeyI) { sign_l = Some("'"); sign_r = Some("'"); }
             if event.event_type == EventType::KeyPress(Key::KeyO) { sign_l = Some("`"); sign_r = Some("`"); }
             if event.event_type == EventType::KeyPress(Key::KeyP) { sign_l = Some("```\n"); sign_r = Some("\n```"); sign_l_move = 4; }
             if event.event_type == EventType::KeyPress(Key::KeyH) { sign_l = Some("【"); sign_r = Some("】"); }
