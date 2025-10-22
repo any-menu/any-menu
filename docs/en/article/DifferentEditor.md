@@ -29,6 +29,14 @@ Hence, AnyMenu was born – a powerful Input Method Assistant / Editor Assistant
 
 There are also some rather annoying issues. When editing Markdown in VSCode, the Ctrl+Shift+V shortcut for pasting plain text is instead used to open the preview function.
 
+### Completing Inconsistent Logic
+
+- **Paired Symbol Completion Issues**
+  - For example, in certain IDEs or text editor environments, when you type `(`, it becomes `(I)`. When you select a segment of text and type `(`, it becomes `(selected text I)`.
+  - However, in some environments (such as the QQ input box, where neither of these two logics is triggered), certain symbols do not work (e.g., Chinese brackets, Chinese quotation marks, etc.).
+- When you press `Tab` (whether you have selected text or not), it may replace the selected text with a tab character or indent the entire line.
+- When you press `Enter`, whether the new line automatically indents or not also falls into this category.
+
 ### Different menus and toolbar
 
 - This includes different right-click context menus, different toolbars, etc. This is easy to understand.
