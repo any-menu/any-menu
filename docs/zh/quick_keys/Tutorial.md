@@ -52,16 +52,18 @@ Caps 与其子层与 Shift 按键完全兼容，**可以同时按住 Caps 和 Sh
 
 ![](../../assets/keyboard-layout-num.png)
 
-### 符号层
+### 引号-符号层
 
 > [!warning]
 > 对于 kanata 和 autohotkey 来说，当前的成对括号部分不是很好用，无法在保证快速的前提下识别是否有选中内容。AnyMenu 版本则无此问题
 
 ![](../../assets/keyboard-layout-sign.png)
 
-## 空格层
+## 空格-编辑器层
 
 这层基本与编辑器相关，需要编辑器配合。例如文本环境得支持历史栈才能用的撤销恢复 (而且恢复可能是 c-s-z 或 c-y)
+
+![](../../assets/keyboard-layout-space.png)
 
 > 记忆小技巧：在文本输入的过程中，特别是输入法组合输入时，撤销操作会有点像智能字/词单位的 Backspace，所以这里也给到 I 键，逻辑统一
 
