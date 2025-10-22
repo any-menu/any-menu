@@ -59,6 +59,10 @@ Caps 与其子层与 Shift 按键完全兼容，**可以同时按住 Caps 和 Sh
 
 ![](../../assets/keyboard-layout-sign.png)
 
+## 空格层
+
+> 记忆小技巧：在文本输入的过程中，特别是输入法组合输入时，撤销操作会有点像智能字/词单位的 Backspace，所以这里也给到 I 键，逻辑统一
+
 ## vim默认层
 
 `Caps+*` 对比传统的 vim 方案

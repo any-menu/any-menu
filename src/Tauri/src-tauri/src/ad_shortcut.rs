@@ -73,6 +73,8 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_cursor_active_used = Cell::new(false); //     是否使用过^该层
     let sign_active = Cell::new(false);             // 是否激活 符号层
     let sign_active_used = Cell::new(false);        //     是否使用过^该层
+    let space_active = Cell::new(false);            // 是否激活 空格层
+    let space_active_used = Cell::new(false);       //     是否使用过^该层
 
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
@@ -175,6 +177,25 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             }
             sign_active_used.set(false);
             sign_active.set(false);
+            return Some(event)
+        }
+
+        // Space 空格层 进出
+        if event.event_type == EventType::KeyPress(Key::Space) {
+            space_active.set(true);
+            space_active_used.set(false);
+            return None // 禁用原行为
+        }
+        if event.event_type == EventType::KeyRelease(Key::Space) {
+            if !space_active_used.get() { // 没用过，恢复原行为
+                virtual_event_flag.set(true);
+                let _ = simulate(&EventType::KeyRelease(Key::Space));
+                thread::sleep(time::Duration::from_millis(10));
+                let _ = simulate(&EventType::KeyPress(Key::Space));
+                virtual_event_flag.set(false);
+            }
+            space_active_used.set(false);
+            space_active.set(false);
             return Some(event)
         }
 
@@ -373,6 +394,26 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 }
             }
         }
+        // #endregion
+
+        // #region Space 空格层
+
+        if space_active.get() {
+            if let EventType::KeyPress(_) = event.event_type { // 按下过
+                space_active_used.set(true)
+            }
+
+            if event.event_type == EventType::KeyPress(Key::KeyI) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Z, Click); simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyO) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Shift, Press); simu3(enigo::Key::Z, Click);
+                simu3(enigo::Key::Shift, Release); simu3(enigo::Key::Control, Release);
+                return None
+            }
+        }
+
         // #endregion
 
         Some(event)
