@@ -29,7 +29,7 @@ use rdev::{
 use enigo::{
     Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
 };
-use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time};
+use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time::{self, Instant}};
 use tauri::Emitter;
 
 use crate::{text, uia};
@@ -75,6 +75,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let sign_active_used = Cell::new(false);        //     是否使用过^该层
     let space_active = Cell::new(false);            // 是否激活 空格层
     let space_active_used = Cell::new(false);       //     是否使用过^该层
+    let space_active_time = Cell::new(Option::<Instant>::None); // ^该层激活的开启时间
 
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
@@ -183,8 +184,18 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         // Space 空格层 进出
         if !caps_active.get() {
             if event.event_type == EventType::KeyPress(Key::Space) {
-                space_active.set(true);
-                space_active_used.set(false);
+                if !space_active.get() {
+                    space_active.set(true);
+                    space_active_used.set(false);
+                    space_active_time.set(Some(Instant::now()));
+                }
+                // 长按则恢复持续点击的行为
+                let over_time: bool = space_active_time.get().map_or(false, |start_time| {
+                    start_time.elapsed() > time::Duration::from_millis(500)
+                });
+                if over_time {
+                    return Some(event)
+                }
                 return None // 禁用原行为
             }
             if event.event_type == EventType::KeyRelease(Key::Space) {
