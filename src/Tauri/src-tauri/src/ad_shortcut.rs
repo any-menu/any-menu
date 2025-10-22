@@ -170,6 +170,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 caps_cursor_active.set(false);
                 return None
             }
+            // TODO 支持斜方向键
             if event.event_type == EventType::KeyPress(Key::KeyU) { let _ = enigo.move_mouse(0, -MOUSE_STEP, enigo::Coordinate::Rel); return None }
             if event.event_type == EventType::KeyPress(Key::KeyJ) { let _ = enigo.move_mouse(-MOUSE_STEP, 0, enigo::Coordinate::Rel); return None }
             if event.event_type == EventType::KeyPress(Key::KeyK) { let _ = enigo.move_mouse(0, MOUSE_STEP, enigo::Coordinate::Rel); return None }

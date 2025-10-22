@@ -12,7 +12,7 @@
 
 ### 两个特殊层
 
-这里还有两个特殊层，但内容过少我就不另外制图了
+这里还有两个特殊层 (Shift 和 Ctrl)，但内容过少我就不另外制图了
 
 - Caps + 空格 = 回车
 - Shift + 空格 = Shift + 回车
@@ -44,6 +44,10 @@ Caps 与其子层与 Shift 按键完全兼容，**可以同时按住 Caps 和 Sh
 
 ![](../../assets/keyboard-layout-page.png)
 
+### Caps-鼠标层
+
+![](../../assets/keyboard-layout-mouse.png)
+
 ### Caps-数字层
 
 ![](../../assets/keyboard-layout-num.png)
@@ -51,7 +55,7 @@ Caps 与其子层与 Shift 按键完全兼容，**可以同时按住 Caps 和 Sh
 ### 符号层
 
 > [!warning]
-> with bug，当前的成对括号部分存在问题，无法在保证快速的前提下识别是否有选中内容
+> 对于 kanata 和 autohotkey 来说，当前的成对括号部分不是很好用，无法在保证快速的前提下识别是否有选中内容。AnyMenu 版本则无此问题
 
 ![](../../assets/keyboard-layout-sign.png)
 
