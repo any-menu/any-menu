@@ -92,7 +92,6 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         // 避免捕获自身模拟的虚拟按键
         if virtual_event_flag.get() {
-            println!("允许虚拟操作 {:?}", event.event_type);
             return Some(event)
         }
 
