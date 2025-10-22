@@ -32,6 +32,8 @@ use enigo::{
 use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time};
 use tauri::Emitter;
 
+use crate::{text, uia};
+
 /** 无法拦截原行为，会阻塞 */
 pub fn _init_ad_shortcut() {
     let mut caps_active = false;  // 是否激活 Caps 层
@@ -325,6 +327,43 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             if event.event_type == EventType::KeyPress(Key::KeyV) { simu_text(&mut enigo, "——"); return None }
 
             // 右半区
+            let mut sign_l: Option<&'static str> = None; // 左符号
+            let mut sign_r: Option<&'static str> = None; // 右符号
+            let mut sign_l_move: u16 = 1;
+            if event.event_type == EventType::KeyPress(Key::KeyY) { sign_l = Some("“"); sign_r = Some("”"); }
+            if event.event_type == EventType::KeyPress(Key::KeyU) { sign_l = Some("'"); sign_r = Some("'"); }
+            if event.event_type == EventType::KeyPress(Key::KeyI) { sign_l = Some("\""); sign_r = Some("\""); }
+            if event.event_type == EventType::KeyPress(Key::KeyO) { sign_l = Some("`"); sign_r = Some("`"); }
+            if event.event_type == EventType::KeyPress(Key::KeyP) { sign_l = Some("```\n"); sign_r = Some("\n```"); sign_l_move = 4; }
+            if event.event_type == EventType::KeyPress(Key::KeyH) { sign_l = Some("【"); sign_r = Some("】"); }
+            if event.event_type == EventType::KeyPress(Key::KeyJ) { sign_l = Some("("); sign_r = Some(")"); }
+            if event.event_type == EventType::KeyPress(Key::KeyK) { sign_l = Some("["); sign_r = Some("]"); }
+            if event.event_type == EventType::KeyPress(Key::KeyL) { sign_l = Some("{ "); sign_r = Some(" }"); sign_l_move = 2; }
+            if event.event_type == EventType::KeyPress(Key::KeyN) { sign_l = Some("「"); sign_r = Some("」"); }
+            if event.event_type == EventType::KeyPress(Key::KeyM) { sign_l = Some("/* "); sign_r = Some(" */"); sign_l_move = 3; }
+            if event.event_type == EventType::KeyPress(Key::Comma) { sign_l = Some("<"); sign_r = Some(">"); }
+            if event.event_type == EventType::KeyPress(Key::Dot) { sign_l = Some("《"); sign_r = Some("》"); }
+            if sign_l.is_some() && sign_r.is_some() {
+                let sign_l = sign_l.unwrap();
+                let sign_r = sign_r.unwrap();
+
+                let selected_text: String = uia::get_uia_by_windows_selected();
+                if selected_text.is_empty() {
+                    virtual_event_flag.set(true);
+                    let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
+                    let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等待光标位置更新
+                    for _ in 0..sign_l_move {
+                        simu3(enigo::Key::LeftArrow, Click);
+                    }
+                    virtual_event_flag.set(false);
+                    return None
+                } else {
+                    virtual_event_flag.set(true);
+                    let _ = text::send(&(sign_l.to_string() + &selected_text + sign_r), "clipboard");
+                    virtual_event_flag.set(false);
+                    return None
+                }
+            }
         }
         // #endregion
 

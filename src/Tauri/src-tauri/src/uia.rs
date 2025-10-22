@@ -23,7 +23,8 @@ use log::{debug, warn, info, error};
 /// 汇总各种方式
 pub fn get_message() -> (i32, i32, String, String) {
     let (x, y) = get_win_message();
-    (x, y, get_uia_by_windows_selected(), get_uia_by_windows_winname())
+    let selected_text: String = get_uia_by_windows_selected();
+    (x, y, selected_text, get_uia_by_windows_winname())
 }
 
 // #region winapi 方式
@@ -623,7 +624,7 @@ fn get_uia_by_windows_winname() -> String {
     }
 }
 
-fn get_uia_by_windows_selected() -> String {
+pub fn get_uia_by_windows_selected() -> String {
     #[cfg(not(target_os = "windows"))]
     {
         return "".to_string();
