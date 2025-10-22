@@ -66,9 +66,11 @@ pub fn _init_ad_shortcut() {
  */
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let caps_active = Cell::new(false);             // 是否激活 Caps 层
-    let caps_active_used = Cell::new(false);        // 是否使用过^该层
+    let caps_active_used = Cell::new(false);        //     是否使用过^该层
     let caps_cursor_active = Cell::new(false);      // 是否激活 Caps_cursor 层
-    let caps_cursor_active_used = Cell::new(false); // 是否使用过^该层
+    let caps_cursor_active_used = Cell::new(false); //     是否使用过^该层
+    let sign_active = Cell::new(false);             // 是否激活 符号层
+    let sign_active_used = Cell::new(false);        //     是否使用过^该层
 
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
@@ -88,6 +90,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         // 避免捕获自身模拟的虚拟按键
         if virtual_event_flag.get() {
+            println!("允许虚拟操作 {:?}", event.event_type);
             return Some(event)
         }
 
@@ -110,7 +113,12 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         let mut enigo = enigo_instance.lock().unwrap();
         let mut simu3 = |key: enigo::Key, direction: enigo::Direction| {
             virtual_event_flag.set(true);
-            let _ = enigo.key(key, direction);
+            let _ = (&mut enigo).key(key, direction);
+            virtual_event_flag.set(false);
+        };
+        let simu_text = |enigo: &mut MutexGuard<'_, Enigo>, text: &str| {
+            virtual_event_flag.set(true);
+            let _ = enigo.text(text);
             virtual_event_flag.set(false);
         };
 
@@ -128,33 +136,56 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             caps_cursor_active.set(false);
         }
 
-        // Caps+* 层进出
+        // #region 默认层
+
+        // Caps+* 光标层 进出
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
             caps_active.set(true);
             caps_active_used.set(false);
-            return None // 禁用 CapsLock 键
+            return None // 禁用原行为
         }
         if event.event_type == EventType::KeyRelease(Key::CapsLock) {
-            if !caps_active_used.get() { // 没用过，则正常大小写切换
+            if !caps_active_used.get() { // 没用过，恢复原行为
                 virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::CapsLock));
                 virtual_event_flag.set(false);
             }
-            caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used);
+            caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used); // 退出所有子层
             caps_active_used.set(false);
             caps_active.set(false);
-            return Some(event) // 禁用 CapsLock 键
+            return Some(event)
         }
 
-        // Caps+C+，鼠标层
+        // '+* 符号层 进出
+        if event.event_type == EventType::KeyPress(Key::Quote) {
+            sign_active.set(true);
+            sign_active_used.set(false);
+            return None // 禁用原行为
+        }
+        if event.event_type == EventType::KeyRelease(Key::Quote) {
+            if !sign_active_used.get() { // 没用过，恢复原行为
+                virtual_event_flag.set(true);
+                let _ = simulate(&EventType::KeyRelease(Key::Quote));
+                thread::sleep(time::Duration::from_millis(10));
+                let _ = simulate(&EventType::KeyPress(Key::Quote));
+                virtual_event_flag.set(false);
+            }
+            sign_active_used.set(false);
+            sign_active.set(false);
+            return Some(event)
+        }
+
+        // #endregion
+
+        // #region Caps+C+* 鼠标层
         if caps_active.get() && caps_cursor_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
                 caps_cursor_active_used.set(true);
             }
 
-            const MOUSE_STEP: i32 = 15; // 可按需调整
+            const MOUSE_STEP: i32 = 18; // 可按需调整
             const MOUSE_STEP2: i32 = 200; // 可按需调整
             // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
             // TODO 点击不应该用I/O，因为可能存在拖拽操作
@@ -181,14 +212,15 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 event.event_type == EventType::KeyPress(Key::KeyY) { let _ = enigo.move_mouse(0, -MOUSE_STEP2, enigo::Coordinate::Rel); return None }
             if event.event_type == EventType::KeyPress(Key::Comma) { let _ = enigo.move_mouse(0, MOUSE_STEP2, enigo::Coordinate::Rel); return None }
         }
+        // #endregion
 
-        // #region Caps+*
+        // #region Caps+* 光标层
         if caps_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
                 caps_active_used.set(true);
             }
 
-            // 光标层进出
+            // Caps+C+* 鼠标层进出
             if event.event_type == EventType::KeyPress(Key::KeyC) {
                 caps_cursor_active.set(true);
                 caps_cursor_active_used.set(false);
@@ -274,6 +306,25 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             //     return None
             // }
             return Some(event)
+        }
+        // #endregion
+
+        // #region '+* 符号层
+        if sign_active.get() {
+            if let EventType::KeyPress(_) = event.event_type { // 按下过
+                sign_active_used.set(true)
+            }
+
+            // 左半区
+            if event.event_type == EventType::KeyPress(Key::KeyQ) { simu_text(&mut enigo, "！"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyW) { simu_text(&mut enigo, "？"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyS) { simu_text(&mut enigo, "……"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyD) { simu_text(&mut enigo, "、"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyF) { simu_text(&mut enigo, "，"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyG) { simu_text(&mut enigo, "。"); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyV) { simu_text(&mut enigo, "——"); return None }
+
+            // 右半区
         }
         // #endregion
 
