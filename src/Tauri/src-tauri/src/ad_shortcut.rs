@@ -202,7 +202,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 caps_cursor_active.set(false);
                 return None
             }
-            // TODO 支持斜方向键
+            // TODO 支持斜向移动
             if event.event_type == EventType::KeyPress(Key::KeyU) { let _ = enigo.move_mouse(0, -MOUSE_STEP, enigo::Coordinate::Rel); return None }
             if event.event_type == EventType::KeyPress(Key::KeyJ) { let _ = enigo.move_mouse(-MOUSE_STEP, 0, enigo::Coordinate::Rel); return None }
             if event.event_type == EventType::KeyPress(Key::KeyK) { let _ = enigo.move_mouse(0, MOUSE_STEP, enigo::Coordinate::Rel); return None }
@@ -254,6 +254,15 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             }
             if event.event_type == EventType::KeyPress(Key::KeyI) { simu3(enigo::Key::Backspace, Click); return None }
             if event.event_type == EventType::KeyPress(Key::KeyO) { simu3(enigo::Key::Delete, Click); return None }
+            if event.event_type == EventType::KeyPress(Key::KeyP) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Z, Click); simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::LeftBracket) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Shift, Press); simu3(enigo::Key::Z, Click);
+                simu3(enigo::Key::Shift, Release); simu3(enigo::Key::Control, Release);
+                return None
+            }
             if event.event_type == EventType::KeyPress(Key::KeyU) { simu3(enigo::Key::UpArrow, Click); return None }
             if event.event_type == EventType::KeyPress(Key::KeyJ) { simu3(enigo::Key::LeftArrow, Click); return None }
             if event.event_type == EventType::KeyPress(Key::KeyK) { simu3(enigo::Key::DownArrow, Click); return None }
@@ -350,7 +359,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 if selected_text.is_empty() {
                     virtual_event_flag.set(true);
                     let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
-                    let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等待光标位置更新
+                    let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
                     for _ in 0..sign_l_move {
                         simu3(enigo::Key::LeftArrow, Click);
                     }
