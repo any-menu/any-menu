@@ -101,10 +101,11 @@ features:
 - Main function
     - Used to enhance input method or editor functionality, quickly generate templates, and provide auto-completion
 - Specific functions
-    - quick panel(multi-level menu, search box, mini editor), hot string (developing)
-    - quick text input, modify selected text
-    - custom dict/script, cloud dict/script
-    - quick gpt
+    - Quick text - Quick input of text, quick conversion of text
+    - Quick panel invocation - Quick search box, quick multi-level menu, quick editor (under development)
+    - Quick activation - Quick super key (Caps+), quick cursor (like vim), hot string (under development)
+    - User-friendly dictionary/script - Customization, cloud market
+    - Quick GPT (under development)
 
 ## Document (using / tutorial / example)
 
