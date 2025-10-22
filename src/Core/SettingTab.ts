@@ -56,7 +56,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
     div.textContent = `默认使用 Alt + A 打开菜单 (App版也可以用高级快捷键 Caps + M) (均可在设置中修改快捷键)\n
 更多说明和教程浏览仓库: https://github.com/any-menu/any-menu\n
 
-!!! 注意: 当前插件设置面板修改过后，需要重启插件/软件才能生效`
+!!! 注意: 当前设置面板修改过后，需要重启插件/软件才能生效`
 
   tab_nav.classList.add('active');
   tab_content.classList.add('active');
