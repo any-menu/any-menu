@@ -4,18 +4,18 @@
 
 :root {
   --am-bright-color: #23A8F2;
-  --am-text-color: #1E1E1E; // #0f0f0f;
-  --am-background-color: #f6f6f6;
-
+  --am-text-color: #f6f6f6;
+  --am-background-color: #2f2f2f;
   color: var(--am-text-color);
   background-color: var(--am-background-color);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --am-text-color: #f6f6f6;
-    --am-background-color: #2f2f2f;
-  }
-}
+// @media (prefers-color-scheme: light) {
+//   :root {
+//     --am-text-color: #1E1E1E; // #0f0f0f;
+//     --am-background-color: #f6f6f6;
+//     
+//   }
+// }
 
 // color: #f6f6f6;
 // background-color: #2f2f2f;
@@ -130,6 +130,7 @@ html, body, #main {
   grid-template-rows: repeat(8, auto); // 每列最多n个
   gap: 0 0;
 
+  color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -198,6 +199,8 @@ html, body, #main {
   top: 0; // override by js
   left: 0; // override by js
   z-index: 100; // 高于多级菜单
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
 
   input.am-search-input {
     height: 32px;
@@ -270,6 +273,7 @@ html, body, #main {
   // .autocomplete-items
   top: 100%;
 
+  color: var(--ab-tab-root-tx-color);
   background-color:  var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -342,6 +346,7 @@ html, body, #main {
     left: 0;
     right: 0;
     background-color: var(--ab-tab-root-bg-color);
+    color: var(--ab-tab-root-tx-color);
 
     // 标签页正文内容
     >div {

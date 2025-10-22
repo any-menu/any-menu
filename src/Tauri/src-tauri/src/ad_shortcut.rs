@@ -337,7 +337,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             if event.event_type == EventType::KeyPress(Key::KeyH) { sign_l = Some("【"); sign_r = Some("】"); }
             if event.event_type == EventType::KeyPress(Key::KeyJ) { sign_l = Some("("); sign_r = Some(")"); }
             if event.event_type == EventType::KeyPress(Key::KeyK) { sign_l = Some("["); sign_r = Some("]"); }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { sign_l = Some("{ "); sign_r = Some(" }"); sign_l_move = 2; }
+            if event.event_type == EventType::KeyPress(Key::KeyL) { sign_l = Some("{"); sign_r = Some("}"); }
             if event.event_type == EventType::KeyPress(Key::KeyN) { sign_l = Some("「"); sign_r = Some("」"); }
             if event.event_type == EventType::KeyPress(Key::KeyM) { sign_l = Some("/* "); sign_r = Some(" */"); sign_l_move = 3; }
             if event.event_type == EventType::KeyPress(Key::Comma) { sign_l = Some("<"); sign_r = Some(">"); }

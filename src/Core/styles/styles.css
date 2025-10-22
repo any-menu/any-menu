@@ -4,18 +4,12 @@
  */
 :root {
   --am-bright-color: #23A8F2;
-  --am-text-color: #1E1E1E;
-  --am-background-color: #f6f6f6;
+  --am-text-color: #f6f6f6;
+  --am-background-color: #2f2f2f;
   color: var(--am-text-color);
   background-color: var(--am-background-color);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --am-text-color: #f6f6f6;
-    --am-background-color: #2f2f2f;
-  }
-}
 html, body, #main, #am-config {
   margin: 0;
   padding: 0;
@@ -107,6 +101,7 @@ html, body, #main {
   grid-auto-flow: column;
   grid-template-rows: repeat(8, auto);
   gap: 0 0;
+  color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -170,6 +165,8 @@ html, body, #main {
   top: 0;
   left: 0;
   z-index: 100;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
 }
 .am-search input.am-search-input {
   height: 32px;
@@ -230,6 +227,7 @@ html, body, #main {
 /* 建议列表 */
 .am-search .am-search-suggestion {
   top: 100%;
+  color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
@@ -294,6 +292,7 @@ html, body, #main {
   left: 0;
   right: 0;
   background-color: var(--ab-tab-root-bg-color);
+  color: var(--ab-tab-root-tx-color);
 }
 .tab-root .tab-content-container > div {
   width: 100%;
