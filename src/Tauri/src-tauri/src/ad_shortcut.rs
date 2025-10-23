@@ -34,7 +34,10 @@ use tauri::Emitter;
 
 use crate::{text, uia};
 
-/** 无法拦截原行为，会阻塞 */
+/** 无法拦截原行为，会阻塞
+ * 
+ * @deprecated 旧版，由于无法拦截原行为，弃用
+ */
 pub fn _init_ad_shortcut() {
     let mut caps_active = false;  // 是否激活 Caps 层
     let mut caps_pressed = false; // 是否阻止 CapsLock 原行为
@@ -67,20 +70,8 @@ pub fn _init_ad_shortcut() {
  * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
  */
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
-    let caps_active = Cell::new(false);             // 是否激活 Caps 层
-    let caps_active_used = Cell::new(false);        //     是否使用过^该层
-    let caps_cursor_active = Cell::new(false);      // 是否激活 Caps_cursor 层
-    let caps_cursor_active_used = Cell::new(false); //     是否使用过^该层
-    let sign_active = Cell::new(false);             // 是否激活 符号层
-    let sign_active_used = Cell::new(false);        //     是否使用过^该层
-    let space_active = Cell::new(false);            // 是否激活 空格层
-    let space_active_used = Cell::new(false);       //     是否使用过^该层
-    // let space_active_time = Cell::new(Option::<Instant>::None); // ^该层激活的开启时间
-    let r_shift_active = Cell::new(false);          // 是否激活 右Shift层
-    let r_shift_active_used = Cell::new(false);     //     是否使用过^该层
-
-    let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
-
+    // 变量 - 线程安全
+    let state = Arc::new(LayerState::new());
     let enigo_instance = Arc::new(Mutex::new(
         Enigo::new(&Settings::default()).expect("Failed to create Enigo instance")
     ));
@@ -96,95 +87,81 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         }
 
         // 避免捕获自身模拟的虚拟按键
-        if virtual_event_flag.get() {
+        if state.virtual_event_flag.get() {
             return Some(event)
         }
 
         // 模拟按键 - 语法糖
         // let simu = |event_type: &EventType| { // 如 simu(&EventType::KeyRelease(Key::CapsLock));
-        //     virtual_event_flag.set(true);
+        //     state.virtual_event_flag.set(true);
         //     let _ = simulate(event_type);
-        //     virtual_event_flag.set(false);
+        //     state.virtual_event_flag.set(false);
         //     // let delay = time::Duration::from_millis(20);
         //     // thread::sleep(delay);
         // };
         // let simu2 = |key: Key| { // 如 simu2(Key::CapsLock);
-        //     virtual_event_flag.set(true);
+        //     state.virtual_event_flag.set(true);
         //     let _ = simulate(&EventType::KeyPress(key));
         //     let _ = simulate(&EventType::KeyRelease(key));
-        //     virtual_event_flag.set(false);
+        //     state.virtual_event_flag.set(false);
         //     // let delay = time::Duration::from_millis(20);
         //     // thread::sleep(delay);
         // };
         let mut enigo = enigo_instance.lock().unwrap();
         let mut simu3 = |key: enigo::Key, direction: enigo::Direction| {
-            virtual_event_flag.set(true);
+            state.virtual_event_flag.set(true);
             let _ = (&mut enigo).key(key, direction);
-            virtual_event_flag.set(false);
+            state.virtual_event_flag.set(false);
         };
         let simu_text = |enigo: &mut MutexGuard<'_, Enigo>, text: &str| {
-            virtual_event_flag.set(true);
+            state.virtual_event_flag.set(true);
             let _ = enigo.text(text);
-            virtual_event_flag.set(false);
+            state.virtual_event_flag.set(false);
         };
-
-        // 为什么要定义这个函数: Caps+C后，无论先松Caps还是先松C，都应视为退出光标层
-        fn caps_cursor_quit(
-            enigo: &mut MutexGuard<'_, Enigo>, 
-            caps_cursor_active: &Cell<bool>, 
-            caps_cursor_active_used: &Cell<bool>
-        ) {
-            if !caps_cursor_active.get() { return }
-            if !caps_cursor_active_used.get() { // 没用过，则单击
-                let _ = enigo.button(enigo::Button::Left, Click);
-            }
-            caps_cursor_active_used.set(false);
-            caps_cursor_active.set(false);
-        }
 
         // #region 默认层
 
         // Caps+* 光标层 进出
         if event.event_type == EventType::KeyPress(Key::CapsLock) {
-            caps_active.set(true);
-            caps_active_used.set(false);
+            state.caps_active.set(true);
+            state.caps_active_used.set(false);
             return None // 禁用原行为
         }
         if event.event_type == EventType::KeyRelease(Key::CapsLock) {
-            if !caps_active_used.get() { // 没用过，恢复原行为
-                virtual_event_flag.set(true);
+            if !state.caps_active_used.get() { // 没用过，恢复原行为
+                state.virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::CapsLock));
-                virtual_event_flag.set(false);
+                state.virtual_event_flag.set(false);
             }
-            caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used); // 退出所有子层
-            caps_active_used.set(false);
-            caps_active.set(false);
+            state.caps_cursor_quit(&mut enigo); // 退出所有子层
+            state.caps_active_used.set(false);
+            state.caps_active.set(false);
             return Some(event)
         }
 
         // '+* 符号层 进出
         if event.event_type == EventType::KeyPress(Key::Quote) {
-            sign_active.set(true);
-            sign_active_used.set(false);
+            state.sign_active.set(true);
+            state.sign_active_used.set(false);
             return None // 禁用原行为
         }
         if event.event_type == EventType::KeyRelease(Key::Quote) {
-            if !sign_active_used.get() { // 没用过，恢复原行为
-                virtual_event_flag.set(true);
+            if !state.sign_active_used.get() { // 没用过，恢复原行为
+                state.virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::Quote));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::Quote));
-                virtual_event_flag.set(false);
+                state.virtual_event_flag.set(false);
             }
-            sign_active_used.set(false);
-            sign_active.set(false);
+            state.sign_active_used.set(false);
+            state.sign_active.set(false);
             return Some(event)
-        }
+        } 
 
         // Space 空格层 进出
-        // if !caps_active.get() {
+        // if !state.caps_active.get() {
         //     if event.event_type == EventType::KeyPress(Key::Space) {
         //         if !space_active.get() {
         //             space_active.set(true);
@@ -202,11 +179,11 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         //     }
         //     if event.event_type == EventType::KeyRelease(Key::Space) {
         //         if !space_active_used.get() { // 没用过，恢复原行为
-        //             virtual_event_flag.set(true);
+        //             state.virtual_event_flag.set(true);
         //             let _ = simulate(&EventType::KeyRelease(Key::Space));
         //             thread::sleep(time::Duration::from_millis(10));
         //             let _ = simulate(&EventType::KeyPress(Key::Space));
-        //             virtual_event_flag.set(false);
+        //             state.virtual_event_flag.set(false);
         //         }
         //         space_active_used.set(false);
         //         space_active.set(false);
@@ -215,24 +192,24 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         // }
 
         // RShift 编辑器/Ctrl层 进出
-        if !caps_active.get() {
+        if !state.caps_active.get() {
             if event.event_type == EventType::KeyPress(Key::ShiftRight) {
-                if !r_shift_active.get() {
-                    r_shift_active.set(true);
-                    r_shift_active_used.set(false);
+                if !state.r_shift_active.get() {
+                    state.r_shift_active.set(true);
+                    state.r_shift_active_used.set(false);
                 }
                 return None // 禁用原行为
             }
             if event.event_type == EventType::KeyRelease(Key::ShiftRight) {
-                if !r_shift_active_used.get() { // 没用过，恢复原行为
-                    virtual_event_flag.set(true);
+                if !state.r_shift_active_used.get() { // 没用过，恢复原行为
+                    state.virtual_event_flag.set(true);
                     let _ = simulate(&EventType::KeyRelease(Key::ShiftRight));
                     thread::sleep(time::Duration::from_millis(10));
                     let _ = simulate(&EventType::KeyPress(Key::ShiftRight));
-                    virtual_event_flag.set(false);
+                    state.virtual_event_flag.set(false);
                 }
-                r_shift_active_used.set(false);
-                r_shift_active.set(false);
+                state.r_shift_active_used.set(false);
+                state.r_shift_active.set(false);
                 return Some(event)
             }
         }
@@ -240,9 +217,9 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         // #endregion
 
         // #region Caps+C+* 鼠标层
-        if caps_active.get() && caps_cursor_active.get() {
+        if state.caps_active.get() && state.caps_cursor_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
-                caps_cursor_active_used.set(true);
+                state.caps_cursor_active_used.set(true);
             }
 
             const MOUSE_STEP: i32 = 18; // 可按需调整
@@ -251,14 +228,14 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             // TODO 点击不应该用I/O，因为可能存在拖拽操作
             if event.event_type == EventType::KeyPress(Key::KeyI) {
                 let _ = enigo.button(enigo::Button::Left, Click);
-                caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                caps_cursor_active.set(false);
+                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.caps_cursor_active.set(false);
                 return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyO) {
                 let _ = enigo.button(enigo::Button::Right, Click);
-                caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                caps_cursor_active.set(false);
+                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.caps_cursor_active.set(false);
                 return None
             }
             // TODO 支持斜向移动
@@ -275,35 +252,35 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         // #endregion
 
         // #region Caps+* 光标层
-        if caps_active.get() {
+        if state.caps_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
-                caps_active_used.set(true);
+                state.caps_active_used.set(true);
             }
 
             // Caps+C+* 鼠标层进出
             if event.event_type == EventType::KeyPress(Key::KeyC) {
-                caps_cursor_active.set(true);
-                caps_cursor_active_used.set(false);
+                state.caps_cursor_active.set(true);
+                state.caps_cursor_active_used.set(false);
                 return None
             }
             if event.event_type == EventType::KeyRelease(Key::KeyC) {
-                caps_cursor_quit(&mut enigo, &caps_cursor_active, &caps_cursor_active_used);
+                state.caps_cursor_quit(&mut enigo);
                 return Some(event)
             }
 
             // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
             // 不知道为什么，+Esc的识别总是不够灵敏
             if event.event_type == EventType::KeyRelease(Key::Escape) {
-                virtual_event_flag.set(true);
+                state.virtual_event_flag.set(true);
                 simu3(enigo::Key::CapsLock, Press);
                 simu3(enigo::Key::CapsLock, Release);
                 return None
             }
             if event.event_type == EventType::KeyPress(Key::KeyB) {
                 // 临时连续点击
-                virtual_event_flag.set(true);
+                state.virtual_event_flag.set(true);
                 let _ = enigo.button(enigo::Button::Left, Click);
-                virtual_event_flag.set(false);
+                state.virtual_event_flag.set(false);
                 let delay = time::Duration::from_millis(100);
                 thread::sleep(delay);
                 return None
@@ -366,7 +343,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 // 
                 // 在解决这个bug之前，这里会强制松开Caps层
                 app_handle.emit("active-window-toggle", ()).unwrap();
-                caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
                 return None
             }
 
@@ -380,9 +357,9 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         // #endregion
 
         // #region '+* 符号层
-        if sign_active.get() {
+        if state.sign_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
-                sign_active_used.set(true)
+                state.sign_active_used.set(true)
             }
 
             // 左半区
@@ -417,18 +394,18 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
                 let selected_text: String = uia::get_uia_by_windows_selected();
                 if selected_text.is_empty() {
-                    virtual_event_flag.set(true);
+                    state.virtual_event_flag.set(true);
                     let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
                     let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
                     for _ in 0..sign_l_move {
                         simu3(enigo::Key::LeftArrow, Click);
                     }
-                    virtual_event_flag.set(false);
+                    state.virtual_event_flag.set(false);
                     return None
                 } else {
-                    virtual_event_flag.set(true);
+                    state.virtual_event_flag.set(true);
                     let _ = text::send(&(sign_l.to_string() + &selected_text + sign_r), "clipboard");
-                    virtual_event_flag.set(false);
+                    state.virtual_event_flag.set(false);
                     return None
                 }
             }
@@ -437,9 +414,9 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         // #region Space 空格层
 
-        if space_active.get() {
+        if state.space_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
-                space_active_used.set(true)
+                state.space_active_used.set(true)
             }
 
             if event.event_type == EventType::KeyPress(Key::KeyI) {
@@ -465,7 +442,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 // 
                 // 在解决这个bug之前，这里会强制松开Caps层
                 app_handle.emit("active-window-toggle", ()).unwrap();
-                space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
                 return None
             }
         }
@@ -474,9 +451,9 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         // #region RShift 空格层
 
-        if r_shift_active.get() {
+        if state.r_shift_active.get() {
             if let EventType::KeyPress(_) = event.event_type { // 按下过
-                r_shift_active_used.set(true)
+                state.r_shift_active_used.set(true)
             }
 
             // 当ctrl用
@@ -535,7 +512,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 // 
                 // 在解决这个bug之前，这里会强制松开Caps层
                 app_handle.emit("active-window-toggle", ()).unwrap();
-                r_shift_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.r_shift_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
                 return None
             }
         }
@@ -546,5 +523,57 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     };
     if let Err(error) = grab(callback) {
         println!("Error: {:?}", error)
+    }
+}
+
+// ========== 状态管理结构体 ==========
+
+/** 键盘层状态 */
+struct LayerState {
+    caps_active: Cell<bool>,                // 是否激活 Caps 层
+    caps_active_used: Cell<bool>,           //     是否使用过^该层
+    caps_cursor_active: Cell<bool>,         // 是否激活 Caps_cursor 层
+    caps_cursor_active_used: Cell<bool>,    //     是否使用过^该层
+    sign_active: Cell<bool>,                // 是否激活 符号层
+    sign_active_used: Cell<bool>,           //     是否使用过^该层
+    space_active: Cell<bool>,               // 是否激活 空格层
+    space_active_used: Cell<bool>,          //     是否使用过^该层
+    // space_active_time: Cell<Option<Instant>>, // ^该层激活的开启时间
+    r_shift_active: Cell<bool>,             // 是否激活 右Shift层
+    r_shift_active_used: Cell<bool>,        //     是否使用过^该层
+
+    virtual_event_flag: Cell<bool>,         // 跳过虚拟行为，避免递归 (可以看作是 "虚拟层")
+}
+impl LayerState {
+    fn new() -> Self {
+        Self {
+            caps_active: Cell::new(false),
+            caps_active_used: Cell::new(false),
+            caps_cursor_active: Cell::new(false),
+            caps_cursor_active_used: Cell::new(false),
+            sign_active: Cell::new(false),
+            sign_active_used: Cell::new(false),
+            space_active: Cell::new(false),
+            space_active_used: Cell::new(false),
+            // space_active_time: Cell::new(None),
+            r_shift_active: Cell::new(false),
+            r_shift_active_used: Cell::new(false),
+            virtual_event_flag: Cell::new(false),
+        }
+    }
+
+    // 为什么要定义这个函数: Caps+C后，无论先松Caps还是先松C，都应视为退出光标层
+    pub fn caps_cursor_quit(
+        &self,
+        enigo: &mut MutexGuard<'_, Enigo>, 
+        // caps_cursor_active: &Cell<bool>, 
+        // caps_cursor_active_used: &Cell<bool>
+    ) {
+        if !self.caps_cursor_active.get() { return }
+        if !self.caps_cursor_active_used.get() { // 没用过，则单击
+            let _ = enigo.button(enigo::Button::Left, Click);
+        }
+        self.caps_cursor_active_used.set(false);
+        self.caps_cursor_active.set(false);
     }
 }
