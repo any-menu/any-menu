@@ -29,7 +29,7 @@ use rdev::{
 use enigo::{
     Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
 };
-use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time::{self, Instant}};
+use std::{cell::Cell, sync::{Arc, Mutex, MutexGuard}, thread, time::{self}};
 use tauri::Emitter;
 
 use crate::{text, uia};
@@ -61,7 +61,7 @@ pub fn _init_ad_shortcut() {
     }).unwrap();
 }
 
-/** 可以拦截原行为，会阻塞
+/** 可以拦截原行为，会阻塞。该函数会在一个独立的线程中被执行
  * 
  * 一些机制: 
  * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
@@ -75,7 +75,9 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let sign_active_used = Cell::new(false);        //     是否使用过^该层
     let space_active = Cell::new(false);            // 是否激活 空格层
     let space_active_used = Cell::new(false);       //     是否使用过^该层
-    let space_active_time = Cell::new(Option::<Instant>::None); // ^该层激活的开启时间
+    // let space_active_time = Cell::new(Option::<Instant>::None); // ^该层激活的开启时间
+    let r_shift_active = Cell::new(false);          // 是否激活 右Shift层
+    let r_shift_active_used = Cell::new(false);     //     是否使用过^该层
 
     let virtual_event_flag = Cell::new(false);  // 跳过虚拟行为，避免递归
 
@@ -83,7 +85,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         Enigo::new(&Settings::default()).expect("Failed to create Enigo instance")
     ));
 
-    // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，表示可以多次且并发调用
+    // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，可以多次且并发调用。不过目前这里并不需要并发
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
     let callback = move |event: Event| -> Option<Event> {
         // 不处理非按键事件 (鼠标 滚动 按钮等)
@@ -182,32 +184,55 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
         }
 
         // Space 空格层 进出
+        // if !caps_active.get() {
+        //     if event.event_type == EventType::KeyPress(Key::Space) {
+        //         if !space_active.get() {
+        //             space_active.set(true);
+        //             space_active_used.set(false);
+        //             space_active_time.set(Some(Instant::now()));
+        //         }
+        //         // 长按则恢复持续点击的行为
+        //         let over_time: bool = space_active_time.get().map_or(false, |start_time| {
+        //             start_time.elapsed() > time::Duration::from_millis(500)
+        //         });
+        //         if over_time {
+        //             return Some(event)
+        //         }
+        //         return None // 禁用原行为
+        //     }
+        //     if event.event_type == EventType::KeyRelease(Key::Space) {
+        //         if !space_active_used.get() { // 没用过，恢复原行为
+        //             virtual_event_flag.set(true);
+        //             let _ = simulate(&EventType::KeyRelease(Key::Space));
+        //             thread::sleep(time::Duration::from_millis(10));
+        //             let _ = simulate(&EventType::KeyPress(Key::Space));
+        //             virtual_event_flag.set(false);
+        //         }
+        //         space_active_used.set(false);
+        //         space_active.set(false);
+        //         return Some(event)
+        //     }
+        // }
+
+        // RShift 编辑器/Ctrl层 进出
         if !caps_active.get() {
-            if event.event_type == EventType::KeyPress(Key::Space) {
-                if !space_active.get() {
-                    space_active.set(true);
-                    space_active_used.set(false);
-                    space_active_time.set(Some(Instant::now()));
-                }
-                // 长按则恢复持续点击的行为
-                let over_time: bool = space_active_time.get().map_or(false, |start_time| {
-                    start_time.elapsed() > time::Duration::from_millis(500)
-                });
-                if over_time {
-                    return Some(event)
+            if event.event_type == EventType::KeyPress(Key::ShiftRight) {
+                if !r_shift_active.get() {
+                    r_shift_active.set(true);
+                    r_shift_active_used.set(false);
                 }
                 return None // 禁用原行为
             }
-            if event.event_type == EventType::KeyRelease(Key::Space) {
-                if !space_active_used.get() { // 没用过，恢复原行为
+            if event.event_type == EventType::KeyRelease(Key::ShiftRight) {
+                if !r_shift_active_used.get() { // 没用过，恢复原行为
                     virtual_event_flag.set(true);
-                    let _ = simulate(&EventType::KeyRelease(Key::Space));
+                    let _ = simulate(&EventType::KeyRelease(Key::ShiftRight));
                     thread::sleep(time::Duration::from_millis(10));
-                    let _ = simulate(&EventType::KeyPress(Key::Space));
+                    let _ = simulate(&EventType::KeyPress(Key::ShiftRight));
                     virtual_event_flag.set(false);
                 }
-                space_active_used.set(false);
-                space_active.set(false);
+                r_shift_active_used.set(false);
+                r_shift_active.set(false);
                 return Some(event)
             }
         }
@@ -441,6 +466,76 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 // 在解决这个bug之前，这里会强制松开Caps层
                 app_handle.emit("active-window-toggle", ()).unwrap();
                 space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                return None
+            }
+        }
+
+        // #endregion
+
+        // #region RShift 空格层
+
+        if r_shift_active.get() {
+            if let EventType::KeyPress(_) = event.event_type { // 按下过
+                r_shift_active_used.set(true)
+            }
+
+            // 当ctrl用
+            if let EventType::KeyPress(key) = event.event_type {
+                if let Some(sim_key) = match key {
+                    Key::KeyQ => Some(enigo::Key::Q),
+                    Key::KeyW => Some(enigo::Key::W),
+                    Key::KeyE => Some(enigo::Key::E),
+                    Key::KeyR => Some(enigo::Key::R),
+                    Key::KeyT => Some(enigo::Key::T),
+
+                    Key::KeyA => Some(enigo::Key::A),
+                    Key::KeyS => Some(enigo::Key::S),
+                    Key::KeyD => Some(enigo::Key::D),
+                    Key::KeyF => Some(enigo::Key::F),
+                    Key::KeyG => Some(enigo::Key::G),
+
+                    Key::KeyZ => Some(enigo::Key::Z),
+                    Key::KeyX => Some(enigo::Key::X),
+                    Key::KeyC => Some(enigo::Key::C),
+                    Key::KeyV => Some(enigo::Key::V),
+                    Key::KeyB => Some(enigo::Key::B),
+                    _ => None,
+                } {
+                    simu3(enigo::Key::Control, Press); simu3(sim_key, Click); simu3(enigo::Key::Control, Release);
+                    return None
+                }
+            }
+
+            // 其他
+            if event.event_type == EventType::KeyPress(Key::ShiftLeft) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Shift, Press); simu3(enigo::Key::Z, Click);
+                simu3(enigo::Key::Shift, Release); simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyI) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Z, Click); simu3(enigo::Key::Control, Release);
+                return None
+            }
+            if event.event_type == EventType::KeyPress(Key::KeyO) {
+                simu3(enigo::Key::Control, Press); simu3(enigo::Key::Shift, Press); simu3(enigo::Key::Z, Click);
+                simu3(enigo::Key::Shift, Release); simu3(enigo::Key::Control, Release);
+                return None
+            }
+
+            if event.event_type == EventType::KeyPress(Key::KeyN) ||
+                event.event_type == EventType::KeyPress(Key::KeyM
+            ) {
+                // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+                // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+                // 
+                // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+                // 此时要按一下 Caps 恢复正常
+                // 
+                // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+                // 
+                // 在解决这个bug之前，这里会强制松开Caps层
+                app_handle.emit("active-window-toggle", ()).unwrap();
+                r_shift_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
                 return None
             }
         }

@@ -8,8 +8,8 @@
 ["~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{w:2},"Backspace"],
 [{w:1.5},"Tab","Q","W","E","R","T","Y","U","I","O","P","{\n[","}\n]",{w:1.5},"|\n\\"],
 [{c:"#b35050",w:1.75},"Caps Lock\n\n\n\n\n\n\n\n\n光标层\n无动作/Esc",{c:"#cccccc"},"A","S","D","F","G","H","J","K","L",":",{c:"#b35050"},"\"\n'\n\n\n\n\n\n\n\n符号层",{c:"#cccccc",w:2.25},"Enter"],
-[{c:"#b35050",w:2.25},"Shift\n\n\n\n\n\n\n\n\n选中层/大写层",{c:"#cccccc"},"Z","X","C","V","B","N","M","<\n,",">\n.","?\n/",{w:2.75},"Shift"],
-[{c:"#b35050",w:1.25},"Ctrl\n\n\n\n\n\n\n\n\n词层",{c:"#cccccc",w:1.25},"Win",{w:1.25},"Alt",{c:"#b35050",a:5,w:6.25},"\n空格\n\n\n\n\n编辑器层/长按空格",{c:"#cccccc",a:4,w:1.25},"Alt",{w:1.25},"Win",{w:1.25},"Menu",{w:1.25},"Ctrl"]
+[{c:"#615555",w:2.25},"Shift\n\n\n\n\n\n\n\n\n选中层/大写层",{c:"#cccccc"},"Z","X","C","V","B","N","M","<\n,",">\n.","?\n/",{c:"#b35050",w:2.75},"Shift\n\n\n\n\n\n\n\n\n编辑器层/Ctrl替代"],
+[{c:"#615555",w:1.25},"Ctrl\n\n\n\n\n\n\n\n\n词层",{c:"#cccccc",w:1.25},"Win",{w:1.25},"Alt",{c:"#b35050",a:5,w:6.25},"\n空格\n\n\n\n\n编辑器层/长按空格",{c:"#cccccc",a:4,w:1.25},"Alt",{w:1.25},"Win",{w:1.25},"Menu",{w:1.25},"Ctrl"]
 ```
 
 ## Caps-光标层
@@ -74,7 +74,17 @@
 [{w:1.25},"Ctrl",{w:1.25},"Win",{w:1.25},"Alt",{a:7,w:6.25},"",{a:4,w:1.25},"Alt",{w:1.25},"Win",{w:1.25},"Menu",{w:1.25},"Ctrl"]
 ```
 
-## 空格-编辑器层
+## 右shift层-编辑器层
+
+```json
+["~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{w:2},"Backspace"],
+[{w:1.5},"Tab",{c:"#407DD5"},"Q\n\n\n\n\n\n\n\n\n\nCtrl Q","W\n\n\n\n\n\n\n\n\n\nCtrl W","E\n\n\n\n\n\n\n\n\n\nCtrl E","R\n\n\n\n\n\n\n\n\n\nCtrl R","T\n\n\n\n\n\n\n\n\n\nCtrl T",{c:"#cccccc"},"Y","U","I","O","P","{\n[","}\n]",{w:1.5},"|\n\\"],
+[{w:1.75},"Caps Lock",{c:"#407DD5"},"A\n\n\n\n\n\n\n\n\n\nCtrl A","S\n\n\n\n\n\n\n\n\n\nCtrl S","D\n\n\n\n\n\n\n\n\n\nCtrl D","F\n\n\n\n\n\n\n\n\n\nCtrl F","G\n\n\n\n\n\n\n\n\n\nCtrl G",{c:"#cccccc"},"H","J","K","L",":\n;","\"\n'",{w:2.25},"Enter"],
+[{c:"#2D6CA1",w:2.25},"Shift\n\n\n\n\n\n\n\n\n\nCtrl Shift Z",{c:"#407DD5"},"Z\n\n\n\n\n\n\n\n\n\nCtrl Z","X\n\n\n\n\n\n\n\n\n\nCtrl X","C\n\n\n\n\n\n\n\n\n\nCtrl C","V\n\n\n\n\n\n\n\n\n\nCtrl V","B\n\n\n\n\n\n\n\n\n\nCtrl B",{c:"#2D6CA1"},"N\n\n\n\n\n\n\n\n\n\nANote","M\n\n\n\n\n\n\n\n\n\nAMenu",{c:"#cccccc"},"<\n,",">\n.","?\n/",{c:"#615555",w:2.75},"Shift\n\n\n\n\n\n\n\n\n被占"],
+[{c:"#cccccc",w:1.25},"Ctrl",{w:1.25},"Win",{w:1.25},"Alt",{a:7,w:6.25},"",{a:4,w:1.25},"Alt",{w:1.25},"Win",{w:1.25},"Menu",{w:1.25},"Ctrl"]
+```
+
+## 空格-编辑器层 (弃用)
 
 ```json
 ["¬\n`","!\n1","\"\n2","£\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{w:2},"Backspace"],
