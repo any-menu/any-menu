@@ -634,7 +634,6 @@ fn layer_shift_r(
             Key::KeyF => Some(enigo::Key::F),
             Key::KeyG => Some(enigo::Key::G),
 
-            Key::KeyZ => Some(enigo::Key::Z),
             Key::KeyX => Some(enigo::Key::X),
             Key::KeyC => Some(enigo::Key::C),
             Key::KeyV => Some(enigo::Key::V),
@@ -648,9 +647,13 @@ fn layer_shift_r(
 
     // 其他
     match event_type {
-        EventType::KeyPress(Key::ShiftLeft) => {
+        EventType::KeyPress(Key::KeyZ) => {
             simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Z, Click);
             simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::ShiftLeft) => {
+           simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Z, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
             return HandlerResult::Block
         }
         EventType::KeyPress(Key::KeyI) => {

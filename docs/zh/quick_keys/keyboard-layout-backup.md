@@ -80,7 +80,7 @@
 ["~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{w:2},"Backspace"],
 [{w:1.5},"Tab",{c:"#407DD5"},"Q\n\n\n\n\n\n\n\n\n\nCtrl Q","W\n\n\n\n\n\n\n\n\n\nCtrl W","E\n\n\n\n\n\n\n\n\n\nCtrl E","R\n\n\n\n\n\n\n\n\n\nCtrl R","T\n\n\n\n\n\n\n\n\n\nCtrl T",{c:"#cccccc"},"Y","U","I","O","P","{\n[","}\n]",{w:1.5},"|\n\\"],
 [{w:1.75},"Caps Lock",{c:"#407DD5"},"A\n\n\n\n\n\n\n\n\n\nCtrl A","S\n\n\n\n\n\n\n\n\n\nCtrl S","D\n\n\n\n\n\n\n\n\n\nCtrl D","F\n\n\n\n\n\n\n\n\n\nCtrl F","G\n\n\n\n\n\n\n\n\n\nCtrl G",{c:"#cccccc"},"H","J","K","L",":\n;","\"\n'",{w:2.25},"Enter"],
-[{c:"#2D6CA1",w:2.25},"Shift\n\n\n\n\n\n\n\n\n\nCtrl Shift Z",{c:"#407DD5"},"Z\n\n\n\n\n\n\n\n\n\nCtrl Z","X\n\n\n\n\n\n\n\n\n\nCtrl X","C\n\n\n\n\n\n\n\n\n\nCtrl C","V\n\n\n\n\n\n\n\n\n\nCtrl V","B\n\n\n\n\n\n\n\n\n\nCtrl B",{c:"#2D6CA1"},"N\n\n\n\n\n\n\n\n\n\nANote","M\n\n\n\n\n\n\n\n\n\nAMenu",{c:"#cccccc"},"<\n,",">\n.","?\n/",{c:"#615555",w:2.75},"Shift\n\n\n\n\n\n\n\n\n被占"],
+[{c:"#2D6CA1",w:2.25},"Shift\n\n\n\n\n\n\n\n\n\nCtrl+Z/撤回","Z\n\n\n\n\n\n\n\n\n\n重做",{c:"#407DD5"},"X\n\n\n\n\n\n\n\n\n\nCtrl X","C\n\n\n\n\n\n\n\n\n\nCtrl C","V\n\n\n\n\n\n\n\n\n\nCtrl V","B\n\n\n\n\n\n\n\n\n\nCtrl B",{c:"#2D6CA1"},"N\n\n\n\n\n\n\n\n\n\nANote","M\n\n\n\n\n\n\n\n\n\nAMenu",{c:"#cccccc"},"<\n,",">\n.","?\n/",{c:"#615555",w:2.75},"Shift\n\n\n\n\n\n\n\n\n被占"],
 [{c:"#cccccc",w:1.25},"Ctrl",{w:1.25},"Win",{w:1.25},"Alt",{a:7,w:6.25},"",{a:4,w:1.25},"Alt",{w:1.25},"Win",{w:1.25},"Menu",{w:1.25},"Ctrl"]
 ```
 
