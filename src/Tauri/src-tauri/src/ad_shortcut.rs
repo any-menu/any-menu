@@ -286,7 +286,7 @@ impl LayerState {
         state: &LayerState,
     ) {
         if !self.caps_page_active.get() { return }
-        if !self.caps_word_active_used.get() { // 没用过
+        if !self.caps_page_active_used.get() { // 没用过
             simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::A, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
         }
         self.caps_page_active_used.set(false);
@@ -579,6 +579,8 @@ fn layer_caps_page(
             simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
             return HandlerResult::Block
         },
+        // TODO 如果是多窗口，`H;` 负责切换切分窗口而非标签 (注意分清三个概念: 标签页、切分窗口(Docker窗口)、窗口(应用窗口))
+        // 不过不同编辑器逻辑不同，VSCode是Ctrl+数字切换、Ctrl+K+方向键是将当前标签转移到其他的切分窗口
         _ => { return HandlerResult::Pass }
     }
 }
@@ -592,9 +594,29 @@ fn layer_caps_num(
     if let EventType::KeyPress(_) = event_type { // 按下过
         state.caps_num_active_used.set(true);
     }
-    return HandlerResult::Pass
-}
 
+    match event_type {
+        // 数字
+        EventType::KeyPress(Key::Space) => { simu_key(enigo, &state, enigo::Key::Num0, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyM) => { simu_key(enigo, &state, enigo::Key::Num1, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::Comma) => { simu_key(enigo, &state, enigo::Key::Num2, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::Dot) => { simu_key(enigo, &state, enigo::Key::Num3, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyJ) => { simu_key(enigo, &state, enigo::Key::Num4, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyK) => { simu_key(enigo, &state, enigo::Key::Num5, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyL) => { simu_key(enigo, &state, enigo::Key::Num6, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyU) => { simu_key(enigo, &state, enigo::Key::Num7, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyI) => { simu_key(enigo, &state, enigo::Key::Num8, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyO) => { simu_key(enigo, &state, enigo::Key::Num9, Click); return HandlerResult::Block },
+        // 其他
+        EventType::KeyPress(Key::KeyB) => { simu_text(enigo, &state, "."); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyH) => { simu_text(enigo, &state, "*"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyY) => { simu_text(enigo, &state, "/"); return HandlerResult::Block },
+        EventType::KeyPress(Key::Slash) => { simu_text(enigo, &state, "="); return HandlerResult::Block },
+        EventType::KeyPress(Key::SemiColon) => { simu_text(enigo, &state, "+"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyP) => { simu_text(enigo, &state, "-"); return HandlerResult::Block },
+        _ => { return HandlerResult::Pass }
+    }
+}
 
 /// Caps+* 光标层 内部
 fn layer_caps(
