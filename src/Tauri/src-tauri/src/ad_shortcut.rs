@@ -94,8 +94,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         let mut enigo = enigo_instance.lock().unwrap();
 
-        // 在默认层
-        // 进出其他层
+        // 默认层 内部，主要是其他层的进出
         match layer_default_caps(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
@@ -117,13 +116,13 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
+        // Caps 及其 子层 的内部
         // Caps+C+* 鼠标层 内部
         match layer_caps_curosr(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
         };
-
         // Caps+* 光标层 内部
         match layer_caps(&event.event_type, &state, &mut enigo, &app_handle) {
             HandlerResult::Allow => return Some(event),
@@ -131,61 +130,12 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
-        // #region '+* 符号层
-        if state.sign_active.get() {
-            if let EventType::KeyPress(_) = event.event_type { // 按下过
-                state.sign_active_used.set(true)
-            }
-
-            // 左半区
-            if event.event_type == EventType::KeyPress(Key::KeyQ) { simu_text(&mut enigo, &state, "！"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyW) { simu_text(&mut enigo, &state, "？"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyS) { simu_text(&mut enigo, &state, "……"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyD) { simu_text(&mut enigo, &state, "、"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyF) { simu_text(&mut enigo, &state, "，"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyG) { simu_text(&mut enigo, &state, "。"); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyV) { simu_text(&mut enigo, &state, "——"); return None }
-
-            // 右半区
-            let mut sign_l: Option<&'static str> = None; // 左符号
-            let mut sign_r: Option<&'static str> = None; // 右符号
-            let mut sign_l_move: u16 = 1;
-            if event.event_type == EventType::KeyPress(Key::KeyY) { sign_l = Some("“"); sign_r = Some("”"); }
-            if event.event_type == EventType::KeyPress(Key::KeyU) { sign_l = Some("\""); sign_r = Some("\""); }
-            if event.event_type == EventType::KeyPress(Key::KeyI) { sign_l = Some("'"); sign_r = Some("'"); }
-            if event.event_type == EventType::KeyPress(Key::KeyO) { sign_l = Some("`"); sign_r = Some("`"); }
-            if event.event_type == EventType::KeyPress(Key::KeyP) { sign_l = Some("```\n"); sign_r = Some("\n```"); sign_l_move = 4; }
-            if event.event_type == EventType::KeyPress(Key::KeyH) { sign_l = Some("【"); sign_r = Some("】"); }
-            if event.event_type == EventType::KeyPress(Key::KeyJ) { sign_l = Some("("); sign_r = Some(")"); }
-            if event.event_type == EventType::KeyPress(Key::KeyK) { sign_l = Some("["); sign_r = Some("]"); }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { sign_l = Some("{"); sign_r = Some("}"); }
-            if event.event_type == EventType::KeyPress(Key::KeyN) { sign_l = Some("「"); sign_r = Some("」"); }
-            if event.event_type == EventType::KeyPress(Key::KeyM) { sign_l = Some("/* "); sign_r = Some(" */"); sign_l_move = 3; }
-            if event.event_type == EventType::KeyPress(Key::Comma) { sign_l = Some("<"); sign_r = Some(">"); }
-            if event.event_type == EventType::KeyPress(Key::Dot) { sign_l = Some("《"); sign_r = Some("》"); }
-            if sign_l.is_some() && sign_r.is_some() {
-                let sign_l = sign_l.unwrap();
-                let sign_r = sign_r.unwrap();
-
-                let selected_text: String = uia::get_uia_by_windows_selected();
-                if selected_text.is_empty() {
-                    state.virtual_event_flag.set(true);
-                    let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
-                    let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
-                    for _ in 0..sign_l_move {
-                        simu_key(&mut enigo, &state, enigo::Key::LeftArrow, Click);
-                    }
-                    state.virtual_event_flag.set(false);
-                    return None
-                } else {
-                    state.virtual_event_flag.set(true);
-                    let _ = text::send(&(sign_l.to_string() + &selected_text + sign_r), "clipboard");
-                    state.virtual_event_flag.set(false);
-                    return None
-                }
-            }
-        }
-        // #endregion
+        // "+ 符号层 内部
+        match layer_sign(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
 
         // #region Space 空格层
 
@@ -358,7 +308,7 @@ enum HandlerResult {
     Pass,  // 不在这里处理，继续分发给后续逻辑
 }
 
-// #region 默认层处理
+// #region 默认层 内部
 
 /// Caps 光标层 进出
 fn layer_default_caps(
@@ -539,7 +489,6 @@ fn layer_caps_curosr(
         },
         _ => { return HandlerResult::Pass }
     }
-    HandlerResult::Pass
 }
 
 /// Caps+* 光标层 内部
@@ -639,15 +588,72 @@ fn layer_caps(
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
         },
-        // Caps+未分配 (可能是Key，或Ctrl/Shift)，或松开按键，阻止 or 允许
-        // EventType::KeyPress(_) => {
-        //     println!("ignore Caps+* {:?}", event_type);
-        //     return HandlerResult::Block
-        // },
-        _ => {}
+        EventType::KeyPress(Key::ShiftLeft) | EventType::KeyPress(Key::ShiftRight) |
+        EventType::KeyPress(Key::ControlLeft) | EventType::KeyPress(Key::ControlRight) => {
+            return HandlerResult::Allow
+        }
+        EventType::KeyPress(_) => { return HandlerResult::Block }, // 未分配则禁止按下，允许其他 // 弃用，要允许Shift
+        _ => { return HandlerResult::Allow }
+    }
+}
+
+/// "+ 符号层 内部
+fn layer_sign(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if !state.sign_active.get() { return HandlerResult::Pass }
+
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.sign_active_used.set(true)
+    }
+
+    // 输出成对符号
+    let simu_sign_part = |enigo: &mut Enigo, sign_l: &'static str, sign_r: &'static str, sign_l_move| {
+        let selected_text: String = uia::get_uia_by_windows_selected();
+        if selected_text.is_empty() {
+            state.virtual_event_flag.set(true);
+            let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
+            let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
+            for _ in 0..sign_l_move {
+                simu_key(enigo, &state, enigo::Key::LeftArrow, Click);
+            }
+            state.virtual_event_flag.set(false);
+        } else {
+            state.virtual_event_flag.set(true);
+            let _ = text::send(&(sign_l.to_string() + &selected_text + sign_r), "clipboard");
+            state.virtual_event_flag.set(false);
+        };
     };
 
-    return HandlerResult::Allow
+    match event_type {
+        // 左半区
+        EventType::KeyPress(Key::KeyQ) => { simu_text(enigo, &state, "！"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyW) => { simu_text(enigo, &state, "？"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyS) => { simu_text(enigo, &state, "……"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyD) => { simu_text(enigo, &state, "、"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyF) => { simu_text(enigo, &state, "，"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyG) => { simu_text(enigo, &state, "。"); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyV) => { simu_text(enigo, &state, "——"); return HandlerResult::Block },
+        // 右半区
+        EventType::KeyPress(Key::KeyY) => { simu_sign_part(enigo, "“", "”", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyU) => { simu_sign_part(enigo, "\"", "\"", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyI) => { simu_sign_part(enigo, "'", "'", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyO) => { simu_sign_part(enigo, "`", "`", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyP) => { simu_sign_part(enigo, "```\n", "\n```", 4); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyH) => { simu_sign_part(enigo, "【", "】", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyJ) => { simu_sign_part(enigo, "(", ")", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyK) => { simu_sign_part(enigo, "[", "]", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyL) => { simu_sign_part(enigo, "{", "}", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyN) => { simu_sign_part(enigo, "「", "」", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyM) => { simu_sign_part(enigo, "/* ", " */", 3); return HandlerResult::Block },
+        EventType::KeyPress(Key::Comma) => { simu_sign_part(enigo, "<", ">", 1); return HandlerResult::Block },
+        EventType::KeyPress(Key::Dot) => { simu_sign_part(enigo, "《", "》", 1); return HandlerResult::Block },
+        // 未分配则禁止按下，允许其他
+        EventType::KeyPress(_) => { return HandlerResult::Block },
+        _ => { return HandlerResult::Allow }
+    }
 }
 
 // ========== 辅助函数 ==========
