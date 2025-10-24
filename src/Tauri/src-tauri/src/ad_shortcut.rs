@@ -110,9 +110,8 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         let mut enigo = enigo_instance.lock().unwrap();
 
-        // #region 默认层
-        
-        // 处理 CapsLock 切换
+        // 在默认层
+        // 进出其他层
         match layer_default_caps(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
@@ -134,147 +133,20 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
-        // #endregion
+        // 在Caps层
+        // 进出光标层
+        match layer_caps_curosr(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
 
-        // #region Caps+C+* 鼠标层
-        if state.caps_active.get() && state.caps_cursor_active.get() {
-            if let EventType::KeyPress(_) = event.event_type { // 按下过
-                state.caps_cursor_active_used.set(true);
-            }
-
-            const MOUSE_STEP: i32 = 18; // 可按需调整
-            const MOUSE_STEP2: i32 = 200; // 可按需调整
-            // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
-            // TODO 点击不应该用I/O，因为可能存在拖拽操作
-            if event.event_type == EventType::KeyPress(Key::KeyI) {
-                let _ = enigo.button(enigo::Button::Left, Click);
-                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                state.caps_cursor_active.set(false);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyO) {
-                let _ = enigo.button(enigo::Button::Right, Click);
-                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                state.caps_cursor_active.set(false);
-                return None
-            }
-            // TODO 支持斜向移动
-            if event.event_type == EventType::KeyPress(Key::KeyU) { let _ = enigo.move_mouse(0, -MOUSE_STEP, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyJ) { let _ = enigo.move_mouse(-MOUSE_STEP, 0, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyK) { let _ = enigo.move_mouse(0, MOUSE_STEP, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { let _ = enigo.move_mouse(MOUSE_STEP, 0, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyH) { let _ = enigo.move_mouse(-MOUSE_STEP2, 0, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::SemiColon) { let _ = enigo.move_mouse(MOUSE_STEP2, 0, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::Num7) ||
-                event.event_type == EventType::KeyPress(Key::KeyY) { let _ = enigo.move_mouse(0, -MOUSE_STEP2, enigo::Coordinate::Rel); return None }
-            if event.event_type == EventType::KeyPress(Key::Comma) { let _ = enigo.move_mouse(0, MOUSE_STEP2, enigo::Coordinate::Rel); return None }
-        }
-        // #endregion
-
-        // #region Caps+* 光标层
-        if state.caps_active.get() {
-            if let EventType::KeyPress(_) = event.event_type { // 按下过
-                state.caps_active_used.set(true);
-            }
-
-            // Caps+C+* 鼠标层进出
-            if event.event_type == EventType::KeyPress(Key::KeyC) {
-                state.caps_cursor_active.set(true);
-                state.caps_cursor_active_used.set(false);
-                return None
-            }
-            if event.event_type == EventType::KeyRelease(Key::KeyC) {
-                state.caps_cursor_quit(&mut enigo);
-                return Some(event)
-            }
-
-            // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
-            // 不知道为什么，+Esc的识别总是不够灵敏
-            if event.event_type == EventType::KeyRelease(Key::Escape) {
-                state.virtual_event_flag.set(true);
-                simu_key(&mut enigo, &state, enigo::Key::CapsLock, Press);
-                simu_key(&mut enigo, &state, enigo::Key::CapsLock, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyB) {
-                // 临时连续点击
-                state.virtual_event_flag.set(true);
-                let _ = enigo.button(enigo::Button::Left, Click);
-                state.virtual_event_flag.set(false);
-                let delay = time::Duration::from_millis(100);
-                thread::sleep(delay);
-                return None
-            }
-            if event.event_type == EventType::KeyRelease(Key::KeyB) {
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyI) { simu_key(&mut enigo, &state, enigo::Key::Backspace, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyO) { simu_key(&mut enigo, &state, enigo::Key::Delete, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyP) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::LeftBracket) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click);
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Release); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyU) { simu_key(&mut enigo, &state, enigo::Key::UpArrow, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyJ) { simu_key(&mut enigo, &state, enigo::Key::LeftArrow, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyK) { simu_key(&mut enigo, &state, enigo::Key::DownArrow, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyL) { simu_key(&mut enigo, &state, enigo::Key::RightArrow, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyH) { simu_key(&mut enigo, &state, enigo::Key::Home, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::SemiColon) { simu_key(&mut enigo, &state, enigo::Key::End, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::Num7) || event.event_type == EventType::KeyPress(Key::KeyY) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Home, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::Comma) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::End, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::Space) { simu_key(&mut enigo, &state, enigo::Key::Return, Click); return None }
-            if event.event_type == EventType::KeyPress(Key::KeyD) ||
-                event.event_type == EventType::KeyPress(Key::KeyG)
-            {
-                // TODO 长按层
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::LeftArrow, Click);
-                let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::RightArrow, Click); simu_key(&mut enigo, &state, enigo::Key::Shift, Release); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyF) {
-                // TODO 长按层
-                simu_key(&mut enigo, &state, enigo::Key::Home, Click);
-                let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::End, Click); simu_key(&mut enigo, &state, enigo::Key::Shift, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyN) ||
-                event.event_type == EventType::KeyPress(Key::KeyM
-            ) {
-                // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-                // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-                // 
-                // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-                // 此时要按一下 Caps 恢复正常
-                // 
-                // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-                // 
-                // 在解决这个bug之前，这里会强制松开Caps层
-                app_handle.emit("active-window-toggle", ()).unwrap();
-                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                return None
-            }
-
-            // Caps+未分配 (可能是Key，或Ctrl/Shift)，或松开按键，不处理
-            // if let EventType::KeyPress(_) = event.event_type {
-            //     println!("ignore Caps+* {:?}", event.event_type);
-            //     return None
-            // }
-            return Some(event)
-        }
-        // #endregion
+        // 在光标层
+        match layer_caps(&event.event_type, &state, &mut enigo, &app_handle) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
 
         // #region '+* 符号层
         if state.sign_active.get() {
@@ -505,7 +377,7 @@ enum HandlerResult {
 
 // #region 默认层处理
 
-/// Caps+* 光标层 进出
+/// Caps 光标层 进出
 fn layer_default_caps(
     event_type: &EventType,
     state: &LayerState,
@@ -561,7 +433,7 @@ fn layer_default_sign(
     }
 }
 
-/// Space+* 编辑器层 进出
+/// Space 编辑器层 进出
 fn _layer_default_space(
     event_type: &EventType,
     state: &LayerState,
@@ -626,6 +498,173 @@ fn layer_default_shift_r(
 }
 
 // #endregion
+
+/// Caps+C 光标层 进出
+fn layer_caps_curosr(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if state.caps_active.get() && state.caps_cursor_active.get() {
+        if let EventType::KeyPress(_) = event_type { // 按下过
+            state.caps_cursor_active_used.set(true);
+        }
+
+        const MOUSE_STEP: i32 = 18; // 可按需调整
+        const MOUSE_STEP2: i32 = 200; // 可按需调整
+        // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
+        // TODO 点击不应该用I/O，因为可能存在拖拽操作
+        match event_type {
+            EventType::KeyPress(Key::KeyI) => {
+                let _ = enigo.button(enigo::Button::Left, Click);
+                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.caps_cursor_active.set(false);
+                return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyO) => {
+                let _ = enigo.button(enigo::Button::Right, Click);
+                state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+                state.caps_cursor_active.set(false);
+                return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyU) => {
+                let _ = enigo.move_mouse(0, -MOUSE_STEP, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyJ) => {
+                let _ = enigo.move_mouse(-MOUSE_STEP, 0, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyK) => {
+                let _ = enigo.move_mouse(0, MOUSE_STEP, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyL) => {
+                let _ = enigo.move_mouse(MOUSE_STEP, 0, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::KeyH) => {
+                let _ = enigo.move_mouse(-MOUSE_STEP2, 0, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::SemiColon) => {
+                let _ = enigo.move_mouse(MOUSE_STEP2, 0, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::Num7) | EventType::KeyPress(Key::KeyY) => {
+                let _ = enigo.move_mouse(0, -MOUSE_STEP2, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            EventType::KeyPress(Key::Comma) => {
+                let _ = enigo.move_mouse(0, MOUSE_STEP2, enigo::Coordinate::Rel); return HandlerResult::Block
+            },
+            _ => { return HandlerResult::Pass }
+        }
+    }
+    HandlerResult::Pass
+}
+
+/// Caps+C+* 光标层
+fn layer_caps(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+    app_handle: &tauri::AppHandle,
+) -> HandlerResult {
+    if !state.caps_active.get() { return HandlerResult::Pass }
+
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.caps_active_used.set(true);
+    }
+
+    match event_type {
+        // Caps+C+* 鼠标层进出
+        EventType::KeyPress(Key::KeyC) => {
+            state.caps_cursor_active.set(true);
+            state.caps_cursor_active_used.set(false);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyC) => {
+            state.caps_cursor_quit(enigo);
+            return HandlerResult::Allow
+        },
+        EventType::KeyPress(Key::KeyB) => {
+            // 临时连续点击
+            state.virtual_event_flag.set(true);
+            let _ = enigo.button(enigo::Button::Left, Click);
+            state.virtual_event_flag.set(false);
+            let delay = time::Duration::from_millis(100);
+            thread::sleep(delay);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyB) => {
+            return HandlerResult::Allow
+        },
+        // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
+        // 不知道为什么，+Esc的识别总是不够灵敏
+        EventType::KeyRelease(Key::Escape) => {
+            state.virtual_event_flag.set(true);
+            simu_key(enigo, &state, enigo::Key::CapsLock, Press);
+            simu_key(enigo, &state, enigo::Key::CapsLock, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyI) => { simu_key(enigo, &state, enigo::Key::Backspace, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyO) => { simu_key(enigo, &state, enigo::Key::Delete, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyP) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Z, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::LeftBracket) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Z, Click);
+            simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyU) => { simu_key(enigo, &state, enigo::Key::UpArrow, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyJ) => { simu_key(enigo, &state, enigo::Key::LeftArrow, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyK) => { simu_key(enigo, &state, enigo::Key::DownArrow, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyL) => { simu_key(enigo, &state, enigo::Key::RightArrow, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyH) => { simu_key(enigo, &state, enigo::Key::Home, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::SemiColon) => { simu_key(enigo, &state, enigo::Key::End, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::Num7) | EventType::KeyPress(Key::KeyY) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Home, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::Comma) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::Space) => { simu_key(enigo, &state, enigo::Key::Return, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyD) | EventType::KeyPress(Key::KeyG) => {
+            // TODO 长按层
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::LeftArrow, Click);
+            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::RightArrow, Click); simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyF) => {
+            // TODO 长按层
+            simu_key(enigo, &state, enigo::Key::Home, Click);
+            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Shift, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
+            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+            // 
+            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+            // 此时要按一下 Caps 恢复正常
+            // 
+            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+            // 
+            // 在解决这个bug之前，这里会强制松开Caps层
+            app_handle.emit("active-window-toggle", ()).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
+        // Caps+未分配 (可能是Key，或Ctrl/Shift)，或松开按键，阻止 or 允许
+        // EventType::KeyPress(_) => {
+        //     println!("ignore Caps+* {:?}", event_type);
+        //     return HandlerResult::Block
+        // },
+        _ => {}
+    };
+
+    return HandlerResult::Allow
+}
 
 // ========== 辅助函数 ==========
 
