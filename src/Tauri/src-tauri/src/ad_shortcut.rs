@@ -137,82 +137,19 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
-        // space+* 空格层 内部 (弃用)
+        // space+* 编辑器层 内部 (弃用)
         // match _layer_space(&event.event_type, &state, &mut enigo, &app_handle) {
         //     HandlerResult::Allow => return Some(event),
         //     HandlerResult::Block => return None,
         //     HandlerResult::Pass => {}
         // };
 
-        // #region RShift 空格层
-
-        if state.r_shift_active.get() {
-            if let EventType::KeyPress(_) = event.event_type { // 按下过
-                state.r_shift_active_used.set(true)
-            }
-
-            // 当ctrl用
-            if let EventType::KeyPress(key) = event.event_type {
-                if let Some(sim_key) = match key {
-                    Key::KeyQ => Some(enigo::Key::Q),
-                    Key::KeyW => Some(enigo::Key::W),
-                    Key::KeyE => Some(enigo::Key::E),
-                    Key::KeyR => Some(enigo::Key::R),
-                    Key::KeyT => Some(enigo::Key::T),
-
-                    Key::KeyA => Some(enigo::Key::A),
-                    Key::KeyS => Some(enigo::Key::S),
-                    Key::KeyD => Some(enigo::Key::D),
-                    Key::KeyF => Some(enigo::Key::F),
-                    Key::KeyG => Some(enigo::Key::G),
-
-                    Key::KeyZ => Some(enigo::Key::Z),
-                    Key::KeyX => Some(enigo::Key::X),
-                    Key::KeyC => Some(enigo::Key::C),
-                    Key::KeyV => Some(enigo::Key::V),
-                    Key::KeyB => Some(enigo::Key::B),
-                    _ => None,
-                } {
-                    simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, sim_key, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                    return None
-                }
-            }
-
-            // 其他
-            if event.event_type == EventType::KeyPress(Key::ShiftLeft) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click);
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Release); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyI) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyO) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click);
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Release); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-
-            if event.event_type == EventType::KeyPress(Key::KeyN) ||
-                event.event_type == EventType::KeyPress(Key::KeyM
-            ) {
-                // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-                // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-                // 
-                // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-                // 此时要按一下 Caps 恢复正常
-                // 
-                // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-                // 
-                // 在解决这个bug之前，这里会强制松开Caps层
-                app_handle.emit("active-window-toggle", ()).unwrap();
-                state.r_shift_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                return None
-            }
-        }
-
-        // #endregion
+        // RShift+* 编辑器/Ctrl层 内部
+        match layer_shift_r(&event.event_type, &state, &mut enigo, &app_handle) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
 
         Some(event)
     };
@@ -234,8 +171,8 @@ struct LayerState {
     _space_active: Cell<bool>,              // 是否激活 空格层
     _space_active_used: Cell<bool>,         //     是否使用过^该层
     _space_active_time: Cell<Option<Instant>>, // ^该层激活的开启时间
-    r_shift_active: Cell<bool>,             // 是否激活 右Shift层
-    r_shift_active_used: Cell<bool>,        //     是否使用过^该层
+    shift_r_active: Cell<bool>,             // 是否激活 右Shift层
+    shift_r_active_used: Cell<bool>,        //     是否使用过^该层
 
     virtual_event_flag: Cell<bool>,         // 跳过虚拟行为，避免递归 (可以看作是 "虚拟层")
 }
@@ -251,8 +188,8 @@ impl LayerState {
             _space_active: Cell::new(false),
             _space_active_used: Cell::new(false),
             _space_active_time: Cell::new(None),
-            r_shift_active: Cell::new(false),
-            r_shift_active_used: Cell::new(false),
+            shift_r_active: Cell::new(false),
+            shift_r_active_used: Cell::new(false),
             virtual_event_flag: Cell::new(false),
         }
     }
@@ -380,20 +317,20 @@ fn layer_default_shift_r(
 ) -> HandlerResult {
     match event_type {
         EventType::KeyPress(Key::ShiftRight) => {
-            state.r_shift_active.set(true);
-            state.r_shift_active_used.set(false);
+            state.shift_r_active.set(true);
+            state.shift_r_active_used.set(false);
             HandlerResult::Block // 禁用原行为
         }
         EventType::KeyRelease(Key::ShiftRight) => {
-             if !state.r_shift_active_used.get() { // 没用过，恢复原行为
+             if !state.shift_r_active_used.get() { // 没用过，恢复原行为
                 state.virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::ShiftRight));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::ShiftRight));
                 state.virtual_event_flag.set(false);
             }
-            state.r_shift_active_used.set(false);
-            state.r_shift_active.set(false);
+            state.shift_r_active_used.set(false);
+            state.shift_r_active.set(false);
             HandlerResult::Allow
         }
         _ => HandlerResult::Pass
@@ -626,7 +563,7 @@ fn layer_sign(
     }
 }
 
-/// Space+* 空格层 内部
+/// Space+* 编辑器层 内部
 fn _layer_space(
     event_type: &EventType,
     state: &LayerState,
@@ -665,6 +602,82 @@ fn _layer_space(
         },
 
         EventType::KeyPress(_) => { return HandlerResult::Block }, // 未分配则禁止按下，允许其他
+        _ => { return HandlerResult::Allow }
+    }
+}
+
+/// RShift+* 编辑器/Ctrl层 内部
+fn layer_shift_r(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+    app_handle: &tauri::AppHandle,
+) -> HandlerResult {
+    if !state.shift_r_active.get() { return HandlerResult::Pass }
+
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.shift_r_active_used.set(true)
+    }
+
+    // 当ctrl用
+    if let EventType::KeyPress(key) = event_type {
+        if let Some(sim_key) = match key {
+            Key::KeyQ => Some(enigo::Key::Q),
+            Key::KeyW => Some(enigo::Key::W),
+            Key::KeyE => Some(enigo::Key::E),
+            Key::KeyR => Some(enigo::Key::R),
+            Key::KeyT => Some(enigo::Key::T),
+
+            Key::KeyA => Some(enigo::Key::A),
+            Key::KeyS => Some(enigo::Key::S),
+            Key::KeyD => Some(enigo::Key::D),
+            Key::KeyF => Some(enigo::Key::F),
+            Key::KeyG => Some(enigo::Key::G),
+
+            Key::KeyZ => Some(enigo::Key::Z),
+            Key::KeyX => Some(enigo::Key::X),
+            Key::KeyC => Some(enigo::Key::C),
+            Key::KeyV => Some(enigo::Key::V),
+            Key::KeyB => Some(enigo::Key::B),
+            _ => None,
+        } {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, sim_key, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+    }
+
+    // 其他
+    match event_type {
+        EventType::KeyPress(Key::ShiftLeft) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Z, Click);
+            simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::KeyI) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Z, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::KeyO) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Z, Click);
+            simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
+            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+            // 
+            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+            // 此时要按一下 Caps 恢复正常
+            // 
+            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+            // 
+            // 在解决这个bug之前，这里会强制松开Caps层
+            app_handle.emit("active-window-toggle", ()).unwrap();
+            state.shift_r_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        }
+        // 未分配则禁止按下，允许其他
+        EventType::KeyPress(_) => { return HandlerResult::Block },
         _ => { return HandlerResult::Allow }
     }
 }
