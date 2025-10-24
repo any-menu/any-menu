@@ -116,9 +116,33 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
-        // Caps 及其 子层 的内部
+        // #region Caps 及其 子层 的内部
         // Caps+C+* 鼠标层 内部
         match layer_caps_curosr(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
+        // Caps+F+* 行层 内部
+        match layer_caps_line(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
+        // Caps+G+* 词层 内部
+        match layer_caps_word(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
+        // Caps+R+* 页层 内部
+        match layer_caps_page(&event.event_type, &state, &mut enigo) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
+        // Caps+E+* 数字层 内部
+        match layer_caps_num(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
@@ -129,6 +153,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
         };
+        // #endregion
 
         // "+* 符号层 内部
         match layer_sign(&event.event_type, &state, &mut enigo) {
@@ -166,6 +191,15 @@ struct LayerState {
     caps_active_used: Cell<bool>,           //     是否使用过^该层
     caps_cursor_active: Cell<bool>,         // 是否激活 Caps_cursor 层
     caps_cursor_active_used: Cell<bool>,    //     是否使用过^该层
+    caps_line_active: Cell<bool>,           // 是否激活 Caps_line 层
+    caps_line_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_word_active: Cell<bool>,           // 是否激活 Caps_word 层
+    caps_word_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_page_active: Cell<bool>,           // 是否激活 Caps_page 层
+    caps_page_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_num_active: Cell<bool>,           // 是否激活 Caps_num 层
+    caps_num_active_used: Cell<bool>,      //     是否使用过^该层
+
     sign_active: Cell<bool>,                // 是否激活 符号层
     sign_active_used: Cell<bool>,           //     是否使用过^该层
     _space_active: Cell<bool>,              // 是否激活 空格层
@@ -183,6 +217,15 @@ impl LayerState {
             caps_active_used: Cell::new(false),
             caps_cursor_active: Cell::new(false),
             caps_cursor_active_used: Cell::new(false),
+            caps_line_active: Cell::new(false),
+            caps_line_active_used: Cell::new(false),
+            caps_word_active: Cell::new(false),
+            caps_word_active_used: Cell::new(false),
+            caps_page_active: Cell::new(false),
+            caps_page_active_used: Cell::new(false),
+            caps_num_active: Cell::new(false),
+            caps_num_active_used: Cell::new(false),
+
             sign_active: Cell::new(false),
             sign_active_used: Cell::new(false),
             _space_active: Cell::new(false),
@@ -205,6 +248,58 @@ impl LayerState {
         }
         self.caps_cursor_active_used.set(false);
         self.caps_cursor_active.set(false);
+    }
+
+    pub fn caps_line_quit(
+        &self,
+        enigo: &mut Enigo,
+        state: &LayerState,
+    ) {
+        if !self.caps_line_active.get() { return }
+        if !self.caps_line_active_used.get() { // 没用过
+            simu_key(enigo, &state, enigo::Key::Home, Click);
+            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Shift, Release);
+        }
+        self.caps_line_active_used.set(false);
+        self.caps_line_active.set(false);
+    }
+
+    pub fn caps_word_quit(
+        &self,
+        enigo: &mut Enigo,
+        state: &LayerState,
+    ) {
+        if !self.caps_word_active.get() { return }
+        if !self.caps_word_active_used.get() { // 没用过
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::LeftArrow, Click);
+            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::RightArrow, Click); simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+        }
+        self.caps_word_active_used.set(false);
+        self.caps_word_active.set(false);
+    }
+
+    pub fn caps_page_quit(
+        &self,
+        enigo: &mut Enigo,
+        state: &LayerState,
+    ) {
+        if !self.caps_page_active.get() { return }
+        if !self.caps_word_active_used.get() { // 没用过
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::A, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+        }
+        self.caps_page_active_used.set(false);
+        self.caps_page_active.set(false);
+    }
+
+    pub fn caps_num_quit(
+        &self,
+    ) {
+        if !self.caps_num_active.get() { return }
+        // 不关心没用过
+        self.caps_num_active_used.set(false);
+        self.caps_num_active.set(false);
     }
 }
 
@@ -238,6 +333,10 @@ fn layer_default_caps(
                 state.virtual_event_flag.set(false);
             }
             state.caps_cursor_quit(enigo); // 退出所有子层
+            state.caps_line_quit(enigo, state);
+            state.caps_word_quit(enigo, state);
+            state.caps_page_quit(enigo, state);
+            state.caps_num_quit();
             state.caps_active_used.set(false);
             state.caps_active.set(false);
             HandlerResult::Allow
@@ -398,6 +497,56 @@ fn layer_caps_curosr(
     }
 }
 
+/// Caps+F+* 行层 内部
+fn layer_caps_line(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if !state.caps_line_active.get() { return HandlerResult::Pass }
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.caps_line_active_used.set(true);
+    }
+    return HandlerResult::Pass
+}
+
+fn layer_caps_word(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if !state.caps_word_active.get() { return HandlerResult::Pass }
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.caps_word_active_used.set(true);
+    }
+    return HandlerResult::Pass
+}
+
+fn layer_caps_page(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if !state.caps_page_active.get() { return HandlerResult::Pass }
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.caps_page_active_used.set(true);
+    }
+    return HandlerResult::Pass
+}
+
+fn layer_caps_num(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+) -> HandlerResult {
+    if !state.caps_num_active.get() { return HandlerResult::Pass }
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state.caps_num_active_used.set(true);
+    }
+    return HandlerResult::Pass
+}
+
+
 /// Caps+* 光标层 内部
 fn layer_caps(
     event_type: &EventType,
@@ -406,7 +555,6 @@ fn layer_caps(
     app_handle: &tauri::AppHandle,
 ) -> HandlerResult {
     if !state.caps_active.get() { return HandlerResult::Pass }
-
     if let EventType::KeyPress(_) = event_type { // 按下过
         state.caps_active_used.set(true);
     }
@@ -434,6 +582,47 @@ fn layer_caps(
         EventType::KeyRelease(Key::KeyB) => {
             return HandlerResult::Allow
         },
+        // 词层和行层和页层
+        EventType::KeyPress(Key::KeyF) => {
+            state.caps_line_active.set(true);
+            state.caps_line_active_used.set(false);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyF) => {
+            state.caps_line_quit(enigo, state);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyD) | EventType::KeyPress(Key::KeyG) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press);
+            state.caps_word_active.set(true);
+            state.caps_word_active_used.set(false);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyD) | EventType::KeyRelease(Key::KeyG) => {
+            simu_key(enigo, &state, enigo::Key::Control, Release);
+            state.caps_word_quit(enigo, state);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyR) => {
+            state.caps_page_active.set(true);
+            state.caps_page_active_used.set(false);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyR) => {
+            state.caps_page_quit(enigo, state);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyE) => {
+            state.caps_num_active.set(true);
+            state.caps_num_active_used.set(false);
+            return HandlerResult::Block
+        },
+        EventType::KeyRelease(Key::KeyE) => {
+            state.caps_num_quit();
+            return HandlerResult::Block
+        },
+
+        // 其他
         // Caps+Esc, 伪造 CapsLock 按下和释放事件，来切换大小写
         EventType::KeyPress(Key::Escape) => {
             state.virtual_event_flag.set(true);
@@ -467,20 +656,6 @@ fn layer_caps(
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::Space) => { simu_key(enigo, &state, enigo::Key::Return, Click); return HandlerResult::Block },
-        EventType::KeyPress(Key::KeyD) | EventType::KeyPress(Key::KeyG) => {
-            // TODO 长按层
-            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::LeftArrow, Click);
-            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
-            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::RightArrow, Click); simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
-            return HandlerResult::Block
-        },
-        EventType::KeyPress(Key::KeyF) => {
-            // TODO 长按层
-            simu_key(enigo, &state, enigo::Key::Home, Click);
-            let delay = time::Duration::from_millis(30); thread::sleep(delay); // 等光标到左侧
-            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Shift, Release);
-            return HandlerResult::Block
-        },
         EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
             // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
             // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
@@ -685,7 +860,7 @@ fn layer_shift_r(
     }
 }
 
-// ========== 辅助函数 ==========
+// #region 辅助函数
 
 /// 模拟按键操作 (不会被重复捕获版)
 fn simu_key(
@@ -709,3 +884,5 @@ fn simu_text(
     let _ = enigo.text(text);
     state.virtual_event_flag.set(false);
 }
+
+// #endregion
