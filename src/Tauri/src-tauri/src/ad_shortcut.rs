@@ -130,49 +130,19 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
 
-        // "+ 符号层 内部
+        // "+* 符号层 内部
         match layer_sign(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
         };
 
-        // #region Space 空格层
-
-        if state.space_active.get() {
-            if let EventType::KeyPress(_) = event.event_type { // 按下过
-                state.space_active_used.set(true)
-            }
-
-            if event.event_type == EventType::KeyPress(Key::KeyI) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-            if event.event_type == EventType::KeyPress(Key::KeyO) {
-                simu_key(&mut enigo, &state, enigo::Key::Control, Press); simu_key(&mut enigo, &state, enigo::Key::Shift, Press); simu_key(&mut enigo, &state, enigo::Key::Z, Click);
-                simu_key(&mut enigo, &state, enigo::Key::Shift, Release); simu_key(&mut enigo, &state, enigo::Key::Control, Release);
-                return None
-            }
-
-            if event.event_type == EventType::KeyPress(Key::KeyN) ||
-                event.event_type == EventType::KeyPress(Key::KeyM
-            ) {
-                // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-                // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-                // 
-                // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-                // 此时要按一下 Caps 恢复正常
-                // 
-                // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-                // 
-                // 在解决这个bug之前，这里会强制松开Caps层
-                app_handle.emit("active-window-toggle", ()).unwrap();
-                state.space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-                return None
-            }
-        }
-
-        // #endregion
+        // space+* 空格层 内部 (弃用)
+        // match _layer_space(&event.event_type, &state, &mut enigo, &app_handle) {
+        //     HandlerResult::Allow => return Some(event),
+        //     HandlerResult::Block => return None,
+        //     HandlerResult::Pass => {}
+        // };
 
         // #region RShift 空格层
 
@@ -261,8 +231,8 @@ struct LayerState {
     caps_cursor_active_used: Cell<bool>,    //     是否使用过^该层
     sign_active: Cell<bool>,                // 是否激活 符号层
     sign_active_used: Cell<bool>,           //     是否使用过^该层
-    space_active: Cell<bool>,               // 是否激活 空格层
-    space_active_used: Cell<bool>,          //     是否使用过^该层
+    _space_active: Cell<bool>,              // 是否激活 空格层
+    _space_active_used: Cell<bool>,         //     是否使用过^该层
     _space_active_time: Cell<Option<Instant>>, // ^该层激活的开启时间
     r_shift_active: Cell<bool>,             // 是否激活 右Shift层
     r_shift_active_used: Cell<bool>,        //     是否使用过^该层
@@ -278,8 +248,8 @@ impl LayerState {
             caps_cursor_active_used: Cell::new(false),
             sign_active: Cell::new(false),
             sign_active_used: Cell::new(false),
-            space_active: Cell::new(false),
-            space_active_used: Cell::new(false),
+            _space_active: Cell::new(false),
+            _space_active_used: Cell::new(false),
             _space_active_time: Cell::new(None),
             r_shift_active: Cell::new(false),
             r_shift_active_used: Cell::new(false),
@@ -373,9 +343,9 @@ fn _layer_default_space(
 ) -> HandlerResult {
     match event_type {
         EventType::KeyPress(Key::Space) => {
-            if !state.space_active.get() { // 避免长按空格频繁更新时间
-                state.space_active.set(true);
-                state.space_active_used.set(false);
+            if !state._space_active.get() { // 避免长按空格频繁更新时间
+                state._space_active.set(true);
+                state._space_active_used.set(false);
                 state._space_active_time.set(Some(Instant::now()));
             }
             // 长按则恢复持续点击的行为
@@ -388,15 +358,15 @@ fn _layer_default_space(
             HandlerResult::Block // 禁用原行为
         }
         EventType::KeyRelease(Key::Space) => {
-            if !state.space_active_used.get() { // 没用过，恢复原行为
+            if !state._space_active_used.get() { // 没用过，恢复原行为
                 state.virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::Space));
                 thread::sleep(time::Duration::from_millis(10));
                 let _ = simulate(&EventType::KeyPress(Key::Space));
                 state.virtual_event_flag.set(false);
             }
-            state.space_active_used.set(false);
-            state.space_active.set(false);
+            state._space_active_used.set(false);
+            state._space_active.set(false);
             HandlerResult::Allow
         }
         _ => HandlerResult::Pass
@@ -597,7 +567,7 @@ fn layer_caps(
     }
 }
 
-/// "+ 符号层 内部
+/// "+* 符号层 内部
 fn layer_sign(
     event_type: &EventType,
     state: &LayerState,
@@ -652,6 +622,49 @@ fn layer_sign(
         EventType::KeyPress(Key::Dot) => { simu_sign_part(enigo, "《", "》", 1); return HandlerResult::Block },
         // 未分配则禁止按下，允许其他
         EventType::KeyPress(_) => { return HandlerResult::Block },
+        _ => { return HandlerResult::Allow }
+    }
+}
+
+/// Space+* 空格层 内部
+fn _layer_space(
+    event_type: &EventType,
+    state: &LayerState,
+    enigo: &mut Enigo,
+    app_handle: &tauri::AppHandle,
+) -> HandlerResult {
+    if !state._space_active.get() { return HandlerResult::Pass }
+
+    if let EventType::KeyPress(_) = event_type { // 按下过
+        state._space_active_used.set(true)
+    }
+
+    match event_type {
+        EventType::KeyPress(Key::KeyI) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Z, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::KeyO) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Z, Click);
+            simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        }
+        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
+            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+            // 
+            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+            // 此时要按一下 Caps 恢复正常
+            // 
+            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+            // 
+            // 在解决这个bug之前，这里会强制松开Caps层
+            app_handle.emit("active-window-toggle", ()).unwrap();
+            state._space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
+
+        EventType::KeyPress(_) => { return HandlerResult::Block }, // 未分配则禁止按下，允许其他
         _ => { return HandlerResult::Allow }
     }
 }
