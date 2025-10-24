@@ -130,7 +130,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Pass => {}
         };
         // Caps+G+* 词层 内部
-        match layer_caps_word(&event.event_type, &state, &mut enigo) {
+        match layer_caps_word(&event.event_type, &state) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
@@ -507,21 +507,49 @@ fn layer_caps_line(
     if let EventType::KeyPress(_) = event_type { // 按下过
         state.caps_line_active_used.set(true);
     }
-    return HandlerResult::Pass
+
+    match event_type {
+        EventType::KeyPress(Key::KeyJ) => { simu_key(enigo, &state, enigo::Key::Home, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyL) => { simu_key(enigo, &state, enigo::Key::End, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyU) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Home, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyK) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyI) => {
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::Home, Click); simu_key(enigo, &state, enigo::Key::Shift, Release);
+            let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
+            simu_key(enigo, &state, enigo::Key::Backspace, Click);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyO) => {
+            simu_key(enigo, &state, enigo::Key::Shift, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Shift, Release);
+            let delay = time::Duration::from_millis(50); thread::sleep(delay); // 等待光标位置更新
+            simu_key(enigo, &state, enigo::Key::Delete, Click);
+            return HandlerResult::Block
+        },
+        _ => { return HandlerResult::Pass }
+    }
 }
 
+/// Caps+G+* 词层 内部
 fn layer_caps_word(
     event_type: &EventType,
     state: &LayerState,
-    enigo: &mut Enigo,
 ) -> HandlerResult {
     if !state.caps_word_active.get() { return HandlerResult::Pass }
     if let EventType::KeyPress(_) = event_type { // 按下过
         state.caps_word_active_used.set(true);
     }
+
+    // 没有子行为，或者说子行为已经被长按了的Ctrl代替了
     return HandlerResult::Pass
 }
 
+/// Caps+R+* 页层 内部
 fn layer_caps_page(
     event_type: &EventType,
     state: &LayerState,
@@ -531,7 +559,28 @@ fn layer_caps_page(
     if let EventType::KeyPress(_) = event_type { // 按下过
         state.caps_page_active_used.set(true);
     }
-    return HandlerResult::Pass
+
+    match event_type {
+        EventType::KeyPress(Key::KeyJ) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::PageUp, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyL) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::PageDown, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyU) => { simu_key(enigo, &state, enigo::Key::PageUp, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::KeyK) => { simu_key(enigo, &state, enigo::Key::PageDown, Click); return HandlerResult::Block },
+        EventType::KeyPress(Key::Num7) | EventType::KeyPress(Key::KeyY) | EventType::KeyPress(Key::KeyH) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::Home, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::Comma) | EventType::KeyPress(Key::SemiColon) => {
+            simu_key(enigo, &state, enigo::Key::Control, Press); simu_key(enigo, &state, enigo::Key::End, Click); simu_key(enigo, &state, enigo::Key::Control, Release);
+            return HandlerResult::Block
+        },
+        _ => { return HandlerResult::Pass }
+    }
 }
 
 fn layer_caps_num(
