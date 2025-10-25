@@ -73,6 +73,7 @@ fn start_uia_worker(rx: Receiver<UiaMsg>) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // 日志插件。release 模式无需高亮 (一般也会禁用掉控制台输出)
+    #[cfg(debug_assertions)]
     let colors = fern::colors::ColoredLevelConfig {
         error: fern::colors::Color::Red,
         warn: fern::colors::Color::Yellow,
