@@ -142,5 +142,29 @@
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-md-delete-bord",
+		"path": "md_delete_bord.js",
+		"name": "md_去除加粗样式",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-md-delete-link",
+		"path": "md_delete_link.js",
+		"name": "md_去除链接样式",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-md-delete-link-all",
+		"path": "md_delete_link_all.js",
+		"name": "md_去除链接文本",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
 	}
 ]
