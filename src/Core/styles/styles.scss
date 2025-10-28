@@ -322,6 +322,23 @@ html, body, #main {
   }
 }
 
+/* -------------------------------- 快速编辑器 --------------------------- */
+.am-mini-editor {
+  box-sizing: border-box;
+  position: fixed;
+  left: 0; // override by js
+  top: 280px; // override by js
+  margin: 0;
+  padding: 0;
+  width: 500px;
+  height: 250px;
+
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  z-index: 10;
+  flex-direction: column;
+}
+
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root {
   padding: 0px;

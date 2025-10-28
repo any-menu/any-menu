@@ -23,6 +23,7 @@ export * from './contextmenu/index'
 export * from './search/index'
 import { AMSearch } from './search/index'
 import { ABContextMenu } from './contextmenu/index'
+import { AMMiniEditor } from './miniEditor/index'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
@@ -30,10 +31,12 @@ import { ABContextMenu } from './contextmenu/index'
 // 单例模式下使用，否则不使用
 export const global_el: {
   amSearch: AMSearch | null,
-  amContextMenu: ABContextMenu | null
+  amContextMenu: ABContextMenu | null,
+  amMiniEditor: AMMiniEditor | null,
 } = {
   amSearch: null,
-  amContextMenu: null
+  amContextMenu: null,
+  amMiniEditor: null,
 }
 
 /** AMPanel 使用单例模式管理 */
@@ -46,6 +49,12 @@ export class AMPanel {
     if (!global_el.amContextMenu) {
       global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
     }
+    if (!global_el.amContextMenu) {
+      global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
+    }
+    // if (!global_el.amMiniEditor) {
+    //   global_el.amMiniEditor = AMMiniEditor.factory(el)
+    // }
 
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
