@@ -1,4 +1,5 @@
-import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor";
+import { global_setting } from "../../../Core/setting"
+import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
 import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
 
@@ -42,14 +43,21 @@ export class AMMiniEditor {
     this.editableBlock_cm.emit_render()
   }
 
-  show(new_text?: string) {
+  show(x?: number, y?: number, new_text?: string) {
     this.el.classList.remove('am-hide');
-    if (new_text !== undefined) {
-      this.cache_text = new_text
-    }
+
+    if (x !== undefined) this.el.style.left = `${x}px`
+    if (y !== undefined) this.el.style.top = `${y}px`
+    if (new_text !== undefined) this.cache_text = new_text
+
+    // 显示后聚焦，否则 focus 无效
+    ;(() => {
+      if (!global_setting.focusStrategy) return
+      this.el?.focus()
+    })();
     
     this.editableBlock_cm.rangeSpec.text_content = this.cache_text
-    this.editableBlock_cm.emit_render()
+    // this.editableBlock_cm.emit_render()
   }
 
   hide() {

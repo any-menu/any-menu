@@ -337,6 +337,13 @@ html, body, #main {
   background-color: var(--ab-menu-bg-color);
   z-index: 10;
   flex-direction: column;
+
+  .editableblock-cm {
+    height: 100%;
+    .cm-editor {
+      height: 100%;
+    }
+  }
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */

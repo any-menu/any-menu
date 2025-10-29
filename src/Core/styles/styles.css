@@ -290,6 +290,12 @@ html, body, #main {
   z-index: 10;
   flex-direction: column;
 }
+.am-mini-editor .editableblock-cm {
+  height: 100%;
+}
+.am-mini-editor .editableblock-cm .cm-editor {
+  height: 100%;
+}
 
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root {

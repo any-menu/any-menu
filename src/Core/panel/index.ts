@@ -30,10 +30,12 @@ import { AMMiniEditor } from './miniEditor/index'
 
 // 单例模式下使用，否则不使用
 export const global_el: {
+  amPanel: AMPanel | null,
   amSearch: AMSearch | null,
   amContextMenu: ABContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
 } = {
+  amPanel: null,
   amSearch: null,
   amContextMenu: null,
   amMiniEditor: null,
@@ -43,29 +45,31 @@ export const global_el: {
 export class AMPanel {
   /** 单例模式 */
   static factory(el: HTMLElement) {
+    if (!global_el.amPanel) {
+      global_el.amPanel = new AMPanel()
+    }
     if (!global_el.amSearch) {
       global_el.amSearch = AMSearch.factory(el)
     }
     if (!global_el.amContextMenu) {
       global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
     }
-    if (!global_el.amContextMenu) {
-      global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
+    if (!global_el.amMiniEditor) {
+      global_el.amMiniEditor = AMMiniEditor.factory(el)
     }
-    // if (!global_el.amMiniEditor) {
-    //   global_el.amMiniEditor = AMMiniEditor.factory(el)
-    // }
 
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 
-  /** 绑定到input事件
-   * 
-   * 流程上: 先去找匹配项/看input是否为空
-   * - 若有内容，则方向键控制搜索建议
-   * - 若无内容，则方向键控制多层菜单
-   */
-  // static bind_input() {
+  static show(x?: number, y?: number) {
+    global_el.amSearch?.show(x, y)
+    global_el.amContextMenu?.show(x, y ? y+32 : undefined)
+    global_el.amMiniEditor?.show(x, y ? y+280 : undefined)
+  }
 
-  // }
+  static hide() {
+    global_el.amSearch?.hide()
+    global_el.amContextMenu?.hide()
+    global_el.amMiniEditor?.hide()
+  }
 }

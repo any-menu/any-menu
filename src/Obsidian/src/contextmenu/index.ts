@@ -29,8 +29,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
       const cursorInfo = getCursorInfo(plugin, editor);
       if (cursorInfo) {
-        amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-        amContextMenu.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
+        AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2)
       }
     },
     hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
@@ -42,8 +41,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {
     const cursorInfo = getCursorInfo(plugin)
     if (cursorInfo) {
-      amSearch.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2)
-      amContextMenu.show(cursorInfo.pos.left + 2, cursorInfo.pos.bottom + 2 + 32)
+      AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2)
     }
   })
 }

@@ -6,7 +6,7 @@
 
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
-import { global_el } from '../../../Core/panel/'
+import { AMPanel } from '../../../Core/panel/'
 
 import { setupAppChangeListener } from './focus'
 setupAppChangeListener()
@@ -262,8 +262,7 @@ async function showWindow() {
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  if (global_el.amSearch != null) global_el.amSearch.show()
-  if (global_el.amContextMenu != null) global_el.amContextMenu.show()
+  AMPanel.show()
 }
 
 /** 隐藏窗口 */
@@ -276,6 +275,5 @@ export async function hideWindow() {
   await appWindow.hide(); global_state.isWindowVisible = false;
 
   // 隐藏&失焦搜索框、建议栏，恢复虚拟聚焦状态
-  if (global_el.amSearch != null) global_el.amSearch.hide()
-  if (global_el.amContextMenu != null) global_el.amContextMenu.hide()
+  AMPanel.hide()
 }
