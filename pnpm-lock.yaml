@@ -21,8 +21,8 @@ importers:
   src/Core:
     dependencies:
       '@editableblock/cm':
-        specifier: 1.0.1-beta37
-        version: 1.0.1-beta37
+        specifier: 1.0.1-beta38
+        version: 1.0.1-beta38
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -149,8 +149,8 @@ packages:
   '@codemirror/view@6.38.1':
     resolution: {integrity: sha512-RmTOkE7hRU3OVREqFVITWHz6ocgBjv08GoePscAakgVQfciA3SGCEk7mb9IzwW61cKKmlTpHXG6DUE5Ubx+MGQ==}
 
-  '@editableblock/cm@1.0.1-beta37':
-    resolution: {integrity: sha512-GElQVGtvUFqDwl2C2MAzSw+nPRf9z/ua6uQ2ntEYqoEu1sngO5EO3+jUwGFjxbAmrj1LVnfgRxua/X0KXVFQFg==}
+  '@editableblock/cm@1.0.1-beta38':
+    resolution: {integrity: sha512-A+ki2RHj0qUXNaiQxr38izDI6JVPWJ+/Fsgs6lcm4ZZ2lMZ0PzeSM1XYHcxDxeoB3+hLpVm4+l6DLDHagOESeA==}
 
   '@editableblock/textarea@1.0.1-beta35':
     resolution: {integrity: sha512-4X4FT6lIjz1pXW4+A9HPEg7ZpkBxXjRiMTDdhgVs+nnkJgT7vAMLSBRqsFvI9hqSZedgguRnX946sOxegSwO5w==}
@@ -1749,7 +1749,7 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@editableblock/cm@1.0.1-beta37':
+  '@editableblock/cm@1.0.1-beta38':
     dependencies:
       '@codemirror/commands': 6.10.0
       '@codemirror/lang-markdown': 6.5.0

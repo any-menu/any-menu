@@ -55,9 +55,9 @@ export class AMMiniEditor {
       if (!global_setting.focusStrategy) return
       this.el?.focus()
     })();
-    
+
     this.editableBlock_cm.rangeSpec.text_content = this.cache_text
-    // this.editableBlock_cm.emit_render()
+    this.editableBlock_cm.update_content(this.cache_text)
   }
 
   hide() {

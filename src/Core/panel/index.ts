@@ -24,6 +24,7 @@ export * from './search/index'
 import { AMSearch } from './search/index'
 import { ABContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
+import { global_setting } from '../setting'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
@@ -61,10 +62,12 @@ export class AMPanel {
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 
+  // TODO 添加显示项，仅显示哪几个面板这样
   static show(x?: number, y?: number) {
     global_el.amSearch?.show(x, y)
     global_el.amContextMenu?.show(x, y ? y+32 : undefined)
-    global_el.amMiniEditor?.show(x, y ? y+280 : undefined)
+    global_el.amMiniEditor?.show(x, y ? y+280 : undefined,
+      global_setting.state.selectedText) // undefined 时不重置内容，否则改为 ?? ""
   }
 
   static hide() {
