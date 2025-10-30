@@ -61,7 +61,7 @@ export class ABContextMenu {
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
   public el_parent: HTMLElement|undefined
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
-  public el_container: HTMLDivElement|undefined
+  public el_container: HTMLDivElement|undefined // 菜单本体
   /// 当前菜单是否处于显示状态
   private isShow: boolean = false
 
@@ -110,6 +110,7 @@ export class ABContextMenu {
     this.isShow = true
     if (x) this.el_container.style.left = `${x}px`
     if (y) this.el_container.style.top = `${y}px`
+    this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
 
     this.updateVFocus(undefined, 'clean')
@@ -122,6 +123,7 @@ export class ABContextMenu {
   public hide() {
     if (!this.el_container) return
     this.isShow = false
+    this.el_container.classList.add('am-hide')
     this.el_container.classList.remove('visible')
 
     this.updateVFocus(undefined, 'clean')

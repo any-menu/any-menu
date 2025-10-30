@@ -262,7 +262,7 @@ async function showWindow(panel_list?: string[]) {
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.show(undefined, undefined, panel_list)
+  AMPanel.show(0, 0, panel_list)
 }
 
 /** 隐藏窗口 */

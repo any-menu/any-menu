@@ -115,7 +115,8 @@ html, body, #main {
 /* -------------------------------- 多级菜单 ---------------------------- */
 
 // 显示/隐藏 (跨平台问题)
-.am-context-menu:not(#main > .am-context-menu) { // app 版恒显示
+// ~~app 版恒显示 :not(#main > .am-context-menu)~~
+.am-context-menu {
   &:not(.visible) {
     display: none;
   }

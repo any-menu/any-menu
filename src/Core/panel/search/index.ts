@@ -27,10 +27,7 @@ export class AMSearch {
    */
   constructor(el?: HTMLElement) {
     if (el) this.createDom(el)
-    this.show()
-
-    // app环境默认显示，非app环境 (ob/) 默认隐藏
-    if (global_setting.env === 'app') this.show()
+    this.hide()
   }
 
   /** 输入框

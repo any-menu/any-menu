@@ -94,10 +94,10 @@ html, body, #main {
 }
 
 /* -------------------------------- 多级菜单 ---------------------------- */
-.am-context-menu:not(#main > .am-context-menu):not(.visible) {
+.am-context-menu:not(.visible) {
   display: none;
 }
-.am-context-menu:not(#main > .am-context-menu).sub-menu:not(.visible) {
+.am-context-menu.sub-menu:not(.visible) {
   display: none;
 }
 

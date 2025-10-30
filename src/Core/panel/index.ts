@@ -68,10 +68,12 @@ export class AMPanel {
       list = ['search', 'menu']
     }
 
+    let is_focued = false // 只聚焦到第一个可聚焦的子面板
     for (const item of list) {
       if (item == 'search') {
         global_el.amSearch?.show(x, y)
         if (y !== undefined) { y += 32 }
+        is_focued = true
       }
       else if (item == 'menu') {
         global_el.amContextMenu?.show(x, y)
@@ -79,7 +81,8 @@ export class AMPanel {
       }
       else if (item == 'miniEditor') {
         global_el.amMiniEditor?.show(x, y,
-          global_setting.state.selectedText) // undefined 时不重置内容，否则改为 ?? ""
+          global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        is_focued = true
       }
       else {
         continue

@@ -21,8 +21,9 @@ export class AMMiniEditor {
   constructor(
     el_parent: HTMLElement,
   ) {
-    this.el_parent = el_parent;
+    this.el_parent = el_parent
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
+    this.hide()
 
     // EditableBlock
     this.cache_text = 'test Mini Editor2' // TODO tmp
@@ -43,21 +44,22 @@ export class AMMiniEditor {
     this.editableBlock_cm.emit_render()
   }
 
-  show(x?: number, y?: number, new_text?: string) {
+  show(x?: number, y?: number, new_text?: string, is_focus: boolean = false) {
     this.el.classList.remove('am-hide');
 
     if (x !== undefined) this.el.style.left = `${x}px`
     if (y !== undefined) this.el.style.top = `${y}px`
     if (new_text !== undefined) this.cache_text = new_text
 
-    // 显示后聚焦，否则 focus 无效
-    ;(() => {
-      if (!global_setting.focusStrategy) return
-      this.el?.focus()
-    })();
-
     this.editableBlock_cm.rangeSpec.text_content = this.cache_text
     this.editableBlock_cm.update_content(this.cache_text)
+
+    // 显示后聚焦，否则 focus 无效
+    ;(() => {
+      if (!is_focus) return
+      if (!global_setting.focusStrategy) return
+      this.editableBlock_cm.focus(0, this.cache_text.length + 2) // [!code warn] 我也没明白为什么要+2
+    })();
   }
 
   hide() {
