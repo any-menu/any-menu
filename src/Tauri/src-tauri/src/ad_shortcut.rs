@@ -727,16 +727,21 @@ fn layer_caps(
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::Space) => { simu_key(enigo, &state, enigo::Key::Return, Click); return HandlerResult::Block },
-        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
-            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-            // 
-            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-            // 此时要按一下 Caps 恢复正常
-            // 
-            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-            // 
-            // 在解决这个bug之前，这里会强制松开Caps层
+        // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+        // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+        // 
+        // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+        // 此时要按一下 Caps 恢复正常
+        // 
+        // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+        // 
+        // 在解决这个bug之前，这里会强制松开Caps层
+        EventType::KeyPress(Key::KeyN) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyM) => {
             app_handle.emit("active-window-toggle", ()).unwrap();
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
@@ -832,18 +837,23 @@ fn _layer_space(
             simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
             return HandlerResult::Block
         }
-        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
-            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-            // 
-            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-            // 此时要按一下 Caps 恢复正常
-            // 
-            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-            // 
-            // 在解决这个bug之前，这里会强制松开Caps层
+        // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+        // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+        // 
+        // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+        // 此时要按一下 Caps 恢复正常
+        // 
+        // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+        // 
+        // 在解决这个bug之前，这里会强制松开Caps层
+        EventType::KeyPress(Key::KeyN) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
+        EventType::KeyPress(Key::KeyM) => {
             app_handle.emit("active-window-toggle", ()).unwrap();
-            state._space_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
         },
 
@@ -911,20 +921,25 @@ fn layer_shift_r(
             simu_key(enigo, &state, enigo::Key::Shift, Release); simu_key(enigo, &state, enigo::Key::Control, Release);
             return HandlerResult::Block
         }
-        EventType::KeyPress(Key::KeyN) | EventType::KeyPress(Key::KeyM) => {
-            // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
-            // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
-            // 
-            // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
-            // 此时要按一下 Caps 恢复正常
-            // 
-            // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
-            // 
-            // 在解决这个bug之前，这里会强制松开Caps层
-            app_handle.emit("active-window-toggle", ()).unwrap();
-            state.shift_r_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+        // 有bug: 这里会通知前端，召唤出窗口。但窗口召唤后这里的按键监听会失效，并且鼠标无法移动，疑似卡死
+        // 但可以按 Esc 退出窗口，并再单击一下 Caps 键。能恢复正常
+        // 
+        // 问题定位: Caps 激活状态阻止了一些事件。而在新窗口中松开 Caps 无效，返回原状态后依然视为 Caps 激活态。
+        // 此时要按一下 Caps 恢复正常
+        // 
+        // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
+        // 
+        // 在解决这个bug之前，这里会强制松开Caps层
+        EventType::KeyPress(Key::KeyN) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
-        }
+        },
+        EventType::KeyPress(Key::KeyM) => {
+            app_handle.emit("active-window-toggle", ()).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
         // 未分配则禁止按下，允许其他
         EventType::KeyPress(_) => { return HandlerResult::Block },
         _ => { return HandlerResult::Allow }

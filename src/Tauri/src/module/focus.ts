@@ -34,8 +34,14 @@ export function setupAppChangeListener() {
   updateShortcuts('')
 
   // 后端通知前端显示 (超级快捷键)
-  listen('active-window-toggle', () => {
-    void toggleWindow()
+  listen('active-window-toggle', (v: any) => {
+    const payload: any = v.payload // 临时: 2|null
+    if (payload === 2) {
+      void toggleWindow(["miniEditor"])
+      return
+    } else {
+      void toggleWindow()
+    }
   })
 }
 

@@ -36,7 +36,7 @@ export class AMMiniEditor {
       parent_prefix: '',
     }
     const outterEditor = new OuterEditor();
-    outterEditor.save = (str_with_prefix: string, force_refresh?: boolean | undefined): Promise<void> => {
+    outterEditor.save = (str_with_prefix: string): Promise<void> => { // force_refresh?: boolean | undefined
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
