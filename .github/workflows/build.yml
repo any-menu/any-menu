@@ -3,7 +3,7 @@ name: Build Any-Menu
 on:
   push:
     branches: [main]
-    # tags: ['v*']
+    tags: ['**'] # tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -128,7 +128,7 @@ jobs:
           echo "Listing contents of ./dist:"
           ls -R ./dist
 
-      # 场景一：release 到固定的 beta tag
+      # 场景一：release 到正式版 tag
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/') # 有tag
         uses: ncipollo/release-action@v1
@@ -144,7 +144,7 @@ jobs:
           prerelease: false # 是否预发布
           makeLatest: true  # 是否最后一个版本
 
-      # 场景二：release 到正式版 tag
+      # 场景二：release 到固定的 beta tag
       - name: Create or Update Beta Release
         if: github.ref == 'refs/heads/main' # 没有tag
         uses: ncipollo/release-action@v1
