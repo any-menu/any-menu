@@ -188,25 +188,26 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 /** 键盘层状态 */
 struct LayerState {
     caps_active: Cell<bool>,                // 是否激活 Caps 层
-    caps_active_used: Cell<bool>,           //     是否使用过^该层
+    caps_active_used: Cell<bool>,           //     ^该层是否使用过
+    caps_active_time: Cell<Option<Instant>>,//     ^该层激活的开启时间
     caps_cursor_active: Cell<bool>,         // 是否激活 Caps_cursor 层
-    caps_cursor_active_used: Cell<bool>,    //     是否使用过^该层
+    caps_cursor_active_used: Cell<bool>,    //     ^该层是否使用过
     caps_line_active: Cell<bool>,           // 是否激活 Caps_line 层
-    caps_line_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_line_active_used: Cell<bool>,      //     ^该层是否使用过
     caps_word_active: Cell<bool>,           // 是否激活 Caps_word 层
-    caps_word_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_word_active_used: Cell<bool>,      //     ^该层是否使用过
     caps_page_active: Cell<bool>,           // 是否激活 Caps_page 层
-    caps_page_active_used: Cell<bool>,      //     是否使用过^该层
-    caps_num_active: Cell<bool>,           // 是否激活 Caps_num 层
-    caps_num_active_used: Cell<bool>,      //     是否使用过^该层
+    caps_page_active_used: Cell<bool>,      //     ^该层是否使用过
+    caps_num_active: Cell<bool>,            // 是否激活 Caps_num 层
+    caps_num_active_used: Cell<bool>,       //     ^该层是否使用过
 
     sign_active: Cell<bool>,                // 是否激活 符号层
-    sign_active_used: Cell<bool>,           //     是否使用过^该层
+    sign_active_used: Cell<bool>,           //     ^该层是否使用过
     _space_active: Cell<bool>,              // 是否激活 空格层
-    _space_active_used: Cell<bool>,         //     是否使用过^该层
-    _space_active_time: Cell<Option<Instant>>, // ^该层激活的开启时间
+    _space_active_used: Cell<bool>,         //     ^该层是否使用过
+    _space_active_time: Cell<Option<Instant>>, //  ^该层激活的开启时间
     shift_r_active: Cell<bool>,             // 是否激活 右Shift层
-    shift_r_active_used: Cell<bool>,        //     是否使用过^该层
+    shift_r_active_used: Cell<bool>,        //     ^该层是否使用过
 
     virtual_event_flag: Cell<bool>,         // 跳过虚拟行为，避免递归 (可以看作是 "虚拟层")
 }
@@ -215,6 +216,7 @@ impl LayerState {
         Self {
             caps_active: Cell::new(false),
             caps_active_used: Cell::new(false),
+            caps_active_time: Cell::new(None),
             caps_cursor_active: Cell::new(false),
             caps_cursor_active_used: Cell::new(false),
             caps_line_active: Cell::new(false),
@@ -320,12 +322,19 @@ fn layer_default_caps(
 ) -> HandlerResult {
     match event_type {
         EventType::KeyPress(Key::CapsLock) => {
-            state.caps_active.set(true);
-            state.caps_active_used.set(false);
+            if !state.caps_active.get() { // 避免长按空格频繁更新时间
+                state.caps_active.set(true);
+                state.caps_active_used.set(false);
+                state.caps_active_time.set(Some(Instant::now()));
+            }
             HandlerResult::Block // 禁用原行为
         }
         EventType::KeyRelease(Key::CapsLock) => {
-            if !state.caps_active_used.get() { // 没用过，恢复原行为
+            if !state.caps_active_used.get() &&
+                state.caps_active_time.get().map_or(false, |start_time| {
+                    start_time.elapsed() < time::Duration::from_millis(200) // >200ms 视为长按，视为行为撤销
+                })
+            { // 没用过，且非长按，恢复原行为
                 state.virtual_event_flag.set(true);
                 let _ = simulate(&EventType::KeyRelease(Key::CapsLock));
                 thread::sleep(time::Duration::from_millis(10));
@@ -337,6 +346,7 @@ fn layer_default_caps(
             state.caps_word_quit(enigo, state);
             state.caps_page_quit(enigo, state);
             state.caps_num_quit();
+            state._space_active_time.set(None);
             state.caps_active_used.set(false);
             state.caps_active.set(false);
             HandlerResult::Allow
