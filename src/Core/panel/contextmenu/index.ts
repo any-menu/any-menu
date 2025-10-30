@@ -124,7 +124,6 @@ export class ABContextMenu {
     this.isShow = false
     this.el_container.classList.remove('visible')
 
-    console.log('准备隐藏多级菜单')
     this.updateVFocus(undefined, 'clean')
 
     window.removeEventListener('click', this.visual_listener_click)

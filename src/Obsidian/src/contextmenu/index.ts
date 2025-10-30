@@ -23,8 +23,8 @@ export function registerAMContextMenu(plugin: Plugin) {
 
   // 注册命令
   plugin.addCommand({
-    id: 'any-menu-panel',
-    name: '展开 AnyMenu 面板 - 主搜索框',
+    id: 'any-menu-panel-serach',
+    name: '展开 AnyMenu 面板 - 搜索框+菜单',
     // callback: () => {},
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
       const cursorInfo = getCursorInfo(plugin, editor);
@@ -37,13 +37,23 @@ export function registerAMContextMenu(plugin: Plugin) {
     ]
   })
 
-  // 注册工具带
-  plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {
-    const cursorInfo = getCursorInfo(plugin)
-    if (cursorInfo) {
-      AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2)
-    }
+  plugin.addCommand({
+    id: 'any-menu-panel-minieditor',
+    name: '展开 AnyMenu 面板 - miniEditor',
+    // callback: () => {},
+    editorCallback: (editor, view) => {
+      const cursorInfo = getCursorInfo(plugin, editor);
+      if (cursorInfo) {
+        AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2, ["miniEditor"])
+      }
+    },
+    hotkeys: [
+      { modifiers: ["Alt"], key: "S" }
+    ]
   })
+
+  // 注册工具带
+  // plugin.addRibbonIcon('crosshair', '展开 AnyMenu 面板', () => {})
 }
 
 // #region 通用部分

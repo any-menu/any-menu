@@ -3,15 +3,20 @@ import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
 import { toggleWindow } from './window'
 
-// 黑名单
-// let APP_BLACKLIST = [
-//   '- Obsidian v',
-// ]
-// 白名单
-// AnyMenu
-
-const SHORTCUT_1 = 'Alt+A';
-// const SHORTCUT_2 = 'CommandOrControl+Space';
+const SHORTCUT_1 = 'Alt+A'
+const SHORTCUT_1_EVENT = async () => {
+  await register(SHORTCUT_1, (event) => {
+    if (event.state !== 'Pressed') return // Pressed/Released
+    void toggleWindow()
+  })
+}
+const SHORTCUT_2 = 'Alt+S'
+const SHORTCUT_2_EVENT = async () => {
+  await register(SHORTCUT_2, (event) => {
+    if (event.state !== 'Pressed') return // Pressed/Released
+    void toggleWindow(["miniEditor"])
+  })
+}
 
 /** 注册事件监听 - 聚焦窗口改变 */
 export function setupAppChangeListener() {
@@ -28,6 +33,7 @@ export function setupAppChangeListener() {
   // 启动时手动触发一次 (或让后端启动时发送一次)
   updateShortcuts('')
 
+  // 后端通知前端显示 (超级快捷键)
   listen('active-window-toggle', () => {
     void toggleWindow()
   })
@@ -49,27 +55,18 @@ async function updateShortcuts(appName: string) {
 
   // 动态注册或注销全局快捷键
   try {
-    const altAIsRegistered = await isRegistered(SHORTCUT_1) as boolean
-    // console.log(`Updating shortcut state for app: ${appName}, isInBlacklist: ${isInBlacklist}, altAIsRegistered: ${altAIsRegistered}`)
+    const is_shortcut_registered1 = await isRegistered(SHORTCUT_1) as boolean
+    const is_shortcut_registered2 = await isRegistered(SHORTCUT_2) as boolean
 
-    // 在黑名单 (不应注册快捷键)
+    // 在黑名单 (不应注册快捷键)，如果快捷键已注册，则取消注册
     if (isInBlacklist) {
-      // 如果快捷键已注册，则取消注册
-      if (altAIsRegistered) {
-        console.log(`Unregistering ${SHORTCUT_1} for blacklisted app: ${appName}`)
-        await unregister(SHORTCUT_1)
-      }
+      if (is_shortcut_registered1) await unregister(SHORTCUT_1)
+      if (is_shortcut_registered2) await unregister(SHORTCUT_2)
     }
-    // 不在黑名单 (应注册快捷键)
+    // 不在黑名单 (应注册快捷键)，如果快捷键未注册，则注册它
     else {
-      // 如果快捷键未注册，则注册它
-      if (!altAIsRegistered) {
-        console.log(`Registering ${SHORTCUT_1} for app: ${appName}`)
-        await register(SHORTCUT_1, (event) => {
-          if (event.state !== 'Pressed') return // Pressed/Released
-          void toggleWindow()
-        })
-      }
+      if (!is_shortcut_registered1) { void SHORTCUT_1_EVENT() }
+      if (!is_shortcut_registered2) { void SHORTCUT_2_EVENT() }
     }
   } catch (err) {
     console.error('Failed to update shortcut state:', err)

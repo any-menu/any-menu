@@ -63,11 +63,28 @@ export class AMPanel {
   }
 
   // TODO 添加显示项，仅显示哪几个面板这样
-  static show(x?: number, y?: number) {
-    global_el.amSearch?.show(x, y)
-    global_el.amContextMenu?.show(x, y ? y+32 : undefined)
-    global_el.amMiniEditor?.show(x, y ? y+280 : undefined,
-      global_setting.state.selectedText) // undefined 时不重置内容，否则改为 ?? ""
+  static show(x?: number, y?: number, list?: string[]) {
+    if (!list) {
+      list = ['search', 'menu']
+    }
+
+    for (const item of list) {
+      if (item == 'search') {
+        global_el.amSearch?.show(x, y)
+        if (y !== undefined) { y += 32 }
+      }
+      else if (item == 'menu') {
+        global_el.amContextMenu?.show(x, y)
+        if (y !== undefined) { y += 248 } // 不一定
+      }
+      else if (item == 'miniEditor') {
+        global_el.amMiniEditor?.show(x, y,
+          global_setting.state.selectedText) // undefined 时不重置内容，否则改为 ?? ""
+      }
+      else {
+        continue
+      }
+    }
   }
 
   static hide() {

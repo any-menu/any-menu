@@ -60,12 +60,6 @@ export class AMSearch {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
-    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
-    if (global_setting.env == 'app') {
-      if (global_setting.focusStrategy) this.el_input?.focus()
-      return
-    }
-
     this.isShow = true
     if (this.el) {
       this.el.classList.remove('am-hide')
@@ -79,6 +73,11 @@ export class AMSearch {
       this.el_input?.focus()
     })();
 
+    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
+    if (global_setting.env == 'app') {
+      return
+    }
+
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
     window.addEventListener('keydown', this.visual_listener_keydown)
@@ -87,9 +86,6 @@ export class AMSearch {
   hide() {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
-
-    // 在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换
-    if (global_setting.env == 'app') return
 
     this.isShow = false
     if (this.el) this.el.classList.add('am-hide')
@@ -108,6 +104,9 @@ export class AMSearch {
       const editor = activeView.editor
       editor.focus()
     })();
+
+    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
+    if (global_setting.env == 'app') return
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('mouseup', this.visual_listener_mouseup)

@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
 })
 
 /** 窗口切换是否显示 */
-export async function toggleWindow() {  
+export async function toggleWindow(panel_list?: string[]) {  
   try {
     const appWindow = getCurrentWindow()
     // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
@@ -38,7 +38,7 @@ export async function toggleWindow() {
     if (isFocused) {
       await hideWindow()
     } else {
-      await showWindow()
+      await showWindow(panel_list)
     }
   } catch (error) {
     console.error('Window show fail:', error)
@@ -193,7 +193,7 @@ async function cacheMenuSize() {
 }
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
-async function showWindow() {
+async function showWindow(panel_list?: string[]) {
   // 获取当前选择的文本
   // @deprecated 这里应废弃
   // - 这里的 selectedText 会被后面的 getCursorXY 覆盖
@@ -262,18 +262,17 @@ async function showWindow() {
     // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.show()
+  AMPanel.show(undefined, undefined, panel_list)
 }
 
 /** 隐藏窗口 */
 export async function hideWindow() {
-  if (!global_state.isWindowVisible) return // 可注释
-  if (global_state.isPin) return
+  if (global_state.isPin) return // 置顶状态
+  AMPanel.hide() // 隐藏面板&失焦面板
+
+  if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉
 
   const appWindow = getCurrentWindow()
 
-  await appWindow.hide(); global_state.isWindowVisible = false;
-
-  // 隐藏&失焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.hide()
+  await appWindow.hide(); global_state.isWindowVisible = false;  
 }
