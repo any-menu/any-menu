@@ -388,7 +388,7 @@ html, body, #main {
   opacity: 0.85;
 }
 .tab-root details {
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .dict-table {

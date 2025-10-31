@@ -146,6 +146,7 @@ jobs:
                 <li>Obsidian Plugin Version:
                   <ul>
                     <li>You can download the three files: main, manifest, and styles</li>
+                    <li>If you don't need the pinyin index function, you can use main-min.js and rename it to main.js instead of the original main.js, which can reduce the file size.</li>
                     <li>Or it is recommended to install using the brat plugin</li>
                     <li>Community store download method is currently under review: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
                   </ul>
@@ -161,6 +162,7 @@ jobs:
                 <li>Obsidian 插件版本:
                   <ul>
                     <li>可下载 main、mainifest、styles 三个文件</li>
+                    <li>如果你不需要拼音索引功能，可以使用 main-min.js 并重命名为 main.js 代替原来的 main.js，可以节约体积</li>
                     <li>或推荐使用 brat 插件进行安装</li>
                     <li>社区商店下载方式当前审核中: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
                   </ul>
@@ -196,6 +198,7 @@ jobs:
                   <li>Obsidian Plugin Version:
                     <ul>
                       <li>You can download the three files: main, manifest, and styles</li>
+                      <li>If you don't need the pinyin index function, you can use main-min.js and rename it to main.js instead of the original main.js, which can reduce the file size.</li>
                       <li>Or it is recommended to install using the brat plugin</li>
                       <li>Community store download method is currently under review: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
                     </ul>
@@ -211,6 +214,7 @@ jobs:
                   <li>Obsidian 插件版本:
                     <ul>
                       <li>可下载 main、mainifest、styles 三个文件</li>
+                      <li>如果你不需要拼音索引功能，可以使用 main-min.js 并重命名为 main.js 代替原来的 main.js，可以节约体积</li>
                       <li>或推荐使用 brat 插件进行安装</li>
                       <li>社区商店下载方式当前审核中: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
                     </ul>
