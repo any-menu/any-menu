@@ -25,11 +25,7 @@ jobs:
     - name: build
       run: |
         pnpm install --frozen-lockfile
-
-        # min 版
         pnpm ob:build-min
-        mv dist-min/main.js dist-min/main-min.js
-
         pnpm ob:build
     - name: upload build artifact
       if: always()
@@ -133,6 +129,7 @@ jobs:
         run: |
           echo "Listing contents of ./dist:"
           ls -R ./dist
+          mv ./dist/obsidian-any-menu/dist-min/main.js ./dist/obsidian-any-menu/main-min.js # 防止命名冲突
 
       # 场景一：release 到正式版 tag
       - name: Create Release
@@ -175,7 +172,6 @@ jobs:
 
           artifacts: |
             ./dist/obsidian-any-menu/*
-            ./dist/obsidian-any-menu/dist-min/*
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
@@ -225,7 +221,6 @@ jobs:
               </details>
           artifacts: |
             ./dist/obsidian-any-menu/*
-            ./dist/obsidian-any-menu/dist-min/*
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           commit: ${{ github.sha }} # 将 release 关联到最新的 commit
