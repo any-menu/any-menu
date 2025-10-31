@@ -116,8 +116,8 @@ export class ABContextMenu {
     this.updateVFocus(undefined, 'clean')
 
     window.addEventListener('click', this.visual_listener_click)
-    window.addEventListener('mouseup', this.visual_listener_mouseup)
     window.addEventListener('keydown', this.visual_listener_keydown)
+    window.addEventListener('mouseup', this.visual_listener_mouseup)
   }
   // 隐藏该菜单
   public hide() {
@@ -129,8 +129,8 @@ export class ABContextMenu {
     this.updateVFocus(undefined, 'clean')
 
     window.removeEventListener('click', this.visual_listener_click)
-    window.removeEventListener('mouseup', this.visual_listener_mouseup)
     window.removeEventListener('keydown', this.visual_listener_keydown)
+    window.removeEventListener('mouseup', this.visual_listener_mouseup)
   }
   // 动态事件组。菜单显示时注册，隐藏时销毁
   // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单

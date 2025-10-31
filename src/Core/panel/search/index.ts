@@ -49,7 +49,7 @@ export class AMSearch {
     this.amSuggestion = AMSuggestion.factory(this.el_input, this.el)
   }
 
-  // ------------- 显示隐藏 -------------
+  // #region 显示/隐藏
 
   private isShow: boolean = false
   
@@ -70,14 +70,12 @@ export class AMSearch {
       this.el_input?.focus()
     })();
 
-    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
-    if (global_setting.env == 'app') {
-      return
-    }
-
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
     window.addEventListener('keydown', this.visual_listener_keydown)
+
+    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
+    // if (global_setting.env == 'app') return
   }
 
   hide() {
@@ -102,12 +100,12 @@ export class AMSearch {
       editor.focus()
     })();
 
-    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
-    if (global_setting.env == 'app') return
-
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('mouseup', this.visual_listener_mouseup)
     window.removeEventListener('keydown', this.visual_listener_keydown)
+
+    // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
+    // if (global_setting.env == 'app') return
   }
 
   // 动态事件组。菜单显示时注册，隐藏时销毁
@@ -126,4 +124,6 @@ export class AMSearch {
     if (!this.isShow) return
     if (ev.key === 'Escape') this.hide()
   }
+
+  // #endregion
 }

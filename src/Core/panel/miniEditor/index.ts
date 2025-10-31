@@ -44,6 +44,8 @@ export class AMMiniEditor {
     this.editableBlock_cm.emit_render()
   }
 
+  // #region 显示/隐藏菜单
+
   show(x?: number, y?: number, new_text?: string, is_focus: boolean = false) {
     this.el.classList.remove('am-hide');
 
@@ -60,9 +62,27 @@ export class AMMiniEditor {
       if (!global_setting.focusStrategy) return
       this.editableBlock_cm.focus(0, this.cache_text.length + 2) // [!code warn] 我也没明白为什么要+2
     })();
+
+    window.addEventListener('click', this.visual_listener_click)
+    window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
   hide() {
     this.el.classList.add('am-hide');
+
+    window.removeEventListener('click', this.visual_listener_click)
+    window.removeEventListener('keydown', this.visual_listener_keydown)
   }
+
+  visual_listener_click = (ev: MouseEvent) => {
+    if (!this.el) return
+    if (this.el.contains(ev.target as Node)) return
+    this.hide()
+  }
+
+  visual_listener_keydown = (ev: KeyboardEvent) => {
+    if (ev.key === 'Escape') this.hide()
+  }
+
+  // #endregion
 }
