@@ -385,6 +385,7 @@ html, body, #main {
   right: 16px;
   bottom: 16px;
   padding: 0 18px;
+  opacity: 0.85;
 }
 
 .dict-table {

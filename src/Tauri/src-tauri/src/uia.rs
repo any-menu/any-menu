@@ -16,6 +16,8 @@
  * - U系列是 uiautomation api
  *   - U2 | 光标 | 从未成功
  *   - U3 | 编辑器窗口| 恒成功，但似乎有误差 (概率失败)
+ * 
+ * (这里的vscode屏幕增强可以按 `Alt+Shift+F1` 可以开启)
  */
 
 use log::{debug, warn, info, error};
