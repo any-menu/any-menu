@@ -12,11 +12,9 @@ import { setupAppChangeListener } from './focus'
 setupAppChangeListener()
 
 export const global_state: {
-  isPin: boolean // 是否置顶
   isWindowVisible: boolean // 当前窗口是否可见 (可以去掉而是实时获取)
   hideTimeout: number | null // 定时器，用于延时隐藏、防抖 (感觉不太需要? 延时加多了反而有种性能差的感觉)
 } = {
-  isPin: false,
   isWindowVisible: false,
   hideTimeout:  null
 }
@@ -267,7 +265,7 @@ async function showWindow(panel_list?: string[]) {
 
 /** 隐藏窗口 */
 export async function hideWindow() {
-  if (global_state.isPin) return // 置顶状态
+  if (global_setting.state.isPin) return // 置顶状态
   AMPanel.hide() // 隐藏面板&失焦面板
 
   if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉

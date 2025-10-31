@@ -79,6 +79,7 @@ export class AMSearch {
   }
 
   hide() {
+    if (global_setting.state.isPin) return
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 

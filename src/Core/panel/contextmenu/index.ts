@@ -121,6 +121,7 @@ export class ABContextMenu {
   }
   // 隐藏该菜单
   public hide() {
+    if (global_setting.state.isPin) return
     if (!this.el_container) return
     this.isShow = false
     this.el_container.classList.add('am-hide')

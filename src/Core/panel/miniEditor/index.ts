@@ -25,6 +25,10 @@ export class AMMiniEditor {
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
     this.hide()
 
+    // buttons
+    const editor = document.createElement('div'); this.el.appendChild(editor);
+    const buttons = document.createElement('div'); this.el.appendChild(buttons);
+
     // EditableBlock
     this.cache_text = 'test Mini Editor2' // TODO tmp
     const rangeSpec_None: RangeSpec_None = {
@@ -40,7 +44,7 @@ export class AMMiniEditor {
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
-    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, this.el, outterEditor)
+    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, editor, outterEditor)
     this.editableBlock_cm.emit_render()
   }
 
@@ -68,6 +72,7 @@ export class AMMiniEditor {
   }
 
   hide() {
+    if (global_setting.state.isPin) return
     this.el.classList.add('am-hide');
 
     window.removeEventListener('click', this.visual_listener_click)
