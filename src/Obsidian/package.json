@@ -9,6 +9,7 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "pnpm copy_style && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"build-min": "pnpm copy_style && tsc -noEmit -skipLibCheck && node esbuild.config.min.mjs production",
 		"copy_style": "copyfiles --flat ../../src/Core/styles/styles.css ../../"
 	},
 	"keywords": [],

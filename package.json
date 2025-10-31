@@ -9,6 +9,7 @@
     "tr:dev": "cd ./src/Tauri && pnpm tauri dev",
     "tr:build": "cd ./src/Tauri && pnpm tauri build",
     "ob:build": "cd ./src/Obsidian && pnpm build",
+    "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

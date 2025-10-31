@@ -25,6 +25,11 @@ jobs:
     - name: build
       run: |
         pnpm install --frozen-lockfile
+
+        # min 版
+        pnpm ob:build-min
+        mv dist-min/main.js dist-min/main-min.js
+
         pnpm ob:build
     - name: upload build artifact
       if: always()
@@ -32,6 +37,7 @@ jobs:
       with:
         name: obsidian-any-menu
         path: |
+          dist-min/main.js
           manifest.json
           main.js
           styles.css
@@ -169,6 +175,7 @@ jobs:
 
           artifacts: |
             ./dist/obsidian-any-menu/*
+            ./dist/obsidian-any-menu/dist-min/*
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
@@ -218,6 +225,7 @@ jobs:
               </details>
           artifacts: |
             ./dist/obsidian-any-menu/*
+            ./dist/obsidian-any-menu/dist-min/*
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           commit: ${{ github.sha }} # 将 release 关联到最新的 commit
