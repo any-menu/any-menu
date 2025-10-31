@@ -61,7 +61,6 @@ window.addEventListener("DOMContentLoaded", () => {
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { initMenu } from './panel'
-import { global_state } from './module/window'
 
 // 前端模块
 window.addEventListener("DOMContentLoaded", () => {
