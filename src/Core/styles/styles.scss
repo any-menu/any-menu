@@ -454,6 +454,10 @@ html, body, #main {
     padding: 0 18px;
     opacity: 0.85;
   }
+
+  details {
+    white-space: nowrap;
+  }
 }
 
 .dict-table {

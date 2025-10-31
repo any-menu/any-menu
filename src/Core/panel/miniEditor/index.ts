@@ -28,6 +28,9 @@ export class AMMiniEditor {
     // buttons
     const editor = document.createElement('div'); this.el.appendChild(editor);
     const buttons = document.createElement('div'); this.el.appendChild(buttons);
+    const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Save';
+    const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
+    const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
 
     // EditableBlock
     this.cache_text = 'test Mini Editor2' // TODO tmp

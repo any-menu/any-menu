@@ -387,6 +387,9 @@ html, body, #main {
   padding: 0 18px;
   opacity: 0.85;
 }
+.tab-root details {
+  white-space: nowrap;
+}
 
 .dict-table {
   overflow-x: auto;
