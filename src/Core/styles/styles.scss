@@ -348,6 +348,9 @@ html, body, #main {
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
+.tab-root-parent { // 不一定有
+  padding: 0px;
+}
 .tab-root {
   padding: 0px;
   position: relative;

@@ -298,6 +298,10 @@ html, body, #main {
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
+.tab-root-parent {
+  padding: 0px;
+}
+
 .tab-root {
   padding: 0px;
   position: relative;

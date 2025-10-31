@@ -12,9 +12,10 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   // local_dict_list.length = 0
   // web_dict_list.length = 0
 
-  el.classList.add('tab-root')
-  const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
-  const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
+  el.classList.add('tab-root-parent');
+  const tab_root = document.createElement('div'); el.appendChild(tab_root); tab_root.classList.add('tab-root');
+  const tab_nav_container = document.createElement('div'); tab_root.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
+  const tab_content_container = document.createElement('div'); tab_root.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
 
   initSettingTab_miniDocs(tab_nav_container, tab_content_container)
   // TODO 应该按先本地再云库的顺序依次而非异步更新，1. 后者不是必须加载的 2. 后者需要先检查本地是否已存在
