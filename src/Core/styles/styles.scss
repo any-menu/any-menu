@@ -349,11 +349,13 @@ html, body, #main {
 
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root-parent { // 不一定有
-  padding: 0px;
+  padding: 0px !important;
 }
 .tab-root {
   padding: 0px;
   position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 
   background-color: var(--ab-tab-root-bg-color);

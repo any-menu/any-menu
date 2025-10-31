@@ -16,10 +16,13 @@ export class AMSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.textContent = ""
 
-    const { tab_nav_container, tab_content_container } = initSettingTab_1(containerEl)
+    containerEl.classList.add('tab-root-parent');
+    const tab_root = document.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
+
+    const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
-    containerEl.createEl('button',
+    tab_root.createEl('button',
       { text: 'Refresh plugin', cls: 'am-ob-setting-btn' },
       (el) => {
         el.onclick = async () => {
