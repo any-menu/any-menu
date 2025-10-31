@@ -136,6 +136,37 @@ jobs:
           token: ${{ secrets.ANYMENU }}
           # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
           name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
+          body: |
+            <details>
+              <summary>Download tips (English)</summary>
+              <ul>
+                <li>Obsidian Plugin Version:
+                  <ul>
+                    <li>You can download the three files: main, manifest, and styles</li>
+                    <li>Or it is recommended to install using the brat plugin</li>
+                    <li>Community store download method is currently under review: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
+                  </ul>
+                </li>
+                <li>Windows App Version: Download the msi or nsis file</li>
+                <li>Linux/macOS App Version: Pending future development and adaptation</li>
+              </ul>
+            </details>
+
+            <details>
+              <summary>下载提示 (中文)</summary>
+              <ul>
+                <li>Obsidian 插件版本:
+                  <ul>
+                    <li>可下载 main、mainifest、styles 三个文件</li>
+                    <li>或推荐使用 brat 插件进行安装</li>
+                    <li>社区商店下载方式当前审核中: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
+                  </ul>
+                </li>
+                <li>Windows App 版本: 下载 msi 或 nsis 文件</li>
+                <li>Linux/MacOS App 版本: 需要等待后期开发适配开发</li>
+              </ul>
+            </details>
+
           artifacts: |
             ./dist/obsidian-any-menu/*
             ./dist/any-menu-windows-msi/*
@@ -156,11 +187,35 @@ jobs:
             非手动的 beta 版本，与手动 beta 版本不同的是，每次 commit 都会更新。
             这也导致了这个版本有可能是存在bug或不可用的。仅供测试使用
 
-            > 下载 tips:
-            > 
-            > - obsidian 用户下载 main、mainifest、styles 三个文件。或更推荐使用 brat 进行安装
-            > - windows 用户下载 msi 或 nsis 文件
-            > - linux 等其他平台开发中
+            <details>
+                <summary>Download tips (English)</summary>
+                <ul>
+                  <li>Obsidian Plugin Version:
+                    <ul>
+                      <li>You can download the three files: main, manifest, and styles</li>
+                      <li>Or it is recommended to install using the brat plugin</li>
+                      <li>Community store download method is currently under review: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
+                    </ul>
+                  </li>
+                  <li>Windows App Version: Download the msi or nsis file</li>
+                  <li>Linux/macOS App Version: Pending future development and adaptation</li>
+                </ul>
+              </details>
+
+              <details>
+                <summary>下载提示 (中文)</summary>
+                <ul>
+                  <li>Obsidian 插件版本:
+                    <ul>
+                      <li>可下载 main、mainifest、styles 三个文件</li>
+                      <li>或推荐使用 brat 插件进行安装</li>
+                      <li>社区商店下载方式当前审核中: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
+                    </ul>
+                  </li>
+                  <li>Windows App 版本: 下载 msi 或 nsis 文件</li>
+                  <li>Linux/MacOS App 版本: 需要等待后期开发适配开发</li>
+                </ul>
+              </details>
           artifacts: |
             ./dist/obsidian-any-menu/*
             ./dist/any-menu-windows-msi/*
