@@ -67,7 +67,7 @@ export class API {
       isParseJson: true,
     })
 
-    console.log('giteeGetDirectory3 res', res)
+    if (global_setting.isDebug) console.log('giteeGetDirectory3 res', res)
 
     // if (res && res.data && res.data.text) {
     //   // Gitee API returns content base64 encoded, so we need to decode it.
@@ -96,7 +96,7 @@ export class API {
       isParseJson: true // The API response is JSON
     })
 
-    console.log('giteeGetDict3 res', res)
+    if (global_setting.isDebug) console.log('giteeGetDict3 res', res)
 
     // if (res && res.data && res.data.content) {
     //   // Content is base64 encoded

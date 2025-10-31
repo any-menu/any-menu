@@ -1,4 +1,5 @@
 // 定义插件必须实现的接口
+import { global_setting } from '../setting';
 import { PluginInterface } from './PluginInterface';
 
 /**
@@ -11,7 +12,7 @@ export class PluginManager {
   dict_list: Record<string, PluginInterface> = {};
 
   constructor() {
-    console.log('>>> PluginManager initialized'); // 验证单例
+    if (global_setting.isDebug) console.log('>>> PluginManager initialized'); // 验证单例
   }
 
   // 加载并验证插件
@@ -100,7 +101,7 @@ export class PluginManager {
       if (plugin.onLoad) plugin.onLoad();
 
       const result = await plugin.process('hello world');
-      console.log(result); // "HELLO WORLD"
+      if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
       if (plugin.onUnload) plugin.onUnload();
     } catch (error) {
       console.error('插件错误:', error);

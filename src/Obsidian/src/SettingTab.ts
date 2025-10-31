@@ -14,7 +14,7 @@ export class AMSettingTab extends PluginSettingTab {
     if (this.isInitialized) return
     this.isInitialized = true
     const { containerEl } = this;
-    containerEl.innerHTML = ""
+    containerEl.textContent = ""
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(containerEl)
     initSettingTab_2(tab_nav_container, tab_content_container)

@@ -3,6 +3,7 @@
  * take from: https://github.com/Obsidian-Forge/obsidian-i18n/
  */
 
+import { global_setting } from '@/Core/setting'
 import { RequestUrlParam, requestUrl } from 'obsidian'
 
 /**
@@ -83,11 +84,11 @@ export class API {
         url: url,
         method: 'GET'
       };
-      console.log(RequestUrlParam)
+      if (global_setting.isDebug) console.log(RequestUrlParam)
       const response = await requestUrl(RequestUrlParam);
       return { 'code': 0, 'data': response.text };
     } catch (error) {
-      console.log(error)
+      console.error(error)
       return { 'code': -1, 'msg': error };
     }
   }
@@ -173,7 +174,7 @@ export class API {
           path: path
         }),
       };
-      console.log(RequestUrlParam);
+      if (global_setting.isDebug) console.log(RequestUrlParam);
       const response = await requestUrl(RequestUrlParam);
       return { 'code': 0, 'data': response.json };
     } catch (error) {
@@ -296,11 +297,11 @@ export class API {
         url: `${this.giteeApiUrl}releases/latest`,
         method: 'GET'
       };
-      console.log(RequestUrlParam)
+      if (global_setting.isDebug) console.log(RequestUrlParam)
       const response = await requestUrl(RequestUrlParam);
       return { 'code': 0, 'data': response.json };
     } catch (error) {
-      console.log(error)
+      console.error(error)
       return { 'code': -1, 'msg': error };
     }
   }

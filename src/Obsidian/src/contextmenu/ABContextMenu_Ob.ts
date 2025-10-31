@@ -152,7 +152,7 @@ function registerABContextMenuDemo(plugin: Plugin) {
             .setIcon("document") // 使用内置图标
             .onClick(async () => {
               new Notification(`你点击了文件: ${file.path}`)
-              console.log(`文件路径: ${file.path}`)
+              // console.log(`文件路径: ${file.path}`)
             });
         });
       }

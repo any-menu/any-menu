@@ -24,7 +24,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   // 注册命令
   plugin.addCommand({
     id: 'any-menu-panel-serach',
-    name: '展开 AnyMenu 面板 - 搜索框+菜单',
+    name: 'Show panel: search and menu',
     // callback: () => {},
     editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
       const cursorInfo = getCursorInfo(plugin, editor);
@@ -32,14 +32,14 @@ export function registerAMContextMenu(plugin: Plugin) {
         AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2)
       }
     },
-    hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
-      { modifiers: ["Alt"], key: "A" }
-    ]
+    // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
+    //   { modifiers: ["Alt"], key: "A" }
+    // ]
   })
 
   plugin.addCommand({
     id: 'any-menu-panel-minieditor',
-    name: '展开 AnyMenu 面板 - miniEditor',
+    name: 'Show panel: miniEditor',
     // callback: () => {},
     editorCallback: (editor, view) => {
       const cursorInfo = getCursorInfo(plugin, editor);
@@ -47,9 +47,9 @@ export function registerAMContextMenu(plugin: Plugin) {
         AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2, ["miniEditor"])
       }
     },
-    hotkeys: [
-      { modifiers: ["Alt"], key: "S" }
-    ]
+    // hotkeys: [
+    //   { modifiers: ["Alt"], key: "S" }
+    // ]
   })
 
   // 注册工具带

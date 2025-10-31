@@ -100,7 +100,7 @@ export default class AnyMenuPlugin extends Plugin {
   // settings: ABSettingInterface
 
   async onload() {
-    console.log('>>> Loading plugin AnyMenu')
+    if (global_setting.isDebug) console.log('>>> Loading plugin AnyMenu')
 
     // #region api 适配2 (Ob/App/Other 环境)
     // 这部分是需要有 plugin 对象才能进行的初始化
@@ -251,6 +251,6 @@ export default class AnyMenuPlugin extends Plugin {
   onunload() {
     document.body.querySelectorAll('.am-context-menu').forEach(el => el.remove())
     document.body.querySelectorAll('.am-search').forEach(el => el.remove())
-    console.log('<<< Unloading plugin AnyMenu')
+    if (global_setting.isDebug) console.log('<<< Unloading plugin AnyMenu')
   }
 }
