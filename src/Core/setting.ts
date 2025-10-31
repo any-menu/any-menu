@@ -69,7 +69,7 @@ export const global_setting: {
   api: {
     readFile: (relPath: string) => Promise<string | null>
     readFolder: (relPath: string) => Promise<string[]>
-    writeFile: (relPath: string, content: string) => Promise<boolean>
+    writeFile: (relPath: string, content: string) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>

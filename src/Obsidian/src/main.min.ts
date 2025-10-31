@@ -187,6 +187,17 @@ export default class AnyMenuPlugin extends Plugin {
       const targetPath = (isBasePluginPath) ? `${pluginBaseDir}/${relPath}` : `${relPath}`
 
       try {
+        // 提取目录路径
+        // 如果路径中包含'/'，则最后一个'/'之前的部分是目录
+        // 如果路径不包含'/'，则表示文件在根目录，没有需要创建的子目录
+        const dirPath = targetPath.includes('/') ? targetPath.substring(0, targetPath.lastIndexOf('/')) : null;
+
+        // 如果存在目录路径，并且该目录尚不存在，则创建它
+        if (dirPath && !(await app.vault.adapter.exists(dirPath))) {
+          await app.vault.adapter.mkdir(dirPath);
+        }
+
+        // 写入文件
         await app.vault.adapter.write(targetPath, content);
         return true;
       } catch (error) {
