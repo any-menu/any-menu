@@ -25,13 +25,6 @@ export class AMMiniEditor {
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
     this.hide()
 
-    // buttons
-    const editor = document.createElement('div'); this.el.appendChild(editor);
-    const buttons = document.createElement('div'); this.el.appendChild(buttons);
-    const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Save';
-    const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
-    const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
-
     // EditableBlock
     this.cache_text = 'test Mini Editor2' // TODO tmp
     const rangeSpec_None: RangeSpec_None = {
@@ -47,8 +40,15 @@ export class AMMiniEditor {
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
-    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, editor, outterEditor)
+    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, this.el, outterEditor)
     this.editableBlock_cm.emit_render()
+
+    // buttons
+    // const editor = document.createElement('div'); this.el.appendChild(editor);
+    const buttons = document.createElement('div'); this.el.appendChild(buttons); buttons.classList.add('am-mini-editor-buttons');
+    const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Send';
+    const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
+    const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
   }
 
   // #region 显示/隐藏菜单

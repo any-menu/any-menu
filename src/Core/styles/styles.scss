@@ -339,10 +339,25 @@ html, body, #main {
   z-index: 10;
   flex-direction: column;
 
-  .editableblock-cm {
+  >.editableblock-cm {
     height: 100%;
     .cm-editor {
       height: 100%;
+    }
+  }
+
+  >.am-mini-editor-buttons {
+    margin: 2px 0 0 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+
+    >button {
+      height: 24px;
+      font-size: 14px;
+      padding: 0 12px;
+      opacity: 0.85;
+      border-radius: 10px;
     }
   }
 }
@@ -552,19 +567,19 @@ html, body, #main {
     text-align: center;
   }
 
-  input,
-  button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    // color: var(--am-text-color);
-    // background-color: var(--am-background-color);
-    // transition: border-color 0.25s;
-    // box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-  }
+  // input,
+  // button {
+  //   // border-radius: 8px;
+  //   // border: 1px solid transparent;
+  //   // padding: 0 1.2em;
+  //   // font-size: 1em;
+  //   // font-weight: 500;
+  //   // font-family: inherit;
+  //   // color: var(--am-text-color);
+  //   // background-color: var(--am-background-color);
+  //   // transition: border-color 0.25s;
+  //   // box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  // }
 
   button {
     cursor: pointer;

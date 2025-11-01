@@ -290,11 +290,24 @@ html, body, #main {
   z-index: 10;
   flex-direction: column;
 }
-.am-mini-editor .editableblock-cm {
+.am-mini-editor > .editableblock-cm {
   height: 100%;
 }
-.am-mini-editor .editableblock-cm .cm-editor {
+.am-mini-editor > .editableblock-cm .cm-editor {
   height: 100%;
+}
+.am-mini-editor > .am-mini-editor-buttons {
+  margin: 2px 0 0 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.am-mini-editor > .am-mini-editor-buttons > button {
+  height: 24px;
+  font-size: 14px;
+  padding: 0 12px;
+  opacity: 0.85;
+  border-radius: 10px;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
@@ -470,16 +483,6 @@ html, body, #main {
 }
 #main h1, #am-config h1 {
   text-align: center;
-}
-#main input,
-#main button, #am-config input,
-#am-config button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
 }
 #main button, #am-config button {
   cursor: pointer;
