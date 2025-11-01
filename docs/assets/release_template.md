@@ -23,7 +23,7 @@
         <li>社区商店下载方式当前审核中: https://github.com/obsidianmd/obsidian-releases/pull/8345</li>
       </ul>
     </li>
-    <li>Windows App 版本: 下载 msi 或 nsis 文件</li>
-    <li>Linux/MacOS App 版本: 需要等待后期开发适配开发</li>
+    <li>Windows App 版本: 下载 .msi 或 .exe 文件</li>
+    <li>Linux/MacOS App 版本: 需要等待后期开发适配</li>
   </ul>
 </details>
