@@ -46,9 +46,14 @@ export class AMMiniEditor {
     // buttons
     // const editor = document.createElement('div'); this.el.appendChild(editor);
     const buttons = document.createElement('div'); this.el.appendChild(buttons); buttons.classList.add('am-mini-editor-buttons');
-    const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Send';
+    const btn_send = document.createElement('button'); buttons.appendChild(btn_send); btn_send.textContent = 'Send';
+      btn_send.title = 'Ctrl+Enter';
+      btn_send.onclick = () => {
+        global_setting.api.sendText(this.cache_text)
+      }
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
     const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
+    
   }
 
   // #region 显示/隐藏菜单
@@ -89,7 +94,20 @@ export class AMMiniEditor {
   }
 
   visual_listener_keydown = (ev: KeyboardEvent) => {
-    if (ev.key === 'Escape') this.hide()
+    if (ev.key === 'Escape') {
+      ev.preventDefault()
+      this.hide()
+      return
+    }
+    else if (ev.key === 'Enter' && ev.ctrlKey) {
+      // 阻止Enter原行为，避免输出结果带尾换行
+      // ev.preventDefault() // 不过事件组织的话顺序不对，优先级不够。改为字符串修改
+      if (this.cache_text.endsWith('\n')) this.cache_text = this.cache_text.slice(0, -1)
+      // console.log(`MiniEditor Ctrl+Enter send text: "${this.cache_text}"`);
+
+      global_setting.api.sendText(this.cache_text)
+      return
+    }
   }
 
   // #endregion
