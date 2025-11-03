@@ -3,6 +3,7 @@ import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
 import { toggleWindow } from './window'
 
+// 显示面板: 搜索框+菜单
 const SHORTCUT_1 = 'Alt+A'
 const SHORTCUT_1_EVENT = async () => {
   await register(SHORTCUT_1, (event) => {
@@ -10,11 +11,27 @@ const SHORTCUT_1_EVENT = async () => {
     void toggleWindow()
   })
 }
+
+// 显示面板: 迷你编辑器
 const SHORTCUT_2 = 'Alt+S'
 const SHORTCUT_2_EVENT = async () => {
   await register(SHORTCUT_2, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
     void toggleWindow(["miniEditor"])
+  })
+}
+
+// 显示面板: 当前窗口信息 (仅debug模式开启)
+const SHORTCUT_3 = 'Alt+D'
+const SHORTCUT_3_EVENT = async () => {
+  if (global_setting.isDebug == false) {
+    console.warn('Debug mode is off, shortcut Alt+D will not be registered')
+    return
+  }
+  await register(SHORTCUT_3, (event) => {
+    if (event.state !== 'Pressed') return // Pressed/Released
+    global_setting.state.infoText = ''
+    void toggleWindow(["info"])
   })
 }
 
@@ -63,16 +80,19 @@ async function updateShortcuts(appName: string) {
   try {
     const is_shortcut_registered1 = await isRegistered(SHORTCUT_1) as boolean
     const is_shortcut_registered2 = await isRegistered(SHORTCUT_2) as boolean
+    const is_shortcut_registered3 = await isRegistered(SHORTCUT_3) as boolean
 
     // 在黑名单 (不应注册快捷键)，如果快捷键已注册，则取消注册
     if (isInBlacklist) {
       if (is_shortcut_registered1) await unregister(SHORTCUT_1)
       if (is_shortcut_registered2) await unregister(SHORTCUT_2)
+      if (is_shortcut_registered3) await unregister(SHORTCUT_3)
     }
     // 不在黑名单 (应注册快捷键)，如果快捷键未注册，则注册它
     else {
       if (!is_shortcut_registered1) { void SHORTCUT_1_EVENT() }
       if (!is_shortcut_registered2) { void SHORTCUT_2_EVENT() }
+      if (!is_shortcut_registered3) { void SHORTCUT_3_EVENT() }
     }
   } catch (err) {
     console.error('Failed to update shortcut state:', err)

@@ -54,6 +54,7 @@ export const global_setting: {
   state: {
     isPin: boolean, // 置顶面板和子面板 (主要用于debug，避免面板在调试过程中失焦而隐藏)
     selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
+    infoText: string, // 当前信息文本 (仅debug模式会注册info面板，从而才会使用这里)
   },
   /**
    * 适配在各种平台及环境中，会有所不同的一些api
@@ -104,6 +105,7 @@ export const global_setting: {
   state: {
     isPin: false,
     selectedText: undefined,
+    infoText: '',
   },
   api: {
     readFile: async () => { console.error("需实现 api.readFile 方法"); return null },

@@ -72,7 +72,7 @@ export class AMMiniEditor {
     ;(() => {
       if (!is_focus) return
       if (!global_setting.focusStrategy) return
-      this.editableBlock_cm.focus(0, this.cache_text.length + 2) // [!code warn] 我也没明白为什么要+2
+      this.editableBlock_cm.focus(0, this.cache_text.length + 2) // [!code warn] 我也没明白为什么要+2，好像每行都要，换行符? 还是原依赖库有bug
     })();
 
     window.addEventListener('click', this.visual_listener_click)

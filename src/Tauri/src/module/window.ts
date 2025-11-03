@@ -194,6 +194,8 @@ import { global_setting } from '../../../Core/setting'
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow(panel_list?: string[]) {
+  if (global_setting.isDebug) global_setting.state.infoText = ""
+
   // 获取当前选择的文本
   // @deprecated 这里应废弃
   // - 这里的 selectedText 会被后面的 getCursorXY 覆盖
@@ -208,12 +210,15 @@ async function showWindow(panel_list?: string[]) {
   // step1. 鼠标位置 (类似于quciker app)
   const appWindow = getCurrentWindow()
   const cursor = await cursorPosition()
+  if (global_setting.isDebug) global_setting.state.infoText += `[mousePosition]\nx:${cursor.x}, y:${cursor.y}\n\n`
   cursor.x += 0
   cursor.y += 2
-  // console.log('鼠标坐标:', cursor);
 
   // step2. 光标位置 (类似于windows自带的 `win+.` 面板)
+  // 注意: 这里会同时自动更新 selectedText
   let cursor2 = await global_setting.api.getCursorXY()
+  if (global_setting.isDebug) global_setting.state.infoText += `[cursorPosition]\nx:${cursor2.x}, y:${cursor2.y}\n\n`
+  if (global_setting.isDebug) global_setting.state.infoText += `[selectedText]\ntext:${global_setting.state.selectedText}\n\n`
   let cursor2_flag = false // 是否成功获取到光标坐标
   // console.log('光标坐标:', cursor);
   // -1 表示获取不到光标坐标，可以使用鼠标坐标
@@ -238,15 +243,17 @@ async function showWindow(panel_list?: string[]) {
   // 此处也可以计算屏幕中间位置，作为菜单的生成位置 (类似于 wox/utools app)
   // 默认预留windows状态栏高度48px
   let screenSize = await global_setting.api.getScreenSize()
+  if (global_setting.isDebug) global_setting.state.infoText += `[screenSize]\nwidth:${screenSize.width}, height:${screenSize.height}\n\n`
   screenSize.height -= 48
   // console.log('屏幕尺寸:', screenSize);
 
   // step4. 最终坐标。触底对齐/反向显示 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
   // TODO 纠正x轴坐标，目前仅纠正y轴坐标
   const panel_size = AMPanel.get_size(panel_list)
-  const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, cursor2_flag ? "revert" : "side")
+  const over_mode = cursor2_flag ? "revert" : "side"
+  const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
   cursor.x = cursor3.x; cursor.y = cursor3.y;
-  console.log('最终坐标:', cursor);
+  if (global_setting.isDebug) global_setting.state.infoText += `[finialPosition]\nover_mode: ${over_mode}, x:${cursor.x}, y:${cursor.y}\n\n`
 
   // step5. 应用坐标并显示窗口
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
