@@ -57,7 +57,7 @@ export function registerAMContextMenu(plugin: Plugin) {
 
     // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
     const panel_size = AMPanel.get_size()
-    const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor)
+    const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
     // 3. 显示面板
     AMPanel.show(cursor3.x + 2, cursor3.y + 2, panel_names)

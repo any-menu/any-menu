@@ -129,6 +129,9 @@ export class AMPanel {
    * @param panel_size 显示的面板大小
    * @param cursor 光标位置
    * @param mode 纠正模式，反向显示 or 靠边显示。TODO x和y模式应该可以分别设置
+   *   目前我的一个建议是，若基于鼠标位置显示，则靠边；
+   *   若是基于光标位置显示，则反向显示 (避免遮挡当前输入内容)
+   *   TODO 如果是 revert 模式，应该通知页面倒置建议栏的位置
    */
   static fix_position(
     screen_size: {width: number, height: number},
@@ -136,12 +139,13 @@ export class AMPanel {
     cursor: { x: number, y: number },
     mode: "revert"|"side" = "side"
   ): {x: number, y: number} {
-    const side_gap = 4 // 靠边间隙
-    
+    const side_gap = 4    // 靠边间隙
+    const line_height = 24 // 反向显示时，需要减行高
+
     // y轴溢出
     if (screen_size.height - side_gap < cursor.y + panel_size.height) {
       if (mode == "revert") { // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
-        cursor.y = cursor.y - panel_size.height
+        cursor.y = cursor.y - line_height - panel_size.height
       } else {
         cursor.y = screen_size.height - side_gap - panel_size.height
         cursor.x += 4 // 避免变成 `<-->` 光标，好看一些

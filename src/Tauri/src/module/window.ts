@@ -244,7 +244,7 @@ async function showWindow(panel_list?: string[]) {
   // step4. 最终坐标。触底对齐/反向显示 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
   // TODO 纠正x轴坐标，目前仅纠正y轴坐标
   const panel_size = AMPanel.get_size(panel_list)
-  const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor)
+  const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, cursor2_flag ? "revert" : "side")
   cursor.x = cursor3.x; cursor.y = cursor3.y;
   console.log('最终坐标:', cursor);
 
