@@ -95,4 +95,68 @@ export class AMPanel {
     global_el.amContextMenu?.hide()
     global_el.amMiniEditor?.hide()
   }
+
+  // TODO 目前的一个问题在于: 用户无法很好地自定义css
+  //   如果用户需要调整尺寸，可能最后需要提供一个设置配置，去修改那里的宽高
+  // TODO 暂不支持宽度计算
+  static get_size(list?: string[]): {width: number, height: number} {
+    if (!list) {
+      list = ['search', 'menu']
+    }
+
+    let width = 0
+    let height = 0
+    for (const item of list) {
+      if (item == 'search') {
+        height += 32
+      }
+      else if (item == 'menu') {
+        height += 248
+      }
+      else if (item == 'miniEditor') {
+        height += 276
+      }
+      else {
+        continue
+      }
+    }
+
+    return { width, height }
+  }
+
+  /** 用屏幕/窗口大小位置纠正光标位置
+   * @param screen_size 屏幕/窗口大小
+   * @param panel_size 显示的面板大小
+   * @param cursor 光标位置
+   * @param mode 纠正模式，反向显示 or 靠边显示。TODO x和y模式应该可以分别设置
+   */
+  static fix_position(
+    screen_size: {width: number, height: number},
+    panel_size: {width: number, height: number},
+    cursor: { x: number, y: number },
+    mode: "revert"|"side" = "side"
+  ): {x: number, y: number} {
+    const side_gap = 4 // 靠边间隙
+    
+    // y轴溢出
+    if (screen_size.height - side_gap < cursor.y + panel_size.height) {
+      if (mode == "revert") { // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
+        cursor.y = cursor.y - panel_size.height
+      } else {
+        cursor.y = screen_size.height - side_gap - panel_size.height
+        cursor.x += 4 // 避免变成 `<-->` 光标，好看一些
+      }
+    }
+
+    // // x轴溢出 TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
+    // if (screen_size.width - side_gap < cursor.x + panel_size.width) {
+    //   if (mode == "revert") {
+    //     cursor.x = cursor.x - panel_size.width
+    //   } else {
+    //     cursor.x = screen_size.width - side_gap - panel_size.width
+    //   }
+    // }
+
+    return { x: cursor.x, y: cursor.y }
+  }
 }

@@ -26,11 +26,21 @@ export function registerAMContextMenu(plugin: Plugin) {
     id: 'any-menu-panel-serach',
     name: 'Show panel: search and menu',
     // callback: () => {},
-    editorCallback: (editor, view) => { // 仅于编辑器界面才能触发的回调
-      const cursorInfo = getCursorInfo(plugin, editor);
-      if (cursorInfo) {
-        AMPanel.show(cursorInfo.pos.right + 2, cursorInfo.pos.bottom + 2)
-      }
+    editorCallback: async (editor, view) => { // 仅于编辑器界面才能触发的回调
+      // 1. 光标位置
+      const cursorInfo = getCursorInfo(plugin, editor)
+      if (!cursorInfo) return
+      const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
+
+      // 2. 光标修正 - 屏幕尺寸
+      const screen_size = await global_setting.api.getScreenSize()
+
+      // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
+      const panel_size = AMPanel.get_size()
+      const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor)
+
+      // 3. 显示面板
+      AMPanel.show(cursor3.x + 2, cursor3.y + 2)
     },
     // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
     //   { modifiers: ["Alt"], key: "A" }

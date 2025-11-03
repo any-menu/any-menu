@@ -23,7 +23,6 @@ export const global_state: {
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
   initClickThroughBehavior()
-  cacheMenuSize()
 })
 
 /** 窗口切换是否显示 */
@@ -178,17 +177,20 @@ function initAutoHide() {
 
 import { global_setting } from '../../../Core/setting'
 
-/** 缓存菜单尺寸 (仅一级菜单) */
-let menuSize = { width: -1, height: -1 }
-async function cacheMenuSize() {
-  await new Promise(resolve => setTimeout(resolve, 500)) // 延时等待渲染完成
-  const el_search = document.querySelector('#main>.am-search');
-  const el_menu = document.querySelector('#main>.am-context-menu');
-
-  menuSize.height = (el_search?.clientHeight ?? 0) + (el_menu?.clientHeight ?? 0)
-  menuSize.width = Math.max(el_search?.clientWidth ?? 0, el_menu?.clientWidth ?? 0)
-  // console.log('菜单尺寸:', menuSize);
-}
+// /** 缓存菜单尺寸 (仅一级菜单)
+//  * 
+//  * 弃用: 目前的面板通过包含的子面板去计算，而非固定的
+//  */
+// let menuSize = { width: -1, height: -1 }
+// async function cacheMenuSize() {
+//   await new Promise(resolve => setTimeout(resolve, 500)) // 延时等待渲染完成
+//   const el_search = document.querySelector('#main>.am-search');
+//   const el_menu = document.querySelector('#main>.am-context-menu');
+// 
+//   menuSize.height = (el_search?.clientHeight ?? 0) + (el_menu?.clientHeight ?? 0)
+//   menuSize.width = Math.max(el_search?.clientWidth ?? 0, el_menu?.clientWidth ?? 0)
+//   // console.log('菜单尺寸:', menuSize);
+// }
 
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow(panel_list?: string[]) {
@@ -217,7 +219,7 @@ async function showWindow(panel_list?: string[]) {
   // -1 表示获取不到光标坐标，可以使用鼠标坐标
   if (cursor2.x < 0 || cursor2.y < 0) {
     console.error('getCursorXY failed, use mouse position instead')
-    cursor2 = cursor
+    // cursor2 = cursor
   }
   // 弃用。改为黑名单注销全局快捷键的方式
   // 其他负数表示不应该使用光标坐标，且不应该显示窗口 (如 app_no_use_in_ob/白名单 选项)
@@ -234,22 +236,16 @@ async function showWindow(panel_list?: string[]) {
   // step3. 屏幕尺寸
   // 这里需要注意这里的屏幕尺寸，暂时为窗口所在的屏幕尺寸 (若有需要，可以将该api修改成其他含义)
   // 此处也可以计算屏幕中间位置，作为菜单的生成位置 (类似于 wox/utools app)
-  const screenSize = await global_setting.api.getScreenSize()
+  // 默认预留windows状态栏高度48px
+  let screenSize = await global_setting.api.getScreenSize()
+  screenSize.height -= 48
   // console.log('屏幕尺寸:', screenSize);
 
-  // step4. 最终坐标 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
-  // 目前仅纠正y轴坐标，默认预留windows状态栏高度48px
-  // TODO 纠正x轴坐标
-  if (menuSize.height > 0) {
-    if (screenSize.height - 8 - 48 - cursor.y < menuSize.height) { // y轴溢出
-      if (cursor2_flag) { // 生成在光标上方 // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
-        cursor.y = cursor2.y - 8 - menuSize.height
-      } else { // 生成在屏幕底部上方
-        cursor.y = screenSize.height - 8 - 48 - menuSize.height
-        cursor.x += 4 // 避免变成 `<-->` 光标，好看一些
-      }
-    }
-  }
+  // step4. 最终坐标。触底对齐/反向显示 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
+  // TODO 纠正x轴坐标，目前仅纠正y轴坐标
+  const panel_size = AMPanel.get_size(panel_list)
+  const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor)
+  cursor.x = cursor3.x; cursor.y = cursor3.y;
   console.log('最终坐标:', cursor);
 
   // step5. 应用坐标并显示窗口
