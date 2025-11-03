@@ -264,8 +264,9 @@ export default class AnyMenuPlugin extends Plugin {
 	}
 
   onunload() {
-    document.body.querySelectorAll('.am-context-menu').forEach(el => el.remove())
-    document.body.querySelectorAll('.am-search').forEach(el => el.remove())
+    document.body.querySelectorAll('body>.am-context-menu').forEach(el => el.remove())
+    document.body.querySelectorAll('body>.am-search').forEach(el => el.remove())
+    document.body.querySelectorAll('body>.am-mini-editor').forEach(el => el.remove())
     if (global_setting.isDebug) console.log('<<< Unloading plugin AnyMenu')
   }
 }
