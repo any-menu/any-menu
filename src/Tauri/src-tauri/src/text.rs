@@ -211,7 +211,7 @@ pub fn send(text: &str, method: &str) -> String {
 ///   - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
 /// 后续可能会用uia等其他方式
 #[tauri::command]
-pub fn _get_selected() -> Option<String> {
+pub fn _get_selected_by_clipboard() -> Option<String> {
     let method = "clipboard";
     match method {
         "clipboard" => {

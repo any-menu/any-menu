@@ -27,8 +27,9 @@ use crate::text;
 /// 汇总各种方式
 pub fn get_message() -> (i32, i32, String, String) {
     let (x, y) = get_win_message();
-    let selected_text: String = get_uia_by_windows_selected();
-    (x, y, selected_text, get_uia_by_windows_winname())
+    let selected_mode: &str = "uia";
+    let selected_text: Option<String> = get_selected(selected_mode);
+    (x, y, selected_text.unwrap_or("".to_string()), get_uia_by_windows_winname())
 }
 
 // #region winapi 方式
@@ -628,68 +629,6 @@ fn get_uia_by_windows_winname() -> String {
     }
 }
 
-pub fn get_uia_by_windows_selected() -> String {
-    #[cfg(not(target_os = "windows"))]
-    {
-        return "".to_string();
-    }
-    
-    use windows::{
-        core::*,
-        Win32::System::Com::*,
-        Win32::UI::Accessibility::*
-    };
-
-    unsafe {
-        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
-
-        let ui_automation: IUIAutomation = match CoCreateInstance(
-            &CUIAutomation,
-            None,
-            CLSCTX_INPROC_SERVER,
-        ) {
-            Ok(ua) => ua,
-            Err(_) => { CoUninitialize(); return "".to_string(); }
-        };
-
-        // 获取焦点元素 (可靠)
-        let element = match ui_automation.GetFocusedElement() {
-            Ok(element) => element,
-            Err(_) => { CoUninitialize(); return "".to_string(); }
-        };
-
-        // 文本模式 (Text Pattern)，以获取选中内容和插入符位置 (可靠，Ndd常失灵)
-        let text_pattern = match element.GetCurrentPattern(UIA_TextPatternId) {
-            Ok(tp) => tp,
-            Err(_) => { CoUninitialize(); return "".to_string(); }
-        };
-
-        // 类型转换
-        let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
-            Ok(tp) => tp,
-            Err(_) => { CoUninitialize(); return "".to_string(); }
-        };
-
-        // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)
-        if let Ok(selection) = text_pattern.GetSelection() {
-            let count = match selection.Length() {
-                Ok(c) => c,
-                Err(_) => { CoUninitialize(); return "".to_string(); }
-            };
-
-            for i in 0..count {
-                if let Ok(range) = selection.GetElement(i) {
-                    if let Ok(text) = range.GetText(-1) {
-                        return text.to_string();
-                    }
-                }
-            }
-        }
-
-        CoUninitialize(); return "".to_string();
-    }
-}
-
 // 辅助函数：将控件类型 ID 转换为可读名称
 fn get_control_type_name(control_type: i32) -> &'static str {
     match control_type {
@@ -738,6 +677,68 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 
 // #endregion
 
+fn get_selected_by_uia() -> Option<String> {
+    #[cfg(not(target_os = "windows"))]
+    {
+        return None;
+    }
+    
+    use windows::{
+        core::*,
+        Win32::System::Com::*,
+        Win32::UI::Accessibility::*
+    };
+
+    unsafe {
+        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
+
+        let ui_automation: IUIAutomation = match CoCreateInstance(
+            &CUIAutomation,
+            None,
+            CLSCTX_INPROC_SERVER,
+        ) {
+            Ok(ua) => ua,
+            Err(_) => { CoUninitialize(); return None; }
+        };
+
+        // 获取焦点元素 (可靠)
+        let element = match ui_automation.GetFocusedElement() {
+            Ok(element) => element,
+            Err(_) => { CoUninitialize(); return None; }
+        };
+
+        // 文本模式 (Text Pattern)，以获取选中内容和插入符位置 (可靠，Ndd常失灵)
+        let text_pattern = match element.GetCurrentPattern(UIA_TextPatternId) {
+            Ok(tp) => tp,
+            Err(_) => { CoUninitialize(); return None; }
+        };
+
+        // 类型转换
+        let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
+            Ok(tp) => tp,
+            Err(_) => { CoUninitialize(); return None; }
+        };
+
+        // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)
+        if let Ok(selection) = text_pattern.GetSelection() {
+            let count = match selection.Length() {
+                Ok(c) => c,
+                Err(_) => { CoUninitialize(); return None; }
+            };
+
+            for i in 0..count {
+                if let Ok(range) = selection.GetElement(i) {
+                    if let Ok(text) = range.GetText(-1) {
+                        return Some(text.to_string());
+                    }
+                }
+            }
+        }
+
+        CoUninitialize(); return None;
+    }
+}
+
 /// 获取当前选中的文本
 /// 
 /// method: &str,
@@ -748,23 +749,30 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 ///   - 可能会覆盖用户原本的剪切板内容
 ///   - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
 /// 后续可能会用uia等其他方式
+fn get_selected_by_clipboard() -> Option<String> {
+    match text::clipboard::simulate_copy() {
+        Ok(_) => {}
+        Err(_) => { log::error!("Failed to simulate copy"); return None; }
+    };
+    // 模拟复制后，等待一小会儿，确保剪贴板内容更新。这个时间不确定 (根据系统不同可能不同，但通常不能太短)
+    // 不过好在这里的复制时机是展开面板时，而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    let Ok(selected_text) = text::clipboard::clipboard_get_text() else {
+        log::error!("Failed to get clipboard text");
+        return None;
+    };
+    Some(selected_text)
+}
+
 #[tauri::command]
-pub fn get_selected() -> Option<String> {
-    let method = "clipboard";
+pub fn get_selected(method: &str) -> Option<String> {
+    // let method = "clipboard";
     match method {
         "clipboard" => {
-            match text::clipboard::simulate_copy() {
-                Ok(_) => {}
-                Err(_) => { log::error!("Failed to simulate copy"); return None; }
-            };
-            // 模拟复制后，等待一小会儿，确保剪贴板内容更新。这个时间不确定 (根据系统不同可能不同，但通常不能太短)
-            // 不过好在这里的复制时机是展开面板时，而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            let Ok(selected_text) = text::clipboard::clipboard_get_text() else {
-                log::error!("Failed to get clipboard text");
-                return None;
-            };
-            Some(selected_text)
+            return get_selected_by_clipboard();
+        },
+        "uia" => {
+            return get_selected_by_uia();
         }
         _ => { log::error!("Unsupported method: {}", method); return None; }
     }
