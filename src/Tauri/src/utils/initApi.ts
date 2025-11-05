@@ -41,7 +41,6 @@ export function initApi() {
     // 这里应该多一个判断。不过这里恒为后者
     hideWindow()
     await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
-    // await invoke("paste", { text: 'paste from button' })
     await invoke("send", { text: str, method: global_setting.config.send_text_method })
   }
 

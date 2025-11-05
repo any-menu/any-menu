@@ -1,15 +1,4 @@
 pub mod clipboard {
-    #[tauri::command]
-    pub fn paste(text: &str) -> String {
-        // 将文本写入剪贴板
-        clipboard_set_text(text).expect("Failed to set clipboard text");
-
-        // 模拟 Ctrl+V 按键来粘贴
-        simulate_paste().expect("Failed to simulate paste");
-
-        format!("Successfully pasted: {}", text)
-    }
-
     /// 将文本写入剪贴板
     #[cfg(target_os = "windows")]
     pub fn clipboard_set_text(text: &str) -> Result<(), String> {
@@ -166,30 +155,44 @@ pub mod clipboard {
     }
 }
 
-// #region send by enigo
+// #region send
 
-use enigo::{Enigo, Keyboard, Settings};
+#[tauri::command]
+fn send_by_clipboard(text: &str) -> String {
+    // 将文本写入剪贴板
+    clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
+
+    // 模拟 Ctrl+V 按键来粘贴
+    clipboard::simulate_paste().expect("Failed to simulate paste");
+
+    format!("Successfully pasted: {}", text)
+}
+
+#[tauri::command]
+fn send_by_enigo(text: &str) -> String {
+    use enigo::{Enigo, Keyboard, Settings};
+
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+    // enigo.move_mouse(500, 200, Abs).unwrap();
+    // enigo.button(Button::Left, Click).unwrap();
+    enigo.text(text).unwrap();
+    format!("Successfully sent: {}", text)
+}
 
 #[tauri::command]
 pub fn send(text: &str, method: &str) -> String {
-    let mut enigo = Enigo::new(&Settings::default()).unwrap();
-
-    // (可选) 根据文本长度及是否包含换行符，选择发送方式
     if method == "clipboard" {
-        return clipboard::paste(text);
+        return send_by_clipboard(text);
     } 
     else if method == "enigo" || method == "keyboard" {
-        // enigo.move_mouse(500, 200, Abs).unwrap();
-        // enigo.button(Button::Left, Click).unwrap();
-        enigo.text(text).unwrap();
-        return format!("Successfully sent: {}", text);
+        return send_by_enigo(text);
     }
-    else { // "auto"
+    else { // "auto" // 根据文本长度及是否包含换行符，选择发送方式
         if text.contains('\n') || text.len() > 30 {
-            return clipboard::paste(text);
+            return send_by_clipboard(text);
+        } else {
+            return send_by_enigo(text);
         }
-        enigo.text(text).unwrap();
-        return format!("Successfully sent: {}", text);
     }
 }
 

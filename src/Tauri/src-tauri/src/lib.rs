@@ -30,7 +30,6 @@ use uia::{
 };
 mod text;
 use text::{
-    clipboard::paste,
     send,
 };
 mod file;
@@ -225,7 +224,7 @@ pub fn run() {
             greet,
             get_caret, get_caret_debug, get_screen_size, // size类
             get_selected, get_info, // 其他类
-            paste, send,
+            send,
             read_file, read_folder, create_file, write_file, delete_file,
         ])
         .run(tauri::generate_context!())
