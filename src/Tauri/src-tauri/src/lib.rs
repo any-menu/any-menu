@@ -25,12 +25,13 @@ use uia::{
     get_message,
     get_uia_focused,
     get_uia_by_windows,
+    get_selected,
+    get_info,
 };
 mod text;
 use text::{
-    paste,
+    clipboard::paste,
     send,
-    get_selected,
 };
 mod file;
 use file::{
@@ -222,8 +223,9 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             greet,
-            get_caret, get_caret_debug, get_screen_size,
-            paste, send, get_selected,
+            get_caret, get_caret_debug, get_screen_size, // size类
+            get_selected, get_info, // 其他类
+            paste, send,
             read_file, read_folder, create_file, write_file, delete_file,
         ])
         .run(tauri::generate_context!())
