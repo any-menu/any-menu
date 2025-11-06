@@ -780,5 +780,11 @@ pub fn get_selected(method: &str) -> Option<String> {
 
 #[tauri::command]
 pub fn get_info() -> Option<String> {
-    return None;
+    let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
+    let _ = text::clipboard::clipboard_get_info();
+
+    let mut result_text = String::new();
+    result_text.push_str(&format!("Clipboard Text: {}\n", clipboard_text));
+
+    return Some(result_text);
 }

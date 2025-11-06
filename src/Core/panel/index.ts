@@ -88,6 +88,15 @@ export class AMPanel {
         global_el.amMiniEditor?.show(x, y,
           global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
+
+        // 异步添加 info 内容
+        global_setting.api.getInfo().then((info_text: string|null) => {
+          global_el.amMiniEditor?.show(
+            undefined, undefined,
+            global_setting.state.infoText + "[uia info]\n" + (info_text ?? "null") + "\n\n",
+            false
+          )
+        })
       }
       else {
         continue

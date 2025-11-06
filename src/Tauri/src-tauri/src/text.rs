@@ -1,3 +1,5 @@
+use crate::text_c;
+
 pub mod clipboard {
     /// 将文本写入剪贴板
     #[cfg(target_os = "windows")]
@@ -87,6 +89,82 @@ pub mod clipboard {
         }
     }
 
+    /// 获取并打印当前剪贴板中所有可用的数据格式
+    #[cfg(target_os = "windows")]
+    pub fn clipboard_get_info() -> Result<(), String> {
+        use std::ptr;
+        use winapi::um::winuser::*;
+
+        println!("--- 获取剪贴板信息 ---");
+
+        let _ = crate::text_c::get_and_print_all_clipboard_info();
+
+        unsafe {
+            if OpenClipboard(ptr::null_mut()) == 0 {
+                return Err("无法打开剪贴板".to_string());
+            }
+
+            let mut formats = Vec::new();
+            let mut current_format = EnumClipboardFormats(0);
+
+            if current_format == 0 {
+                println!("剪贴板为空或无法访问内容。");
+            }
+
+            while current_format != 0 {
+                let format_name = get_format_name(current_format);
+                formats.push(format!("ID: {:<5} | 名称: {}", current_format, format_name));
+                current_format = EnumClipboardFormats(current_format);
+            }
+
+            CloseClipboard();
+            
+            if !formats.is_empty() {
+                println!("剪贴板中包含 {} 种可用格式:", formats.len());
+                for f in formats {
+                    println!("- {}", f);
+                }
+            }
+            
+            println!("----------------------");
+        }
+        Ok(())
+    }
+
+    /// 根据格式ID获取其可读名称
+    #[cfg(target_os = "windows")]
+    unsafe fn get_format_name(format: u32) -> String {
+        use winapi::um::winbase::{GlobalLock, GlobalUnlock};
+        use winapi::um::winuser::*;
+
+        // 匹配预定义的标准格式
+        match format {
+            CF_TEXT => "CF_TEXT (ANSI 文本)".to_string(),
+            CF_BITMAP => "CF_BITMAP (位图)".to_string(),
+            CF_DIB => "CF_DIB (设备无关位图)".to_string(),
+            CF_DIBV5 => "CF_DIBV5 (V5版设备无关位图)".to_string(),
+            CF_UNICODETEXT => "CF_UNICODETEXT (Unicode 文本)".to_string(),
+            CF_HDROP => "CF_HDROP (文件列表)".to_string(),
+            CF_RIFF => "CF_RIFF (音频)".to_string(),
+            CF_WAVE => "CF_WAVE (WAVE 音频)".to_string(),
+            CF_TIFF => "CF_TIFF (TIFF 图像)".to_string(),
+            CF_OEMTEXT => "CF_OEMTEXT (OEM 文本)".to_string(),
+            CF_PALETTE => "CF_PALETTE (调色板)".to_string(),
+            _ => {
+                // 尝试获取自定义格式的注册名称
+                let mut name_buf: [u16; 256] = [0; 256];
+                let len = GetClipboardFormatNameW(format, name_buf.as_mut_ptr(), name_buf.len() as i32);
+                if len > 0 {
+                    match String::from_utf16(&name_buf[..len as usize]) {
+                        Ok(name) => format!("自定义格式: {}", name),
+                        Err(_) => "无法解析的自定义格式名称".to_string(),
+                    }
+                } else {
+                    "未知的非标准格式".to_string()
+                }
+            }
+        }
+    }
 
     /// 模拟黏贴按键
     #[cfg(target_os = "windows")]

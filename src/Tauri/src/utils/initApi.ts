@@ -35,6 +35,12 @@ export function initApi() {
     return { width: pos[0], height: pos[1] }
   }
 
+  global_setting.api.getInfo = async (): Promise<string|null> => {
+    const info: any = await invoke("get_info");
+    if (typeof info !== 'string') return null
+    return info
+  }
+
   global_setting.api.sendText = async (str: string) => {
     // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
     // 但 Tauri 程序中，我们采用了失焦的方式展开菜单

@@ -74,6 +74,7 @@ export const global_setting: {
     deleteFile: (relPath: string) => Promise<boolean>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
+    getInfo: () => Promise<string | null> // 主要用于调试
     sendText: (text: string) => Promise<void>
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null> // 统一的网络请求接口，并简化try/catch
   },
@@ -114,6 +115,7 @@ export const global_setting: {
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
+    getInfo: async () => { console.error("需实现 api.getInfo 方法"); return null },
     sendText: async () => { console.error("需实现 api.sendText 方法") },
     urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null },
   },

@@ -32,6 +32,7 @@ mod text;
 use text::{
     send,
 };
+mod text_c;
 mod file;
 use file::{
     read_file,
