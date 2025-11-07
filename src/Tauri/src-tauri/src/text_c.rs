@@ -17,7 +17,7 @@ use winapi::um::winuser::*;
 // }
 
 /// 获取并打印剪贴板中所有能解析的信息
-pub fn get_and_print_all_clipboard_info() -> Result<(), String> {
+pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
     println!("==================================================");
     println!("        开始读取当前剪贴板的详细信息");
     println!("==================================================");
@@ -31,9 +31,9 @@ pub fn get_and_print_all_clipboard_info() -> Result<(), String> {
         // 2. 遍历所有可用格式
         let mut current_format = EnumClipboardFormats(0);
         if current_format == 0 {
-            println!("剪贴板为空，或无法枚举格式。");
             CloseClipboard();
-            return Ok(());
+            println!("剪贴板为空，或无法枚举格式。");
+            return Ok("剪贴板为空，或无法枚举格式。".to_string());
         }
 
         while current_format != 0 {
@@ -48,7 +48,7 @@ pub fn get_and_print_all_clipboard_info() -> Result<(), String> {
     println!("\n==================================================");
     println!("                 信息读取完毕");
     println!("==================================================");
-    Ok(())
+    Ok("信息读取完毕".to_string())
 }
 
 /// 根据格式ID，打印该格式的详细信息

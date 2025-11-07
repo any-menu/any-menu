@@ -91,13 +91,20 @@ pub mod clipboard {
 
     /// 获取并打印当前剪贴板中所有可用的数据格式
     #[cfg(target_os = "windows")]
-    pub fn clipboard_get_info() -> Result<(), String> {
+    pub fn clipboard_get_info() -> Result<String, String> {
         use std::ptr;
         use winapi::um::winuser::*;
+        let mut result: String = "".to_string();
 
         println!("--- 获取剪贴板信息 ---");
 
-        let _ = crate::text_c::get_and_print_all_clipboard_info();
+        match crate::text_c::get_and_print_all_clipboard_info() {
+            Ok(info) => result += &info,
+            Err(err) => {
+                log::error!("get_and_print_all_clipboard_info failed: {}", err);
+                result += &format!("Failed to get clipboard info: {}", err);
+            }
+        }
 
         unsafe {
             if OpenClipboard(ptr::null_mut()) == 0 {
@@ -128,7 +135,7 @@ pub mod clipboard {
             
             println!("----------------------");
         }
-        Ok(())
+        Ok(result)
     }
 
     /// 根据格式ID获取其可读名称

@@ -780,11 +780,22 @@ pub fn get_selected(method: &str) -> Option<String> {
 
 #[tauri::command]
 pub fn get_info() -> Option<String> {
-    let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
-    let _ = text::clipboard::clipboard_get_info();
-
     let mut result_text = String::new();
+
+    let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
     result_text.push_str(&format!("Clipboard Text: {}\n", clipboard_text));
+
+    match text::clipboard::clipboard_get_info() {
+        Ok(info) => {
+            let mut result_text = String::new();
+            result_text.push_str(&format!("Clipboard Info:\n{}\n", info));
+            result_text.push_str(&format!("Clipboard Text: {}\n", clipboard_text));
+            return Some(result_text);
+        },
+        Err(_) => {
+            log::error!("Failed to get clipboard info");
+        }
+    }
 
     return Some(result_text);
 }
