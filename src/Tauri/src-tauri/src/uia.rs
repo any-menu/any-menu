@@ -677,6 +677,32 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 
 // #endregion
 
+// #region 获取选中文本
+
+/// 获取当前选中的文本
+/// 
+/// @param method: &str
+///   - "clipboard" 剪切板方式
+///     - 但事实上剪切板方式并不好用，缺点很多
+///     - 需要在菜单召唤出来前完成ctrl+c的模拟按键 (而对于剪切版的识别可以延后执行)
+///     - 需要等待剪切板更新，而这个时间不确定且通常较长，会影响用户体验
+///     - 可能会覆盖用户原本的剪切板内容
+///     - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
+///   - "uia" uia方式 (目前仅支持windows)
+#[tauri::command]
+pub fn get_selected(method: &str) -> Option<String> {
+    // let method = "clipboard";
+    match method {
+        "clipboard" => {
+            return get_selected_by_clipboard();
+        },
+        "uia" => {
+            return get_selected_by_uia();
+        }
+        _ => { log::error!("Unsupported method: {}", method); return None; }
+    }
+}
+
 fn get_selected_by_uia() -> Option<String> {
     #[cfg(not(target_os = "windows"))]
     {
@@ -739,16 +765,6 @@ fn get_selected_by_uia() -> Option<String> {
     }
 }
 
-/// 获取当前选中的文本
-/// 
-/// method: &str,
-/// - 剪切板方式 (目前仅支持)
-///   - 但事实上剪切板方式并不好用，缺点很多
-///   - 需要在菜单召唤出来前完成ctrl+c的模拟按键 (而对于剪切版的识别可以延后执行)
-///   - 需要等待剪切板更新，而这个时间不确定且通常较长，会影响用户体验
-///   - 可能会覆盖用户原本的剪切板内容
-///   - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
-/// 后续可能会用uia等其他方式
 fn get_selected_by_clipboard() -> Option<String> {
     match text::clipboard::simulate_copy() {
         Ok(_) => {}
@@ -764,20 +780,14 @@ fn get_selected_by_clipboard() -> Option<String> {
     Some(selected_text)
 }
 
-#[tauri::command]
-pub fn get_selected(method: &str) -> Option<String> {
-    // let method = "clipboard";
-    match method {
-        "clipboard" => {
-            return get_selected_by_clipboard();
-        },
-        "uia" => {
-            return get_selected_by_uia();
-        }
-        _ => { log::error!("Unsupported method: {}", method); return None; }
-    }
-}
+// #endregion
 
+/// 获取展开菜单时的各种信息 (主要是 uia 信息)
+/// 
+/// 包括:
+/// - 方位类: 鼠标/光标/窗口/屏幕的大小和位置
+/// - 编辑器类: 剪切板、选中文本、插入符位置等
+/// - 窗口/ui/uia 信息: 窗口名、控件类型、类名等
 #[tauri::command]
 pub fn get_info() -> Option<String> {
     let mut result_text = String::new();
@@ -789,13 +799,15 @@ pub fn get_info() -> Option<String> {
         Ok(info) => {
             let mut result_text = String::new();
             result_text.push_str(&format!("Clipboard Info:\n{}\n", info));
-            result_text.push_str(&format!("Clipboard Text: {}\n", clipboard_text));
+            result_text.push_str(&format!("Clipboard Text:\n{}\n", clipboard_text));
             return Some(result_text);
         },
         Err(_) => {
             log::error!("Failed to get clipboard info");
         }
     }
+
+    // TODO cache about uia get selected text
 
     return Some(result_text);
 }
