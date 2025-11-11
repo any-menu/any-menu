@@ -237,6 +237,23 @@ pub mod clipboard {
 // #region send
 
 #[tauri::command]
+pub fn send(text: &str, method: &str) -> String {
+    if method == "clipboard" {
+        return send_by_clipboard(text);
+    } 
+    else if method == "enigo" || method == "keyboard" {
+        return send_by_enigo(text);
+    }
+    else { // "auto" // 根据文本长度及是否包含换行符，选择发送方式
+        if text.contains('\n') || text.len() > 30 {
+            return send_by_clipboard(text);
+        } else {
+            return send_by_enigo(text);
+        }
+    }
+}
+
+#[tauri::command]
 fn send_by_clipboard(text: &str) -> String {
     // 将文本写入剪贴板
     clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
@@ -257,177 +274,5 @@ fn send_by_enigo(text: &str) -> String {
     enigo.text(text).unwrap();
     format!("Successfully sent: {}", text)
 }
-
-#[tauri::command]
-pub fn send(text: &str, method: &str) -> String {
-    if method == "clipboard" {
-        return send_by_clipboard(text);
-    } 
-    else if method == "enigo" || method == "keyboard" {
-        return send_by_enigo(text);
-    }
-    else { // "auto" // 根据文本长度及是否包含换行符，选择发送方式
-        if text.contains('\n') || text.len() > 30 {
-            return send_by_clipboard(text);
-        } else {
-            return send_by_enigo(text);
-        }
-    }
-}
-
-// #endregion
-
-/// 获取当前选中的文本
-/// 
-/// @description 弃用 改成在uia模块中集成，从而支持uia和剪切板两种模式
-/// 
-/// method: &str,
-/// - 剪切板方式 (目前仅支持)
-///   - 但事实上剪切板方式并不好用，缺点很多
-///   - 需要在菜单召唤出来前完成ctrl+c的模拟按键 (而对于剪切版的识别可以延后执行)
-///   - 需要等待剪切板更新，而这个时间不确定且通常较长，会影响用户体验
-///   - 可能会覆盖用户原本的剪切板内容
-///   - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
-/// 后续可能会用uia等其他方式
-#[tauri::command]
-pub fn _get_selected_by_clipboard() -> Option<String> {
-    let method = "clipboard";
-    match method {
-        "clipboard" => {
-            match clipboard::simulate_copy() {
-                Ok(_) => {}
-                Err(_) => { log::error!("Failed to simulate copy"); return None; }
-            };
-            // 模拟复制后，等待一小会儿，确保剪贴板内容更新。这个时间不确定 (根据系统不同可能不同，但通常不能太短)
-            // 不过好在这里的复制时机是展开面板时，而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            let Ok(selected_text) = clipboard::clipboard_get_text() else {
-                log::error!("Failed to get clipboard text");
-                return None;
-            };
-            Some(selected_text)
-        }
-        _ => { log::error!("Unsupported method: {}", method); return None; }
-    }
-}
-
-// #region window sendText
-
-// // 使用windows的SendInput函数直接发送文本
-// #[cfg(target_os = "windows")]
-// fn send_text_directly(text: &str) -> Result<(), String> {
-//     use winapi::um::winuser::{SendInput, INPUT, INPUT_KEYBOARD, KEYEVENTF_UNICODE, KEYEVENTF_KEYUP};
-//     use winapi::shared::minwindef::WORD;
-
-//     let mut inputs = Vec::new();
-
-//     for ch in text.chars() {
-//         let unicode_value = ch as u32;
-
-//         // 对于基本平面字符 (U+0000 到 U+FFFF)
-//         if unicode_value <= 0xFFFF {
-//             // 按下键
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: unicode_value as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-
-//             // 释放键
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: unicode_value as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-//         } else {
-//             // 对于扩展平面字符，需要使用代理对 (Surrogate Pairs)
-//             let code_point = unicode_value - 0x10000;
-//             let high_surrogate = 0xD800 + (code_point >> 10);
-//             let low_surrogate = 0xDC00 + (code_point & 0x3FF);
-
-//             // 高代理
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: high_surrogate as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: high_surrogate as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-
-//             // 低代理
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: low_surrogate as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-
-//             inputs.push(INPUT {
-//                 type_: INPUT_KEYBOARD,
-//                 u: unsafe {
-//                     std::mem::transmute(winapi::um::winuser::KEYBDINPUT {
-//                         wVk: 0,
-//                         wScan: low_surrogate as WORD,
-//                         dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
-//                         time: 0,
-//                         dwExtraInfo: 0,
-//                     })
-//                 },
-//             });
-//         }
-//     }
-
-//     unsafe {
-//         let result = SendInput(
-//             inputs.len() as u32,
-//             inputs.as_ptr(),
-//             std::mem::size_of::<INPUT>() as i32,
-//         );
-
-//         if result == 0 {
-//             return Err("Failed to send input".to_string());
-//         }
-//     }
-
-//     Ok(())
-// }
 
 // #endregion

@@ -1,20 +1,9 @@
-use std::ffi::OsString;
-use std::mem::{size_of, zeroed};
-use std::os::windows::ffi::OsStringExt;
-use std::ptr::{self, null_mut};
-use winapi::shared::minwindef::{HGLOBAL, UINT};
-// use winapi::shared::windef::HDROP;
-// use winapi::um::shellapi::{DragQueryFileW, DragFinish};
-use winapi::um::winbase::{GlobalLock, GlobalSize, GlobalUnlock};
-// use winapi::um::wingdi::{BITMAPINFOHEADER, CF_DIB};
-use winapi::um::winuser::*;
+/// 剪切板信息专题
 
-// /// 主函数，执行所有操作
-// fn main() {
-//     if let Err(e) = get_and_print_all_clipboard_info() {
-//         eprintln!("\n发生严重错误: {}", e);
-//     }
-// }
+use std::ptr::{self};
+use winapi::shared::minwindef::{HGLOBAL, UINT};
+use winapi::um::winbase::{GlobalLock, GlobalSize, GlobalUnlock};
+use winapi::um::winuser::*;
 
 /// 获取并打印剪贴板中所有能解析的信息
 pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
@@ -53,11 +42,11 @@ pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
 
 /// 根据格式ID，打印该格式的详细信息
 unsafe fn print_format_details(format: UINT) {
-    let format_name = get_format_name(format);
+    let format_name = unsafe { get_format_name(format) };
     println!("\n--- 格式ID: {:<5} | 名称: {} ---", format, format_name);
 
     // 获取该格式的数据句柄
-    let handle = GetClipboardData(format);
+    let handle = unsafe { GetClipboardData(format) };
     if handle.is_null() {
         println!("    -> 无法获取此格式的数据句柄。");
         return;
@@ -65,46 +54,83 @@ unsafe fn print_format_details(format: UINT) {
 
     // 根据不同的格式类型，调用不同的解析函数
     match format {
-        CF_UNICODETEXT => print_as_text(handle),
+        CF_UNICODETEXT => unsafe { print_as_text(handle) },
         // CF_HDROP => print_as_file_list(handle),
         // CF_DIB => print_as_dib_info(handle),
         _ => {
             // 对于其他格式，特别是自定义格式，尝试读取其原始字节
             // HTML格式是一个常见的自定义格式
             if format_name.contains("HTML Format") {
-                print_as_html(handle);
+                unsafe { print_as_html(handle) };
             } else {
-                print_as_raw_bytes(handle);
+                unsafe { print_as_raw_bytes(handle) };
             }
         }
     }
 }
 
-// ========== 具体格式的解析函数 ==========
-
 /// 解析并打印文本内容 (CF_UNICODETEXT)
 unsafe fn print_as_text(handle: HGLOBAL) {
-    let data_ptr = GlobalLock(handle);
-    if data_ptr.is_null() {
-        println!("    -> 无法锁定内存以读取文本。");
+    unsafe {
+        let data_ptr = GlobalLock(handle);
+        if data_ptr.is_null() {
+            println!("    -> 无法锁定内存以读取文本。");
+            GlobalUnlock(handle);
+            return;
+        }
+
+        let mut len = 0;
+        let mut p_char = data_ptr as *const u16;
+        while *p_char != 0 {
+            len += 1;
+            p_char = p_char.add(1);
+        }
+        
+        let slice = std::slice::from_raw_parts(data_ptr as *const u16, len);
+        match String::from_utf16(slice) {
+            Ok(text) => println!("    内容 (Unicode 文本):\n```\n{}\n```", text),
+            Err(_) => println!("    -> 无法将数据解析为有效的 UTF-16 文本。"),
+        }
+
         GlobalUnlock(handle);
-        return;
     }
+}
 
-    let mut len = 0;
-    let mut p_char = data_ptr as *const u16;
-    while *p_char != 0 {
-        len += 1;
-        p_char = p_char.add(1);
-    }
-    
-    let slice = std::slice::from_raw_parts(data_ptr as *const u16, len);
-    match String::from_utf16(slice) {
-        Ok(text) => println!("    内容 (Unicode 文本):\n```\n{}\n```", text),
-        Err(_) => println!("    -> 无法将数据解析为有效的 UTF-16 文本。"),
-    }
+/// 解析并打印HTML内容 (自定义格式 "HTML Format")
+unsafe fn print_as_html(handle: HGLOBAL) {
+    unsafe {
+        let data_ptr = GlobalLock(handle);
+        if data_ptr.is_null() {
+            println!("    -> 无法锁定内存以读取HTML内容。");
+            GlobalUnlock(handle);
+            return;
+        }
 
-    GlobalUnlock(handle);
+        // HTML格式的数据是ANSI文本，不是Unicode
+        let size = GlobalSize(handle);
+        let slice = std::slice::from_raw_parts(data_ptr as *const u8, size);
+        
+        // 尝试将其作为ANSI文本（使用系统默认代码页）进行转换
+        // 注意：这里用 to_string_lossy，因为我们不知道确切的编码，但这通常有效
+        match std::str::from_utf8(slice) {
+            Ok(text) => {
+                println!("    内容 (HTML 原始代码):\n```html\n{}\n```", text.trim_end_matches('\0'));
+            },
+            Err(_) => println!("    -> 无法将数据解析为有效的 UTF-8 文本 (可能为其他编码)。"),
+        }
+        
+        GlobalUnlock(handle);
+    }
+}
+
+/// 对于未知但有数据的格式，打印其原始字节大小
+unsafe fn print_as_raw_bytes(handle: HGLOBAL) {
+    let size = unsafe { GlobalSize(handle) };
+    if size > 0 {
+        println!("    -> 这是一个自定义或未知格式，包含 {} 字节的原始数据。", size);
+    } else {
+        println!("    -> 这是一个自定义或未知格式，没有数据或大小为0。");
+    }
 }
 
 // /// 解析并打印文件列表 (CF_HDROP)
@@ -157,42 +183,6 @@ unsafe fn print_as_text(handle: HGLOBAL) {
 //     GlobalUnlock(handle);
 // }
 
-/// 解析并打印HTML内容 (自定义格式 "HTML Format")
-unsafe fn print_as_html(handle: HGLOBAL) {
-    let data_ptr = GlobalLock(handle);
-    if data_ptr.is_null() {
-        println!("    -> 无法锁定内存以读取HTML内容。");
-        GlobalUnlock(handle);
-        return;
-    }
-
-    // HTML格式的数据是ANSI文本，不是Unicode
-    let size = GlobalSize(handle);
-    let slice = std::slice::from_raw_parts(data_ptr as *const u8, size);
-    
-    // 尝试将其作为ANSI文本（使用系统默认代码页）进行转换
-    // 注意：这里用 to_string_lossy，因为我们不知道确切的编码，但这通常有效
-    match std::str::from_utf8(slice) {
-        Ok(text) => {
-            println!("    内容 (HTML 原始代码):\n```html\n{}\n```", text.trim_end_matches('\0'));
-        },
-        Err(_) => println!("    -> 无法将数据解析为有效的 UTF-8 文本 (可能为其他编码)。"),
-    }
-    
-    GlobalUnlock(handle);
-}
-
-/// 对于未知但有数据的格式，打印其原始字节大小
-unsafe fn print_as_raw_bytes(handle: HGLOBAL) {
-    let size = GlobalSize(handle);
-    if size > 0 {
-        println!("    -> 这是一个自定义或未知格式，包含 {} 字节的原始数据。", size);
-    } else {
-        println!("    -> 这是一个自定义或未知格式，没有数据或大小为0。");
-    }
-}
-
-
 /// 辅助函数：根据格式ID获取可读名称
 #[cfg(target_os = "windows")]
 unsafe fn get_format_name(format: u32) -> String {
@@ -210,7 +200,7 @@ unsafe fn get_format_name(format: u32) -> String {
         CF_PALETTE => "CF_PALETTE (Color Palette)".to_string(),
         _ => {
             let mut name_buf: [u16; 256] = [0; 256];
-            let len = GetClipboardFormatNameW(format, name_buf.as_mut_ptr(), name_buf.len() as i32);
+            let len = unsafe { GetClipboardFormatNameW(format, name_buf.as_mut_ptr(), name_buf.len() as i32) };
             if len > 0 {
                 format!("自定义格式: {}", String::from_utf16_lossy(&name_buf[..len as usize]))
             } else {
