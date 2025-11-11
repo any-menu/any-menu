@@ -147,27 +147,34 @@ pub mod clipboard {
         Ok(())
     }
 
-    /// 通过模拟复制来获取当前选中的文本
+    /// 通过模拟复制来获取当前选中的文本 (新版)
     /// 
-    /// 模拟Ctrl+C一般是用 winuser::keybd_event / enigo，不用 simulate (组合键存在问题)
-    /// 
-    /// 需要注意的是: ctrl+c模拟函数到按键按出来，以及按出来后到剪切板刷新。通常需要等待一小会儿，再获取时结果才是正确的
-    /// 这个时间不确定 (根据系统不同可能不同，但通常不能太短)
-    /// 
-    /// 优化: 不过好在这里的复制时机是展开面板时，该函数可以线程/闭包执行。
-    /// 而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
+    /// 新版不再使用sleep方式来等待，容易时间过长/过短，而是使用轮询+剪切板id的方式来检测剪切板内容是否更新
     pub fn get_selected_by_clipboard() -> Option<String> {
-        match simulate_copy() {
-            Ok(_) => {}
-            Err(_) => { log::error!("Failed to simulate copy"); return None; }
-        };
+        return _get_selected_by_clipboard();
 
-        std::thread::sleep(std::time::Duration::from_millis(100));
-        let Ok(selected_text) = clipboard_get_text() else {
-            log::error!("Failed to get clipboard text");
-            return None;
-        };
-        Some(selected_text)
+        /// 通过模拟复制来获取当前选中的文本 (旧版)
+        /// 
+        /// 模拟Ctrl+C一般是用 winuser::keybd_event / enigo，不用 simulate (组合键存在问题)
+        /// 
+        /// 需要注意的是: ctrl+c模拟函数到按键按出来，以及按出来后到剪切板刷新。通常需要等待一小会儿，再获取时结果才是正确的
+        /// 这个时间不确定 (根据系统不同可能不同，但通常不能太短)
+        /// 
+        /// 优化: 不过好在这里的复制时机是展开面板时，该函数可以线程/闭包执行。
+        /// 而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
+        fn _get_selected_by_clipboard() -> Option<String> {
+            match simulate_copy() {
+                Ok(_) => {}
+                Err(_) => { log::error!("Failed to simulate copy"); return None; }
+            };
+
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            let Ok(selected_text) = clipboard_get_text() else {
+                log::error!("Failed to get clipboard text");
+                return None;
+            };
+            Some(selected_text)
+        }
     }
 
     /// 获取并打印当前剪贴板中所有可用的数据格式
@@ -251,8 +258,6 @@ pub mod clipboard {
     }
 }
 
-// #region send
-
 #[tauri::command]
 pub fn send(text: &str, method: &str) -> String {
     if method == "clipboard" {
@@ -268,28 +273,24 @@ pub fn send(text: &str, method: &str) -> String {
             return send_by_enigo(text);
         }
     }
+
+    fn send_by_clipboard(text: &str) -> String {
+        // 将文本写入剪贴板
+        clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
+
+        // 模拟 Ctrl+V 按键来粘贴
+        clipboard::simulate_paste().expect("Failed to simulate paste");
+
+        format!("Successfully pasted: {}", text)
+    }
+
+    fn send_by_enigo(text: &str) -> String {
+        use enigo::{Enigo, Keyboard, Settings};
+
+        let mut enigo = Enigo::new(&Settings::default()).unwrap();
+        // enigo.move_mouse(500, 200, Abs).unwrap();
+        // enigo.button(Button::Left, Click).unwrap();
+        enigo.text(text).unwrap();
+        format!("Successfully sent: {}", text)
+    }
 }
-
-#[tauri::command]
-fn send_by_clipboard(text: &str) -> String {
-    // 将文本写入剪贴板
-    clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
-
-    // 模拟 Ctrl+V 按键来粘贴
-    clipboard::simulate_paste().expect("Failed to simulate paste");
-
-    format!("Successfully pasted: {}", text)
-}
-
-#[tauri::command]
-fn send_by_enigo(text: &str) -> String {
-    use enigo::{Enigo, Keyboard, Settings};
-
-    let mut enigo = Enigo::new(&Settings::default()).unwrap();
-    // enigo.move_mouse(500, 200, Abs).unwrap();
-    // enigo.button(Button::Left, Click).unwrap();
-    enigo.text(text).unwrap();
-    format!("Successfully sent: {}", text)
-}
-
-// #endregion
