@@ -22,7 +22,6 @@ use uiautomation::{
 // 自定义包
 mod uia;
 use uia::{
-    get_message,
     get_uia_focused,
     get_uia_by_windows,
     get_selected,
@@ -314,3 +313,12 @@ fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
 }
 
 // #endregion
+
+/// 汇总一些信息
+/// 包括: 坐标、选择文本、窗口名等
+fn get_message() -> (i32, i32, String, String) {
+    let (x, y) = uia::get_win_message();
+    let selected_mode: &str = "uia";
+    let selected_text: Option<String> = get_selected(selected_mode);
+    (x, y, selected_text.unwrap_or("".to_string()), uia::get_uia_by_windows_winname())
+}

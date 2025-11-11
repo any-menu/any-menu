@@ -1,5 +1,3 @@
-use crate::text_c;
-
 pub mod clipboard {
     /// 将文本写入剪贴板
     #[cfg(target_os = "windows")]
@@ -96,8 +94,6 @@ pub mod clipboard {
         use winapi::um::winuser::*;
         let mut result: String = "".to_string();
 
-        println!("--- 获取剪贴板信息 ---");
-
         match crate::text_c::get_and_print_all_clipboard_info() {
             Ok(info) => result += &info,
             Err(err) => {
@@ -132,8 +128,6 @@ pub mod clipboard {
                     println!("- {}", f);
                 }
             }
-            
-            println!("----------------------");
         }
         Ok(result)
     }
@@ -141,7 +135,7 @@ pub mod clipboard {
     /// 根据格式ID获取其可读名称
     #[cfg(target_os = "windows")]
     unsafe fn get_format_name(format: u32) -> String {
-        use winapi::um::winbase::{GlobalLock, GlobalUnlock};
+        // use winapi::um::winbase::{GlobalLock, GlobalUnlock};
         use winapi::um::winuser::*;
 
         // 匹配预定义的标准格式
@@ -160,7 +154,7 @@ pub mod clipboard {
             _ => {
                 // 尝试获取自定义格式的注册名称
                 let mut name_buf: [u16; 256] = [0; 256];
-                let len = GetClipboardFormatNameW(format, name_buf.as_mut_ptr(), name_buf.len() as i32);
+                let len = unsafe { GetClipboardFormatNameW(format, name_buf.as_mut_ptr(), name_buf.len() as i32) };
                 if len > 0 {
                     match String::from_utf16(&name_buf[..len as usize]) {
                         Ok(name) => format!("自定义格式: {}", name),

@@ -24,18 +24,10 @@ use log::{debug, warn, info, error};
 
 use crate::text;
 
-/// 汇总各种方式
-pub fn get_message() -> (i32, i32, String, String) {
-    let (x, y) = get_win_message();
-    let selected_mode: &str = "uia";
-    let selected_text: Option<String> = get_selected(selected_mode);
-    (x, y, selected_text.unwrap_or("".to_string()), get_uia_by_windows_winname())
-}
-
 // #region winapi 方式
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-fn get_win_message() -> (i32, i32) { 
+pub fn get_win_message() -> (i32, i32) { 
     info!("  > print_msg --------------");
     let mut x = -1;
     let mut y = -1;
@@ -607,7 +599,7 @@ pub fn get_uia_by_windows() -> Result<()> {
     log::error!("目前仅支持 windows 平台"); None
 }
 
-fn get_uia_by_windows_winname() -> String {
+pub fn get_uia_by_windows_winname() -> String {
     #[cfg(not(target_os = "windows"))]
     {
         return "".to_string();
