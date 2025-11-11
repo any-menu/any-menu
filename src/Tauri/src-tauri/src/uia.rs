@@ -703,7 +703,7 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                     }
                 });
                 {
-                    let result_clipboard = get_selected_by_clipboard();
+                    let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
                         *cache = result_clipboard.clone();
                     }
@@ -712,7 +712,7 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
             },
             "uia" => {
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
-                    let result_clipboard = get_selected_by_clipboard();
+                    let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
                         *cache = result_clipboard;
                     }
@@ -730,7 +730,7 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
     } else {
         match method {
             "clipboard" => {
-                return get_selected_by_clipboard();
+                return text::clipboard::get_selected_by_clipboard();
             },
             "uia" => {
                 return get_selected_by_uia();
@@ -800,21 +800,6 @@ fn get_selected_by_uia() -> Option<String> {
 
         CoUninitialize(); return None;
     }
-}
-
-fn get_selected_by_clipboard() -> Option<String> {
-    match text::clipboard::simulate_copy() {
-        Ok(_) => {}
-        Err(_) => { log::error!("Failed to simulate copy"); return None; }
-    };
-    // 模拟复制后，等待一小会儿，确保剪贴板内容更新。这个时间不确定 (根据系统不同可能不同，但通常不能太短)
-    // 不过好在这里的复制时机是展开面板时，而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
-    std::thread::sleep(std::time::Duration::from_millis(100));
-    let Ok(selected_text) = text::clipboard::clipboard_get_text() else {
-        log::error!("Failed to get clipboard text");
-        return None;
-    };
-    Some(selected_text)
 }
 
 // #endregion
