@@ -1,4 +1,4 @@
-/// 剪切板信息专题
+/// 剪切板 - 关注所有项
 
 use std::ptr::{self};
 use winapi::shared::minwindef::{HGLOBAL, UINT};
@@ -10,6 +10,14 @@ pub fn get_clipboard_info_all() -> Result<String, String> {
     println!("==================================================");
     println!("        开始读取当前剪贴板的详细信息");
     println!("==================================================");
+
+    // 获取并打印剪贴板序列号
+    let sequence_number = unsafe { GetClipboardSequenceNumber() };
+    if sequence_number == 0 {
+        println!("无法获取剪贴板序列号。");
+    } else {
+        println!("当前剪贴板序列号 (Sequence Number): {}", sequence_number);
+    }
 
     unsafe {
         // 1. 打开剪贴板

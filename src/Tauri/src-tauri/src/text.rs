@@ -151,7 +151,53 @@ pub mod clipboard {
     /// 
     /// 新版不再使用sleep方式来等待，容易时间过长/过短，而是使用轮询+剪切板id的方式来检测剪切板内容是否更新
     pub fn get_selected_by_clipboard() -> Option<String> {
-        return _get_selected_by_clipboard();
+        #[cfg(not(target_os = "windows"))]
+        return None;
+
+        #[cfg(target_os = "windows")] {
+            use std::time::{Duration, Instant};
+            // use windows_sys::Win32::System::DataExchange::GetClipboardSequenceNumber;
+            use winapi::um::winuser::*;
+
+            // 1. 获取初始的剪切板序列号
+            // 如果当前没有焦点窗口或没有东西被选中，复制操作可能会失败，序列号也不会变
+            let initial_sequence_num = unsafe { GetClipboardSequenceNumber() };
+
+            // 2. 模拟复制
+            if let Err(e) = simulate_copy() {
+                log::error!("Failed to simulate copy: {}", e); return None;
+            }
+
+            // 3. 等待更新 (带超时的轮询，等待剪切板更新)
+            let timeout = Duration::from_millis(500); // 超时时间
+            let start_time = Instant::now(); // 开始时间
+            loop {
+                let current_sequence_num = unsafe { GetClipboardSequenceNumber() };
+                // 剪切板已更新，退出
+                if current_sequence_num != initial_sequence_num {
+                    // 实践中，即使序列号变了，内容写入也可能还有微小延迟，
+                    // 加一个极短的 sleep 是一个“带保险带”的做法，但通常非必需。
+                    // std::thread::sleep(Duration::from_millis(10));
+                    break;
+                }
+                // 超时
+                if start_time.elapsed() > timeout {
+                    log::warn!("Timeout waiting for clipboard update. Maybe nothing was selected.");
+                    return None;
+                }
+                // 继续轮询 (先短暂休眠，避免CPU空转)
+                std::thread::sleep(Duration::from_millis(5));
+            }
+
+            // 4. 获取复制的内容
+            return match clipboard_get_text() {
+                Ok(text) => Some(text),
+                Err(e) => {
+                    log::error!("Failed to get clipboard text after update: {}", e);
+                    None
+                }
+            };
+        }
 
         /// 通过模拟复制来获取当前选中的文本 (旧版)
         /// 
@@ -163,17 +209,22 @@ pub mod clipboard {
         /// 优化: 不过好在这里的复制时机是展开面板时，该函数可以线程/闭包执行。
         /// 而不像我之前搞 autohotkey 或 kanata 那样用热键触发，慢得多
         fn _get_selected_by_clipboard() -> Option<String> {
-            match simulate_copy() {
-                Ok(_) => {}
-                Err(_) => { log::error!("Failed to simulate copy"); return None; }
-            };
+            // 2. 模拟复制
+            if let Err(e) = simulate_copy() {
+                log::error!("Failed to simulate copy: {}", e); return None;
+            }
 
+            // 3. 等待更新
             std::thread::sleep(std::time::Duration::from_millis(100));
-            let Ok(selected_text) = clipboard_get_text() else {
-                log::error!("Failed to get clipboard text");
-                return None;
+
+            // 4. 获取复制的内容
+            return match clipboard_get_text() {
+                Ok(text) => Some(text),
+                Err(_) => {
+                    log::error!("Failed to get clipboard text");
+                    None
+                }
             };
-            Some(selected_text)
         }
     }
 

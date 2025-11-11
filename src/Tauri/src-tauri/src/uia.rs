@@ -687,6 +687,7 @@ static UIA_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
 ///     - 可能会覆盖用户原本的剪切板内容
 ///     - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
 ///   - "uia" uia方式 (目前仅支持windows)
+///   - "auto" 优先uia，失败则clipboard
 /// @param is_both: bool 都执行并缓存，只是返回的时候只返回其中一个
 #[tauri::command]
 pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
@@ -724,6 +725,29 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                     }
                     return result_uia;
                 }
+            },
+            "auto" => { // 优先uia，失败则clipboard
+                if let Some(text) = get_selected_by_uia() {
+                    std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
+                        let result_clipboard = text::clipboard::get_selected_by_clipboard();
+                        if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
+                            *cache = result_clipboard;
+                        }
+                    });
+                    if let Ok(mut cache) = UIA_CACHE.lock() {
+                        *cache = Some(text.clone());
+                    }
+                    return Some(text);
+                } else {
+                    if let Ok(mut cache) = UIA_CACHE.lock() {
+                        *cache = None;
+                    }
+                    let result_clipboard = text::clipboard::get_selected_by_clipboard();
+                    if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
+                        *cache = result_clipboard.clone();
+                    }
+                    return result_clipboard;
+                }
             }
             _ => { log::error!("Unsupported method: {}", method); return None; }
         }
@@ -734,6 +758,12 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
             },
             "uia" => {
                 return get_selected_by_uia();
+            },
+            "auto" => { // 优先uia，失败则clipboard
+                if let Some(text) = get_selected_by_uia() {
+                    return Some(text);
+                }
+                return text::clipboard::get_selected_by_clipboard();
             }
             _ => { log::error!("Unsupported method: {}", method); return None; }
         }
@@ -810,6 +840,8 @@ fn get_selected_by_uia() -> Option<String> {
 /// - 方位类: 鼠标/光标/窗口/屏幕的大小和位置
 /// - 编辑器类: 剪切板、选中文本、插入符位置等
 /// - 窗口/ui/uia 信息: 窗口名、控件类型、类名等
+/// 
+/// TODO 等待500ms的剪切板更新后，需要去进行一次主动的通知更新
 #[tauri::command]
 pub fn get_info() -> Option<String> {
     let mut result_text = String::new();
@@ -817,7 +849,7 @@ pub fn get_info() -> Option<String> {
     // 选中文本的缓存
     let cache_selected_clipboard: String = {
         if let Ok(cache) = CLIPBOARD_CACHE.lock() {
-            cache.clone().unwrap_or_else(|| "[error] failed".into())
+            cache.clone().unwrap_or("".into())
         } else {
             "[error] failed2".into()
         }
@@ -832,18 +864,18 @@ pub fn get_info() -> Option<String> {
     };
     result_text.push_str(&format!("[info.selected text by uia cache]\n{}\n", cache_selected_uia));
 
-    // 剪切板文本
+    // 剪切板首个文本 (可能未更新，不含调用该函数前做的复制操作)
     let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
-    result_text.push_str(&format!("[info.text by clipboard]\n{}\n", clipboard_text));
+    result_text.push_str(&format!("[info.text in old clipboard]\n{}\n", clipboard_text));
 
-    // 剪切板信息
+    // 剪切板信息 (可能未更新，不含调用该函数前做的复制操作)
     match text::clipboard::clipboard_get_info() {
         Ok(info) => {
-            result_text.push_str(&format!("[info.info by clipboard]\n{}\n", info));
+            result_text.push_str(&format!("[info.info in old clipboard]\n{}\n", info));
             return Some(result_text);
         },
         Err(_) => {
-            result_text.push_str(&format!("[info.info by clipboard]\n[error] failed to get\n"));
+            result_text.push_str(&format!("[info.info by old clipboard]\n[error] failed to get\n"));
             log::error!("Failed to get clipboard info");
         }
     }
