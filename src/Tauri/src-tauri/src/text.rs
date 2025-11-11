@@ -1,90 +1,150 @@
+/// 剪切版 - 仅关注最近项
 pub mod clipboard {
     /// 将文本写入剪贴板
-    #[cfg(target_os = "windows")]
     pub fn clipboard_set_text(text: &str) -> Result<(), String> {
-        use std::ffi::OsStr;
-        use std::iter::once;
-        use std::os::windows::ffi::OsStrExt;
-        use std::ptr;
-        use winapi::um::winbase::{GlobalAlloc, GlobalLock, GlobalUnlock, GMEM_MOVEABLE};
-        use winapi::um::winnt::HANDLE;
-        use winapi::um::winuser::CF_UNICODETEXT;
-        use winapi::um::winuser::{CloseClipboard, EmptyClipboard, OpenClipboard, SetClipboardData};
+        #[cfg(not(target_os = "windows"))]
+        return Err("Clipboard operations not implemented for this platform".to_string());
 
-        unsafe {
-            if OpenClipboard(ptr::null_mut()) == 0 {
-                return Err("Failed to open clipboard".to_string());
-            }
+        #[cfg(target_os = "windows")] {
+            use std::ffi::OsStr;
+            use std::iter::once;
+            use std::os::windows::ffi::OsStrExt;
+            use std::ptr;
+            use winapi::um::winbase::{GlobalAlloc, GlobalLock, GlobalUnlock, GMEM_MOVEABLE};
+            use winapi::um::winnt::HANDLE;
+            use winapi::um::winuser::CF_UNICODETEXT;
+            use winapi::um::winuser::{CloseClipboard, EmptyClipboard, OpenClipboard, SetClipboardData};
 
-            if EmptyClipboard() == 0 {
+            unsafe {
+                if OpenClipboard(ptr::null_mut()) == 0 {
+                    return Err("Failed to open clipboard".to_string());
+                }
+
+                if EmptyClipboard() == 0 {
+                    CloseClipboard();
+                    return Err("Failed to empty clipboard".to_string());
+                }
+
+                let wide: Vec<u16> = OsStr::new(text).encode_wide().chain(once(0)).collect();
+                let len = wide.len() * std::mem::size_of::<u16>();
+
+                let h_mem: HANDLE = GlobalAlloc(GMEM_MOVEABLE, len);
+                if h_mem.is_null() {
+                    CloseClipboard();
+                    return Err("Failed to allocate memory".to_string());
+                }
+
+                let p_mem = GlobalLock(h_mem);
+                if p_mem.is_null() {
+                    CloseClipboard();
+                    return Err("Failed to lock memory".to_string());
+                }
+
+                ptr::copy_nonoverlapping(wide.as_ptr(), p_mem as *mut u16, wide.len());
+                GlobalUnlock(h_mem);
+
+                if SetClipboardData(CF_UNICODETEXT, h_mem).is_null() {
+                    CloseClipboard();
+                    return Err("Failed to set clipboard data".to_string());
+                }
+
                 CloseClipboard();
-                return Err("Failed to empty clipboard".to_string());
+                Ok(())
             }
-
-            let wide: Vec<u16> = OsStr::new(text).encode_wide().chain(once(0)).collect();
-            let len = wide.len() * std::mem::size_of::<u16>();
-
-            let h_mem: HANDLE = GlobalAlloc(GMEM_MOVEABLE, len);
-            if h_mem.is_null() {
-                CloseClipboard();
-                return Err("Failed to allocate memory".to_string());
-            }
-
-            let p_mem = GlobalLock(h_mem);
-            if p_mem.is_null() {
-                CloseClipboard();
-                return Err("Failed to lock memory".to_string());
-            }
-
-            ptr::copy_nonoverlapping(wide.as_ptr(), p_mem as *mut u16, wide.len());
-            GlobalUnlock(h_mem);
-
-            if SetClipboardData(CF_UNICODETEXT, h_mem).is_null() {
-                CloseClipboard();
-                return Err("Failed to set clipboard data".to_string());
-            }
-
-            CloseClipboard();
-            Ok(())
         }
     }
 
     /// 从剪贴板获取文本
-    #[cfg(target_os = "windows")]
     pub fn clipboard_get_text() -> Result<String, String> {
-        use std::ptr;
-        use winapi::um::winbase::{GlobalLock, GlobalUnlock};
-        use winapi::um::winuser::{CloseClipboard, OpenClipboard, GetClipboardData, CF_UNICODETEXT};
+        #[cfg(not(target_os = "windows"))]
+        return Err("Clipboard operations not implemented for this platform".to_string());
 
-        unsafe {
-            if OpenClipboard(ptr::null_mut()) == 0 {
-                return Err("Failed to open clipboard".to_string());
-            }
+        #[cfg(target_os = "windows")] {
+            use std::ptr;
+            use winapi::um::winbase::{GlobalLock, GlobalUnlock};
+            use winapi::um::winuser::{CloseClipboard, OpenClipboard, GetClipboardData, CF_UNICODETEXT};
 
-            let h_data = GetClipboardData(CF_UNICODETEXT);
-            if h_data.is_null() {
+            unsafe {
+                if OpenClipboard(ptr::null_mut()) == 0 {
+                    return Err("Failed to open clipboard".to_string());
+                }
+
+                let h_data = GetClipboardData(CF_UNICODETEXT);
+                if h_data.is_null() {
+                    CloseClipboard();
+                    return Err("No text data in clipboard".to_string());
+                }
+
+                let p_data = GlobalLock(h_data);
+                if p_data.is_null() {
+                    CloseClipboard();
+                    return Err("Failed to lock clipboard data".to_string());
+                }
+
+                let mut len = 0;
+                while *(p_data as *const u16).add(len) != 0 {
+                    len += 1;
+                }
+
+                let slice = std::slice::from_raw_parts(p_data as *const u16, len);
+                let text = String::from_utf16(slice).map_err(|e| e.to_string())?;
+
+                GlobalUnlock(h_data);
                 CloseClipboard();
-                return Err("No text data in clipboard".to_string());
+                Ok(text)
             }
-
-            let p_data = GlobalLock(h_data);
-            if p_data.is_null() {
-                CloseClipboard();
-                return Err("Failed to lock clipboard data".to_string());
-            }
-
-            let mut len = 0;
-            while *(p_data as *const u16).add(len) != 0 {
-                len += 1;
-            }
-
-            let slice = std::slice::from_raw_parts(p_data as *const u16, len);
-            let text = String::from_utf16(slice).map_err(|e| e.to_string())?;
-
-            GlobalUnlock(h_data);
-            CloseClipboard();
-            Ok(text)
         }
+    }
+
+    /// 模拟黏贴按键
+    pub fn simulate_paste() -> Result<(), String> {
+        #[cfg(not(target_os = "windows"))]
+        return Err("Paste simulation not implemented for this platform".to_string());
+
+        #[cfg(target_os = "windows")] {
+            use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL};
+
+            const VK_V: u8 = b'V'; // 大写V的ascii码是 86 = 0x56
+
+            unsafe {
+                keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
+                keybd_event(VK_V, 0, 0, 0); // 按下 V
+                keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0); // 释放 V
+                keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
+            }
+        }
+
+        Ok(())
+    }
+
+    /// 模拟复制按键
+    pub fn simulate_copy() -> Result<(), String> {
+        log::info!("simulate_copy called start");
+
+        #[cfg(not(target_os = "windows"))]
+        Err("Copy simulation not implemented for this platform".to_string());
+
+        #[cfg(target_os = "windows")] {
+            use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL, VK_MENU};
+
+            const VK_C: u8 = b'C'; // 大写C的ascii码是 67 = 0x43
+            const VK_A: u8 = b'A'; // 大写A的ascii码是 65 = 0x41
+
+            unsafe {
+                // 可能的冲突: 释放 Alt和A, 防止与召唤菜单时的按键冲突
+                // 焦点转移策略时，需要在菜单召唤前 (焦点转移前) 完成
+                keybd_event(VK_A, 0, KEYEVENTF_KEYUP, 0);
+                keybd_event(VK_MENU as u8, 0, KEYEVENTF_KEYUP, 0);
+
+                keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
+                keybd_event(VK_C, 0, 0, 0); // 按下 C
+                keybd_event(VK_C, 0, KEYEVENTF_KEYUP, 0); // 释放 C
+                keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
+            }
+        }
+
+        log::info!("simulate_copy called end");
+        Ok(())
     }
 
     /// 获取并打印当前剪贴板中所有可用的数据格式
@@ -94,7 +154,7 @@ pub mod clipboard {
         use winapi::um::winuser::*;
         let mut result: String = "".to_string();
 
-        match crate::text_c::get_and_print_all_clipboard_info() {
+        match crate::text_c::get_clipboard_info_all() {
             Ok(info) => result += &info,
             Err(err) => {
                 log::error!("get_and_print_all_clipboard_info failed: {}", err);
@@ -165,72 +225,6 @@ pub mod clipboard {
                 }
             }
         }
-    }
-
-    /// 模拟黏贴按键
-    #[cfg(target_os = "windows")]
-    pub fn simulate_paste() -> Result<(), String> {
-        use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL};
-
-        const VK_V: u8 = b'V'; // 大写V的ascii码是 86 = 0x56
-
-        unsafe {
-            keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
-            keybd_event(VK_V, 0, 0, 0); // 按下 V
-            keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0); // 释放 V
-            keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
-        }
-
-        Ok(())
-    }
-
-    /// 模拟复制按键
-    #[cfg(target_os = "windows")]
-    pub fn simulate_copy() -> Result<(), String> {
-        log::info!("simulate_copy called start");
-        use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL, VK_MENU};
-
-        const VK_C: u8 = b'C'; // 大写C的ascii码是 67 = 0x43
-        const VK_A: u8 = b'A'; // 大写A的ascii码是 65 = 0x41
-
-        unsafe {
-            // 可能的冲突: 释放 Alt和A, 防止与召唤菜单时的按键冲突
-            // 焦点转移策略时，需要在菜单召唤前 (焦点转移前) 完成
-            keybd_event(VK_A, 0, KEYEVENTF_KEYUP, 0);
-            keybd_event(VK_MENU as u8, 0, KEYEVENTF_KEYUP, 0);
-
-            keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
-            keybd_event(VK_C, 0, 0, 0); // 按下 C
-            keybd_event(VK_C, 0, KEYEVENTF_KEYUP, 0); // 释放 C
-            keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
-        }
-
-        log::info!("simulate_copy called end");
-        Ok(())
-    }
-
-    /// 将文本写入剪贴板
-    #[cfg(not(target_os = "windows"))]
-    pub fn clipboard_set_text(_text: &str) -> Result<(), String> {
-        Err("Clipboard operations not implemented for this platform".to_string())
-    }
-
-    /// 从剪贴板获取文本
-    #[cfg(not(target_os = "windows"))]
-    pub fn clipboard_get_text() -> Result<String, String> {
-        Err("Clipboard operations not implemented for this platform".to_string())
-    }
-
-    /// 模拟黏贴按键
-    #[cfg(not(target_os = "windows"))]
-    pub fn simulate_paste() -> Result<(), String> {
-        Err("Paste simulation not implemented for this platform".to_string())
-    }
-
-    /// 模拟黏贴按键
-    #[cfg(not(target_os = "windows"))]
-    pub fn simulate_copy() -> Result<(), String> {
-        Err("Copy simulation not implemented for this platform".to_string())
     }
 }
 

@@ -6,7 +6,7 @@ use winapi::um::winbase::{GlobalLock, GlobalSize, GlobalUnlock};
 use winapi::um::winuser::*;
 
 /// 获取并打印剪贴板中所有能解析的信息
-pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
+pub fn get_clipboard_info_all() -> Result<String, String> {
     println!("==================================================");
     println!("        开始读取当前剪贴板的详细信息");
     println!("==================================================");
@@ -26,7 +26,7 @@ pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
         }
 
         while current_format != 0 {
-            print_format_details(current_format);
+            print_as(current_format);
             current_format = EnumClipboardFormats(current_format);
         }
 
@@ -40,8 +40,8 @@ pub fn get_and_print_all_clipboard_info() -> Result<String, String> {
     Ok("信息读取完毕".to_string())
 }
 
-/// 根据格式ID，打印该格式的详细信息
-unsafe fn print_format_details(format: UINT) {
+/// 解析并打印对应的剪切板项
+unsafe fn print_as(format: UINT) {
     let format_name = unsafe { get_format_name(format) };
     println!("\n--- 格式ID: {:<5} | 名称: {} ---", format, format_name);
 
@@ -63,7 +63,7 @@ unsafe fn print_format_details(format: UINT) {
             if format_name.contains("HTML Format") {
                 unsafe { print_as_html(handle) };
             } else {
-                unsafe { print_as_raw_bytes(handle) };
+                unsafe { print_as_bytes(handle) };
             }
         }
     }
@@ -123,8 +123,8 @@ unsafe fn print_as_html(handle: HGLOBAL) {
     }
 }
 
-/// 对于未知但有数据的格式，打印其原始字节大小
-unsafe fn print_as_raw_bytes(handle: HGLOBAL) {
+/// 解析并打印未知格式/原始字节
+unsafe fn print_as_bytes(handle: HGLOBAL) {
     let size = unsafe { GlobalSize(handle) };
     if size > 0 {
         println!("    -> 这是一个自定义或未知格式，包含 {} 字节的原始数据。", size);
