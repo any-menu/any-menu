@@ -28,9 +28,7 @@ pub fn get_clipboard_info_all() -> Result<String, String> {
         // 2. 遍历所有可用格式
         let mut current_format = EnumClipboardFormats(0);
         if current_format == 0 {
-            CloseClipboard();
-            println!("剪贴板为空，或无法枚举格式。");
-            return Ok("剪贴板为空，或无法枚举格式。".to_string());
+            CloseClipboard(); return Ok("剪贴板为空，或无法枚举格式。".to_string());
         }
 
         while current_format != 0 {
@@ -45,7 +43,7 @@ pub fn get_clipboard_info_all() -> Result<String, String> {
     println!("\n==================================================");
     println!("                 信息读取完毕");
     println!("==================================================");
-    Ok("信息读取完毕".to_string())
+    Ok("信息读取并打印完毕".to_string())
 }
 
 /// 解析并打印对应的剪切板项

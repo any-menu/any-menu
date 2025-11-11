@@ -849,17 +849,17 @@ pub fn get_info() -> Option<String> {
     // 选中文本的缓存
     let cache_selected_clipboard: String = {
         if let Ok(cache) = CLIPBOARD_CACHE.lock() {
-            cache.clone().unwrap_or("".into())
+            cache.clone().unwrap_or("[error] failed2".into()) // Option<String>
         } else {
-            "[error] failed2".into()
+            "[error] failed lock".into()
         }
     };
     result_text.push_str(&format!("[info.selected text by clipboard cache]\n{}\n", cache_selected_clipboard));
     let cache_selected_uia: String = {
         if let Ok(cache) = UIA_CACHE.lock() {
-            cache.clone().unwrap_or_else(|| "[error] failed".into())
+            cache.clone().unwrap_or("[error] failed3".into())
         } else {
-            "[error] failed2".into()
+            "[error] failed unlock".into()
         }
     };
     result_text.push_str(&format!("[info.selected text by uia cache]\n{}\n", cache_selected_uia));

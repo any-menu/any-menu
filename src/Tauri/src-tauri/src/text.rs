@@ -21,8 +21,7 @@ pub mod clipboard {
                 }
 
                 if EmptyClipboard() == 0 {
-                    CloseClipboard();
-                    return Err("Failed to empty clipboard".to_string());
+                    CloseClipboard(); return Err("Failed to empty clipboard".to_string());
                 }
 
                 let wide: Vec<u16> = OsStr::new(text).encode_wide().chain(once(0)).collect();
@@ -30,26 +29,22 @@ pub mod clipboard {
 
                 let h_mem: HANDLE = GlobalAlloc(GMEM_MOVEABLE, len);
                 if h_mem.is_null() {
-                    CloseClipboard();
-                    return Err("Failed to allocate memory".to_string());
+                    CloseClipboard(); return Err("Failed to allocate memory".to_string());
                 }
 
                 let p_mem = GlobalLock(h_mem);
                 if p_mem.is_null() {
-                    CloseClipboard();
-                    return Err("Failed to lock memory".to_string());
+                    CloseClipboard(); return Err("Failed to lock memory".to_string());
                 }
 
                 ptr::copy_nonoverlapping(wide.as_ptr(), p_mem as *mut u16, wide.len());
                 GlobalUnlock(h_mem);
 
                 if SetClipboardData(CF_UNICODETEXT, h_mem).is_null() {
-                    CloseClipboard();
-                    return Err("Failed to set clipboard data".to_string());
+                    CloseClipboard(); return Err("Failed to set clipboard data".to_string());
                 }
 
-                CloseClipboard();
-                Ok(())
+                CloseClipboard(); Ok(())
             }
         }
     }
@@ -71,14 +66,12 @@ pub mod clipboard {
 
                 let h_data = GetClipboardData(CF_UNICODETEXT);
                 if h_data.is_null() {
-                    CloseClipboard();
-                    return Err("No text data in clipboard".to_string());
+                    CloseClipboard(); return Err("No text data in clipboard".to_string());
                 }
 
                 let p_data = GlobalLock(h_data);
                 if p_data.is_null() {
-                    CloseClipboard();
-                    return Err("Failed to lock clipboard data".to_string());
+                    CloseClipboard(); return Err("Failed to lock clipboard data".to_string());
                 }
 
                 let mut len = 0;
@@ -90,8 +83,7 @@ pub mod clipboard {
                 let text = String::from_utf16(slice).map_err(|e| e.to_string())?;
 
                 GlobalUnlock(h_data);
-                CloseClipboard();
-                Ok(text)
+                CloseClipboard(); Ok(text)
             }
         }
     }
@@ -177,7 +169,7 @@ pub mod clipboard {
                 if current_sequence_num != initial_sequence_num {
                     // 实践中，即使序列号变了，内容写入也可能还有微小延迟，
                     // 加一个极短的 sleep 是一个“带保险带”的做法，但通常非必需。
-                    // std::thread::sleep(Duration::from_millis(10));
+                    std::thread::sleep(Duration::from_millis(10));
                     break;
                 }
                 // 超时
@@ -203,7 +195,7 @@ pub mod clipboard {
         /// 
         /// 模拟Ctrl+C一般是用 winuser::keybd_event / enigo，不用 simulate (组合键存在问题)
         /// 
-        /// 需要注意的是: ctrl+c模拟函数到按键按出来，以及按出来后到剪切板刷新。通常需要等待一小会儿，再获取时结果才是正确的
+        /// 需要注意的是: ctrl+c模拟函数到按键按出来，以及按出来后到剪切板刷新。都需要等待一段时间，再获取时结果才是正确的
         /// 这个时间不确定 (根据系统不同可能不同，但通常不能太短)
         /// 
         /// 优化: 不过好在这里的复制时机是展开面板时，该函数可以线程/闭包执行。
@@ -243,16 +235,16 @@ pub mod clipboard {
             }
         }
 
+        let mut formats = Vec::new();
         unsafe {
             if OpenClipboard(ptr::null_mut()) == 0 {
                 return Err("无法打开剪贴板".to_string());
             }
 
-            let mut formats = Vec::new();
             let mut current_format = EnumClipboardFormats(0);
 
             if current_format == 0 {
-                println!("剪贴板为空或无法访问内容。");
+                log::error!("剪贴板为空或无法访问内容。");
             }
 
             while current_format != 0 {
@@ -262,14 +254,14 @@ pub mod clipboard {
             }
 
             CloseClipboard();
-            
-            if !formats.is_empty() {
-                println!("剪贴板中包含 {} 种可用格式:", formats.len());
-                for f in formats {
-                    println!("- {}", f);
-                }
+        }
+        if !formats.is_empty() {
+            println!("剪贴板中包含 {} 种可用格式:", formats.len());
+            for f in formats {
+                println!("- {}", f);
             }
         }
+
         Ok(result)
     }
 
