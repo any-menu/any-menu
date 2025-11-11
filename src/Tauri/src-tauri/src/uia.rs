@@ -21,6 +21,8 @@
  */
 
 use log::{debug, warn, info, error};
+use once_cell::sync::Lazy;
+use std::sync::{Mutex};
 
 use crate::text;
 
@@ -671,6 +673,10 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 
 // #region 获取选中文本
 
+// 缓存选中文本的结果
+static CLIPBOARD_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
+static UIA_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
+
 /// 获取当前选中的文本
 /// 
 /// @param method: &str
@@ -681,17 +687,56 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 ///     - 可能会覆盖用户原本的剪切板内容
 ///     - 无法判断当前是否有选中的文本 (有可能没有选中，这个通过剪切板难以判断)
 ///   - "uia" uia方式 (目前仅支持windows)
+/// @param is_both: bool 都执行并缓存，只是返回的时候只返回其中一个
 #[tauri::command]
-pub fn get_selected(method: &str) -> Option<String> {
+pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
     // let method = "clipboard";
-    match method {
-        "clipboard" => {
-            return get_selected_by_clipboard();
-        },
-        "uia" => {
-            return get_selected_by_uia();
+    let is_both = is_both.unwrap_or(true);
+
+    if is_both {
+        match method {
+            "clipboard" => {
+                std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
+                    let result_uia = get_selected_by_uia();
+                    if let Ok(mut cache) = UIA_CACHE.lock() {
+                        *cache = result_uia;
+                    }
+                });
+                {
+                    let result_clipboard = get_selected_by_clipboard();
+                    if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
+                        *cache = result_clipboard.clone();
+                    }
+                    return result_clipboard;
+                }
+            },
+            "uia" => {
+                std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
+                    let result_clipboard = get_selected_by_clipboard();
+                    if let Ok(mut cache) = CLIPBOARD_CACHE.lock() {
+                        *cache = result_clipboard;
+                    }
+                });
+                {
+                    let result_uia = get_selected_by_uia();
+                    if let Ok(mut cache) = UIA_CACHE.lock() {
+                        *cache = result_uia.clone();
+                    }
+                    return result_uia;
+                }
+            }
+            _ => { log::error!("Unsupported method: {}", method); return None; }
         }
-        _ => { log::error!("Unsupported method: {}", method); return None; }
+    } else {
+        match method {
+            "clipboard" => {
+                return get_selected_by_clipboard();
+            },
+            "uia" => {
+                return get_selected_by_uia();
+            }
+            _ => { log::error!("Unsupported method: {}", method); return None; }
+        }
     }
 }
 
@@ -784,22 +829,39 @@ fn get_selected_by_clipboard() -> Option<String> {
 pub fn get_info() -> Option<String> {
     let mut result_text = String::new();
 
-    let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
-    result_text.push_str(&format!("Clipboard Text: {}\n", clipboard_text));
+    // 选中文本的缓存
+    let cache_selected_clipboard: String = {
+        if let Ok(cache) = CLIPBOARD_CACHE.lock() {
+            cache.clone().unwrap_or_else(|| "[error] failed".into())
+        } else {
+            "[error] failed2".into()
+        }
+    };
+    result_text.push_str(&format!("[info.selected text by clipboard cache]\n{}\n", cache_selected_clipboard));
+    let cache_selected_uia: String = {
+        if let Ok(cache) = UIA_CACHE.lock() {
+            cache.clone().unwrap_or_else(|| "[error] failed".into())
+        } else {
+            "[error] failed2".into()
+        }
+    };
+    result_text.push_str(&format!("[info.selected text by uia cache]\n{}\n", cache_selected_uia));
 
+    // 剪切板文本
+    let clipboard_text: String = text::clipboard::clipboard_get_text().unwrap_or("failed".into());
+    result_text.push_str(&format!("[info.text by clipboard]\n{}\n", clipboard_text));
+
+    // 剪切板信息
     match text::clipboard::clipboard_get_info() {
         Ok(info) => {
-            let mut result_text = String::new();
-            result_text.push_str(&format!("Clipboard Info:\n{}\n", info));
-            result_text.push_str(&format!("Clipboard Text:\n{}\n", clipboard_text));
+            result_text.push_str(&format!("[info.info by clipboard]\n{}\n", info));
             return Some(result_text);
         },
         Err(_) => {
+            result_text.push_str(&format!("[info.info by clipboard]\n[error] failed to get\n"));
             log::error!("Failed to get clipboard info");
         }
     }
-
-    // TODO cache about uia get selected text
 
     return Some(result_text);
 }

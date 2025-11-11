@@ -93,7 +93,7 @@ export class AMPanel {
         global_setting.api.getInfo().then((info_text: string|null) => {
           global_el.amMiniEditor?.show(
             undefined, undefined,
-            global_setting.state.infoText + "[uia info]\n" + (info_text ?? "null") + "\n\n",
+            global_setting.state.infoText + "[info]\n" + (info_text ?? "null") + "\n\n",
             false
           )
         })

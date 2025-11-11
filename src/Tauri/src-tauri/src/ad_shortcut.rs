@@ -779,7 +779,7 @@ fn layer_sign(
 
     // 输出成对符号
     let simu_sign_part = |enigo: &mut Enigo, sign_l: &'static str, sign_r: &'static str, sign_l_move| {
-        let selected_text: String = uia::get_selected("uia").unwrap_or("".to_string());
+        let selected_text: String = uia::get_selected("uia", Some(false)).unwrap_or("".to_string());
         if selected_text.is_empty() {
             state.virtual_event_flag.set(true);
             let _ = text::send(&(sign_l.to_string() + sign_r), "clipboard");
