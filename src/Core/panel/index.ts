@@ -91,11 +91,8 @@ export class AMPanel {
 
         // 异步添加 info 内容
         global_setting.api.getInfo().then((info_text: string|null) => {
-          global_el.amMiniEditor?.show(
-            undefined, undefined,
-            global_setting.state.infoText + "[info]\n" + (info_text ?? "null") + "\n\n",
-            false
-          )
+          global_setting.state.infoText += '[info]\n' + (info_text ?? "null") + "\n\n"
+          global_el.amMiniEditor?.show(undefined, undefined, global_setting.state.infoText, false)
         })
       }
       else {

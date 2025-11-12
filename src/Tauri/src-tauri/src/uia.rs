@@ -874,7 +874,7 @@ pub fn get_info() -> Option<String> {
             return Some(result_text);
         },
         Err(_) => {
-            result_text.push_str(&format!("[info.info by old clipboard]\n[error] failed to get\n"));
+            result_text.push_str(&format!("[info.info by old clipboard]\nERROR: failed to get\n"));
             log::error!("Failed to get clipboard info");
         }
     }

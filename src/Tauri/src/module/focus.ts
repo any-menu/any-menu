@@ -62,11 +62,12 @@ export function setupAppChangeListener() {
       void toggleWindow(["miniEditor"])
     }
     else if (typeof payload == 'object') {
+      // 异步添加 info 内容
       const json_str = JSON.stringify(payload, null, 2)
-      // console.log('Parsed JSON payload:', json_str)
-      global_setting.state.selectedText += json_str
+      // console.log('Parsed JSON payload:', json_str, '\n---\n', global_setting.state.infoText)
+      global_setting.state.infoText += '[info.slow]\n' + json_str + '\n\n'
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
-        global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
+        global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
       }
     }
     else {

@@ -223,7 +223,7 @@ async function showWindow(panel_list?: string[]) {
   // console.log('光标坐标:', cursor);
   // -1 表示获取不到光标坐标，可以使用鼠标坐标
   if (cursor2.x < 0 || cursor2.y < 0) {
-    console.error('getCursorXY failed, use mouse position instead')
+    console.warn('getCursorXY failed, use mouse position instead')
     // cursor2 = cursor
   }
   // 弃用。改为黑名单注销全局快捷键的方式
@@ -253,7 +253,7 @@ async function showWindow(panel_list?: string[]) {
   const over_mode = cursor2_flag ? "revert" : "side"
   const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
   cursor.x = cursor3.x; cursor.y = cursor3.y;
-  if (global_setting.isDebug) global_setting.state.infoText += `[finialPosition]\nover_mode: ${over_mode}, x:${cursor.x}, y:${cursor.y}\n\n`
+  if (global_setting.isDebug) global_setting.state.infoText += `[finialPosition]\nover_mode:${over_mode}, x:${cursor.x}, y:${cursor.y}\n\n`
 
   // step5. 应用坐标并显示窗口
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
