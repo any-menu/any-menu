@@ -13,9 +13,21 @@
 /// 
 /// 总结就是: 该对象会发生不止一次的更新，通常是一次在面板展开前，一次或以上的在面板展开后的耗时操作
 
-// 旧
 use once_cell::sync::Lazy;
 use std::sync::{Mutex};
-// // 缓存选中文本的结果
-pub static CLIPBOARD_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
-pub static UIA_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
+
+// 缓存结构
+#[derive(Debug, Clone, Default)]
+pub struct AMState {
+    pub clipboard: Option<String>,
+    pub uia: Option<String>,
+}
+// 缓存对象
+pub static AM_STATE: Lazy<Mutex<AMState>> = Lazy::new(|| Mutex::new(AMState::default()));
+
+// 旧
+// use once_cell::sync::Lazy;
+// use std::sync::{Mutex};
+// // // 缓存选中文本的结果
+// pub static CLIPBOARD_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
+// pub static UIA_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));

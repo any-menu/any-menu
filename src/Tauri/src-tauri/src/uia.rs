@@ -694,14 +694,14 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
             "clipboard" => {
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_uia = get_selected_by_uia();
-                    if let Ok(mut cache) = utils::UIA_CACHE.lock() {
-                        *cache = result_uia;
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.uia = result_uia;
                     }
                 });
                 {
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                    if let Ok(mut cache) = utils::CLIPBOARD_CACHE.lock() {
-                        *cache = result_clipboard.clone();
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.clipboard = result_clipboard.clone();
                     }
                     return result_clipboard;
                 }
@@ -709,14 +709,14 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
             "uia" => {
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                    if let Ok(mut cache) = utils::CLIPBOARD_CACHE.lock() {
-                        *cache = result_clipboard;
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.clipboard = result_clipboard;
                     }
                 });
                 {
                     let result_uia = get_selected_by_uia();
-                    if let Ok(mut cache) = utils::UIA_CACHE.lock() {
-                        *cache = result_uia.clone();
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.uia = result_uia.clone();
                     }
                     return result_uia;
                 }
@@ -725,21 +725,21 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                 if let Some(text) = get_selected_by_uia() {
                     std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                         let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                        if let Ok(mut cache) = utils::CLIPBOARD_CACHE.lock() {
-                            *cache = result_clipboard;
+                        if let Ok(mut cache) = utils::AM_STATE.lock() {
+                            cache.clipboard = result_clipboard;
                         }
                     });
-                    if let Ok(mut cache) = utils::UIA_CACHE.lock() {
-                        *cache = Some(text.clone());
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.uia = Some(text.clone());
                     }
                     return Some(text);
                 } else {
-                    if let Ok(mut cache) = utils::UIA_CACHE.lock() {
-                        *cache = None;
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.uia = None;
                     }
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                    if let Ok(mut cache) = utils::CLIPBOARD_CACHE.lock() {
-                        *cache = result_clipboard.clone();
+                    if let Ok(mut cache) = utils::AM_STATE.lock() {
+                        cache.clipboard = result_clipboard.clone();
                     }
                     return result_clipboard;
                 }
@@ -843,16 +843,16 @@ pub fn get_info() -> Option<String> {
 
     // 选中文本的缓存
     let cache_selected_clipboard: String = {
-        if let Ok(cache) = utils::CLIPBOARD_CACHE.lock() {
-            cache.clone().unwrap_or("[error] failed2".into()) // Option<String>
+        if let Ok(cache) = utils::AM_STATE.lock() {
+            cache.clipboard.clone().unwrap_or("[error] failed2".into()) // Option<String>
         } else {
             "[error] failed lock".into()
         }
     };
     result_text.push_str(&format!("[info.selected text by clipboard cache]\n{}\n", cache_selected_clipboard));
     let cache_selected_uia: String = {
-        if let Ok(cache) = utils::UIA_CACHE.lock() {
-            cache.clone().unwrap_or("[error] failed3".into())
+        if let Ok(cache) = utils::AM_STATE.lock() {
+            cache.uia.clone().unwrap_or("[error] failed3".into())
         } else {
             "[error] failed unlock".into()
         }
