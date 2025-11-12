@@ -28,9 +28,6 @@ use uia::{
     get_info,
 };
 mod text;
-use text::{
-    send,
-};
 mod text_c;
 mod file;
 use file::{
@@ -42,6 +39,7 @@ use file::{
 };
 mod focus;
 mod ad_shortcut;
+mod utils;
 
 // #region uia thread
 
@@ -224,7 +222,7 @@ pub fn run() {
             greet,
             get_caret, get_caret_debug, get_screen_size, // size类
             get_selected, get_info, // 其他类
-            send,
+            text::send,
             read_file, read_folder, create_file, write_file, delete_file,
         ])
         .run(tauri::generate_context!())
