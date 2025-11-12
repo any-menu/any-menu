@@ -123,6 +123,10 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .setup(|app| {
+            if let Ok(mut state) = utils::AM_STATE.lock() {
+                state.app_handle = Some(app.app_handle().clone());
+            }
+
             // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程
             focus::init_focus_check(app.app_handle().clone());
 

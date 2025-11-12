@@ -186,7 +186,7 @@ pub mod clipboard {
                 Ok(text) => Ok(text),
                 Err(e) => {
                     log::error!("Failed to get clipboard text after update: {}", e);
-                    Err("获取剪贴板文本失败".into())
+                    Err(format!("获取剪切板文本失败: {}", e))
                 }
             };
         }

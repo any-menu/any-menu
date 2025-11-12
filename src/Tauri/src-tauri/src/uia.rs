@@ -692,47 +692,49 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
     if is_both {
         match method {
             "clipboard" => {
+                let result_clipboard = text::clipboard::get_selected_by_clipboard();
+                if let Ok(mut cache) = utils::AM_STATE.lock() {
+                    cache.selected_text_by_clipboard = result_clipboard.clone();
+                    cache.selected_text_by_uia = Err("waiting".into());
+                }
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_uia = get_selected_by_uia();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
                         cache.selected_text_by_uia = result_uia;
+                        cache.update();
                     }
                 });
-                {
-                    let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                    if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.selected_text_by_clipboard = result_clipboard.clone();
-                    }
-                    return result_clipboard;
-                }
+                return result_clipboard;
             },
             "uia" => {
+                let result_uia = get_selected_by_uia();
+                if let Ok(mut cache) = utils::AM_STATE.lock() {
+                    cache.selected_text_by_uia = result_uia.clone();
+                    cache.selected_text_by_clipboard = Err("waiting".into());
+                }
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
                         cache.selected_text_by_clipboard = result_clipboard;
+                        cache.update();
                     }
                 });
-                {
-                    let result_uia = get_selected_by_uia();
-                    if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.selected_text_by_uia = result_uia.clone();
-                    }
-                    return result_uia;
-                }
+                return result_uia;
             },
             "auto" => { // 优先uia，失败则clipboard
                 match get_selected_by_uia() {
                     Ok(text) => {
+                        if let Ok(mut cache) = utils::AM_STATE.lock() {
+                            cache.selected_text_by_uia = Ok(text.clone());
+                            cache.selected_text_by_clipboard = Err("waiting".into());
+                        }
                         std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                             let result_clipboard = text::clipboard::get_selected_by_clipboard();
                             if let Ok(mut cache) = utils::AM_STATE.lock() {
                                 cache.selected_text_by_clipboard = result_clipboard;
+                                cache.update();
                             }
                         });
-                        if let Ok(mut cache) = utils::AM_STATE.lock() {
-                            cache.selected_text_by_uia = Ok(text.clone());
-                        }
                         return Ok(text);
                     }
                     Err(err) =>  {
@@ -807,7 +809,7 @@ fn get_selected_by_uia() -> Result<String, String> {
         // 类型转换
         let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
             Ok(tp) => tp,
-            Err(_) => { CoUninitialize(); return Err("获取文本模式失败".into()); }
+            Err(_) => { CoUninitialize(); return Err("文本模式转换失败".into()); }
         };
 
         // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)

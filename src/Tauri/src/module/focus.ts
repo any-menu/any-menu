@@ -2,6 +2,7 @@ import { global_setting } from '../../../Core/setting'
 import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
 import { toggleWindow } from './window'
+import { global_el } from '../../../Core/panel'
 
 // 显示面板: 搜索框+菜单
 const SHORTCUT_1 = 'Alt+A'
@@ -53,11 +54,23 @@ export function setupAppChangeListener() {
   // 后端通知前端显示 (超级快捷键)
   listen('active-window-toggle', (v: any) => {
     const payload: any = v.payload // 临时: 2|null
-    if (payload === 2) {
-      void toggleWindow(["miniEditor"])
-      return
-    } else {
+
+    if (payload === null) { // 对应rust返回 `()`
       void toggleWindow()
+    }
+    else if (typeof payload == 'number' && payload === 2) {
+      void toggleWindow(["miniEditor"])
+    }
+    else if (typeof payload == 'object') {
+      const json_str = JSON.stringify(payload, null, 2)
+      // console.log('Parsed JSON payload:', json_str)
+      global_setting.state.selectedText += json_str
+      if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
+        global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
+      }
+    }
+    else {
+      console.error('Unknown payload for active-window-toggle:', payload)
     }
   })
 }
