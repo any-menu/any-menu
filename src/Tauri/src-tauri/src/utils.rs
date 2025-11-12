@@ -17,17 +17,28 @@ use once_cell::sync::Lazy;
 use std::sync::{Mutex};
 
 // 缓存结构
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct AMState {
-    pub clipboard: Option<String>,
-    pub uia: Option<String>,
+    // 两个selectedText，需要区分是没有选中文本还是获取失败、以及先清空再延时获取时的等待状态，所以不用Option
+    pub selected_text_by_clipboard: Result<String, String>,
+    pub selected_text_by_uia: Result<String, String>,
 }
+impl Default for AMState {
+    fn default() -> Self {
+        Self {
+            selected_text_by_clipboard: Err("init".to_string()), // 初始化状态
+            selected_text_by_uia: Err("init".to_string()), // 初始化状态
+        }
+    }
+}
+
 // 缓存对象
 pub static AM_STATE: Lazy<Mutex<AMState>> = Lazy::new(|| Mutex::new(AMState::default()));
 
 // 旧
 // use once_cell::sync::Lazy;
 // use std::sync::{Mutex};
-// // // 缓存选中文本的结果
+// 
+// // 缓存选中文本的结果
 // pub static CLIPBOARD_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));
 // pub static UIA_CACHE: Lazy<Mutex<Option<String>>> = Lazy::new(|| Mutex::new(None));

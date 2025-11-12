@@ -685,7 +685,7 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 ///   - "auto" 优先uia，失败则clipboard
 /// @param is_both: bool 都执行并缓存，只是返回的时候只返回其中一个
 #[tauri::command]
-pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
+pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, String> {
     // let method = "clipboard";
     let is_both = is_both.unwrap_or(true);
 
@@ -695,13 +695,13 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_uia = get_selected_by_uia();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.uia = result_uia;
+                        cache.selected_text_by_uia = result_uia;
                     }
                 });
                 {
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.clipboard = result_clipboard.clone();
+                        cache.selected_text_by_clipboard = result_clipboard.clone();
                     }
                     return result_clipboard;
                 }
@@ -710,41 +710,44 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.clipboard = result_clipboard;
+                        cache.selected_text_by_clipboard = result_clipboard;
                     }
                 });
                 {
                     let result_uia = get_selected_by_uia();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.uia = result_uia.clone();
+                        cache.selected_text_by_uia = result_uia.clone();
                     }
                     return result_uia;
                 }
             },
             "auto" => { // 优先uia，失败则clipboard
-                if let Some(text) = get_selected_by_uia() {
-                    std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
+                match get_selected_by_uia() {
+                    Ok(text) => {
+                        std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
+                            let result_clipboard = text::clipboard::get_selected_by_clipboard();
+                            if let Ok(mut cache) = utils::AM_STATE.lock() {
+                                cache.selected_text_by_clipboard = result_clipboard;
+                            }
+                        });
+                        if let Ok(mut cache) = utils::AM_STATE.lock() {
+                            cache.selected_text_by_uia = Ok(text.clone());
+                        }
+                        return Ok(text);
+                    }
+                    Err(err) =>  {
+                        if let Ok(mut cache) = utils::AM_STATE.lock() {
+                            cache.selected_text_by_uia = Err(err);
+                        }
                         let result_clipboard = text::clipboard::get_selected_by_clipboard();
                         if let Ok(mut cache) = utils::AM_STATE.lock() {
-                            cache.clipboard = result_clipboard;
+                            cache.selected_text_by_clipboard = result_clipboard.clone();
                         }
-                    });
-                    if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.uia = Some(text.clone());
+                        return result_clipboard;
                     }
-                    return Some(text);
-                } else {
-                    if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.uia = None;
-                    }
-                    let result_clipboard = text::clipboard::get_selected_by_clipboard();
-                    if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.clipboard = result_clipboard.clone();
-                    }
-                    return result_clipboard;
                 }
             }
-            _ => { log::error!("Unsupported method: {}", method); return None; }
+            _ => { log::error!("Unsupported method: {}", method); return Err("不支持的获取方法".into()); }
         }
     } else {
         match method {
@@ -755,20 +758,20 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Option<String> {
                 return get_selected_by_uia();
             },
             "auto" => { // 优先uia，失败则clipboard
-                if let Some(text) = get_selected_by_uia() {
-                    return Some(text);
+                if let Ok(text) = get_selected_by_uia() {
+                    return Ok(text);
                 }
                 return text::clipboard::get_selected_by_clipboard();
             }
-            _ => { log::error!("Unsupported method: {}", method); return None; }
+            _ => { log::error!("Unsupported method: {}", method); return Err("不支持的获取方法".into()); }
         }
     }
 }
 
-fn get_selected_by_uia() -> Option<String> {
+fn get_selected_by_uia() -> Result<String, String> {
     #[cfg(not(target_os = "windows"))]
     {
-        return None;
+        return Err("不支持的操作系统".into());
     }
     
     use windows::{
@@ -786,44 +789,43 @@ fn get_selected_by_uia() -> Option<String> {
             CLSCTX_INPROC_SERVER,
         ) {
             Ok(ua) => ua,
-            Err(_) => { CoUninitialize(); return None; }
+            Err(_) => { CoUninitialize(); return Err("获取UI自动化实例失败".into()); }
         };
 
         // 获取焦点元素 (可靠)
         let element = match ui_automation.GetFocusedElement() {
             Ok(element) => element,
-            Err(_) => { CoUninitialize(); return None; }
+            Err(_) => { CoUninitialize(); return Err("获取焦点元素失败".into()); }
         };
 
         // 文本模式 (Text Pattern)，以获取选中内容和插入符位置 (可靠，Ndd常失灵)
         let text_pattern = match element.GetCurrentPattern(UIA_TextPatternId) {
             Ok(tp) => tp,
-            Err(_) => { CoUninitialize(); return None; }
+            Err(_) => { CoUninitialize(); return Err("获取文本模式失败".into()); }
         };
 
         // 类型转换
         let text_pattern: IUIAutomationTextPattern = match text_pattern.cast() {
             Ok(tp) => tp,
-            Err(_) => { CoUninitialize(); return None; }
+            Err(_) => { CoUninitialize(); return Err("获取文本模式失败".into()); }
         };
 
         // 获取选中的文本范围 (似乎不一定支持多光标，识别的是主光标区域)
         if let Ok(selection) = text_pattern.GetSelection() {
             let count = match selection.Length() {
                 Ok(c) => c,
-                Err(_) => { CoUninitialize(); return None; }
+                Err(_) => { CoUninitialize(); return Err("获取选中文本范围失败".into()); }
             };
 
             for i in 0..count {
                 if let Ok(range) = selection.GetElement(i) {
                     if let Ok(text) = range.GetText(-1) {
-                        return Some(text.to_string());
+                        return Ok(text.to_string());
                     }
                 }
             }
         }
-
-        CoUninitialize(); return None;
+        CoUninitialize(); return Ok("".into()); // 没有选中文本
     }
 }
 
@@ -844,17 +846,17 @@ pub fn get_info() -> Option<String> {
     // 选中文本的缓存
     let cache_selected_clipboard: String = {
         if let Ok(cache) = utils::AM_STATE.lock() {
-            cache.clipboard.clone().unwrap_or("[error] failed2".into()) // Option<String>
+            cache.selected_text_by_clipboard.clone().unwrap_or_else(|e| format!("ERROR: {}", e))
         } else {
-            "[error] failed lock".into()
+            "ERROR: failed lock".into()
         }
     };
     result_text.push_str(&format!("[info.selected text by clipboard cache]\n{}\n", cache_selected_clipboard));
     let cache_selected_uia: String = {
         if let Ok(cache) = utils::AM_STATE.lock() {
-            cache.uia.clone().unwrap_or("[error] failed3".into())
+            cache.selected_text_by_uia.clone().unwrap_or_else(|e| format!("ERROR: {}", e))
         } else {
-            "[error] failed unlock".into()
+            "ERROR: failed unlock".into()
         }
     };
     result_text.push_str(&format!("[info.selected text by uia cache]\n{}\n", cache_selected_uia));

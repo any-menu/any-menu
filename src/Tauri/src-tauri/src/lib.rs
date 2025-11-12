@@ -317,6 +317,6 @@ fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
 fn get_message() -> (i32, i32, String, String) {
     let (x, y) = uia::get_win_message();
     let selected_mode: &str = "uia";
-    let selected_text: Option<String> = get_selected(selected_mode, None);
+    let selected_text: Option<String> = get_selected(selected_mode, None).ok();
     (x, y, selected_text.unwrap_or("".to_string()), uia::get_uia_by_windows_winname())
 }

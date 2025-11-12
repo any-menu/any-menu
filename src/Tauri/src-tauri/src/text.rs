@@ -142,9 +142,9 @@ pub mod clipboard {
     /// 通过模拟复制来获取当前选中的文本 (新版)
     /// 
     /// 新版不再使用sleep方式来等待，容易时间过长/过短，而是使用轮询+剪切板id的方式来检测剪切板内容是否更新
-    pub fn get_selected_by_clipboard() -> Option<String> {
+    pub fn get_selected_by_clipboard() -> Result<String, String> {
         #[cfg(not(target_os = "windows"))]
-        return None;
+        return Err("不支持的操作系统".into());
 
         #[cfg(target_os = "windows")] {
             use std::time::{Duration, Instant};
@@ -157,7 +157,7 @@ pub mod clipboard {
 
             // 2. 模拟复制
             if let Err(e) = simulate_copy() {
-                log::error!("Failed to simulate copy: {}", e); return None;
+                log::error!("Failed to simulate copy: {}", e); return Err("模拟复制失败".into());
             }
 
             // 3. 等待更新 (带超时的轮询，等待剪切板更新)
@@ -175,7 +175,7 @@ pub mod clipboard {
                 // 超时
                 if start_time.elapsed() > timeout {
                     log::warn!("Timeout waiting for clipboard update. Maybe nothing was selected.");
-                    return None;
+                    return Err("null".into()); // 可能是没有选中文本，也可能是剪切板更新超时
                 }
                 // 继续轮询 (先短暂休眠，避免CPU空转)
                 std::thread::sleep(Duration::from_millis(5));
@@ -183,10 +183,10 @@ pub mod clipboard {
 
             // 4. 获取复制的内容
             return match clipboard_get_text() {
-                Ok(text) => Some(text),
+                Ok(text) => Ok(text),
                 Err(e) => {
                     log::error!("Failed to get clipboard text after update: {}", e);
-                    None
+                    Err("获取剪贴板文本失败".into())
                 }
             };
         }
