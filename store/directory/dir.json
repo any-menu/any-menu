@@ -88,6 +88,14 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-ECharts",
+		"path": "ECharts.toml",
+		"name": "ECharts",
+		"detail": "(需要先安装 Charts, AnyBlock 类别需安装 AnyBlock)",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "anymenu-ObMetaBind",
 		"path": "ObMetaBind.toml",
 		"name": "MetaBind",
