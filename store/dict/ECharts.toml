@@ -9,7 +9,7 @@ label = "树图"
 key = "列表转树图 list2echarts_tree"
 detail = "md"
 callback = """
-[list2echarts_tree|code(echarts)]
+[list2echarts_tree]
 
 - 11
   - 22
@@ -33,7 +33,7 @@ label = "径向树图"
 key = "列表转径向树图 list2echarts_tree_radial"
 detail = "md"
 callback = """
-[list2echarts_tree_radial|code(echarts)]
+[list2echarts_tree_radial]
 
 - 11
   - 22
@@ -57,7 +57,7 @@ label = "树图_带方向"
 key = "列表转树图_带方向 list2echarts_tree_BT"
 detail = "md"
 callback = """
-[list2echarts_tree_BT|code(echarts)]
+[list2echarts_tree_BT]
 
 - 11
   - 22
@@ -81,7 +81,7 @@ label = "树图_折线"
 key = "列表转树图_折线 list2echarts_tree_polyline"
 detail = "md"
 callback = """
-[list2echarts_tree_polyline|code(echarts)]
+[list2echarts_tree_polyline]
 
 - 11
   - 22
@@ -105,7 +105,7 @@ label = "旭日图"
 key = "列表转旭日图 list2echarts_sunburst"
 detail = "md"
 callback = """
-[list2echarts_sunburst|code(echarts)]
+[list2echarts_sunburst]
 
 - 11
   - 22
