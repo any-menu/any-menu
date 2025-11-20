@@ -68,8 +68,9 @@ export function initApi() {
     return files
   }
 
-  global_setting.api.writeFile = async (relPath: string, content: string): Promise<boolean> => {
-    return await invoke("write_file", { path: relPath, content });
+  global_setting.api.writeFile = async (relPath: string, content: string, _isappend?: boolean): Promise<boolean> => {
+    let isappend: boolean = _isappend || false;
+    return await invoke("write_file", { path: relPath, content, isappend });
   }
 
   global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {

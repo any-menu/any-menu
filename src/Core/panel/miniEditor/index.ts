@@ -53,6 +53,26 @@ export class AMMiniEditor {
       btn_send.onclick = () => {
         global_setting.api.sendText(this.cache_text)
       }
+    const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Save';
+      btn_send.title = 'Ctrl+S';
+      btn_save.onclick = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+        const dir_path = global_setting.config.note_paths
+        global_setting.api.writeFile(`${dir_path}${year}-${month}-${day}.md`,
+          `${hours}:${minutes}:${seconds}.${milliseconds}\n\n${this.cache_text}\n\n`,
+          true
+        ).catch(err=>{
+          console.error('MiniEditor 保存笔记失败', err);
+        });
+      }
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
     const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
     

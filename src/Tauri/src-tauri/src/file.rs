@@ -50,17 +50,20 @@ pub fn create_file(path: &str, content: &str) -> bool {
 /// 写入内容到指定文件。
 /// 如果目录不存在，则会创建目录
 /// 如果文件不存在，则会创建新文件。
-/// 如果文件已存在，则会覆盖所有内容。
-///
+/// 如果文件已存在，则会覆盖所有内容 (使用参数三为true，则变为追加模式)
+/// 
 /// # Arguments
 ///
 /// * `path` - 文件的完整路径
 /// * `content` - 要写入的字符串内容
-///
+/// * `isappend` - 可选参数，是否以追加模式写入，默认为覆盖模式
+/// 
 /// # Returns
-///
+/// 
 /// * `bool` - 操作成功返回 `true`，失败则返回 `false`
-pub fn write_file(path: &str, content: &str) -> bool {
+pub fn write_file(path: &str, content: &str, isappend: bool) -> bool {
+    use std::io::Write;
+
     let file_path = Path::new(path);
 
     // 获取文件所在的父目录
@@ -73,8 +76,23 @@ pub fn write_file(path: &str, content: &str) -> bool {
         }
     }
 
-    // 现在目录肯定存在了，可以安全地写入文件
-    match fs::write(file_path, content) {
+    // 写入文件
+    log::info!("模式判断, {:?}", isappend);
+    let result = if isappend {
+        // 追加模式
+        log::info!("追加模式");
+        fs::OpenOptions::new()
+            .create(true) // 如果文件不存在则创建
+            .append(true)
+            .open(file_path)
+            .and_then(|mut file| file.write_all(content.as_bytes()))
+    } else {
+        // 覆盖模式（fs::write 的行为）
+        log::info!("覆盖模式");
+        fs::write(file_path, content)
+    };
+
+    match result {
         Ok(_) => true,
         Err(e) => {
             log::error!("写入文件 {} 时出错: {}", path, e);

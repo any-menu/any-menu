@@ -40,6 +40,8 @@ export const global_setting: {
     search_limit: number,
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
+    // 记录笔记的基础路径
+    note_paths: string,
     // app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
     app_black_list: string[],
     // app是否使用高级快捷键，TODO 未起作用
@@ -70,7 +72,7 @@ export const global_setting: {
   api: {
     readFile: (relPath: string) => Promise<string | null>
     readFolder: (relPath: string) => Promise<string[]>
-    writeFile: (relPath: string, content: string) => Promise<boolean> // 需实现自动创建目录
+    writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
@@ -94,7 +96,8 @@ export const global_setting: {
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 500,
-    dict_paths: './dict/', // obsidian 用户可能比较熟悉于 Template 文件夹
+    dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
+    note_paths: 'H:/Git/Private/Group_Note/MdNote_Public/note/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     app_black_list: ['- Obsidian v'],
     app_ad_shortcut: true,
   },
