@@ -47,7 +47,9 @@ export function setupAppChangeListener() {
       return
     }
 
-    // console.log('Active app changed:', appName)
+    if (appName != "AnyMenu") { // 避免自己覆盖创建本应用之前的应用
+      global_setting.state.activeAppName = appName
+    }
     updateShortcuts(appName)
   })
   // 启动时手动触发一次 (或让后端启动时发送一次)
@@ -73,7 +75,9 @@ export function setupAppChangeListener() {
       const clipboard_selectedText = payload['selected_text_by_clipboard']
       const clipboard_selectedText_html = payload['selected_html_by_clipboard']
       let is_update_selectedText = false
-      if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0) { // 特殊 - html 拥有更高的优先级
+      if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0
+        && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住
+      ) { // 特殊 - html 拥有更高的优先级
         console.log(`selectedText is html`)
         global_setting.state.selectedText = turndownService.turndown(clipboard_selectedText_html)
         is_update_selectedText = true
@@ -94,11 +98,24 @@ export function setupAppChangeListener() {
       }
       global_setting.state.infoText += '[info.slow]\n' + json_str + '\n\n'
 
+      // (可选) 特殊情况, 需要配合 obsidian chatview_qq 使用时
+      if (global_setting.state.activeAppName == "QQ" && global_setting.state.selectedText) {
+        // 正则将 img 标签中的 src 中的空格改为 %20
+        global_setting.state.selectedText = global_setting.state.selectedText.replace(/<img[^>]+src="([^">]+)"[^>]*\/?>/g, (_, p1) => {
+          const newSrc = p1.replace(' ', '%20')
+          return `![](${newSrc})` // match.replace(p1, newSrc)
+        })
+
+        global_setting.state.selectedText = "```chat\n" + global_setting.state.selectedText + "\n```\n\n"
+      }
+
       // 更新 miniEditor 面板显示内容
+      // 除了miniEditor不会被显示的情况外，如果异步信息获取足够快，这里是可能在面板显示前更新的。这里也为false
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
         if (global_el.amMiniEditor.flag === 'info') {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
-        } else if (global_el.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
+        }
+        else if (global_el.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
         }
       }

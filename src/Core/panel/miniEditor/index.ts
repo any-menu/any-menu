@@ -10,7 +10,7 @@ export class AMMiniEditor {
   public cache_text: string = ''
   public editableBlock_cm: EditableBlock_Cm
   
-  isShow = true // TODO
+  isShow = true
 
   static factory(
     el_parent: HTMLElement,
