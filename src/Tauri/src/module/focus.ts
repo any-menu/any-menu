@@ -65,10 +65,15 @@ export function setupAppChangeListener() {
       const json_str = JSON.stringify(payload, null, 2)
 
       // 更新 global_setting.state
-      let last_selectedText = global_setting.state.selectedText // 上次uia失败则一般这个值是 undefined
-      if (!last_selectedText) {
-        console.log(`last_selectedText replace: undefined -> ${payload['selectedText']}`)
-        global_setting.state.selectedText = payload['selectedText']
+      // 这里硬编码，默认策略是先uia，异步clipboard
+      const uia_selectedText = global_setting.state.selectedText // 上次uia失败则一般这个值是 undefined
+      // const uia_selectedText2 = payload['selected_text_by_uia']
+      const clipboard_selectedText = payload['selected_text_by_clipboard']
+      if (!uia_selectedText) {
+        console.log(`selectedText replace: undefined -> ${clipboard_selectedText}`)
+        global_setting.state.selectedText = clipboard_selectedText
+      } else {
+        console.log(`selectedText keep: ${uia_selectedText} <- ${clipboard_selectedText}`)
       }
       global_setting.state.infoText += '[info.slow]\n' + json_str + '\n\n'
 
@@ -76,7 +81,7 @@ export function setupAppChangeListener() {
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
         if (global_el.amMiniEditor.flag === 'info') {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
-        } else if (global_el.amMiniEditor.flag === 'miniEditor' && !last_selectedText) {
+        } else if (global_el.amMiniEditor.flag === 'miniEditor' && !uia_selectedText) {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
         }
       }

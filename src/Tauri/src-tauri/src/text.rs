@@ -226,7 +226,7 @@ pub mod clipboard {
             }
 
             // 4. 获取复制的内容
-            return match clipboard_get_text_with_retry(5, Duration::from_millis(100)) {
+            return match clipboard_get_text_with_retry(8, Duration::from_millis(50)) {
                 Ok(text) => Ok(text),
                 Err(e) => {
                     log::error!("Failed to get clipboard text after update: {}", e);
