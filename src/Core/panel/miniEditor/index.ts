@@ -98,7 +98,8 @@ export class AMMiniEditor {
 
     if (x !== undefined) this.el.style.left = `${x}px`
     if (y !== undefined) this.el.style.top = `${y}px`
-    if (new_text !== undefined) this.cache_text = new_text
+    if (new_text) this.cache_text = new_text
+    else { this.cache_text = '' } // 策略应该显示旧内容还是空内容? 若是前者，此处不变。否则此处应该不执行
 
     this.editableBlock_cm.rangeSpec.text_content = this.cache_text
     this.editableBlock_cm.update_content(this.cache_text)

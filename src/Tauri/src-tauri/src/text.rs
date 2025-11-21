@@ -1,4 +1,13 @@
-/// 剪切版 - 仅关注最近项
+/// 剪切板冲突问题
+/// 
+/// 如果同时有两个线程想要打开剪切板，则可能导致其中一个失败。为了避免这种情况。
+/// 这里要捋顺一下剪切板的调用时机:
+/// 
+/// 展开 miniEditor 并显示选择文本时:
+/// - getCursorXY (get_caret (get_win_message坐标, get_selected, get_uia_by_windows_winname)) // 仅uia，不剪切板
+/// - getScreenSize (get_screen_size)
+
+/// 剪切板 - 仅关注最近项
 pub mod clipboard {
     /// 将文本写入剪贴板
     pub fn clipboard_set_text(text: &str) -> Result<(), String> {
@@ -47,6 +56,40 @@ pub mod clipboard {
                 CloseClipboard(); Ok(())
             }
         }
+    }
+
+    /// 更健壮的 clipboard_get_text() 方法
+    /// 尝试改善bug: 直接 clipboard_get_text() 有可能会冲突，获取失败，提示: Failed to open clipboard
+    #[cfg(target_os = "windows")]
+    fn clipboard_get_text_with_retry(
+        max_retries: u32,
+        delay: std::time::Duration,
+    ) -> Result<String, String> {
+        let mut last_error = "Unknown error".to_string();
+        for attempt in 0..max_retries {
+            match clipboard_get_text() {
+                Ok(text) => return Ok(text),
+                Err(e) => {
+                    last_error = e.to_string();
+                    if last_error.contains("Failed to open clipboard") {
+                        log::warn!(
+                            "Attempt {} to get clipboard text failed: {}. Retrying in {:?}...",
+                            attempt + 1,
+                            last_error,
+                            delay
+                        );
+                        std::thread::sleep(delay);
+                    } else {
+                        // For other errors, fail immediately.
+                        return Err(last_error);
+                    }
+                }
+            }
+        }
+        Err(format!(
+            "Failed to get clipboard text after {} retries. Last error: {}",
+            max_retries, last_error
+        ))
     }
 
     /// 从剪贴板获取文本
@@ -174,15 +217,16 @@ pub mod clipboard {
                 }
                 // 超时
                 if start_time.elapsed() > timeout {
+                    // 正常的。可能是没有选中文本，也可能是剪切板更新超时
                     log::warn!("Timeout waiting for clipboard update. Maybe nothing was selected.");
-                    return Err("null".into()); // 可能是没有选中文本，也可能是剪切板更新超时
+                    return Err("null".into());
                 }
                 // 继续轮询 (先短暂休眠，避免CPU空转)
                 std::thread::sleep(Duration::from_millis(5));
             }
 
             // 4. 获取复制的内容
-            return match clipboard_get_text() {
+            return match clipboard_get_text_with_retry(5, Duration::from_millis(100)) {
                 Ok(text) => Ok(text),
                 Err(e) => {
                     log::error!("Failed to get clipboard text after update: {}", e);

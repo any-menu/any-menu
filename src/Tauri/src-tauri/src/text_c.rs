@@ -1,4 +1,4 @@
-/// 剪切板 - 关注所有项
+/// 剪切板 - 关注所有项，而非最近项
 
 use std::ptr::{self};
 use winapi::shared::minwindef::{HGLOBAL, UINT};

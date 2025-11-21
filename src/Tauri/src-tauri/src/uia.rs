@@ -106,7 +106,8 @@ fn get_win_message_getgui() -> Option<(i32, i32)> {
         }
         // 检查是否有活动的插入符号
         if gui_info.hwndCaret.is_null() {
-            error!("S2: gui_info.hwndCaret: 没有活动的插入符号"); return None
+            // 正常的，很多软件都检测不到
+            warn!("S2: gui_info.hwndCaret: 没有活动的插入符号"); return None
         }
         // 获取插入符号的位置
         let caret_rect = gui_info.rcCaret;

@@ -225,9 +225,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             get_caret, get_caret_debug, get_screen_size, // size类
-            get_selected, get_info, // 其他类
+            get_info, // 其他类 // get_selected, 
             text::send,
-            read_file, read_folder, create_file, write_file, delete_file,
+            read_file, read_folder, create_file, write_file, delete_file, // 文件类
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -321,6 +321,6 @@ fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
 fn get_message() -> (i32, i32, String, String) {
     let (x, y) = uia::get_win_message();
     let selected_mode: &str = "uia";
-    let selected_text: Option<String> = get_selected(selected_mode, None).ok();
+    let selected_text: Option<String> = get_selected(selected_mode, Some(true)).ok();
     (x, y, selected_text.unwrap_or("".to_string()), uia::get_uia_by_windows_winname())
 }
