@@ -2,6 +2,7 @@ import { global_setting } from "../../../Core/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
 import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
+import { AMPanel } from "..";
 
 export class AMMiniEditor {
   public el_parent: HTMLElement;
@@ -52,6 +53,7 @@ export class AMMiniEditor {
       btn_send.title = 'Ctrl+Enter';
       btn_send.onclick = () => {
         global_setting.api.sendText(this.cache_text)
+        // 会自动隐藏窗口
       }
     const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Save';
       btn_send.title = 'Ctrl+S';
@@ -72,6 +74,8 @@ export class AMMiniEditor {
         ).catch(err=>{
           console.error('MiniEditor 保存笔记失败', err);
         });
+        // TODO Tauri 版本存在bug，Tauri 版本中，鼠标外点会分别隐藏元素+窗口。但这里只会影响元素而不影响窗口
+        this.hide(); // 隐藏窗口
       }
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
     const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
@@ -94,7 +98,7 @@ export class AMMiniEditor {
   // #region 显示/隐藏菜单
 
   show(x?: number, y?: number, new_text?: string, is_focus: boolean = false) {
-    this.el.classList.remove('am-hide');
+    this.el.classList.remove('am-hide'); this.isShow = true;
 
     if (x !== undefined) this.el.style.left = `${x}px`
     if (y !== undefined) this.el.style.top = `${y}px`
@@ -117,7 +121,7 @@ export class AMMiniEditor {
 
   hide() {
     if (global_setting.state.isPin) return
-    this.el.classList.add('am-hide');
+    this.el.classList.add('am-hide'); this.isShow = false;
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('keydown', this.visual_listener_keydown)
