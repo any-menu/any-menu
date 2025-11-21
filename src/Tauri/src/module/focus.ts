@@ -69,11 +69,21 @@ export function setupAppChangeListener() {
       const uia_selectedText = global_setting.state.selectedText // 上次uia失败则一般这个值是 undefined
       // const uia_selectedText2 = payload['selected_text_by_uia']
       const clipboard_selectedText = payload['selected_text_by_clipboard']
-      if (!uia_selectedText) {
-        console.log(`selectedText replace: undefined -> ${clipboard_selectedText}`)
+      let is_update_selectedText = false
+      if (uia_selectedText == clipboard_selectedText) { // 相同，则不变
+        console.log(`selectedText same: ${uia_selectedText} == ${clipboard_selectedText}`)
+        is_update_selectedText = false
+      } else if (!uia_selectedText) { // 只有一个成功
+        console.log(`selectedText replace: ${uia_selectedText} -> ${clipboard_selectedText}`)
         global_setting.state.selectedText = clipboard_selectedText
-      } else {
+        is_update_selectedText = true
+      } else if (!clipboard_selectedText) { // 只有一个成功
         console.log(`selectedText keep: ${uia_selectedText} <- ${clipboard_selectedText}`)
+        is_update_selectedText = false
+      } else { // 都成功，优先 clipboard (换行符、html2md等，更优)
+        console.log(`selectedText better: ${uia_selectedText} -> ${clipboard_selectedText}`)
+        global_setting.state.selectedText = clipboard_selectedText
+        is_update_selectedText = true
       }
       global_setting.state.infoText += '[info.slow]\n' + json_str + '\n\n'
 
@@ -81,7 +91,7 @@ export function setupAppChangeListener() {
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
         if (global_el.amMiniEditor.flag === 'info') {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
-        } else if (global_el.amMiniEditor.flag === 'miniEditor' && !uia_selectedText) {
+        } else if (global_el.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
           global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
         }
       }
