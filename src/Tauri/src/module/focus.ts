@@ -67,7 +67,11 @@ export function setupAppChangeListener() {
       // console.log('Parsed JSON payload:', json_str, '\n---\n', global_setting.state.infoText)
       global_setting.state.infoText += '[info.slow]\n' + json_str + '\n\n'
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
-        global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
+        if (global_el.amMiniEditor.flag === 'info') {
+          global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
+        } else if (global_el.amMiniEditor.flag === 'miniEditor') {
+          global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
+        }
       }
     }
     else {

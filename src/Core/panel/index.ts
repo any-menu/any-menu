@@ -80,11 +80,13 @@ export class AMPanel {
         if (y !== undefined) { y += 248 } // 不一定
       }
       else if (item == 'miniEditor') {
+        global_el.amMiniEditor?.set_flag('miniEditor')
         global_el.amMiniEditor?.show(x, y,
           global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
+        global_el.amMiniEditor?.set_flag('info')
         global_el.amMiniEditor?.show(x, y,
           global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true

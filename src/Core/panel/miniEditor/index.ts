@@ -67,7 +67,7 @@ export class AMMiniEditor {
 
         const dir_path = global_setting.config.note_paths
         global_setting.api.writeFile(`${dir_path}${year}-${month}-${day}.md`,
-          `${hours}:${minutes}:${seconds}.${milliseconds}\n\n${this.cache_text}\n\n`,
+          `## ${hours}:${minutes}:${seconds}.${milliseconds}\n\n${this.cache_text}\n\n`,
           true
         ).catch(err=>{
           console.error('MiniEditor 保存笔记失败', err);
@@ -76,6 +76,19 @@ export class AMMiniEditor {
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
     const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
     
+  }
+
+  // 用来标记是显示 info 还是 selectedText，避免异步更新进行不合适的覆盖
+  flag: 'miniEditor'|'info'|'' = ''
+  set_flag(mode: 'miniEditor'|'info') {
+    if (mode === 'miniEditor') {
+      this.el.classList.remove('am-mini-editor-mode-info')
+      this.el.classList.add('am-mini-editor-mode-minieditor')
+    } else {
+      this.el.classList.remove('am-mini-editor-mode-minieditor')
+      this.el.classList.add('am-mini-editor-mode-info')
+    }
+    this.flag = mode
   }
 
   // #region 显示/隐藏菜单
