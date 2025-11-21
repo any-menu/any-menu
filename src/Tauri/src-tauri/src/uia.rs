@@ -689,13 +689,25 @@ fn get_control_type_name(control_type: i32) -> &'static str {
 pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, String> {
     // let method = "clipboard";
     let is_both = is_both.unwrap_or(true);
+    let mut result: Result<String, String> = Err("init result".into());
 
     if is_both {
         match method {
             "clipboard" => {
                 let result_clipboard = text::clipboard::get_selected_by_clipboard();
                 if let Ok(mut cache) = utils::AM_STATE.lock() {
-                    cache.selected_text_by_clipboard = result_clipboard.clone();
+                    match result_clipboard {
+                        Ok((text, html)) => {
+                            cache.selected_text_by_clipboard = Ok(text.clone());
+                            cache.selected_html_by_clipboard = Ok(html);
+                            result = Ok(text);
+                        },
+                        Err(err) => {
+                            cache.selected_text_by_clipboard = Err(err.clone());
+                            cache.selected_html_by_clipboard = Err(err.clone());
+                            result = Err(err);
+                        }
+                    };
                     cache.selected_text_by_uia = Err("waiting".into());
                 }
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
@@ -705,7 +717,7 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
                         cache.update();
                     }
                 });
-                return result_clipboard;
+                return result;
             },
             "uia" => {
                 let result_uia = get_selected_by_uia();
@@ -716,10 +728,20 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
                 std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                     let result_clipboard = text::clipboard::get_selected_by_clipboard();
                     if let Ok(mut cache) = utils::AM_STATE.lock() {
-                        cache.selected_text_by_clipboard = result_clipboard;
+                        match result_clipboard {
+                            Ok((text, html)) => {
+                                cache.selected_text_by_clipboard = Ok(text);
+                                cache.selected_html_by_clipboard = Ok(html);
+                            },
+                            Err(err) => {
+                                cache.selected_text_by_clipboard = Err(err.clone());
+                                cache.selected_html_by_clipboard = Err(err.clone());
+                            }
+                        };
                         cache.update();
                     }
                 });
+                // std::thread::sleep(std::time::Duration::from_millis(10)); // 模拟等待 ctrl+c 执行完毕? 但又怕异步行为先完成
                 return result_uia;
             },
             "auto" => { // 优先uia，失败则clipboard
@@ -732,10 +754,20 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
                         std::thread::spawn(move || { // 非阻塞地运行和缓存另一个
                             let result_clipboard = text::clipboard::get_selected_by_clipboard();
                             if let Ok(mut cache) = utils::AM_STATE.lock() {
-                                cache.selected_text_by_clipboard = result_clipboard;
+                                match result_clipboard {
+                                    Ok((text, html)) => {
+                                        cache.selected_text_by_clipboard = Ok(text);
+                                        cache.selected_html_by_clipboard = Ok(html);
+                                    },
+                                    Err(err) => {
+                                        cache.selected_text_by_clipboard = Err(err.clone());
+                                        cache.selected_html_by_clipboard = Err(err.clone());
+                                    }
+                                };
                                 cache.update();
                             }
                         });
+                        // std::thread::sleep(std::time::Duration::from_millis(10)); // 模拟等待 ctrl+c 执行完毕? 但又怕异步行为先完成
                         return Ok(text);
                     }
                     Err(err) =>  {
@@ -744,9 +776,20 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
                         }
                         let result_clipboard = text::clipboard::get_selected_by_clipboard();
                         if let Ok(mut cache) = utils::AM_STATE.lock() {
-                            cache.selected_text_by_clipboard = result_clipboard.clone();
+                             match result_clipboard {
+                                Ok((text, html)) => {
+                                    cache.selected_text_by_clipboard = Ok(text.clone());
+                                    cache.selected_html_by_clipboard = Ok(html);
+                                    result = Ok(text);
+                                },
+                                Err(err) => {
+                                    cache.selected_text_by_clipboard = Err(err.clone());
+                                    cache.selected_html_by_clipboard = Err(err.clone());
+                                    result = Err(err);
+                                }
+                            };
                         }
-                        return result_clipboard;
+                        return result;
                     }
                 }
             }
@@ -755,7 +798,10 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
     } else {
         match method {
             "clipboard" => {
-                return text::clipboard::get_selected_by_clipboard();
+                return match text::clipboard::get_selected_by_clipboard() {
+                    Ok((text, _html)) => Ok(text),
+                    Err(err) => Err(err),
+                }
             },
             "uia" => {
                 return get_selected_by_uia();
@@ -764,7 +810,10 @@ pub fn get_selected(method: &str, is_both: Option<bool>) -> Result<String, Strin
                 if let Ok(text) = get_selected_by_uia() {
                     return Ok(text);
                 }
-                return text::clipboard::get_selected_by_clipboard();
+                return match text::clipboard::get_selected_by_clipboard() {
+                    Ok((text, _html)) => Ok(text),
+                    Err(err) => Err(err),
+                }
             }
             _ => { log::error!("Unsupported method: {}", method); return Err("不支持的获取方法".into()); }
         }

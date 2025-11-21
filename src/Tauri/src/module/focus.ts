@@ -1,6 +1,7 @@
-import { global_setting } from '../../../Core/setting'
+import TurndownService from 'turndown' // html2md(clipboard_selectedText_html) // html2md 库太老了，使用更现代的html2md库: turndown
 import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
+import { global_setting } from '../../../Core/setting'
 import { toggleWindow } from './window'
 import { global_el } from '../../../Core/panel'
 
@@ -36,6 +37,7 @@ const SHORTCUT_3_EVENT = async () => {
   })
 }
 
+const turndownService = new TurndownService()
 /** 注册事件监听 - 聚焦窗口改变 */
 export function setupAppChangeListener() {
   listen('active-app-changed', (event) => {
@@ -69,8 +71,13 @@ export function setupAppChangeListener() {
       const uia_selectedText = global_setting.state.selectedText // 上次uia失败则一般这个值是 undefined
       // const uia_selectedText2 = payload['selected_text_by_uia']
       const clipboard_selectedText = payload['selected_text_by_clipboard']
+      const clipboard_selectedText_html = payload['selected_html_by_clipboard']
       let is_update_selectedText = false
-      if (uia_selectedText == clipboard_selectedText) { // 相同，则不变
+      if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0) { // 特殊 - html 拥有更高的优先级
+        console.log(`selectedText is html`)
+        global_setting.state.selectedText = turndownService.turndown(clipboard_selectedText_html)
+        is_update_selectedText = true
+      } else if (uia_selectedText == clipboard_selectedText) { // 相同，则不变
         console.log(`selectedText same: ${uia_selectedText} == ${clipboard_selectedText}`)
         is_update_selectedText = false
       } else if (!uia_selectedText) { // 只有一个成功

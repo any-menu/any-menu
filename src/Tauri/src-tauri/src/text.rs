@@ -61,14 +61,25 @@ pub mod clipboard {
     /// 更健壮的 clipboard_get_text() 方法
     /// 尝试改善bug: 直接 clipboard_get_text() 有可能会冲突，获取失败，提示: Failed to open clipboard
     #[cfg(target_os = "windows")]
-    fn clipboard_get_text_with_retry(
+    fn clipboard_get_both_with_retry(
         max_retries: u32,
         delay: std::time::Duration,
-    ) -> Result<String, String> {
+    ) -> Result<(String, String), String> {
         let mut last_error = "Unknown error".to_string();
         for attempt in 0..max_retries {
             match clipboard_get_text() {
-                Ok(text) => return Ok(text),
+                Ok(text) => {
+                    let result_html: String = match clipboard_get_html() {
+                        Ok(html) => {
+                            html
+                        },
+                        Err(e) => {
+                            log::warn!("Failed to get clipboard HTML: {}", e);
+                            "".to_string()
+                        }
+                    };
+                    return Ok((text, result_html));
+                },
                 Err(e) => {
                     last_error = e.to_string();
                     if last_error.contains("Failed to open clipboard") {
@@ -86,10 +97,11 @@ pub mod clipboard {
                 }
             }
         }
-        Err(format!(
+        last_error = format!(
             "Failed to get clipboard text after {} retries. Last error: {}",
             max_retries, last_error
-        ))
+        );
+        Err(last_error)
     }
 
     /// 从剪贴板获取文本
@@ -127,6 +139,84 @@ pub mod clipboard {
 
                 GlobalUnlock(h_data);
                 CloseClipboard(); Ok(text)
+            }
+        }
+    }
+
+    /// 从剪贴板获取 HTML 内容
+    pub fn clipboard_get_html() -> Result<String, String> {
+        #[cfg(not(target_os = "windows"))]
+        return Err("Clipboard2 operations not implemented for this platform".to_string());
+
+        #[cfg(target_os = "windows")] {
+            use std::ffi::CString;
+            use std::ptr;
+            use std::str;
+            use winapi::um::winbase::{GlobalLock, GlobalSize, GlobalUnlock};
+            use winapi::um::winuser::{
+                CloseClipboard, GetClipboardData, IsClipboardFormatAvailable, OpenClipboard,
+                RegisterClipboardFormatA,
+            };
+        
+            let html_format_name = CString::new("HTML Format").unwrap();
+            let cf_html = unsafe { RegisterClipboardFormatA(html_format_name.as_ptr()) };
+        
+            unsafe {
+                if IsClipboardFormatAvailable(cf_html) == 0 {
+                    return Err("No HTML format data in clipboard".to_string());
+                }
+        
+                if OpenClipboard(ptr::null_mut()) == 0 {
+                    return Err("Failed to open clipboard".to_string());
+                }
+        
+                let h_data = GetClipboardData(cf_html);
+                if h_data.is_null() {
+                    CloseClipboard();
+                    return Err("Failed to get clipboard data handle for HTML".to_string());
+                }
+        
+                let p_data = GlobalLock(h_data);
+                if p_data.is_null() {
+                    CloseClipboard();
+                    return Err("Failed to lock clipboard data for HTML".to_string());
+                }
+        
+                let size = GlobalSize(h_data);
+                let data_slice = std::slice::from_raw_parts(p_data as *const u8, size);
+        
+                // 将字节切片转换为字符串，以便解析头部
+                let text = str::from_utf8(data_slice).map_err(|e| e.to_string())?;
+        
+                // 解析头部以找到HTML内容的起始位置
+                let mut start_html = 0;
+                let mut end_html = text.len();
+                for line in text.lines() {
+                    if line.starts_with("StartHTML:") {
+                        start_html = line["StartHTML:".len()..].parse().unwrap_or(0);
+                    }
+                    if line.starts_with("EndHTML:") {
+                        end_html = line["EndHTML:".len()..].parse().unwrap_or(text.len());
+                    }
+                    if line.starts_with("<!--") {
+                        break;
+                    }
+                }
+                
+                // 确保索引在范围内
+                if start_html > end_html || end_html > text.len() {
+                    GlobalUnlock(h_data);
+                    CloseClipboard();
+                    return Err("Invalid HTML offsets in clipboard data".to_string());
+                }
+        
+                // 提取HTML片段
+                let html_content = &text[start_html..end_html];
+        
+                GlobalUnlock(h_data);
+                CloseClipboard();
+        
+                Ok(html_content.to_string())
             }
         }
     }
@@ -185,7 +275,7 @@ pub mod clipboard {
     /// 通过模拟复制来获取当前选中的文本 (新版)
     /// 
     /// 新版不再使用sleep方式来等待，容易时间过长/过短，而是使用轮询+剪切板id的方式来检测剪切板内容是否更新
-    pub fn get_selected_by_clipboard() -> Result<String, String> {
+    pub fn get_selected_by_clipboard() -> Result<(String, String), String> {
         #[cfg(not(target_os = "windows"))]
         return Err("不支持的操作系统".into());
 
@@ -226,8 +316,8 @@ pub mod clipboard {
             }
 
             // 4. 获取复制的内容
-            return match clipboard_get_text_with_retry(8, Duration::from_millis(50)) {
-                Ok(text) => Ok(text),
+            return match clipboard_get_both_with_retry(10, Duration::from_millis(50)) {
+                Ok((text, html)) => Ok((text, html)),
                 Err(e) => {
                     log::error!("Failed to get clipboard text after update: {}", e);
                     Err(format!("获取剪切板文本失败: {}", e))

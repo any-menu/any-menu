@@ -24,6 +24,7 @@ use serde_json::json;
 pub struct AMState {
     // 两个selectedText，需要区分是没有选中文本还是获取失败、以及先清空再延时获取时的等待状态，所以不用Option
     pub selected_text_by_clipboard: Result<String, String>,
+    pub selected_html_by_clipboard: Result<String, String>,
     pub selected_text_by_uia: Result<String, String>,
 
     pub app_handle: Option<tauri::AppHandle>,
@@ -32,6 +33,7 @@ impl Default for AMState {
     fn default() -> Self {
         Self {
             selected_text_by_clipboard: Err("init".to_string()),    // 初始化状态
+            selected_html_by_clipboard: Err("init".to_string()),    // 初始化状态
             selected_text_by_uia: Err("init".to_string()),          // 初始化状态
             app_handle: None,
         }
@@ -44,6 +46,7 @@ impl AMState {
             // create a JSON payload for the event
             let payload = json!({
                 "selected_text_by_clipboard": self.selected_text_by_clipboard.clone().ok(),
+                "selected_html_by_clipboard": self.selected_html_by_clipboard.clone().ok(),
                 "selected_text_by_uia": self.selected_text_by_uia.clone().ok(),
             });
             app_handle.emit("active-window-toggle", payload).unwrap();

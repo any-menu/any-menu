@@ -2,7 +2,6 @@ import { global_setting } from "../../../Core/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
 import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
-import { AMPanel } from "..";
 
 export class AMMiniEditor {
   public el_parent: HTMLElement;
