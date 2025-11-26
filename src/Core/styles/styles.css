@@ -173,6 +173,17 @@ html, body, #main {
   left: calc(0px + 100%);
 }
 
+.ab-contextmenu-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: var(--background-secondary);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-high);
+  max-width: 400px;
+  min-width: 200px;
+}
+
 /* -------------------------------- 搜索栏 ------------------------------- */
 .am-search {
   width: 500px;
@@ -283,7 +294,7 @@ html, body, #main {
   top: 280px;
   margin: 0;
   padding: 0;
-  width: 500px;
+  width: 700px;
   height: 250px;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);

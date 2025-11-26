@@ -2,7 +2,7 @@
  * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
  */
 
- // #region color var
+// #region color var
 
 :root {
   --am-bright-color: #23A8F2;
@@ -200,9 +200,21 @@ html, body, #main {
   }
   >.am-context-menu.sub-menu {
     position: absolute;
-    top: -4px; // ul padding
+    top: -4px; // 原 -4px; 为 ul padding，下移是为了项过多时项换列后，能更好地右移，而不是被子菜单或tooltip遮挡
     left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
   }
+}
+
+// 可视化效果渲染
+.ab-contextmenu-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: var(--background-secondary);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-high);
+  max-width: 400px;
+  min-width: 200px;
 }
 
 /* -------------------------------- 搜索栏 ------------------------------- */
