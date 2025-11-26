@@ -98,7 +98,7 @@ export const global_setting: {
     send_text_method: 'clipboard',
     search_limit: 500,
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
-    note_paths: 'H:/Git/Private/Group_Note/MdNote_Public/note/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     app_black_list: ['- Obsidian v'],
     app_ad_shortcut: true,
   },
