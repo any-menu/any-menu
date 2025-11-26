@@ -157,9 +157,7 @@ label = "线图"
 key = "线图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const oneDay = 86400000;
 const data = [];
 let now = new Date(1997, 9, 3);
@@ -263,9 +261,7 @@ label = "柱状图"
 key = "柱状图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const data = [];
 
 for (let i = 0; i < 5; i++) data.push(Math.round(Math.random() * 200));
@@ -344,9 +340,7 @@ label = "饼图"
 key = "饼图"
 detail = "md"
 callback = """
-[echarts]
-
-```json
+```echarts
 {
   "legend": {
     "top": "bottom"
@@ -424,9 +418,7 @@ label = "散点图"
 key = "散点图"
 detail = "md"
 callback = """
-[echarts]
-
-```json
+```echarts
 {
   "xAxis": {},
   "yAxis": {},
@@ -469,9 +461,7 @@ label = "极坐标图"
 key = "极坐标图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const data = []
 
 for (let i = 0; i <= 100; i++) {
@@ -516,9 +506,7 @@ label = "烛台图"
 key = "烛台图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const upColor = '#ec0000'
 const upBorderColor = '#8A0000'
 const downColor = '#00da3c'
@@ -831,9 +819,7 @@ label = "雷达图"
 key = "雷达图"
 detail = "md"
 callback = """
-[echarts]
-
-```json
+```echarts
 {
   "legend": {
     "data": ["Allocated Budget", "Actual Spending"]
@@ -874,9 +860,7 @@ label = "热力图"
 key = "热力图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 /*
  * perlin noise helper from https://github.com/josephg/noisejs
  */
@@ -1066,9 +1050,7 @@ label = "树图"
 key = "树图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const data = await fetch(
   'https://theme-hope-assets.vuejs.press/data/flare.json',
 ).then((res) => res.json())
@@ -1106,9 +1088,7 @@ label = "多图"
 key = "多图"
 detail = "md"
 callback = """
-[echarts]
-
-```js
+```echarts
 const option = {
   legend: {},
   tooltip: {
