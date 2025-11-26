@@ -93,7 +93,7 @@
 		"name": "ECharts",
 		"detail": "(需要先安装 Charts, AnyBlock 类别需安装 AnyBlock)",
 		"author": "LincZero",
-		"version": "1.0.0"
+		"version": "1.0.1"
 	},
 	{
 		"id": "anymenu-ObMetaBind",

@@ -124,6 +124,28 @@ callback = """
 
 """
 
+[[categories.children]]
+label = "甘特图"
+key = "列表转甘特图 list2echarts_gantt"
+detail = "md"
+callback = """
+[list2echarts_gantt]
+
+- 2025-12-03/2025-12-24 | 上半，杜林、温迪、雅柯达卡池
+- 2025-12-24/2026-01-14 | 下半，瓦蕾莎、希诺宁卡池
+  - mm
+  - AA
+- 2025-12-05/2025-12-15 | 「哐哐当当雀雀球」
+- 2025-12-10/2026-01-13 | 「幽境危战」
+- 2025-12-03/2026-01-13 | 「干“雪”度假村，派对聚奇域！」网页活动
+- 2025-12-29/2026-01-07 | 「讽勇争锋，龙之劲斗」
+- 2025-12-19/2026-01-05 | 「炽魂斗士的雪界之旅」
+- 2026-01-05/2026-01-12 | 「百货奇货」
+- 2025-12-01/2026-02-23 | 「砺行修远」2期：参与活动可兑换角色命座！
+- 2025-12-01            | 幻想真境巨诗 (火冰风, 再下期是火水雷)
+- 2026-01-02            | 月之三版本前瞻
+"""
+
 # ============================================================
 # Tree 分类
 # ============================================================
@@ -218,13 +240,13 @@ const option = {
   ],
 };
 const timeId = setInterval(() => {
-  if (echarts._disposed) return clearInterval(timeId);
+  if (myChart._disposed) return clearInterval(timeId);
 
   for (let i = 0; i < 5; i++) {
     data.shift();
     data.push(randomData());
   }
-  echarts.setOption({
+  myChart.setOption({
     series: [
       {
         data: data,
@@ -304,13 +326,13 @@ const run = () => {
   for (let i = 0; i < data.length; i++)
     data[i] += Math.round(Math.random() * Math.random() > 0.9 ? 2000 : 200);
 
-  echarts.setOption({
+  myChart.setOption({
     series: [{ type: "bar", data }],
   });
 };
 
 const timeId = setInterval(() => {
-  if (echarts._disposed) return clearInterval(timeId);
+  if (myChart._disposed) return clearInterval(timeId);
 
   run();
 }, 3000);
