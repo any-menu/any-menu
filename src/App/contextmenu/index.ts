@@ -47,6 +47,11 @@ export class ABContextMenu_App extends ABContextMenu {
           // b2. 输出 item.callback 文本到当前光标位置
           else if (typeof item.callback === 'string') {
             li.addEventListener('click', () => {
+              if (item.detail == "command_ob") {
+                global_setting.other.run_command_ob?.(item.callback as string)
+                return
+              }
+
               // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
               const activeElement: Element|null = document.activeElement
 
@@ -75,6 +80,7 @@ export class ABContextMenu_App extends ABContextMenu {
         let tooltip: HTMLElement|undefined = undefined
         if (item.detail) {
           li.onmouseenter = () => {
+            if (item.detail == "command_ob") return // 命令flag, 不显示
             tooltip = document.createElement('div'); li.appendChild(tooltip);
             tooltip.classList.add('ab-contextmenu-tooltip')
             const domRect = li.getBoundingClientRect()
@@ -89,8 +95,7 @@ export class ABContextMenu_App extends ABContextMenu {
               if (typeof item.callback == "string") {
                 void global_setting.other.renderMarkdown?.(item.callback, tooltip)
               }
-            }
-            else {
+            } else {
               const img = document.createElement('img'); tooltip.appendChild(img);
                 img.setAttribute('src', item.detail as string);
                 img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');

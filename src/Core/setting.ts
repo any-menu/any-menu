@@ -86,6 +86,7 @@ export const global_setting: {
     obsidian_plugin: any|null,
     obsidian_ctx: any|null, // type: MarkdownPostProcessorContext
     renderMarkdown: null|((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>),
+    run_command_ob: null|((commandId: string) => Promise<void>),
   }
 } = {
   env: 'app',
@@ -127,7 +128,8 @@ export const global_setting: {
   other: {
     obsidian_plugin: null,
     obsidian_ctx: null,
-    renderMarkdown: async (): Promise<void> => {},
+    renderMarkdown: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
+    run_command_ob: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
   }
 }
 

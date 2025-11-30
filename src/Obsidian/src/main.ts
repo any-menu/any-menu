@@ -35,6 +35,17 @@ global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, 
   MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
 }
 
+global_setting.other.run_command_ob = async (commandId: string): Promise<void> => {
+  if (!global_setting.other.obsidian_plugin) return
+  // 用户如果不知道id，可以在控制台使用 app.commands.commands 查询
+  // 另一个方式是一些插件会提供相关的命令，如 Meta Bind 插件提供 Select and copy command id 功能 (TODO 此插件也应该要提供)  
+  const app = (global_setting.other.obsidian_plugin.app as App)
+  // // @ts-expect-error 类型“App”上不存在属性“commands”
+  // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
+  // @ts-expect-error 类型“App”上不存在属性“commands”
+  app.commands.executeCommandById(commandId)
+}
+
 global_setting.api.sendText = async (text: string) => {
   const plugin = global_setting.other.obsidian_plugin
   if (!plugin) return

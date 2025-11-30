@@ -192,10 +192,16 @@ callback = '`VIEW[some text {textExampleProperty}][text]`'
 
 [[categories]]
 label = "Inline Button"
+detail = "md"
 callback = '`BUTTON[example-id]`'
 
 [[categories]]
 label = "Button"
+
+[[categories.children]]
+label = "Default Button"
+key = "default_button"
+detail = "md"
 callback = '''
 ```meta-bind-button
 label: This is a button
@@ -211,3 +217,36 @@ actions: []
 
 ```
 '''
+
+[[categories.children]]
+label = "Open Button Builder"
+key = "Button builder"
+detail = "command_ob"
+callback = 'obsidian-meta-bind-plugin:open-button-builder'
+
+[[categories]]
+label = "More Commands"
+
+[[categories.children]]
+label = "Copy Command ID"
+key = "Copy Command ID"
+detail = "command_ob"
+callback = 'obsidian-meta-bind-plugin:copy-command-id'
+
+[[categories.children]]
+label = "Open docs"
+key = "Open docs"
+detail = "command_ob"
+callback = 'obsidian-meta-bind-plugin:open-docs'
+
+[[categories.children]]
+label = "Open help"
+key = "Open help"
+detail = "command_ob"
+callback = 'obsidian-meta-bind-plugin:open-help'
+
+[[categories.children]]
+label = "Open playground"
+key = "Open playground"
+detail = "command_ob"
+callback = 'obsidian-meta-bind-plugin:open-playground'

@@ -46,7 +46,9 @@ export class ABContextMenu_Ob extends ABContextMenu {
     return
   }
 
+  /// 支持obsidian原生菜单
   /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
+  /// 并支持 command_ob 类型
   override append_data(menuItems: ContextMenuItems) {
     // 预创建菜单版本
     if (this.el_container) return super.append_data(menuItems)
@@ -74,7 +76,14 @@ export class ABContextMenu_Ob extends ABContextMenu {
 
           // 菜单项功能
           if (item.callback == undefined) {}
-          else if (typeof item.callback === 'string') menuItem.onClick(() => editor.replaceSelection(item.callback as string))
+          else if (typeof item.callback === 'string') menuItem.onClick(() => {
+            if (item.detail == "command_ob") {
+              global_setting.other.run_command_ob?.(item.callback as string)
+              return
+            } else {
+              editor.replaceSelection(item.callback as string)
+            }
+          })
           else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as ((str?: string) => void))() })
 
           // 菜单项说明
@@ -83,6 +92,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
           const dom = menu.dom
           if (item.detail && dom) {
             menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
+              if (item.detail == "command_ob") return // 命令flag, 不显示
               tooltip = document.createElement('div'); dom.appendChild(tooltip);
               tooltip.addClass('ab-contextmenu-tooltip')
               const domRect = dom.getBoundingClientRect()
@@ -97,8 +107,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
                 if (typeof item.callback == "string") {
                   void global_setting.other.renderMarkdown?.(item.callback, tooltip)
                 }
-              }
-              else {
+              } else {
                 const img = document.createElement('img'); tooltip.appendChild(img);
                   img.setAttribute('src', item.detail as string);
                   img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');

@@ -332,6 +332,11 @@ export class ABContextMenu {
           // b2. 输出 item.callback 文本到当前光标位置
           else if (typeof item.callback === 'string') {
             li.addEventListener('click', async () => {
+              if (item.detail == "command_ob") {
+                global_setting.other.run_command_ob?.(item.callback as string)
+                return
+              }
+
               this.sendText(item.callback as string)
             })
           }
@@ -352,7 +357,8 @@ export class ABContextMenu {
         let tooltip: HTMLElement|undefined = undefined
         if (item.detail) {
           li.onmouseenter = () => {
-            tooltip = document.createElement('div'); document.body.appendChild(tooltip);
+            if (item.detail == "command_ob") return // 命令flag, 不显示
+            tooltip = document.createElement('div'); li.appendChild(tooltip);
             tooltip.classList.add('ab-contextmenu-tooltip')
             const domRect = li.getBoundingClientRect()
             tooltip.setAttribute('style', `
@@ -366,8 +372,7 @@ export class ABContextMenu {
               if (typeof item.callback == "string") {
                 void global_setting.other.renderMarkdown?.(item.callback, tooltip)
               }
-            }
-            else {
+            } else {
               const img = document.createElement('img'); tooltip.appendChild(img);
                 img.setAttribute('src', item.detail as string);
                 img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
@@ -375,7 +380,7 @@ export class ABContextMenu {
           }
           li.onmouseleave = () => {
             if (!tooltip) return
-            document.body.removeChild(tooltip)
+            li.removeChild(tooltip)
             tooltip = undefined
           }
         }
