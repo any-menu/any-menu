@@ -7,6 +7,7 @@ import {
 
 import { ABContextMenu } from "@/Core/panel/contextmenu"
 import { root_menu, type ContextMenuItems } from "@/Core/panel/contextmenu/demo"
+import { global_setting } from '@/Core/setting'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -45,7 +46,7 @@ export class ABContextMenu_Ob extends ABContextMenu {
     return
   }
 
-  // 将 ContextMenuItems 添加到菜单中
+  /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
   override append_data(menuItems: ContextMenuItems) {
     // 预创建菜单版本
     if (this.el_container) return super.append_data(menuItems)
@@ -63,24 +64,24 @@ export class ABContextMenu_Ob extends ABContextMenu {
 
     // 递归添加菜单项
     function addMenuItems(menu: Menu, menuItems: ContextMenuItems, editor: Editor) {
-      for (const menuItem of menuItems) {
-        menu.addItem((item: MenuItem) => {
+      for (const item of menuItems) {
+        menu.addItem((menuItem: MenuItem) => {
           // 菜单项标题
-          item.setTitle(menuItem.label)
+          menuItem.setTitle(item.label)
           
           // 菜单项图标
-          if (menuItem.icon) item.setIcon(menuItem.icon)
+          if (item.icon) menuItem.setIcon(item.icon)
 
           // 菜单项功能
-          if (menuItem.callback == undefined) {}
-          else if (typeof menuItem.callback === 'string') item.onClick(() => editor.replaceSelection(menuItem.callback as string))
-          else if (typeof menuItem.callback === 'function') item.onClick(() => { (menuItem.callback as ((str?: string) => void))() })
+          if (item.callback == undefined) {}
+          else if (typeof item.callback === 'string') menuItem.onClick(() => editor.replaceSelection(item.callback as string))
+          else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as ((str?: string) => void))() })
 
-          // 菜单项说明，悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)
+          // 菜单项说明
           let tooltip: HTMLElement|undefined = undefined
           // @ts-ignore
           const dom = menu.dom
-          if (menuItem.detail && dom) {
+          if (item.detail && dom) {
             menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
               tooltip = document.createElement('div'); dom.appendChild(tooltip);
               tooltip.addClass('ab-contextmenu-tooltip')
@@ -91,9 +92,17 @@ export class ABContextMenu_Ob extends ABContextMenu {
               `)
               // top: ${evt.clientY + 10}px;
               // left: ${evt.clientX + 10}px;
-              const img = document.createElement('img'); tooltip.appendChild(img);
-                img.setAttr('src', menuItem.detail as string);
-                img.setAttr('style', 'max-width: 100%; height: auto; display: block;');
+
+              if (item.detail == "md") { // 一个flag
+                if (typeof item.callback == "string") {
+                  void global_setting.other.renderMarkdown?.(item.callback, tooltip)
+                }
+              }
+              else {
+                const img = document.createElement('img'); tooltip.appendChild(img);
+                  img.setAttribute('src', item.detail as string);
+                  img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+              }
             })
             menu.registerDomEvent(dom, 'mouseleave', (evt: MouseEvent) => {
               if (!tooltip) return
@@ -103,12 +112,12 @@ export class ABContextMenu_Ob extends ABContextMenu {
           }
 
           // 菜单项的子菜单
-          if (menuItem.children && menuItem.children.length > 0) {
+          if (item.children && item.children.length > 0) {
             // 官方没这个api，隐含api
             // 且这个api到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
             // @ts-ignore
-            const submenu = item.setSubmenu()
-            addMenuItems(submenu, menuItem.children, editor) // 递归
+            const submenu = menuItem.setSubmenu()
+            addMenuItems(submenu, item.children, editor) // 递归
             // const submenu = new Menu()
             // item.setSubmenu(submenu)
           }

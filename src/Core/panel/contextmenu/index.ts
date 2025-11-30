@@ -301,6 +301,8 @@ export class ABContextMenu {
 
   /** 添加菜单项 - 操作糖，快捷添加一组按键
    * 
+   * 仅支持预创建策略，不支持动态创建策略
+   * 
    * DOM:
    * - .am-context-menu.root-menu (ul/div, el_container)
    *   - li

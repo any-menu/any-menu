@@ -6,6 +6,7 @@ import { ABContextMenu } from '@/Core/panel/contextmenu/index'
 
 import { EditableBlock_Raw } from "@editableblock/textarea/dist/EditableBlock/src/EditableBlock_Raw"
 import type { ContextMenuItems, ContextMenuItem } from "@/Core/panel/contextmenu/demo"
+import { global_setting } from '@/Core/setting'
 
 /**
  * 一个上下文菜单 - 通用版 (App)
@@ -22,6 +23,8 @@ export class ABContextMenu_App extends ABContextMenu {
     super(el_parent, menuItems)
   }
 
+  /// 主要修改了一些使用到的方法:
+  /// 如: 获取焦点元素、输入到当前可编辑区域
   override append_data(menuItems: ContextMenuItems) {
     if (!this.el_container) return
 
@@ -81,9 +84,17 @@ export class ABContextMenu_App extends ABContextMenu {
             `)
             // top: ${evt.clientY + 10}px;
             // left: ${evt.clientX + 10}px;
-            const img = document.createElement('img'); tooltip.appendChild(img);
-              img.setAttribute('src', item.detail as string);
-              img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+
+            if (item.detail == "md") { // 一个flag
+              if (typeof item.callback == "string") {
+                void global_setting.other.renderMarkdown?.(item.callback, tooltip)
+              }
+            }
+            else {
+              const img = document.createElement('img'); tooltip.appendChild(img);
+                img.setAttribute('src', item.detail as string);
+                img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+            }
           }
           li.onmouseleave = () => {
             if (!tooltip) return
