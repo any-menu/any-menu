@@ -76,15 +76,8 @@ export class ABContextMenu_App extends ABContextMenu {
             tooltip.classList.add('ab-contextmenu-tooltip')
             const domRect = li.getBoundingClientRect()
             tooltip.setAttribute('style', `
-              position: fixed;
               top: ${domRect.top + 1}px;
               left: ${domRect.right + 1}px;
-              z-index: 9999;
-              background: var(--background-secondary);
-              padding: 8px;
-              border-radius: 4px;
-              box-shadow: var(--shadow-elevation-high);
-              max-width: 300px;
             `)
             // top: ${evt.clientY + 10}px;
             // left: ${evt.clientX + 10}px;
