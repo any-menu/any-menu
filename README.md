@@ -82,6 +82,8 @@ mindmap
       Markdown格式化
       Markdown标签对
       HTML标签对
+    (其他)
+      obsidian专用命令
 ```
 
 官方词典/脚本正在不断扩充中，你也完全可以编写你自己的自定义词典/脚本

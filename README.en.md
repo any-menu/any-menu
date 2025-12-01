@@ -84,6 +84,8 @@ mindmap
       Markdown formatting
       Markdown tags
       HTML tags
+    (Other)
+      Obsidian command
 ```
 
 Official dictionaries/scripts are continuously being expanded. You can also fully write your own custom dictionaries/scripts.
