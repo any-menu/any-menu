@@ -229,6 +229,7 @@ html, body, #main {
   z-index: 100; // 高于多级菜单
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
 
   input.am-search-input {
     height: 32px;
@@ -240,6 +241,7 @@ html, body, #main {
     outline: none;
     color: var(--am-text-color);
     background-color: var(--am-background-color);
+    border-radius: 8px;
     // box-shadow: none;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   }

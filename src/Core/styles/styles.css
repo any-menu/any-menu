@@ -195,6 +195,7 @@ html, body, #main {
   z-index: 100;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
 }
 .am-search input.am-search-input {
   height: 32px;
@@ -205,6 +206,7 @@ html, body, #main {
   outline: none;
   color: var(--am-text-color);
   background-color: var(--am-background-color);
+  border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 .am-search .am-search-suggestion {
