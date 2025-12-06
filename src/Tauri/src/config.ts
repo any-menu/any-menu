@@ -105,19 +105,39 @@ export async function load_config() {
 /** 保存配置
  * @param new_str 新的配置字符串
  * @param textarea (可选) 用于表示未保存/保存错误的状态
+ * 
+ * 保持toml中的注释不变问题的解决方案: TODO
+ * - 确认修改来源，有两种。一是在软件中以文本方式修改toml，二是使用封装好的界面修改配置项。
+ *   - 如果是前者，那么直接保存文本即可，就不用管注释问题
+ *     (此函数不处理，该函数执行之前处理)
+ *   - 如果是后者，则使用其他方法。
+ *     具体是把这两弄成是冲突的，如果支持了界面配置项，
+ *     就表示可以使用界面来向用户表示每个配置项的含义，而不是注释了。此时保存可以直接覆盖注释
+ *   - 还有一种比较高级的做法，是可以参考 vscode 的 settings.json 的注释处理方式。
+ *     这种也能通过界面配置，而且不会丢失注释
+ * 
+ * 其中第三点GPT说是:
+ * 基于带注释/空白的语法树（token/trivia-aware AST）做最小文本编辑（minimal textual edits）
+ * 也就是说不把整个文件重新序列化替换，而是解析出能保留注释/空白的信息结构，定位到要改动的 key/value 的文本片段，仅替换或插入那一小段文本，保持其他内容（注释、顺序、换行、缩进）原封不动
  */
 export function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
   try {
+    // 解析新配置文件
     const new_config = toml_parse(new_str)['config']
-    if (new_config && typeof new_config === 'object') {
-      global_setting.config = {...global_setting.config, ...new_config}
-    } else {
+    if (!new_config || typeof new_config !== 'object') {
       throw new Error("Invalid config format")
     }
+    
+    // 保存新配置文件
+    const result = global_setting.api.writeFile(CONFIG_PATH, new_str)
+    if (!result) {
+      throw new Error("Write file failed")
+    }
 
-    // TODO 保存配置文件 & 刷新某些对象/界面
-    // global_setting.save_config()
+    // 应用新配置文件 // TODO 可以动态更新一些页面信息 (暂时通过告知用户设置后需要重启来实现)
+    global_setting.config = {...global_setting.config, ...new_config}
 
+    // 告知用户应用成功
     textarea?.classList.remove('no-save', 'error-save')
     console.log('配置已保存，重启应用后生效')
   } catch (error) {
@@ -129,7 +149,7 @@ export function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
 
 // 这样的toml配置会有注释，如果用 global_setting.config 转toml则没注释
 const DEFAULT_TOML = `\
-[[config]]
+[config]
 pinyin_index = true         # 是否为中文key自动构建拼音索引
 pinyin_first_index = true   # 是否为中文key自动构建拼音首字母索引
 
