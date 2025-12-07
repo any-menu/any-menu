@@ -101,7 +101,7 @@ global_setting.api.getCursorXY = async (): Promise<{ x: number, y: number }> => 
 // #endregion
 
 export default class AnyMenuPlugin extends Plugin {
-  // settings: ABSettingInterface
+  settings: AMSettingInterface
 
   async onload() {
     if (global_setting.isDebug) console.log('>>> Loading plugin AnyMenu')
@@ -260,7 +260,7 @@ export default class AnyMenuPlugin extends Plugin {
     // }
 	}
 	async saveSettings() {
-		// await this.saveData(this.settings)
+		await this.saveData(this.settings)
 	}
 
   onunload() {

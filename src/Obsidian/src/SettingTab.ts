@@ -2,6 +2,14 @@ import {App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice} from "
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 // import { API } from "@/Core/webApi";
 
+// 配置结构和默认值
+export interface AMSettingInterface {
+
+}
+const AM_SETTINGS_DEFAULT: AMSettingInterface = {
+  
+}
+
 export class AMSettingTab extends PluginSettingTab {
   isInitialized = false
 
@@ -10,9 +18,9 @@ export class AMSettingTab extends PluginSettingTab {
   }
 
   display(): void {
-    // display() 会重复触发，不要重复添加一些内容
-    if (this.isInitialized) return
+    if (this.isInitialized) return // display() 会重复触发，不要重复添加一些内容
     this.isInitialized = true
+
     const { containerEl } = this;
     containerEl.textContent = ""
 
