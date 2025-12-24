@@ -90,7 +90,7 @@ export const global_setting: {
   }
 } = {
   env: 'app',
-  isDebug: true,
+  isDebug: false,
   focusStrategy: true,
   config: {    
     pinyin_index: true,

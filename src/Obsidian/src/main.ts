@@ -14,7 +14,7 @@ import {
   type App
 } from 'obsidian'
 import { getCursorInfo, registerABContextMenu, registerAMContextMenu } from './contextmenu'
-import { AMSettingTab } from "./SettingTab"
+import { type AMSettingInterface, AMSettingTab, AM_SETTINGS_DEFAULT } from "./SettingTab"
 import { global_setting, UrlRequestConfig, UrlResponse } from '@/Core/setting'
 
 // #region api 适配 (Ob/App/Other 环境)
@@ -258,17 +258,21 @@ export default class AnyMenuPlugin extends Plugin {
   }
 
   async loadSettings() {
-    // const data = await this.loadData() // 如果没有配置文件则为null
-		// this.settings = Object.assign({}, AB_SETTINGS, data); // 合并默认值和配置文件的值
+    const data = await this.loadData() // 如果没有配置文件则为null
+    this.settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
 
-    // // 如果没有配置文件则生成一个默认值的配置文件
-    // if (!data) {
-    //   this.saveData(this.settings)
-    // }
-	}
-	async saveSettings() {
-		await this.saveData(this.settings)
-	}
+    // 如果没有配置文件则生成一个默认值的配置文件
+    if (!data) {
+      this.saveData(this.settings)
+    }
+  }
+  async saveSettings() {
+    // 一致性
+    global_setting.isDebug = this.settings.isDebug
+    global_setting.config = this.settings.config
+
+    await this.saveData(this.settings)
+  }
 
   onunload() {
     document.body.querySelectorAll('body>.am-context-menu').forEach(el => el.remove())
