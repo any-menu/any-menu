@@ -143,3 +143,12 @@ App版可以在任何文本环境下使用:
   - 易用的、快速的、强大的、高自定义的
 - 跨平台
   - 如果有空，将会支持 Windows/Linux 平台、Obsidian、VSCode 插件
+
+## TODO
+
+- 支持方向键和 `alt+` 控制多级菜单
+- 搜索结果支持 `alt+` 调用
+- 完善 quicker note
+- 加入翻译 api
+- 支持纯鼠标快捷键
+- obsidian add gui config panel
