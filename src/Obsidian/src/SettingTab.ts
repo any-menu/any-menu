@@ -1,6 +1,7 @@
 import {App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice} from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { global_setting } from "@/Core/setting";
+import { t } from "./locales/helper";
 // import { API } from "@/Core/webApi";
 
 // 配置结构和默认值
@@ -40,16 +41,14 @@ export class AMSettingTab extends PluginSettingTab {
     let settings: AMSettingInterface = this.plugin.settings
     {
       const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-        tab_nav.textContent = 'Config file';
+        tab_nav.textContent = t('Config file');
       const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-        tab_content.createEl('div', { text: 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.\n\
-暂时并非所有可配置项均支持可视化编辑，部分配置可到插件文件夹下手动编辑data.json文件' });
+        tab_content.createEl('div', { text: t('Config file2') });
       tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
 
-      // 是否为中文key自动构建拼音索引
       new Setting(tab_content)
-      .setName("Pinyin index")
-      .setDesc("Is it the case that the Chinese \"key\" is automatically constructed with a pinyin index?")
+      .setName(t('Pinyin index'))
+      .setDesc(t('Pinyin index2'))
       .addToggle(toggle => toggle
         .setValue(settings.config.pinyin_index)
         .onChange(async (value) => {
@@ -58,10 +57,9 @@ export class AMSettingTab extends PluginSettingTab {
         })
       )
 
-      // 是否为中文key自动构建拼音首字母索引
       new Setting(tab_content)
-      .setName("Pinyin first index")
-      .setDesc("Is it the case that the Chinese \"key\" is automatically constructed into an index using the initial letters of pinyin?")
+      .setName(t('Pinyin first index'))
+      .setDesc(t('Pinyin first index2'))
       .addToggle(toggle => toggle
         .setValue(settings.config.pinyin_first_index)
         .onChange(async (value) => {
@@ -70,10 +68,9 @@ export class AMSettingTab extends PluginSettingTab {
         })
       )
 
-      // 词典保存路径，你也可以把词典保存在插件文件中，如 .obsidian/plugin/any-menu/
       new Setting(tab_content)
-      .setName("Dict paths")
-      .setDesc("The path for saving the dictionary. You can also save the dictionary in the plugin file, such as filling in `.obsidian/plugin/any-menu/`")
+      .setName(t('Dict paths'))
+      .setDesc(t('Dict paths2'))
       .addText(text => text
         .setValue(settings.config.dict_paths)
         .onChange(async (value) => {
@@ -83,8 +80,8 @@ export class AMSettingTab extends PluginSettingTab {
       )
 
       new Setting(tab_content)
-      .setName("Debug")
-      .setDesc("Only for developer use")
+      .setName(t('Debug mode'))
+      .setDesc(t('Debug mode2'))
       .addToggle(toggle => toggle
         .setValue(settings.isDebug)
         .onChange(async (value) => {
