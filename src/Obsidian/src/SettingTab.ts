@@ -8,6 +8,10 @@ export interface AMSettingInterface {
   config: typeof global_setting.config
   isDebug: typeof global_setting.isDebug
 }
+// 需要与 global_setting 保持同步，这里另外定义是为了
+// 1. 类型约束
+// 2. 二次封装简化 (去除不可配置项/不让用户配置的部分)
+// 一般来说 saveSettings (保存配置文件时) 会自动保证一致性
 export const AM_SETTINGS_DEFAULT: AMSettingInterface = {
   config: global_setting.config,
   isDebug: global_setting.isDebug,
@@ -31,16 +35,66 @@ export class AMSettingTab extends PluginSettingTab {
     const tab_root = document.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
+
     // #region setting panel
+    let settings: AMSettingInterface = this.plugin.settings
     {
       const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
         tab_nav.textContent = 'Config file';
       const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-        tab_content.createEl('div', { text: 'Currently, visual editing configuration is not supported. Please edit the data.json file in the plugin folder.\n\
-暂不支持可视化编辑配置，请到插件文件夹下手动编辑data.json文件' });
+        tab_content.createEl('div', { text: 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.\n\
+暂时并非所有可配置项均支持可视化编辑，部分配置可到插件文件夹下手动编辑data.json文件' });
       tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
+
+      // 是否为中文key自动构建拼音索引
+      new Setting(tab_content)
+      .setName("Pinyin index")
+      .setDesc("Is it the case that the Chinese \"key\" is automatically constructed with a pinyin index?")
+      .addToggle(toggle => toggle
+        .setValue(settings.config.pinyin_index)
+        .onChange(async (value) => {
+          settings.config.pinyin_index = value
+          await this.plugin.saveSettings()
+        })
+      )
+
+      // 是否为中文key自动构建拼音首字母索引
+      new Setting(tab_content)
+      .setName("Pinyin first index")
+      .setDesc("Is it the case that the Chinese \"key\" is automatically constructed into an index using the initial letters of pinyin?")
+      .addToggle(toggle => toggle
+        .setValue(settings.config.pinyin_first_index)
+        .onChange(async (value) => {
+          settings.config.pinyin_first_index = value
+          await this.plugin.saveSettings()
+        })
+      )
+
+      // 词典保存路径，你也可以把词典保存在插件文件中，如 .obsidian/plugin/any-menu/
+      new Setting(tab_content)
+      .setName("Dict paths")
+      .setDesc("The path for saving the dictionary. You can also save the dictionary in the plugin file, such as filling in `.obsidian/plugin/any-menu/`")
+      .addText(text => text
+        .setValue(settings.config.dict_paths)
+        .onChange(async (value) => {
+          settings.config.dict_paths = value
+          await this.plugin.saveSettings()
+        })
+      )
+
+      new Setting(tab_content)
+      .setName("Debug")
+      .setDesc("Only for developer use")
+      .addToggle(toggle => toggle
+        .setValue(settings.isDebug)
+        .onChange(async (value) => {
+          settings.isDebug = value
+          await this.plugin.saveSettings()
+        })
+      )
     }
     // #endregion
+
     initSettingTab_2(tab_nav_container, tab_content_container)
 
     tab_root.createEl('button',

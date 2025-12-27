@@ -260,7 +260,7 @@ export default class AnyMenuPlugin extends Plugin {
     }
   }
   async saveSettings() {
-    // 一致性
+    // 需要保持一致性 // [!code hl]
     global_setting.isDebug = this.settings.isDebug
     global_setting.config = this.settings.config
 
