@@ -200,147 +200,6 @@ export class ABContextMenu {
     })
   }
 
-  // #region 方向键、虚拟聚焦/高亮项管理
-
-  /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
-  vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
-    // el_input.addEventListener('input', () => {})
-    this.menu_el_data_current = this.menu_el_data_root
-
-    let el_items: NodeListOf<HTMLElement>|undefined
-    el_input.addEventListener('keydown', (ev) => {
-      // 有内容时，由搜索框建议栏接管事件
-      if (el_input.value.trim() != '') {
-        // this.updateVFocus('clean') // 不需要，可能会有筛选搜索的功能
-        return
-      }
-
-      if (!this.el_container) return
-      el_items = this.el_container.querySelectorAll(":scope>li") // li 可能有 .has-children
-
-      // Down 切换选项
-      if (ev.key == 'ArrowDown') {
-        this.vFocus_update(el_items, 'down')
-      }
-      // Up 切换选项
-      else if (ev.key == 'ArrowUp') {
-        this.vFocus_update(el_items, 'up');
-      }
-      // Right 切换选项 (模拟鼠标悬浮) TODO 如果不可展开，则模拟点击选中
-      else if (ev.key == 'ArrowRight') {
-        const mouseEvent = new MouseEvent('mouseenter', {
-          // bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
-
-        if (this.menu_el_data_current.children.length > 0 && this.current_vFocus < this.menu_el_data_current.children.length) {
-          this.menu_el_data_current = this.menu_el_data_current.children[this.current_vFocus]
-        }
-        // el_items = ...
-        // this.updateVFocus(el_items, '0');
-      }
-      // Left 切换选项 (模拟鼠标移出)
-      else if (ev.key == 'ArrowLeft') {
-        const mouseEvent = new MouseEvent('mouseleave', {
-          // bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-
-        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
-        if (this.menu_el_data_current.parent) {
-          this.menu_el_data_current = this.menu_el_data_current.parent
-        }
-        // el_items = ...
-        // this.updateVFocus(el_items, '0');
-        // 如果是根部 updateVFocus(undefined, 'clean')
-      }
-      // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
-      else if (ev.key == 'Enter') {
-        if (this.current_vFocus > -1) {
-          ev.preventDefault()
-          el_items[this.current_vFocus].click()
-        }
-      }
-      // Alt + Key 直接选择对应项
-      else if (ev.altKey) {
-        let index: number = -1
-        // 支持数字
-        if (ev.key >= '1' && ev.key <= '9') {
-          index = parseInt(ev.key) - 1
-          // this.currentFocus = index // TODO vFocus_update(el_items, index)
-        }
-        // 也支持字母 (暂时a视为第10项，类似base64)
-        else if (ev.key >= 'a' && ev.key <= 'z') {
-          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
-        }
-        if (index == -1) return
-        if (index > el_items.length - 1) return
-
-        // ev.preventDefault()
-        // const mouseEvent = new MouseEvent('mouseenter', {
-        //   cancelable: true,
-        //   view: window,
-        // })
-        // el_items[index].dispatchEvent(mouseEvent)
-        el_items[index].click()
-      }
-    })
-  }
-
-  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
-    if (!list) {
-      if (!this.el_container) return
-      list = this.el_container.querySelectorAll(":scope>li")
-    }
-
-    // 清理之前的hover状态
-    if (this.current_vFocus >= 0 && list[this.current_vFocus]) {
-      const mouseEvent = new MouseEvent('mouseleave', {
-        // bubbles: true,
-        cancelable: true,
-        view: window,
-      })
-      list[this.current_vFocus].dispatchEvent(mouseEvent)
-    }
-
-    if (flag === '0') this.current_vFocus = 0
-    else if (flag === 'down') this.current_vFocus++
-    else if (flag === 'up') this.current_vFocus--
-    else if (flag === 'clean') this.current_vFocus = -1
-    else throw new Error("unreachable")
-
-    if (!list || list.length == 0) return false
-    removeVFocus(list)
-
-    // 循环选择 (可选，或改为置顶/底后不再移动)
-    // 使用 -1 排外的循环策略 (-2最后一个 -> -1不选 -> 0第一个)
-    if (flag === 'clean') {
-      this.current_vFocus = -1
-      return
-    }
-    if (this.current_vFocus == -1 || this.current_vFocus == list.length) {
-      this.current_vFocus = -1
-      return
-    }
-    else if (this.current_vFocus >= list.length) this.current_vFocus = 0
-    else if (this.current_vFocus < 0) this.current_vFocus = (list.length - 1)
-
-    list[this.current_vFocus].classList.add("focus-active") // 添加高亮
-    list[this.current_vFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
-
-    // 移除所有项的聚焦样式
-    function removeVFocus(list: NodeListOf<Element>) {
-      for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("focus-active");
-      }
-    }
-  }
-
-  // #endregion
-
   // #region 添加菜单项
 
   /// 缓存多级菜单的容器
@@ -514,6 +373,147 @@ export class ABContextMenu {
       // }
     })
     this.append_el(header_r)
+  }
+
+  // #endregion
+
+  // #region 方向键、虚拟聚焦/高亮项管理
+
+  /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
+  vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
+    // el_input.addEventListener('input', () => {})
+    this.menu_el_data_current = this.menu_el_data_root
+
+    let el_items: NodeListOf<HTMLElement>|undefined
+    el_input.addEventListener('keydown', (ev) => {
+      // 有内容时，由搜索框建议栏接管事件
+      if (el_input.value.trim() != '') {
+        // this.updateVFocus('clean') // 不需要，可能会有筛选搜索的功能
+        return
+      }
+
+      if (!this.el_container) return
+      el_items = this.el_container.querySelectorAll(":scope>li") // li 可能有 .has-children
+
+      // Down 切换选项
+      if (ev.key == 'ArrowDown') {
+        this.vFocus_update(el_items, 'down')
+      }
+      // Up 切换选项
+      else if (ev.key == 'ArrowUp') {
+        this.vFocus_update(el_items, 'up');
+      }
+      // Right 切换选项 (模拟鼠标悬浮) TODO 如果不可展开，则模拟点击选中
+      else if (ev.key == 'ArrowRight') {
+        const mouseEvent = new MouseEvent('mouseenter', {
+          // bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
+
+        if (this.menu_el_data_current.children.length > 0 && this.current_vFocus < this.menu_el_data_current.children.length) {
+          this.menu_el_data_current = this.menu_el_data_current.children[this.current_vFocus]
+        }
+        // el_items = ...
+        // this.updateVFocus(el_items, '0');
+      }
+      // Left 切换选项 (模拟鼠标移出)
+      else if (ev.key == 'ArrowLeft') {
+        const mouseEvent = new MouseEvent('mouseleave', {
+          // bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+
+        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
+        if (this.menu_el_data_current.parent) {
+          this.menu_el_data_current = this.menu_el_data_current.parent
+        }
+        // el_items = ...
+        // this.updateVFocus(el_items, '0');
+        // 如果是根部 updateVFocus(undefined, 'clean')
+      }
+      // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+      else if (ev.key == 'Enter') {
+        if (this.current_vFocus > -1) {
+          ev.preventDefault()
+          el_items[this.current_vFocus].click()
+        }
+      }
+      // Alt + Key 直接选择对应项
+      else if (ev.altKey) {
+        let index: number = -1
+        // 支持数字
+        if (ev.key >= '1' && ev.key <= '9') {
+          index = parseInt(ev.key) - 1
+          // this.currentFocus = index // TODO vFocus_update(el_items, index)
+        }
+        // 也支持字母 (暂时a视为第10项，类似base64)
+        else if (ev.key >= 'a' && ev.key <= 'z') {
+          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
+        }
+        if (index == -1) return
+        if (index > el_items.length - 1) return
+
+        // ev.preventDefault()
+        // const mouseEvent = new MouseEvent('mouseenter', {
+        //   cancelable: true,
+        //   view: window,
+        // })
+        // el_items[index].dispatchEvent(mouseEvent)
+        el_items[index].click()
+      }
+    })
+  }
+
+  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+    if (!list) {
+      if (!this.el_container) return
+      list = this.el_container.querySelectorAll(":scope>li")
+    }
+
+    // 清理之前的hover状态
+    if (this.current_vFocus >= 0 && list[this.current_vFocus]) {
+      const mouseEvent = new MouseEvent('mouseleave', {
+        // bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+      list[this.current_vFocus].dispatchEvent(mouseEvent)
+    }
+
+    if (flag === '0') this.current_vFocus = 0
+    else if (flag === 'down') this.current_vFocus++
+    else if (flag === 'up') this.current_vFocus--
+    else if (flag === 'clean') this.current_vFocus = -1
+    else throw new Error("unreachable")
+
+    if (!list || list.length == 0) return false
+    removeVFocus(list)
+
+    // 循环选择 (可选，或改为置顶/底后不再移动)
+    // 使用 -1 排外的循环策略 (-2最后一个 -> -1不选 -> 0第一个)
+    if (flag === 'clean') {
+      this.current_vFocus = -1
+      return
+    }
+    if (this.current_vFocus == -1 || this.current_vFocus == list.length) {
+      this.current_vFocus = -1
+      return
+    }
+    else if (this.current_vFocus >= list.length) this.current_vFocus = 0
+    else if (this.current_vFocus < 0) this.current_vFocus = (list.length - 1)
+
+    list[this.current_vFocus].classList.add("focus-active") // 添加高亮
+    list[this.current_vFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
+
+    // 移除所有项的聚焦样式
+    function removeVFocus(list: NodeListOf<Element>) {
+      for (let i = 0; i < list.length; i++) {
+        list[i].classList.remove("focus-active");
+      }
+    }
   }
 
   // #endregion
