@@ -65,6 +65,9 @@ export class ABContextMenu {
   /// 当前菜单是否处于显示状态
   private isShow: boolean = false
 
+  // #region 特殊函数 big3
+
+  /// 创建菜单实例，并自动处理容器和绑定事件
   static factory(
     el_parent?: HTMLElement,
     menuItems?: ContextMenuItems,
@@ -75,8 +78,8 @@ export class ABContextMenu {
     return abContextMenu
   }
 
-  // 创建一个菜单实例
-  constructor(
+  /// 创建一个菜单实例
+  private constructor(
     el_parent?: HTMLElement,
     menuItems?: ContextMenuItems,
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
@@ -102,9 +105,11 @@ export class ABContextMenu {
     if (menuItems) this.append_data(menuItems)
   }
 
+  // #endregion
+
   // #region 显示/隐藏菜单
 
-  // 显示该菜单
+  /// 显示该菜单
   public show(x?: number, y?: number) {
     if (!this.el_container) return
     this.isShow = true
@@ -119,7 +124,7 @@ export class ABContextMenu {
     window.addEventListener('keydown', this.visual_listener_keydown)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
   }
-  // 隐藏该菜单
+  /// 隐藏该菜单
   public hide() {
     if (global_setting.state.isPin) return
     if (!this.el_container) return
@@ -152,7 +157,8 @@ export class ABContextMenu {
 
   // #endregion
 
-  /** 在目标上监听 contextmenu 事件，并显示该菜单 (仅非 App 环境)
+  /** 在目标上监听 contextmenu 事件，并显示该菜单
+   * (仅于非App环境环境中使用。非App环境会在 document 对象中监听，而App环境则会在全局中监听按键事件)
    * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
    */
   public bind_emitArea(targetElement: HTMLElement | string) {
@@ -448,30 +454,33 @@ export class ABContextMenu {
   // #endregion
 
   public async sendText(str: string) {
+    // app环境
     if (global_setting.env === 'app') {
       await global_setting.api.sendText(str); this.hide(); return;
     }
+    // obsidian插件环境
     else if (global_setting.env === 'obsidian-plugin') {
       await global_setting.api.sendText(str); this.hide(); return;
     }
     // 后面是通用 browser 环境
+    else {
+      // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
+      // 注意:
+      // - 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
+      // - 但 Tauri 程序中，我们采用了失焦的方式展开菜单
+      const activeElement: Element|null = document.activeElement
 
-    // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
-    // 注意:
-    // - 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
-    // - 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-    const activeElement: Element|null = document.activeElement
+      // 检查该元素是否是可编辑的输入框或文本域
+      if (!activeElement) {
+        console.warn('没有活动的元素，将demo文本生成到剪贴板')
+        navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
+      } else {
+        await global_setting.api.sendText(str)
+        // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
+      }
 
-    // 检查该元素是否是可编辑的输入框或文本域
-    if (!activeElement) {
-      console.warn('没有活动的元素，将demo文本生成到剪贴板')
-      navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
-    } else {
-      await global_setting.api.sendText(str)
-      // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
+      this.hide(); return;
     }
-
-    this.hide(); return;
   }
 
   // -------------------- 使用示例 --------------------
@@ -511,8 +520,3 @@ export class ABContextMenu {
     }
   }
 }
-
-// /** 装饰 - 叉 */
-// function input_delete() {
-//   
-// }

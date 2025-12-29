@@ -151,4 +151,3 @@ App版可以在任何文本环境下使用:
 - 完善 quicker note
 - 加入翻译 api
 - 支持纯鼠标快捷键
-- obsidian add gui config panel
