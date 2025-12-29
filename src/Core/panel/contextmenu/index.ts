@@ -74,7 +74,7 @@ export class ABContextMenu {
     el_input?: HTMLInputElement,
   ): ABContextMenu {
     const abContextMenu = new ABContextMenu(el_parent, menuItems)
-    if (el_input) abContextMenu.bind_arrowKeyArea(el_input)
+    if (el_input) abContextMenu.vFocus_bind_arrowKeyArea(el_input)
     return abContextMenu
   }
 
@@ -118,7 +118,7 @@ export class ABContextMenu {
     this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
 
-    this.updateVFocus(undefined, 'clean')
+    this.vFocus_update(undefined, 'clean')
 
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('keydown', this.visual_listener_keydown)
@@ -132,7 +132,7 @@ export class ABContextMenu {
     this.el_container.classList.add('am-hide')
     this.el_container.classList.remove('visible')
 
-    this.updateVFocus(undefined, 'clean')
+    this.vFocus_update(undefined, 'clean')
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('keydown', this.visual_listener_keydown)
@@ -160,6 +160,9 @@ export class ABContextMenu {
   /** 在目标上监听 contextmenu 事件，并显示该菜单
    * (仅于非App环境环境中使用。非App环境会在 document 对象中监听，而App环境则会在全局中监听按键事件)
    * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
+   * 
+   * @deprecated 弃用，应该绑定在主面板上，主右键菜单上
+   * 这里重构后不再表示 "右键菜单"，只表示 "右键菜单" 内的 "多级可展开菜单"
    */
   public bind_emitArea(targetElement: HTMLElement | string) {
     if (typeof targetElement == 'string') return
@@ -190,14 +193,14 @@ export class ABContextMenu {
 
   // #region 方向键、虚拟聚焦/高亮项管理
 
-  /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
-  bind_arrowKeyArea(el_input: HTMLInputElement) {
-    el_input.addEventListener('input', () => {
+  /// 键盘选择项追踪，初始不起作用
+  private currentFocus: number = -1
 
-    })
+  /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
+  vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
+    // el_input.addEventListener('input', () => {})
 
     let el_items: NodeListOf<HTMLElement>|undefined
-
     el_input.addEventListener('keydown', (ev) => {
       // 有内容时，由搜索框建议栏接管事件
       if (el_input.value.trim() != '') {
@@ -208,11 +211,16 @@ export class ABContextMenu {
       if (!this.el_container) return
       el_items = this.el_container.querySelectorAll(":scope>li") // li 可能有 .has-children
 
-      if (ev.key == 'ArrowDown') { // Down 切换选项
-        this.updateVFocus(el_items, 'down')
-      } else if (ev.key == 'ArrowUp') { // Up 切换选项
-        this.updateVFocus(el_items, 'up');
-      } else if (ev.key == 'ArrowRight') { // Right 切换选项
+      // Down 切换选项
+      if (ev.key == 'ArrowDown') {
+        this.vFocus_update(el_items, 'down')
+      }
+      // Up 切换选项
+      else if (ev.key == 'ArrowUp') {
+        this.vFocus_update(el_items, 'up');
+      }
+      // Right 切换选项 (模拟鼠标悬浮) TODO 如果不可展开，则模拟点击选中
+      else if (ev.key == 'ArrowRight') {
         const mouseEvent = new MouseEvent('mouseenter', {
           // bubbles: true,
           cancelable: true,
@@ -221,7 +229,9 @@ export class ABContextMenu {
         el_items[this.currentFocus].dispatchEvent(mouseEvent)
         // el_items = ...
         // this.updateVFocus(el_items, '0');
-      } else if (ev.key == 'ArrowLeft') { // Left 切换选项
+      }
+      // Left 切换选项 (模拟鼠标移出)
+      else if (ev.key == 'ArrowLeft') {
         const mouseEvent = new MouseEvent('mouseleave', {
           // bubbles: true,
           cancelable: true,
@@ -231,19 +241,41 @@ export class ABContextMenu {
         // el_items = ...
         // this.updateVFocus(el_items, '0');
         // 如果是根部 updateVFocus(undefined, 'clean')
-      } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+      }
+      // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+      else if (ev.key == 'Enter') {
         if (this.currentFocus > -1) {
           ev.preventDefault()
           el_items[this.currentFocus].click()
         }
       }
+      // Alt + Key 直接选择对应项
+      else if (ev.altKey) {
+        let index: number = -1
+        // 支持数字
+        if (ev.key >= '1' && ev.key <= '9') {
+          index = parseInt(ev.key) - 1
+        }
+        // 也支持字母 (暂时a视为第10项，类似base64)
+        else if (ev.key >= 'a' && ev.key <= 'z') {
+          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
+        }
+        console.log(`Alt+${ev.key} 选择菜单项 ${index + 1}`)        
+        if (index == -1) return
+        if (index > el_items.length - 1) return
+
+        // ev.preventDefault()
+        // const mouseEvent = new MouseEvent('mouseenter', {
+        //   cancelable: true,
+        //   view: window,
+        // })
+        // el_items[index].dispatchEvent(mouseEvent)
+        el_items[index].click()
+      }
     })
   }
 
-  // 键盘选择项追踪，初始不起作用
-  private currentFocus: number = -1
-
-  private updateVFocus(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
     if (!list) {
       if (!this.el_container) return
       list = this.el_container.querySelectorAll(":scope>li")
@@ -295,15 +327,6 @@ export class ABContextMenu {
   // #endregion
 
   // #region 添加菜单项
-
-  /** 添加菜单项 - 给菜单添加一个自定义元素
-   * (如hr、input等，如果是常规元素推荐用 append_data)
-   */
-  append_el(el: HTMLElement) {
-    if (!this.el_container) return
-
-    this.el_container.appendChild(el)
-  }
 
   /** 添加菜单项 - 操作糖，快捷添加一组按键
    * 
@@ -409,11 +432,26 @@ export class ABContextMenu {
     li_list(this.el_container, menuItems)
   }
 
+  /** 添加菜单项 - 给菜单添加一个自定义元素
+   * (如hr、input等，如果是常规元素推荐用 append_data)
+   * 
+   * @deprecated 弃用，菜单中若出现其他部分，不要再与 contextmenu 进行绑定，而应该通过组合的方式来绑定
+   * 即该类不再是完整的 "右键菜单" 所展示的全部内容，而是右键菜单中的 "多级可展开菜单" 中的部分
+   */
+  append_el(el: HTMLElement) {
+    if (!this.el_container) return
+
+    this.el_container.appendChild(el)
+  }
+
   /** 添加菜单项 - 操作糖，添加header切换器
    * 
    * header切换器带输入框、下拉框、提示补全
    * 
    * 其中输入框回车或点击建议栏应用，ESC和失焦不应用 (TODO 手机版应该得失焦应用吧)
+   * 
+   * @deprecated 弃用，菜单中若出现其他部分，不要再与 contextmenu 进行绑定，而应该通过组合的方式来绑定
+   * 即该类不再是完整的 "右键菜单" 所展示的全部内容，而是右键菜单中的 "多级可展开菜单" 中的部分
    */
   append_headerEditor(header_old: string, header_callback: (header_new: string) => void) {
     const header_r = document.createElement('div'); header_r.classList.add('am-context-menu-header');
