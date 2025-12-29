@@ -447,7 +447,7 @@ export class ABContextMenu {
         // 支持数字
         if (ev.key >= '1' && ev.key <= '9') {
           index = parseInt(ev.key) - 1
-          // this.currentFocus = index // TODO vFocus_update(el_items, index)
+          this.vFocus_update(el_items, index)
         }
         // 也支持字母 (暂时a视为第10项，类似base64)
         else if (ev.key >= 'a' && ev.key <= 'z') {
@@ -467,13 +467,14 @@ export class ABContextMenu {
     })
   }
 
-  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean') {
+  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean'|number) {
     if (!list) {
       if (!this.el_container) return
       list = this.el_container.querySelectorAll(":scope>li")
     }
+    if (list.length == 0) return false
 
-    // 清理之前的hover状态
+    // 1. 清理之前所有的hover状态
     if (this.current_vFocus >= 0 && list[this.current_vFocus]) {
       const mouseEvent = new MouseEvent('mouseleave', {
         // bubbles: true,
@@ -483,16 +484,26 @@ export class ABContextMenu {
       list[this.current_vFocus].dispatchEvent(mouseEvent)
     }
 
+    // 2. 移除之前所有的聚焦样式
+    removeVFocus(list)
+    function removeVFocus(list: NodeListOf<Element>) {
+      for (let i = 0; i < list.length; i++) {
+        list[i].classList.remove("focus-active");
+      }
+    }
+
+    // 3.1. 更新索引
     if (flag === '0') this.current_vFocus = 0
     else if (flag === 'down') this.current_vFocus++
     else if (flag === 'up') this.current_vFocus--
     else if (flag === 'clean') this.current_vFocus = -1
+    else if (typeof flag === 'number') {
+      if (flag > list.length - 1) this.current_vFocus = -1 // 无效
+      else this.current_vFocus = flag
+    }
     else throw new Error("unreachable")
 
-    if (!list || list.length == 0) return false
-    removeVFocus(list)
-
-    // 循环选择 (可选，或改为置顶/底后不再移动)
+    // 3.2. 循环选择 (可选，或改为置顶/底后不再移动)
     // 使用 -1 排外的循环策略 (-2最后一个 -> -1不选 -> 0第一个)
     if (flag === 'clean') {
       this.current_vFocus = -1
@@ -505,15 +516,9 @@ export class ABContextMenu {
     else if (this.current_vFocus >= list.length) this.current_vFocus = 0
     else if (this.current_vFocus < 0) this.current_vFocus = (list.length - 1)
 
+    // 4. 添加样式
     list[this.current_vFocus].classList.add("focus-active") // 添加高亮
     list[this.current_vFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
-
-    // 移除所有项的聚焦样式
-    function removeVFocus(list: NodeListOf<Element>) {
-      for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("focus-active");
-      }
-    }
   }
 
   // #endregion
