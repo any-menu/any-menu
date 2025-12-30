@@ -40,7 +40,7 @@ type MENU_NODE = {
   el: HTMLElement|null,
   parent: MENU_NODE|null, // 父节点 (冗余数据)
   children: MENU_NODE[],  // 子节点
-  vFocus_index?: number, // 字节点的虚拟聚焦索引 (范围为 -1 ~ children.length-1)
+  vFocus_index: number,   // 字节点的虚拟聚焦索引 (范围为 -1 ~ children.length-1)
 }
 
 /**
@@ -127,7 +127,11 @@ export class ABContextMenu {
     this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
 
-    this.vFocus_update(undefined, 'clean')
+    // 状态重置
+    this.vFocus_update('clean')
+    this.menu_el_data_root.el = null
+    this.menu_el_data_root.vFocus_index = -1
+    this.menu_el_data_current = this.menu_el_data_root
 
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('keydown', this.visual_listener_keydown)
@@ -141,7 +145,7 @@ export class ABContextMenu {
     this.el_container.classList.add('am-hide')
     this.el_container.classList.remove('visible')
 
-    this.vFocus_update(undefined, 'clean')
+    this.vFocus_update('clean')
 
     window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('keydown', this.visual_listener_keydown)
@@ -200,14 +204,14 @@ export class ABContextMenu {
     })
   }
 
-  // #region 添加菜单项
-
   /// 缓存多级菜单的容器
-  menu_el_data_root: MENU_NODE = { el: null, parent: null, children: [] }
+  menu_el_data_root: MENU_NODE = { el: null, parent: null, children: [], vFocus_index: -1 }
   /// 当前节点
   menu_el_data_current: MENU_NODE = this.menu_el_data_root
-  /// 键盘选择项追踪，初始不起作用。将弃用，这个无法和多级菜单配合使用
-  private current_vFocus: number = -1
+  ///// 键盘选择项追踪，初始不起作用。将弃用，这个无法和多级菜单配合使用
+  // private current_vFocus: number = -1
+
+  // #region 添加菜单项  
 
   /** 添加菜单项 - 操作糖，快捷添加一组按键
    * 
@@ -230,7 +234,7 @@ export class ABContextMenu {
       let sub_node: MENU_NODE
       menuItems.forEach((item: ContextMenuItem) => {
         const li = document.createElement('li'); ul.appendChild(li);
-          sub_node = { el: li, parent: current_node, children: [] }; current_node.children.push(sub_node);
+          sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
         // 菜单项标题
         li.textContent = item.label
 
@@ -382,7 +386,6 @@ export class ABContextMenu {
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
     // el_input.addEventListener('input', () => {})
-    this.menu_el_data_current = this.menu_el_data_root
 
     let el_items: NodeListOf<HTMLElement>|undefined
     el_input.addEventListener('keydown', (ev) => {
@@ -392,16 +395,18 @@ export class ABContextMenu {
         return
       }
 
-      if (!this.el_container) return
-      el_items = this.el_container.querySelectorAll(":scope>li") // li 可能有 .has-children
+      if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el_container ?? null
+      if (!this.menu_el_data_current.el) return
+      el_items = this.menu_el_data_current.el.querySelectorAll(":scope>li") // li 可能有 .has-children，可换成 this.menu_el_data_current.children
+      console.log('debug chick before', el_items, this.menu_el_data_current, this.menu_el_data_current.vFocus_index)
 
       // Down 切换选项
       if (ev.key == 'ArrowDown') {
-        this.vFocus_update(el_items, 'down')
+        this.vFocus_update('down')
       }
       // Up 切换选项
       else if (ev.key == 'ArrowUp') {
-        this.vFocus_update(el_items, 'up');
+        this.vFocus_update('up');
       }
       // Right 切换选项 (模拟鼠标悬浮) TODO 如果不可展开，则模拟点击选中
       else if (ev.key == 'ArrowRight') {
@@ -410,13 +415,12 @@ export class ABContextMenu {
           cancelable: true,
           view: window,
         })
-        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
+        this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.dispatchEvent(mouseEvent)
 
-        if (this.menu_el_data_current.children.length > 0 && this.current_vFocus < this.menu_el_data_current.children.length) {
-          this.menu_el_data_current = this.menu_el_data_current.children[this.current_vFocus]
+        if (this.menu_el_data_current.children.length > 0) {
+          this.menu_el_data_current = this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index] ?? this.menu_el_data_current
+          // TODO 可以让子菜单自动选中第一个
         }
-        // el_items = ...
-        // this.updateVFocus(el_items, '0');
       }
       // Left 切换选项 (模拟鼠标移出)
       else if (ev.key == 'ArrowLeft') {
@@ -425,20 +429,17 @@ export class ABContextMenu {
           cancelable: true,
           view: window,
         })
+        this.menu_el_data_current.el?.dispatchEvent(mouseEvent)
 
-        el_items[this.current_vFocus].dispatchEvent(mouseEvent)
         if (this.menu_el_data_current.parent) {
           this.menu_el_data_current = this.menu_el_data_current.parent
         }
-        // el_items = ...
-        // this.updateVFocus(el_items, '0');
-        // 如果是根部 updateVFocus(undefined, 'clean')
       }
       // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
       else if (ev.key == 'Enter') {
-        if (this.current_vFocus > -1) {
+        if (this.menu_el_data_current.vFocus_index > -1) {
           ev.preventDefault()
-          el_items[this.current_vFocus].click()
+          this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.click()
         }
       }
       // Alt + Key 直接选择对应项
@@ -447,14 +448,14 @@ export class ABContextMenu {
         // 支持数字
         if (ev.key >= '1' && ev.key <= '9') {
           index = parseInt(ev.key) - 1
-          this.vFocus_update(el_items, index)
+          this.vFocus_update(index)
         }
         // 也支持字母 (暂时a视为第10项，类似base64)
         else if (ev.key >= 'a' && ev.key <= 'z') {
           index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
         }
         if (index == -1) return
-        if (index > el_items.length - 1) return
+        if (index > this.menu_el_data_current.children.length - 1) return
 
         // ev.preventDefault()
         // const mouseEvent = new MouseEvent('mouseenter', {
@@ -462,12 +463,17 @@ export class ABContextMenu {
         //   view: window,
         // })
         // el_items[index].dispatchEvent(mouseEvent)
-        el_items[index].click()
+        this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.click()
       }
+
+      console.log('debug chick after ', this.menu_el_data_current, this.menu_el_data_current.vFocus_index)
     })
   }
 
-  private vFocus_update(list?: NodeListOf<HTMLElement>, flag?: 'up'|'down'|'0'|'clean'|number) {
+  /// 不管左右，只管上下
+  /// 应该以list为准 or menu_el_data_current.children为准? 一般情况下这两是等同的
+  private vFocus_update(flag?: 'up'|'down'|'0'|'clean'|number) {
+    let list = this.menu_el_data_current.el?.querySelectorAll(":scope>li")
     if (!list) {
       if (!this.el_container) return
       list = this.el_container.querySelectorAll(":scope>li")
@@ -475,13 +481,13 @@ export class ABContextMenu {
     if (list.length == 0) return false
 
     // 1. 清理之前所有的hover状态
-    if (this.current_vFocus >= 0 && list[this.current_vFocus]) {
+    if (this.menu_el_data_current.vFocus_index >= 0 && list[this.menu_el_data_current.vFocus_index]) {
       const mouseEvent = new MouseEvent('mouseleave', {
         // bubbles: true,
         cancelable: true,
         view: window,
       })
-      list[this.current_vFocus].dispatchEvent(mouseEvent)
+      list[this.menu_el_data_current.vFocus_index].dispatchEvent(mouseEvent)
     }
 
     // 2. 移除之前所有的聚焦样式
@@ -493,32 +499,32 @@ export class ABContextMenu {
     }
 
     // 3.1. 更新索引
-    if (flag === '0') this.current_vFocus = 0
-    else if (flag === 'down') this.current_vFocus++
-    else if (flag === 'up') this.current_vFocus--
-    else if (flag === 'clean') this.current_vFocus = -1
+    if (flag === '0') this.menu_el_data_current.vFocus_index = 0
+    else if (flag === 'down') this.menu_el_data_current.vFocus_index++
+    else if (flag === 'up') this.menu_el_data_current.vFocus_index--
+    else if (flag === 'clean') this.menu_el_data_current.vFocus_index = -1
     else if (typeof flag === 'number') {
-      if (flag > list.length - 1) this.current_vFocus = -1 // 无效
-      else this.current_vFocus = flag
+      if (flag > list.length - 1) this.menu_el_data_current.vFocus_index = -1 // 无效
+      else this.menu_el_data_current.vFocus_index = flag
     }
     else throw new Error("unreachable")
 
     // 3.2. 循环选择 (可选，或改为置顶/底后不再移动)
     // 使用 -1 排外的循环策略 (-2最后一个 -> -1不选 -> 0第一个)
     if (flag === 'clean') {
-      this.current_vFocus = -1
+      this.menu_el_data_current.vFocus_index = -1
       return
     }
-    if (this.current_vFocus == -1 || this.current_vFocus == list.length) {
-      this.current_vFocus = -1
+    if (this.menu_el_data_current.vFocus_index == -1 || this.menu_el_data_current.vFocus_index == list.length) {
+      this.menu_el_data_current.vFocus_index = -1
       return
     }
-    else if (this.current_vFocus >= list.length) this.current_vFocus = 0
-    else if (this.current_vFocus < 0) this.current_vFocus = (list.length - 1)
+    else if (this.menu_el_data_current.vFocus_index >= list.length) this.menu_el_data_current.vFocus_index = 0
+    else if (this.menu_el_data_current.vFocus_index < 0) this.menu_el_data_current.vFocus_index = (list.length - 1)
 
     // 4. 添加样式
-    list[this.current_vFocus].classList.add("focus-active") // 添加高亮
-    list[this.current_vFocus].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
+    list[this.menu_el_data_current.vFocus_index].classList.add("focus-active") // 添加高亮
+    list[this.menu_el_data_current.vFocus_index].scrollIntoView({ block: 'nearest' }) // 滚动到可视区域
   }
 
   // #endregion
