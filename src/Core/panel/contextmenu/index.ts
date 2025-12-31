@@ -127,11 +127,10 @@ export class ABContextMenu {
     this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
 
-    // 状态重置
-    this.vFocus_update('clean')
+    // 状态重置    
     this.menu_el_data_root.el = null
-    this.menu_el_data_root.vFocus_index = -1
     this.menu_el_data_current = this.menu_el_data_root
+    this.vFocus_update('clean')
 
     window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('keydown', this.visual_listener_keydown)
@@ -407,13 +406,14 @@ export class ABContextMenu {
       }
       // Right 切换选项 (模拟鼠标悬浮) TODO 如果不可展开，则模拟点击选中
       else if (ev.key == 'ArrowRight') {
+        // 悬浮状态
         const mouseEvent = new MouseEvent('mouseenter', {
           // bubbles: true,
           cancelable: true,
           view: window,
         })
         this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.dispatchEvent(mouseEvent)
-
+        // 父子节点切换
         const menu_el_data_next = this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]
         if (menu_el_data_next && menu_el_data_next.children.length > 0) {
           this.menu_el_data_current = menu_el_data_next
@@ -422,13 +422,14 @@ export class ABContextMenu {
       }
       // Left 切换选项 (模拟鼠标移出)
       else if (ev.key == 'ArrowLeft') {
+        // 悬浮状态
         const mouseEvent = new MouseEvent('mouseleave', {
           // bubbles: true,
           cancelable: true,
           view: window,
         })
         this.menu_el_data_current.el?.dispatchEvent(mouseEvent)
-
+        // 父子节点切换
         if (this.menu_el_data_current.parent) {
           this.menu_el_data_current = this.menu_el_data_current.parent
         }
@@ -442,32 +443,48 @@ export class ABContextMenu {
       }
       // Alt + Key 直接选择对应项
       else if (ev.altKey) {
+        // step1. 确定目标索引
         let index: number = -1
-        // 支持数字
-        if (ev.key >= '1' && ev.key <= '9') {
+        if (ev.key >= '1' && ev.key <= '9') { // 支持数字
           index = parseInt(ev.key) - 1
           this.vFocus_update(index)
         }
-        // 也支持字母 (暂时a视为第10项，类似base64)
-        else if (ev.key >= 'a' && ev.key <= 'z') {
+        else if (ev.key >= 'a' && ev.key <= 'z') { // 也支持字母 (暂时a视为第10项，类似base64)
           index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
         }
         if (index == -1) return
         if (index > this.menu_el_data_current.children.length - 1) return
 
-        // ev.preventDefault()
-        // const mouseEvent = new MouseEvent('mouseenter', {
-        //   cancelable: true,
-        //   view: window,
-        // })
-        // el_items[index].dispatchEvent(mouseEvent)
-        this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.click()
+        // step2. 确定目标节点
+        const target_node: MENU_NODE|undefined = this.menu_el_data_current.children[index]
+        if (!target_node) return
+        this.vFocus_update(index)
+
+        // step3. 然后再操作
+        if (target_node.children.length > 0) { // 有子菜单则悬浮展开，暂不支持可点击的父项菜单项。等同右方向键
+          // 悬浮状态
+          const mouseEvent = new MouseEvent('mouseenter', {
+            cancelable: true,
+            view: window,
+          })
+          this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]?.el?.dispatchEvent(mouseEvent)
+          // 父子节点切换
+          const menu_el_data_next = this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]
+          if (menu_el_data_next && menu_el_data_next.children.length > 0) {
+            this.menu_el_data_current = menu_el_data_next
+            this.vFocus_update(0) // 右键弹出时，让子菜单自动选中第一个
+          }
+        } else { // 无子菜单则点击
+          ev.preventDefault()
+          this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el?.click()
+        }
       }
     })
   }
 
   /// 不管左右，只管上下
-  /// 应该以list为准 or menu_el_data_current.children为准? 一般情况下这两是等同的
+  /// 应该只在此处编辑 vFocus_index 属性! 可定时检查该函数外是否存在 `vFocus_index =` 语句
+  /// ~~应该以list为准 or menu_el_data_current.children为准? 一般情况下这两是等同的~~
   private vFocus_update(flag?: 'up'|'down'|'0'|'clean'|number) {
     // let list = this.menu_el_data_current.el?.querySelectorAll(":scope>li") // 弃用。第一层是这个，第二层可能是 :scope>div>li
     const list: MENU_NODE[] = this.menu_el_data_current.children
