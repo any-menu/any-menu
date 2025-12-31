@@ -88,7 +88,7 @@ export class ABContextMenu {
   }
 
   /// 创建一个菜单实例
-  private constructor(
+  constructor(
     el_parent?: HTMLElement,
     menuItems?: ContextMenuItems,
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
