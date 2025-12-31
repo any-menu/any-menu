@@ -94,13 +94,6 @@ html, body, #main {
 }
 
 /* -------------------------------- 多级菜单 ---------------------------- */
-.am-context-menu:not(.visible) {
-  display: none;
-}
-.am-context-menu.sub-menu:not(.visible) {
-  display: none;
-}
-
 /** 基本样式
  * - am-context-menu.root-menu
  *   - li.has-children
@@ -126,9 +119,17 @@ html, body, #main {
   z-index: 10;
   list-style: none;
   padding: 4px;
+  counter-reset: alt-index 0;
 }
-.am-context-menu > ul, .am-context-menu > li, .am-context-menu > div, .am-context-menu > span, .am-context-menu > button, .am-context-menu > input {
+.am-context-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu.sub-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu .am-context-menu-item {
   box-sizing: border-box;
+  position: relative;
   width: 100%;
   min-width: 180px;
   min-height: 28px;
@@ -139,38 +140,41 @@ html, body, #main {
   font-size: 14px;
   cursor: pointer;
 }
-.am-context-menu > ul .left, .am-context-menu > li .left, .am-context-menu > div .left, .am-context-menu > span .left, .am-context-menu > button .left, .am-context-menu > input .left {
+.am-context-menu .am-context-menu-item .left {
   margin-right: 10px;
 }
-.am-context-menu > ul:hover, .am-context-menu > li:hover, .am-context-menu > div:hover, .am-context-menu > span:hover, .am-context-menu > button:hover, .am-context-menu > input:hover {
+.am-context-menu .am-context-menu-item:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.am-context-menu > ul.focus-active, .am-context-menu > li.focus-active, .am-context-menu > div.focus-active, .am-context-menu > span.focus-active, .am-context-menu > button.focus-active, .am-context-menu > input.focus-active {
+.am-context-menu .am-context-menu-item.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }
-.am-context-menu input {
-  padding: 4px 4px;
-  border: none;
-  border-bottom: solid 1px var(--ab-tab-root-bd-color);
-  outline: none;
-  background: none;
-  color: currentColor;
+.am-context-menu .am-context-menu-item::after {
+  counter-increment: alt-index 1;
+  content: attr(data-altkey);
+  display: none;
+  position: absolute;
+  right: 28px;
+  top: 6px;
+  font-size: 12px;
+  color: var(--ab-tab-root-tx-color);
+  opacity: 0.6;
+  color: #ffffff;
 }
-
-.am-context-menu > .has-children {
-  position: relative;
-}
-.am-context-menu > .has-children::before {
+.am-context-menu .am-context-menu-item.has-children::before {
   content: "▶";
   float: right;
   font-size: 12px;
   margin-top: 2px;
 }
-.am-context-menu > .has-children > .am-context-menu.sub-menu {
+.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
+}
+.am-context-menu.show-altkey .am-context-menu-item::after {
+  display: block;
 }
 
 .ab-contextmenu-tooltip {

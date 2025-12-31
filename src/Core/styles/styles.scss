@@ -114,18 +114,6 @@ html, body, #main {
 
 /* -------------------------------- 多级菜单 ---------------------------- */
 
-// 显示/隐藏 (跨平台问题)
-// ~~app 版恒显示 :not(#main > .am-context-menu)~~
-.am-context-menu {
-  &:not(.visible) {
-    display: none;
-  }
-
-  &.sub-menu:not(.visible) {
-    display: none;
-  }
-}
-
 /** 基本样式
  * - am-context-menu.root-menu
  *   - li.has-children
@@ -133,6 +121,15 @@ html, body, #main {
  *     - am-context-menu.sub-menu (并嵌套)
  */
 .am-context-menu {
+  // 显示/隐藏 (跨平台问题)
+  // ~~app 版恒显示 :not(#main > .am-context-menu)~~
+  &:not(.visible) {
+    display: none;
+  }
+  &.sub-menu:not(.visible) {
+    display: none;
+  }
+
   box-sizing: border-box;
   position: fixed;
   left: 0; // override by js
@@ -140,7 +137,7 @@ html, body, #main {
   margin: 0;
   min-width: 180px;
 
-  // 一列满了再下一列，如果想平均分布则用 columns 而非这个
+  // 多列布局。一列满了再下一列，如果想平均分布则用 columns 而非这个
   display: grid;
   grid-auto-flow: column; // 横向排列
   grid-template-rows: repeat(8, auto); // 每列最多n个
@@ -155,9 +152,12 @@ html, body, #main {
   list-style: none;
   padding: 4px;
 
-  // 多级菜单项
-  >ul, >li, >div, >span, >button, >input {
+  // 多级菜单的菜单项
+  counter-reset: alt-index 0;
+  // >ul, >li, >div, >span, >button, >input {
+  .am-context-menu-item {
     box-sizing: border-box;
+    position: relative;
     width: 100%;
     min-width: 180px;
     min-height: 28px; // (20+8+0)
@@ -171,6 +171,7 @@ html, body, #main {
       margin-right: 10px;
     }
 
+    // 悬浮和虚拟聚焦
     &:hover {
       background-color: var(--ab-tab-root-hv-color);
     }
@@ -178,30 +179,50 @@ html, body, #main {
       background-color: var(--am-bright-color) !important; // 优先于 :hover
       color: #ffffff;
     }
-  }
-  input {
-    padding: 4px 4px;
-    border: none;
-    border-bottom: solid 1px var(--ab-tab-root-bd-color);
-    outline: none;
-    background: none;
-    color: currentColor;
-  }
-}
 
-// 嵌套处理
-.am-context-menu>.has-children {
-  position: relative;
-  &::before {
-    content: "▶";
-    float: right;
-    font-size: 12px;
-    margin-top: 2px;
+    // Alt+Key 快捷键提示
+    &::after {
+      counter-increment: alt-index 1;
+      content: attr(data-altkey); // counter(alt-index);
+      display: none;
+      position: absolute;
+      right: 28px;
+      top: 6px;
+      font-size: 12px;
+      color: var(--ab-tab-root-tx-color);
+      opacity: 0.6;
+      color: #ffffff;
+    }
+
+    // 带子类嵌套处理
+    &.has-children {
+      &::before { // 展开图标
+        content: "▶";
+        float: right;
+        font-size: 12px;
+        margin-top: 2px;
+      }
+      >.am-context-menu.sub-menu {
+        position: absolute;
+        top: -4px; // 原 -4px; 为 ul padding，下移是为了项过多时项换列后，能更好地右移，而不是被子菜单或tooltip遮挡
+        left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
+      }
+    }
   }
-  >.am-context-menu.sub-menu {
-    position: absolute;
-    top: -4px; // 原 -4px; 为 ul padding，下移是为了项过多时项换列后，能更好地右移，而不是被子菜单或tooltip遮挡
-    left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
+  // input {
+  //   padding: 4px 4px;
+  //   border: none;
+  //   border-bottom: solid 1px var(--ab-tab-root-bd-color);
+  //   outline: none;
+  //   background: none;
+  //   color: currentColor;
+  // }
+
+  // 多级菜单的菜单项 - altkey 显示控制
+  &.show-altkey .am-context-menu-item {
+    &::after {
+      display: block;
+    }
   }
 }
 

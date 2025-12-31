@@ -126,8 +126,9 @@ export class ABContextMenu {
     if (y) this.el_container.style.top = `${y}px`
     this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
+    this.el_container?.classList.remove('show-altkey')
 
-    // 状态重置    
+    // 状态重置
     this.menu_el_data_root.el = null
     this.menu_el_data_current = this.menu_el_data_root
     this.vFocus_update('clean')
@@ -144,6 +145,7 @@ export class ABContextMenu {
     this.el_container.classList.add('am-hide')
     this.el_container.classList.remove('visible')
 
+    // 状态重置
     this.vFocus_update('clean')
 
     window.removeEventListener('click', this.visual_listener_click)
@@ -229,10 +231,27 @@ export class ABContextMenu {
     /** 递归生成菜单项
      * @param current_node 当前节点
      */
-    const li_list = (ul: HTMLElement, menuItems: ContextMenuItems, current_node: MENU_NODE) => { // HTMLUListElement
+    const li_list = (
+      ul: HTMLElement,
+      menuItems: ContextMenuItems,
+      current_node: MENU_NODE,
+    ) => { // HTMLUListElement
       let sub_node: MENU_NODE
+      let alt_key_index = current_node.children.length // alt+key 快捷键 (目前仅支持顺序的 [1-90a-z]，将0放9后面优化手感。超出不显示，不支持自定义)      
       menuItems.forEach((item: ContextMenuItem) => {
-        const li = document.createElement('li'); ul.appendChild(li);
+        // alt_key_key
+        let alt_key_key: string = ''
+        if (alt_key_index < 9) {
+          alt_key_key = (alt_key_index + 1).toString()
+        } else if (alt_key_index == 9) {
+          alt_key_key = "0"
+        } else if (alt_key_index < 36) {
+          alt_key_key = String.fromCharCode(97 + alt_key_index - 10)
+        }
+        alt_key_index++
+
+        const li = document.createElement('li'); ul.appendChild(li); li.classList.add('am-context-menu-item');
+          li.setAttribute('data-altkey', alt_key_key);
           sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
         // 菜单项标题
         li.textContent = item.label
@@ -385,6 +404,23 @@ export class ABContextMenu {
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
     // el_input.addEventListener('input', () => {})
+
+    // alt切换快捷提示
+    {
+      el_input.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Alt') {
+          ev.preventDefault() // 不要触发窗口的alt键功能
+          this.el_container?.classList.add('show-altkey')
+        }
+      })
+      el_input.addEventListener('keyup', (ev) => {
+        if (ev.key === 'Alt') {
+          ev.preventDefault() // 不要触发窗口的alt键功能
+          this.el_container?.classList.remove('show-altkey')
+        }
+      })
+    }
+
     el_input.addEventListener('keydown', (ev) => {
       // 有内容时，由搜索框建议栏接管事件
       if (el_input.value.trim() != '') {
