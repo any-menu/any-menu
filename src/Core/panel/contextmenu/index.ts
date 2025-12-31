@@ -386,8 +386,6 @@ export class ABContextMenu {
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
     // el_input.addEventListener('input', () => {})
-
-    let el_items: NodeListOf<HTMLElement>|undefined
     el_input.addEventListener('keydown', (ev) => {
       // 有内容时，由搜索框建议栏接管事件
       if (el_input.value.trim() != '') {
@@ -397,7 +395,7 @@ export class ABContextMenu {
 
       if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el_container ?? null
       if (!this.menu_el_data_current.el) return
-      el_items = this.menu_el_data_current.el.querySelectorAll(":scope>li") // li 可能有 .has-children，可换成 this.menu_el_data_current.children
+      // const el_items = this.menu_el_data_current.el.querySelectorAll(":scope>li") // li 可能有 .has-children，可换成 this.menu_el_data_current.children
 
       // Down 切换选项
       if (ev.key == 'ArrowDown') {
