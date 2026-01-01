@@ -94,8 +94,11 @@ export class AMSuggestion {
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
           index = parseInt(ev.key) - 1
         }
+        else if (ev.key == '0') {
+          index = 9
+        }
         else if (ev.key >= 'a' && ev.key <= 'z') { // 也支持字母 (暂时a视为第10项，类似base64)
-          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
+          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 10
         }
         if (index == -1) return
         if (index > el_items.length - 1) return
@@ -173,8 +176,21 @@ export class AMSuggestion {
 
     // 添加到建议列表
     this.show()
+    let alt_key_index = 0
     for (const item of result) {
-      const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item')
+      // alt_key_key
+      let alt_key_key: string = ''
+      if (alt_key_index < 9) {
+        alt_key_key = (alt_key_index + 1).toString()
+      } else if (alt_key_index == 9) {
+        alt_key_key = "0"
+      } else if (alt_key_index < 36) {
+        alt_key_key = String.fromCharCode(97 + alt_key_index - 10)
+      }
+      alt_key_index++
+
+      const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item');
+        div.setAttribute('data-altkey', alt_key_key);
       const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
         div_value.textContent = item.value
       const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')

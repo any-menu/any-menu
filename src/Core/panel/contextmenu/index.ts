@@ -467,8 +467,11 @@ export class ABContextMenu {
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
           index = parseInt(ev.key) - 1
         }
+        else if (ev.key == '0') {
+          index = 9
+        }
         else if (ev.key >= 'a' && ev.key <= 'z') { // 也支持字母 (暂时a视为第10项，类似base64)
-          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
+          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 10
         }
         if (index == -1) return
         if (index > this.menu_el_data_current.children.length - 1) return

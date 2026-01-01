@@ -310,7 +310,7 @@ html, body, #main {
 
       // Alt+Key 快捷键提示
       &::after {
-        content: "3"; // attr(data-altkey); // counter(alt-index);
+        content: attr(data-altkey); // counter(alt-index);
         display: none;
         position: absolute;
         right: 7px;

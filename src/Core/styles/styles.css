@@ -247,7 +247,7 @@ html, body, #main {
   background-color: var(--ab-tab-root-hv-color);
 }
 .am-search .am-search-suggestion > div.item::after {
-  content: "3";
+  content: attr(data-altkey);
   display: none;
   position: absolute;
   right: 7px;
