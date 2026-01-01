@@ -227,15 +227,34 @@ pub mod clipboard {
         return Err("Paste simulation not implemented for this platform".to_string());
 
         #[cfg(target_os = "windows")] {
-            use winapi::um::winuser::{keybd_event, KEYEVENTF_KEYUP, VK_CONTROL};
+            use winapi::um::winuser::{
+                keybd_event, KEYEVENTF_KEYUP,
+                VK_CONTROL, VK_MENU, VK_SHIFT, VK_LWIN, VK_RWIN, GetKeyState
+            };
 
             const VK_V: u8 = b'V'; // 大写V的ascii码是 86 = 0x56
 
             unsafe {
+                // 检查并释放的干扰键，先模拟释放，防止干扰 Ctrl+V
+                let interfere_keys = [VK_MENU, VK_SHIFT, VK_LWIN, VK_RWIN];
+                let mut _pressed_keys = Vec::new(); // 待恢复
+                for &key in &interfere_keys {
+                    if (GetKeyState(key) as u16 & 0x8000) == 0 { continue; } // 未按下
+                    keybd_event(key as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 干扰键
+                    _pressed_keys.push(key);
+                }
+
                 keybd_event(VK_CONTROL as u8, 0, 0, 0); // 按下 Ctrl
                 keybd_event(VK_V, 0, 0, 0); // 按下 V
                 keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0); // 释放 V
                 keybd_event(VK_CONTROL as u8, 0, KEYEVENTF_KEYUP, 0); // 释放 Ctrl
+
+                // 可选:
+                // 恢复之前被释放的按键状态，以保持用户键盘状态一致
+                // 暂时不予恢复。是否恢复都有可能有bug，但感觉恢复的话更容易出问题
+                // for &key in &pressed_keys {
+                //     keybd_event(key as u8, 0, 0, 0);
+                // }
             }
         }
 
