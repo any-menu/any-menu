@@ -51,7 +51,7 @@ export class AMSuggestion {
 
       // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
       const el_items = el_suggestion.querySelectorAll(":scope>div.item")
-      this.updateVFocus(el_items, '0')
+      this.vFocus_update(el_items, '0')
     })
 
     // input事件 - 键盘按键
@@ -65,20 +65,49 @@ export class AMSuggestion {
       let el_items: NodeListOf<HTMLElement> = el_suggestion.querySelectorAll(":scope>div.item")
       if (!el_items || el_items.length == 0) return
 
-      if (ev.key == 'ArrowDown') { // Down 切换选项
-        this.updateVFocus(el_items, 'down')
-      } else if (ev.key == 'ArrowUp') { // Up 切换选项
-        this.updateVFocus(el_items, 'up');
-      } else if (ev.key == 'Enter') { // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+      // Down 切换选项
+      if (ev.key == 'ArrowDown') {
+        this.vFocus_update(el_items, 'down')      
+      }
+      // Up 切换选项
+      else if (ev.key == 'ArrowUp') {
+        this.vFocus_update(el_items, 'up');
+      }
+      // Enter 模拟点击选中的项目 // TODO 区分 shift+Enter 换行、ctrl+Enter、tab 应用输入框而非建议项
+      else if (ev.key == 'Enter') {
         if (this.currentFocus > -1) {
           ev.preventDefault()
           el_items[this.currentFocus].click()
         }
-      } else if (ev.key == 'Tab') { // Tab 不应用，仅将内容填入输入框
+      }
+      // Tab 不应用，仅将内容填入输入框
+      else if (ev.key == 'Tab') {
         if (this.currentFocus > -1) {
           ev.preventDefault()
           if (search_result.length) el_input.value = search_result[this.currentFocus].value
         }
+      }
+      // Alt + Key 直接选择对应项
+      else if (ev.altKey) {
+        // step1. 确定目标索引
+        let index: number = -1
+        if (ev.key >= '1' && ev.key <= '9') { // 支持数字
+          index = parseInt(ev.key) - 1
+        }
+        else if (ev.key >= 'a' && ev.key <= 'z') { // 也支持字母 (暂时a视为第10项，类似base64)
+          index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9
+        }
+        if (index == -1) return
+        if (index > el_items.length - 1) return
+
+        // step2. 确定目标节点
+        const target_el = el_items[index]
+        if (!target_el) return
+        // this.vFocus_update(el_items, index)
+
+        // step3. 然后再操作
+        ev.preventDefault()
+        target_el.click()
       }
     })
   }
@@ -93,7 +122,7 @@ export class AMSuggestion {
    * - 'up'，选中上一项 (可循环选择)
    * - 'down'，选中下一项 (可循环选择)
    */
-  private updateVFocus(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
+  private vFocus_update(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
     if (flag === '0') this.currentFocus = 0
     else if (flag === 'down') this.currentFocus++
     else if (flag === 'up') this.currentFocus--

@@ -404,23 +404,6 @@ export class ABContextMenu {
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
     // el_input.addEventListener('input', () => {})
-
-    // alt切换快捷提示
-    {
-      el_input.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Alt') {
-          ev.preventDefault() // 不要触发窗口的alt键功能
-          this.el_container?.classList.add('show-altkey')
-        }
-      })
-      el_input.addEventListener('keyup', (ev) => {
-        if (ev.key === 'Alt') {
-          ev.preventDefault() // 不要触发窗口的alt键功能
-          this.el_container?.classList.remove('show-altkey')
-        }
-      })
-    }
-
     el_input.addEventListener('keydown', (ev) => {
       // 有内容时，由搜索框建议栏接管事件
       if (el_input.value.trim() != '') {
@@ -470,7 +453,7 @@ export class ABContextMenu {
           this.menu_el_data_current = this.menu_el_data_current.parent
         }
       }
-      // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter 应用输入框而非建议项
+      // Enter 执行选项 (模拟点击选中的项目) // TODO 区分 shift+Enter 换行、ctrl+Enter、tab 应用输入框而非建议项
       else if (ev.key == 'Enter') {
         if (this.menu_el_data_current.vFocus_index > -1) {
           ev.preventDefault()
@@ -483,7 +466,6 @@ export class ABContextMenu {
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
           index = parseInt(ev.key) - 1
-          this.vFocus_update(index)
         }
         else if (ev.key >= 'a' && ev.key <= 'z') { // 也支持字母 (暂时a视为第10项，类似base64)
           index = ev.key.charCodeAt(0) - 'a'.charCodeAt(0) + 9

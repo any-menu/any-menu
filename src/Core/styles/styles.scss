@@ -112,6 +112,23 @@ html, body, #main {
   }
 }
 
+/* -------------------------------- 总菜单面板 (组合基) ------------------ */
+
+// 多级菜单的菜单项 - altkey 显示控制
+.show-altkey {
+  >.am-context-menu .am-context-menu-item {
+    &::after {
+      display: block !important;
+    }
+  }
+
+  >.am-search>.am-search-suggestion>div.item {
+    &::after {
+      display: block !important;
+    }
+  }
+}
+
 /* -------------------------------- 多级菜单 ---------------------------- */
 
 /** 基本样式
@@ -217,13 +234,6 @@ html, body, #main {
   //   background: none;
   //   color: currentColor;
   // }
-
-  // 多级菜单的菜单项 - altkey 显示控制
-  &.show-altkey .am-context-menu-item {
-    &::after {
-      display: block;
-    }
-  }
 }
 
 // 可视化效果渲染
@@ -296,6 +306,19 @@ html, body, #main {
 
       &:hover {
         background-color: var(--ab-tab-root-hv-color);
+      }
+
+      // Alt+Key 快捷键提示
+      &::after {
+        content: "3"; // attr(data-altkey); // counter(alt-index);
+        display: none;
+        position: absolute;
+        right: 7px;
+        top: unset;
+        font-size: 12px;
+        color: var(--ab-tab-root-tx-color);
+        opacity: 0.6;
+        color: #ffffff;
       }
 
       // TODO value 有可能是多行文本，这里最好是有个flag来说明是不是多行，以使用不同样式

@@ -59,6 +59,22 @@ export class AMPanel {
       global_el.amMiniEditor = AMMiniEditor.factory(el)
     }
 
+    // alt切换快捷提示
+    {
+      el.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Alt') {
+          ev.preventDefault() // 不要触发窗口的alt键功能
+          el?.classList.add('show-altkey')
+        }
+      })
+      el.addEventListener('keyup', (ev) => {
+        if (ev.key === 'Alt') {
+          ev.preventDefault() // 不要触发窗口的alt键功能
+          el?.classList.remove('show-altkey')
+        }
+      })
+    }
+
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 

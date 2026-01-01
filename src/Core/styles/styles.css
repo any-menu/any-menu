@@ -93,6 +93,14 @@ html, body, #main {
   bottom: 50px;
 }
 
+/* -------------------------------- 总菜单面板 (组合基) ------------------ */
+.show-altkey > .am-context-menu .am-context-menu-item::after {
+  display: block !important;
+}
+.show-altkey > .am-search > .am-search-suggestion > div.item::after {
+  display: block !important;
+}
+
 /* -------------------------------- 多级菜单 ---------------------------- */
 /** 基本样式
  * - am-context-menu.root-menu
@@ -173,9 +181,6 @@ html, body, #main {
   top: -4px;
   left: calc(0px + 100%);
 }
-.am-context-menu.show-altkey .am-context-menu-item::after {
-  display: block;
-}
 
 .ab-contextmenu-tooltip {
   position: fixed;
@@ -240,6 +245,17 @@ html, body, #main {
 }
 .am-search .am-search-suggestion > div.item:hover {
   background-color: var(--ab-tab-root-hv-color);
+}
+.am-search .am-search-suggestion > div.item::after {
+  content: "3";
+  display: none;
+  position: absolute;
+  right: 7px;
+  top: unset;
+  font-size: 12px;
+  color: var(--ab-tab-root-tx-color);
+  opacity: 0.6;
+  color: #ffffff;
 }
 .am-search .am-search-suggestion > div.item > .value {
   text-overflow: ellipsis;
