@@ -440,7 +440,7 @@ export class ABContextMenu {
         }
       }
       // Left 切换选项 (模拟鼠标移出)
-      else if (ev.key == 'ArrowLeft') {
+      else if (ev.key == 'ArrowLeft' || ev.key == 'Backspace') {
         // 悬浮状态
         const mouseEvent = new MouseEvent('mouseleave', {
           // bubbles: true,
