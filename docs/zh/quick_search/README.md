@@ -16,3 +16,12 @@
     - `search_engine = "trie"`
 - 其他选项
   - `serach_limit`
+
+## Arrow ShortKey
+
+除了使用鼠标悬浮/选择外，你还可以使用键盘上的上面方向键选择项，然后用 Enter 点击应用
+
+## Alt ShortKey
+
+你可以按住 Alt 键 (TODO 以后允许单击alt切换至alt模式)，就会显示出前36个数字+字母的快捷提示
+你可以再单击搜索/菜单项中显示的对应键来快速选择对应的内容
