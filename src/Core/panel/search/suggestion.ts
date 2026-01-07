@@ -47,8 +47,6 @@ export class AMSuggestion {
 
     // input事件 - 输入
     el_input.addEventListener('input', (ev) => {
-      if (global_el.alt_v_state) return
-
       const target = ev.target as HTMLInputElement
       search_result = this.search(el_suggestion, target.value)
 

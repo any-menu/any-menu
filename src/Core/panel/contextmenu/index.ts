@@ -484,6 +484,7 @@ export class ABContextMenu {
         this.vFocus_update(index)
 
         // step3. 然后再操作
+        ev.preventDefault()
         if (target_node.children.length > 0) { // 有子菜单则悬浮展开，暂不支持可点击的父项菜单项。等同右方向键
           // 悬浮状态
           const mouseEvent = new MouseEvent('mouseenter', {
@@ -498,7 +499,6 @@ export class ABContextMenu {
             this.vFocus_update(0) // 右键弹出时，让子菜单自动选中第一个
           }
         } else { // 无子菜单则点击
-          ev.preventDefault()
           this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el?.click()
         }
       }
