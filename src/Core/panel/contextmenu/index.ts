@@ -30,6 +30,7 @@
 
 import { global_setting } from "../../setting"
 import { input_suggestion } from "./suggestion_old"
+import { global_el } from "../index"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
@@ -462,7 +463,7 @@ export class ABContextMenu {
         }
       }
       // Alt + Key 直接选择对应项
-      else if (ev.altKey) {
+      else if (ev.altKey || global_el.alt_v_state) {
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字

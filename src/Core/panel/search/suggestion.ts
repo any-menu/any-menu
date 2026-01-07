@@ -1,5 +1,6 @@
-import { global_setting } from "../../setting";
-import { SEARCH_DB } from "./SearchDB";
+import { global_setting } from "../../setting"
+import { SEARCH_DB } from "./SearchDB"
+import { global_el } from "../index"
 
 // 建议项
 export class AMSuggestion {
@@ -46,6 +47,8 @@ export class AMSuggestion {
 
     // input事件 - 输入
     el_input.addEventListener('input', (ev) => {
+      if (global_el.alt_v_state) return
+
       const target = ev.target as HTMLInputElement
       search_result = this.search(el_suggestion, target.value)
 
@@ -55,8 +58,6 @@ export class AMSuggestion {
     })
 
     // input事件 - 键盘按键
-    let alt_key_flag = false  // 按下过 alt+key 组合键
-    let alt_v_state = false   // 虚拟alt状态
     el_input.addEventListener('keydown', (ev) => {
       // 无内容时，由多级菜单接管事件
       if (el_input.value.trim() === '') {
@@ -90,9 +91,7 @@ export class AMSuggestion {
         }
       }
       // Alt + Key 直接选择对应项
-      else if (ev.altKey) {
-        if (ev.key != 'Alt') alt_key_flag = true
-
+      else if (ev.altKey || global_el.alt_v_state) {
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字

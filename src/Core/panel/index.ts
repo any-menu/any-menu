@@ -35,12 +35,15 @@ export const global_el: {
   amSearch: AMSearch | null,
   amContextMenu: ABContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
+  alt_v_state: boolean,  // 虚拟alt状态
 } = {
   amPanel: null,
   amSearch: null,
   amContextMenu: null,
   amMiniEditor: null,
+  alt_v_state: false
 }
+let alt_key_flag = false        // 按下过 alt+key 组合键
 
 /** AMPanel 使用单例模式管理 */
 export class AMPanel {
@@ -61,10 +64,6 @@ export class AMPanel {
 
     // alt切换快捷提示
     {
-      // virtual alt state
-      let alt_key_flag = false  // 按下过 alt+key 组合键
-      let alt_v_state = false   // 虚拟alt状态
-
       el.addEventListener('keydown', (ev) => {
         if (ev.key === 'Alt') {
           ev.preventDefault() // 不要触发窗口的alt键功能
@@ -78,14 +77,22 @@ export class AMPanel {
       })
       el.addEventListener('keyup', (ev) => {
         if (ev.key === 'Alt') {
-          ev.preventDefault() // 不要触发窗口的alt键功能
-          el?.classList.remove('show-altkey')
-
           // alt+key
           if (alt_key_flag) {
-            alt_key_flag = false
+            alt_key_flag = false,
+            global_el.alt_v_state = false
+            ev.preventDefault() // 不要触发窗口的alt键功能
+            el?.classList.remove('show-altkey')
           } else {
-            alt_v_state = !alt_key_flag
+            global_el.alt_v_state = !global_el.alt_v_state
+          }
+
+          if (global_el.alt_v_state) {
+            ev.preventDefault() // 不要触发窗口的alt键功能
+            el?.classList.add('show-altkey')
+          } else {
+            ev.preventDefault() // 不要触发窗口的alt键功能
+            el?.classList.remove('show-altkey')
           }
         }
       })
