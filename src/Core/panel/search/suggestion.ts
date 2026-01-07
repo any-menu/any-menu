@@ -55,6 +55,8 @@ export class AMSuggestion {
     })
 
     // input事件 - 键盘按键
+    let alt_key_flag = false  // 按下过 alt+key 组合键
+    let alt_v_state = false   // 虚拟alt状态
     el_input.addEventListener('keydown', (ev) => {
       // 无内容时，由多级菜单接管事件
       if (el_input.value.trim() === '') {
@@ -89,6 +91,8 @@ export class AMSuggestion {
       }
       // Alt + Key 直接选择对应项
       else if (ev.altKey) {
+        if (ev.key != 'Alt') alt_key_flag = true
+
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字

@@ -404,10 +404,11 @@ export class ABContextMenu {
   /** 在目标上监听方向键事件，并改变虚拟聚焦项 */
   vFocus_bind_arrowKeyArea(el_input: HTMLInputElement) {
     // el_input.addEventListener('input', () => {})
+
+    // input事件 - 键盘按键
     el_input.addEventListener('keydown', (ev) => {
       // 有内容时，由搜索框建议栏接管事件
       if (el_input.value.trim() != '') {
-        // this.updateVFocus('clean') // 不需要，可能会有筛选搜索的功能
         return
       }
 

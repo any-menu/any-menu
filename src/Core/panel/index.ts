@@ -61,16 +61,32 @@ export class AMPanel {
 
     // alt切换快捷提示
     {
+      // virtual alt state
+      let alt_key_flag = false  // 按下过 alt+key 组合键
+      let alt_v_state = false   // 虚拟alt状态
+
       el.addEventListener('keydown', (ev) => {
         if (ev.key === 'Alt') {
           ev.preventDefault() // 不要触发窗口的alt键功能
           el?.classList.add('show-altkey')
+        }
+
+        // alt+key
+        if (ev.altKey) {
+          if (ev.key != 'Alt') alt_key_flag = true
         }
       })
       el.addEventListener('keyup', (ev) => {
         if (ev.key === 'Alt') {
           ev.preventDefault() // 不要触发窗口的alt键功能
           el?.classList.remove('show-altkey')
+
+          // alt+key
+          if (alt_key_flag) {
+            alt_key_flag = false
+          } else {
+            alt_v_state = !alt_key_flag
+          }
         }
       })
     }
