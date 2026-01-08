@@ -81,8 +81,26 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     let callback = move |event: Event| -> Option<Event> {
         // 不处理非按键事件 (鼠标 滚动 按钮等)
         match event.event_type {
-            EventType::KeyPress(_) => {} // println!("KeyDown {:?}", key);
-            EventType::KeyRelease(_) => {}
+            EventType::KeyPress(_) | EventType::KeyRelease(_) => {} // println!("KeyDown {:?}", key);
+            EventType::ButtonPress(_) | EventType::ButtonRelease(_) => {
+                let mut enigo = enigo_instance.lock().unwrap();
+
+                // 默认层 内部，主要是其他层的进出
+                match layer_default_left(&event.event_type, &state) {
+                    HandlerResult::Allow => return Some(event),
+                    HandlerResult::Block => return None,
+                    HandlerResult::Pass => {}
+                };
+
+                // 左键+* 左键层 内部
+                match layer_left(&event.event_type, &state, &mut enigo, &app_handle) {
+                    HandlerResult::Allow => return Some(event),
+                    HandlerResult::Block => return None,
+                    HandlerResult::Pass => {}
+                };
+
+                return Some(event)
+            }
             _ => { return Some(event) }
         }
 
@@ -94,7 +112,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
         let mut enigo = enigo_instance.lock().unwrap();
 
-        // 默认层 内部，主要是其他层的进出
+        // #region 默认层 内部，主要是其他层的进出
         match layer_default_caps(&event.event_type, &state, &mut enigo) {
             HandlerResult::Allow => return Some(event),
             HandlerResult::Block => return None,
@@ -115,18 +133,7 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
         };
-        match layer_default_left(&event.event_type, &state) {
-            HandlerResult::Allow => return Some(event),
-            HandlerResult::Block => return None,
-            HandlerResult::Pass => {}
-        };
-
-        // 左键+* 左键层 内部
-        match layer_left(&event.event_type, &state, &mut enigo, &app_handle) {
-            HandlerResult::Allow => return Some(event),
-            HandlerResult::Block => return None,
-            HandlerResult::Pass => {}
-        }
+        // #endregion
 
         // #region Caps 及其 子层 的内部
         // Caps+C+* 鼠标层 内部
@@ -470,8 +477,12 @@ fn layer_default_left(
     match event_type {
         EventType::ButtonPress(Button::Left) => {
             state.left_active.set(true);
-            HandlerResult::Allow // 允许原行为
-        }
+            HandlerResult::Allow
+        },
+        EventType::ButtonRelease(Button::Left) => {
+            state.left_active.set(false);
+            HandlerResult::Allow
+        },
         _ => HandlerResult::Pass
     }
 }
@@ -490,7 +501,10 @@ fn layer_left(
     // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
     match event_type {
         EventType::ButtonPress(Button::Right) => {
-            app_handle.emit("active-window-toggle", ()).unwrap();
+            return HandlerResult::Block
+        },
+        EventType::ButtonRelease(Button::Right) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
             state.left_active.set(false); // 在解决这个bug之前，这里会强制松开左键层
             return HandlerResult::Block
         },
