@@ -24,7 +24,7 @@
  */
 
 use rdev::{
-    grab, listen, simulate, Event, EventType, Key
+    grab, listen, simulate, Event, EventType, Key, Button
 };
 use enigo::{
     Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
@@ -115,6 +115,18 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
             HandlerResult::Block => return None,
             HandlerResult::Pass => {}
         };
+        match layer_default_left(&event.event_type, &state) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        };
+
+        // 左键+* 左键层 内部
+        match layer_left(&event.event_type, &state, &mut enigo, &app_handle) {
+            HandlerResult::Allow => return Some(event),
+            HandlerResult::Block => return None,
+            HandlerResult::Pass => {}
+        }
 
         // #region Caps 及其 子层 的内部
         // Caps+C+* 鼠标层 内部
@@ -187,6 +199,8 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
 
 /** 键盘层状态 */
 struct LayerState {
+    left_active: Cell<bool>,                // 是否激活 左键层
+
     caps_active: Cell<bool>,                // 是否激活 Caps 层
     caps_active_used: Cell<bool>,           //     ^该层是否使用过
     caps_active_time: Cell<Option<Instant>>,//     ^该层激活的开启时间
@@ -214,6 +228,8 @@ struct LayerState {
 impl LayerState {
     fn new() -> Self {
         Self {
+            left_active: Cell::new(false),
+
             caps_active: Cell::new(false),
             caps_active_used: Cell::new(false),
             caps_active_time: Cell::new(None),
@@ -446,7 +462,41 @@ fn layer_default_shift_r(
     }
 }
 
+/// Left 左键层 进出
+fn layer_default_left(
+    event_type: &EventType,
+    state: &LayerState,
+) -> HandlerResult {
+    match event_type {
+        EventType::ButtonPress(Button::Left) => {
+            state.left_active.set(true);
+            HandlerResult::Allow // 允许原行为
+        }
+        _ => HandlerResult::Pass
+    }
+}
+
 // #endregion
+
+/// 左键+* 左键层 内部
+fn layer_left(
+    event_type: &EventType,
+    state: &LayerState,
+    _enigo: &mut Enigo,
+    app_handle: &tauri::AppHandle,
+) -> HandlerResult {
+    if !state.left_active.get() { return HandlerResult::Pass }
+
+    // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
+    match event_type {
+        EventType::ButtonPress(Button::Right) => {
+            app_handle.emit("active-window-toggle", ()).unwrap();
+            state.left_active.set(false); // 在解决这个bug之前，这里会强制松开左键层
+            return HandlerResult::Block
+        },
+        _ => { return HandlerResult::Pass }
+    }
+}
 
 /// Caps+C+* 鼠标层 内部
 fn layer_caps_curosr(
