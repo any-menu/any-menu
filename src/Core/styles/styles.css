@@ -2,6 +2,548 @@
 /**
  * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
  */
+/*
+ * shiki transformers style
+ * https://shiki.style/packages/transformers#unstyled
+ */
+/* ----------------------------- adapt without obsidian ------------ */
+/*
+[!code hl]
+var(--code-size)
+*/
+:root {
+  --font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --text-selection: #0078D788;
+  --indent-size: 4;
+}
+
+/* ----------------------------- adapt without vuepress ------------- */
+/* color perset */
+:root {
+  --vp-c-gray-1: #dddde3;
+  --vp-c-gray-2: #e4e4e9;
+  --vp-c-gray-3: #ebebef;
+  --vp-c-gray-soft: rgba(142, 150, 170, .14);
+  --vp-c-indigo-1: #3451b2;
+  --vp-c-indigo-2: #3a5ccc;
+  --vp-c-indigo-3: #5672cd;
+  --vp-c-indigo-soft: rgba(100, 108, 255, .14);
+  --vp-c-purple-1: #6f42c1;
+  --vp-c-purple-2: #7e4cc9;
+  --vp-c-purple-3: #8e5cd9;
+  --vp-c-purple-soft: rgba(159, 122, 234, .14);
+  --vp-c-green-1: #18794e;
+  --vp-c-green-2: #299764;
+  --vp-c-green-3: #30a46c;
+  --vp-c-green-soft: rgba(16, 185, 129, .14);
+  --vp-c-yellow-1: #915930;
+  --vp-c-yellow-2: #946300;
+  --vp-c-yellow-3: #9f6a00;
+  --vp-c-yellow-soft: rgba(234, 179, 8, .14);
+  --vp-c-red-1: #b8272c;
+  --vp-c-red-2: #d5393e;
+  --vp-c-red-3: #e0575b;
+  --vp-c-red-soft: rgba(244, 63, 94, .14);
+}
+
+.dark {
+  --vp-c-gray-1: #515c67;
+  --vp-c-gray-2: #414853;
+  --vp-c-gray-3: #32363f;
+  --vp-c-gray-soft: rgba(101, 117, 133, .16);
+  --vp-c-indigo-1: #a8b1ff;
+  --vp-c-indigo-2: #5c73e7;
+  --vp-c-indigo-3: #3e63dd;
+  --vp-c-indigo-soft: rgba(100, 108, 255, .16);
+  --vp-c-purple-1: #c8abfa;
+  --vp-c-purple-2: #a879e6;
+  --vp-c-purple-3: #8e5cd9;
+  --vp-c-purple-soft: rgba(159, 122, 234, .16);
+  --vp-c-green-1: #3dd68c;
+  --vp-c-green-2: #30a46c;
+  --vp-c-green-3: #298459;
+  --vp-c-green-soft: rgba(16, 185, 129, .16);
+  --vp-c-yellow-1: #f9b44e;
+  --vp-c-yellow-2: #da8b17;
+  --vp-c-yellow-3: #a46a0a;
+  --vp-c-yellow-soft: rgba(234, 179, 8, .16);
+  --vp-c-red-1: #f66f81;
+  --vp-c-red-2: #f14158;
+  --vp-c-red-3: #b62a3c;
+  --vp-c-red-soft: rgba(244, 63, 94, .16);
+}
+
+/* Adapt to color preset */
+:root {
+  --vp-c-default-1: var(--vp-c-gray-1);
+  --vp-c-default-2: var(--vp-c-gray-2);
+  --vp-c-default-3: var(--vp-c-gray-3);
+  --vp-c-default-soft: var(--vp-c-gray-soft);
+  --vp-c-brand-1: var(--vp-c-indigo-1);
+  --vp-c-brand-2: var(--vp-c-indigo-2);
+  --vp-c-brand-3: var(--vp-c-indigo-3);
+  --vp-c-brand-soft: var(--vp-c-indigo-soft);
+  --vp-c-brand: var(--vp-c-brand-1);
+  --vp-c-tip-1: var(--vp-c-brand-1);
+  --vp-c-tip-2: var(--vp-c-brand-2);
+  --vp-c-tip-3: var(--vp-c-brand-3);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
+  --vp-c-note-1: var(--vp-c-brand-1);
+  --vp-c-note-2: var(--vp-c-brand-2);
+  --vp-c-note-3: var(--vp-c-brand-3);
+  --vp-c-note-soft: var(--vp-c-brand-soft);
+  --vp-c-success-1: var(--vp-c-green-1);
+  --vp-c-success-2: var(--vp-c-green-2);
+  --vp-c-success-3: var(--vp-c-green-3);
+  --vp-c-success-soft: var(--vp-c-green-soft);
+  --vp-c-important-1: var(--vp-c-purple-1);
+  --vp-c-important-2: var(--vp-c-purple-2);
+  --vp-c-important-3: var(--vp-c-purple-3);
+  --vp-c-important-soft: var(--vp-c-purple-soft);
+  --vp-c-warning-1: var(--vp-c-yellow-1);
+  --vp-c-warning-2: var(--vp-c-yellow-2);
+  --vp-c-warning-3: var(--vp-c-yellow-3);
+  --vp-c-warning-soft: var(--vp-c-yellow-soft);
+  --vp-c-danger-1: var(--vp-c-red-1);
+  --vp-c-danger-2: var(--vp-c-red-2);
+  --vp-c-danger-3: var(--vp-c-red-3);
+  --vp-c-danger-soft: var(--vp-c-red-soft);
+  --vp-c-caution-1: var(--vp-c-red-1);
+  --vp-c-caution-2: var(--vp-c-red-2);
+  --vp-c-caution-3: var(--vp-c-red-3);
+  --vp-c-caution-soft: var(--vp-c-red-soft) ;
+}
+
+/* Adapt to vuepress */
+:root {
+  --vp-code-line-height: 1.7;
+  --vp-code-font-size: .875em;
+  --vp-code-color: var(--vp-c-brand-1);
+  --vp-code-link-color: var(--vp-c-brand-1);
+  --vp-code-link-hover-color: var(--vp-c-brand-2);
+  --vp-code-bg: var(--vp-c-default-soft);
+  --vp-code-block-color: var(--vp-c-text-2);
+  --vp-code-block-bg: var(--vp-c-bg-alt);
+  --vp-code-block-divider-color: var(--vp-c-gutter);
+  --vp-code-lang-color: var(--vp-c-text-2);
+  --vp-code-line-highlight-color: var(--vp-c-default-soft);
+  --vp-code-line-number-color: var(--vp-c-text-2);
+  --vp-code-line-diff-add-color: var(--vp-c-success-soft);
+  --vp-code-line-diff-add-symbol-color: var(--vp-c-success-1);
+  --vp-code-line-diff-remove-color: var(--vp-c-danger-soft);
+  --vp-code-line-diff-remove-symbol-color: var(--vp-c-danger-1);
+  --vp-code-line-warning-color: var(--vp-c-warning-soft);
+  --vp-code-line-error-color: var(--vp-c-danger-soft);
+  --vp-code-copy-code-border-color: var(--vp-c-divider);
+  --vp-code-copy-code-bg: var(--vp-c-bg-soft);
+  --vp-code-copy-code-hover-border-color: var(--vp-c-divider);
+  --vp-code-copy-code-hover-bg: var(--vp-c-bg);
+  --vp-code-copy-code-active-text: var(--vp-c-text-2);
+  --vp-code-copy-copied-text-content: "Copied";
+  --vp-code-tab-divider: var(--vp-code-block-divider-color);
+  --vp-code-tab-text-color: var(--vp-c-text-2);
+  --vp-code-tab-bg: var(--vp-code-block-bg);
+  --vp-code-tab-hover-text-color: var(--vp-c-text-1);
+  --vp-code-tab-active-text-color: var(--vp-c-text-1);
+  --vp-code-tab-active-bar-color: var(--vp-c-brand-1) ;
+}
+
+/* ----------------------------- line flag -------------------------- */
+code > span.line.diff {
+  transition: background-color 0.5s;
+  margin: 0 calc(-1 * var(--shiki-x-padding));
+  padding: 0 var(--shiki-x-padding);
+  width: calc(100% + 2 * var(--shiki-x-padding));
+  display: inline-block;
+}
+
+code > span.line.diff:before {
+  position: absolute;
+  left: 5px; /*old 10*/
+}
+
+code > span.line.diff.add {
+  background-color: var(--vp-code-line-diff-add-color);
+}
+
+code > span.line.diff.add:before {
+  content: "+";
+  color: var(--vp-code-line-diff-add-symbol-color);
+}
+
+code > span.line.diff.remove {
+  background-color: var(--vp-code-line-diff-remove-color);
+}
+
+code > span.line.diff.remove:before {
+  content: "-";
+  color: var(--vp-code-line-diff-remove-symbol-color);
+}
+
+code > span.line.highlighted {
+  background-color: var(--vp-code-line-highlight-color);
+  transition: background-color 0.5s;
+  margin: 0 calc(-1 * var(--shiki-x-padding));
+  padding: 0 var(--shiki-x-padding);
+  width: calc(100% + 2 * var(--shiki-x-padding));
+  display: inline-block;
+}
+
+code > span.line.highlighted.error {
+  background-color: var(--vp-code-line-error-color);
+}
+
+code > span.line.highlighted.warning {
+  background-color: var(--vp-code-line-warning-color);
+}
+
+.has-focused code > span.line:not(.focused),
+.has-focused-lines code > span.line:not(.has-focus) {
+  filter: blur(0.095rem);
+  opacity: 0.4;
+  transition: filter 0.35s, opacity 0.35s;
+}
+
+.has-focused code > span.line:not(.focused),
+.has-focused-lines code > span.line:not(.has-focus) {
+  opacity: 0.7;
+  transition: filter 0.35s, opacity 0.35s;
+}
+
+.has-focused:hover code > span.line:not(.focused),
+.has-focused-lines:hover code > span.line:not(.has-focus) {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* ----------------------------- keep same in textarePre ------------ */
+/*
+ * keep same: pre & textarea
+ * 
+ * It is necessary to ensure that the style of this part is not overwritten,
+ * Otherwise, `textarea` and `code` won't align
+ */
+:root {
+  --shiki-x-padding: 16px;
+  --shiki-line-height: 24px;
+}
+
+.editable-codeblock code, .editable-codeblock textarea {
+  line-height: var(--shiki-line-height) !important;
+  -moz-tab-size: var(--indent-size) !important;
+    -o-tab-size: var(--indent-size) !important;
+       tab-size: var(--indent-size) !important;
+  font-size: var(--code-size) !important;
+  font-family: var(--font-monospace) !important;
+  white-space: pre !important;
+}
+
+.editable-codeblock code::-moz-selection, .editable-codeblock textarea::-moz-selection {
+  background-color: var(--text-selection) !important;
+  color: currentColor !important;
+}
+
+.editable-codeblock code::selection, .editable-codeblock textarea::selection {
+  background-color: var(--text-selection) !important;
+  color: currentColor !important;
+}
+
+.editable-codeblock code {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+.editable-codeblock pre, .editable-codeblock textarea {
+  min-width: 100%;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 12px var(--shiki-x-padding) !important;
+  border: 0 !important;
+  white-space: pre !important;
+  cursor: text;
+}
+
+/* edit-block-button > textarea > pre */
+.editable-codeblock pre {
+  z-index: 0;
+}
+
+.editable-codeblock textarea {
+  z-index: 0;
+}
+
+/* fix black line zero height */
+.editable-codeblock code > span {
+  vertical-align: top !important;
+  min-height: var(--shiki-line-height) !important;
+}
+
+/* scroll-x
+ * need .editable-codeblock parent set `overflow-x: auto`
+ */
+.editable-codeblock {
+  display: inline-block !important;
+  overflow-x: visible !important;
+}
+
+.editable-codeblock code {
+  display: inline-block !important;
+  overflow: visible !important;
+}
+
+.editable-codeblock pre, .editable-codeblock textarea {
+  display: inline-block !important;
+  overflow: visible !important;
+}
+
+/* ----------------------------- other ------------------------------ */
+/* language-type-btn */
+.editable-codeblock .language-edit {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  line-height: var(--shiki-line-height);
+  min-height: var(--shiki-line-height);
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+.editable-codeblock .language-edit > input {
+  margin: 0;
+  padding: 0 14px;
+  border: none;
+  outline: none;
+  background: none;
+  box-shadow: none;
+  text-align: right;
+  color: currentColor;
+}
+
+.editable-codeblock .language-edit > input:focus {
+  border-bottom: 1px solid currentColor;
+  outline: none;
+}
+
+/* chore fix: keep color magin zero */
+code > span.line {
+  line-height: var(--shiki-line-height);
+}
+
+.editable-codeblock {
+  position: relative;
+  min-width: 100%;
+}
+
+/* shiki attr style */
+.editable-codeblock textarea {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  background-color: transparent;
+  /* color: transparent; */
+  color: rgba(255, 255, 255, 0.1333333333);
+  caret-color: rgba(255, 255, 255, 0.8666666667); /* TODO Conflicts with the cm style */
+}
+
+/* .editable-codeblock:has(textarea:focus) {
+  outline: 1px solid #0060DF;
+  border-radius: 4px;
+} */
+.editable-codeblock:has(textarea:focus),
+.editable-codeblock:has(pre:focus),
+.editable-codeblock:has(pre > code:focus) {
+  outline: 1px solid #0060DF;
+}
+
+.editable-codeblock textarea:focus,
+.editable-codeblock pre:focus,
+.editable-codeblock pre:has(> code:focus),
+.editable-codeblock code:focus {
+  outline: none;
+}
+
+.is-no-saved {
+  position: relative;
+}
+
+.is-no-saved::before {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: #0060DF;
+  opacity: 0.5;
+  z-index: 201;
+  /* currentColor;
+  border-left: solid 2px yellow !important; */
+}
+
+/* ----------------------------- app version use --------------------- */
+/* 
+- .nf-textarea-p lock标志层
+  - .editable-codeblock-p.scroll-able 滚动容器
+    - .editable-codeblock 可溢出部分
+ */
+.cm-content {
+  max-width: 100%;
+}
+
+.editable-codeblock-p {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* ----------------------------- obsidian use ----------------------- */
+.editable-codeblock-p .cm-sizer {
+  margin: 0 !important;
+  padding-left: 20px;
+}
+
+/* ----------------------------- EditableBlock_Cm ------------------- */
+.cm-editor .cm-scroller {
+  /* cm 的 img.cm-widgetBuffer
+   * 
+   * block模式下光标上下会跳过区域。
+   * 在非block模式，会进入，但会有1em的占位 img.cm-widgetBuffer，可减少之。
+   * 在非block+inclusive模式，img.cm-widgetBuffer 时有时无, 非常奇怪
+   * 但注意底部如果太小，则光标进入会定位到开头而非尾部 (cm是会通过屏幕位置去定位的)
+   *
+   * - 如果没有则不用管，这是最好的
+   * - 如果有则可以用负margin优化
+   * - 时有时无则只能用display去掉，但这会导致一个缺点：尾部向上移动时，光标会跳到开头
+   *   - 一个优化是只去掉开头 (不一定有)，保留结尾
+   * 
+   * HyperMd-xxx 是使用了 HyperMd 插件的版本 (Obsidian中属于这种情况)
+   * cm-xxx 是普通 codemirror 的版本 (App版本中属于这种情况)
+   */
+}
+.cm-editor .cm-scroller .editable-codeblock-p[has-prefix=true] {
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0.5em !important;
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > .editable-codeblock-p,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > .editable-codeblock-p {
+  margin: 0 0 -0.85em 0;
+}
+.cm-editor .cm-scroller .cm-codeblock.cm-line > .editable-codeblock-p,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > .editable-codeblock-p {
+  margin: 0 0 -0.95em 0;
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .cm-codeblock.cm-line > img.cm-widgetBuffer {
+  display: none !important;
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .cm-codeblock.cm-line > img.cm-widgetBuffer:last-child {
+  display: inline !important;
+}
+
+/* ----------------------------- EditableBlock_Textarea ------------- */
+.editable-textarea-textarea {
+  display: inline-block;
+  box-sizing: content-box !important;
+  width: 100%;
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding: 0px;
+  resize: none;
+  white-space: pre-wrap;
+  border: none;
+  outline: none;
+  color: currentColor;
+  background: none;
+}
+
+div.editable-textarea-textarea {
+  padding-right: 1ch;
+}
+
+/* ----------------------------- EditableBlock_Cm ------------------- */
+/* plugin */
+.editable-codeblock-p {
+  width: calc(100% - 10px);
+  width: 100%;
+}
+
+.editableblock-cm {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.editableblock-cm .cm-editor {
+  background: none !important;
+}
+
+/* ----------------------------- quote ----------------------------- */
+.editableblock-cm.editableblock-quote {
+  width: calc(100% - 4px);
+  margin-left: 4px;
+  /* padding-left: 10px; */
+  background-color: rgba(136, 136, 136, 0.0666666667);
+}
+.editableblock-cm.editableblock-quote.callout-note {
+  background-color: rgba(2, 121, 254, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-note::before {
+  background-color: rgba(2, 121, 254, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-tip {
+  background-color: rgba(5, 178, 77, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-tip::before {
+  background-color: rgba(5, 178, 77, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-warning {
+  background-color: rgba(226, 130, 5, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-warning::before {
+  background-color: rgba(226, 130, 5, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-error {
+  background-color: rgba(226, 25, 64, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-error::before {
+  background-color: rgba(226, 25, 64, 0.8);
+}
+
+.editableblock-cm.editableblock-quote::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  left: -4px;
+  top: 0;
+  background-color: #888888;
+  z-index: 200;
+}
+
+/* ----------------------------- EditableBlock_Ob ------------------- */
+.editableblock-obsidian .cm-editor > .cm-scroller > .cm-sizer {
+  margin: 0 !important;
+}
+
+.editable-codeblock.editable-textarea {
+  margin: 1px;
+}
+
 :root {
   --am-bright-color: #23A8F2;
   --am-text-color: #f6f6f6;

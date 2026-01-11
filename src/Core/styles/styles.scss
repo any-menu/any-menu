@@ -2,6 +2,12 @@
  * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
  */
 
+// @use "./EditableBlock.scss";
+@use "../node_modules/@editableblock/core/styles/EditableBlock.scss";
+.editable-codeblock.editable-textarea {
+  margin: 1px;
+}
+
 // #region color var
 
 :root {
