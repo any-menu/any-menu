@@ -1,6 +1,7 @@
 import { global_setting } from "../../../Core/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
-import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
+// import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
+import { EditableBlock_Code } from "@editableblock/code/dist/EditableBlock_Code/src/" // [!code hl]
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
 
 export class AMMiniEditor {
@@ -8,7 +9,8 @@ export class AMMiniEditor {
   public el: HTMLElement;
 
   public cache_text: string = ''
-  public editableBlock_cm: EditableBlock_Cm
+  // public editableBlock_cm: EditableBlock_Cm
+  public editableBlock_cm: EditableBlock_Code  // [!code hl]
   
   isShow = true
 
@@ -42,8 +44,10 @@ export class AMMiniEditor {
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
-    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, this.el, outterEditor)
-    this.editableBlock_cm.emit_render()
+    // this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, this.el, outterEditor)
+    this.editableBlock_cm = new EditableBlock_Code(rangeSpec_None, this.el, outterEditor) // [!code hl]
+    // this.editableBlock_cm.settings. ...
+    this.editableBlock_cm.emit_render() // [!code hl]
 
     // buttons
     // const editor = document.createElement('div'); this.el.appendChild(editor);
@@ -105,7 +109,11 @@ export class AMMiniEditor {
     else { this.cache_text = '' } // 策略应该显示旧内容还是空内容? 若是前者，此处不变。否则此处应该不执行
 
     this.editableBlock_cm.rangeSpec.text_content = this.cache_text
-    this.editableBlock_cm.update_content(this.cache_text)
+    // this.editableBlock_cm.update_content(this.cache_text)
+    // [!code hl]
+    this.editableBlock_cm.outerInfo.source = this.cache_text
+    this.editableBlock_cm.innerInfo.source_old = this.cache_text
+    this.editableBlock_cm.re_render()
 
     // 显示后聚焦，否则 focus 无效
     ;(() => {
