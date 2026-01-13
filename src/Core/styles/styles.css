@@ -540,8 +540,10 @@ div.editable-textarea-textarea {
   margin: 0 !important;
 }
 
-.editable-codeblock.editable-textarea {
+.editable-codeblock-p {
   margin: 1px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 :root {

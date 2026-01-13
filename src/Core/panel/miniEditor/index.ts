@@ -44,8 +44,9 @@ export class AMMiniEditor {
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
-    // this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, this.el, outterEditor)
-    this.editableBlock_cm = new EditableBlock_Code(rangeSpec_None, this.el, outterEditor) // [!code hl]
+    const editableblock_p = document.createElement('div'); this.el.appendChild(editableblock_p); editableblock_p.classList.add('editable-codeblock-p')
+    // this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, editableblock_p, outterEditor)
+    this.editableBlock_cm = new EditableBlock_Code(rangeSpec_None, editableblock_p, outterEditor) // [!code hl]
     // this.editableBlock_cm.settings. ...
     this.editableBlock_cm.emit_render() // [!code hl]
 
