@@ -80,6 +80,19 @@ export class AMSettingTab extends PluginSettingTab {
       )
 
       new Setting(tab_content)
+      .setName(t('Dict online source'))
+      .setDesc(t('Dict online source2'))
+      .addDropdown(dropdown => {
+        dropdown.addOption('gitee', 'gitee')
+        dropdown.addOption('github', 'github')
+        dropdown.setValue(settings.config.dict_online_source)
+        dropdown.onChange(async (value) => {
+          settings.config.dict_online_source = value as 'gitee' | 'github'
+          await this.plugin.saveSettings()
+        })
+      })
+
+      new Setting(tab_content)
       .setName(t('Debug mode'))
       .setDesc(t('Debug mode2'))
       .addToggle(toggle => toggle

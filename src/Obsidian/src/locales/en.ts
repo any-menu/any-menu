@@ -13,6 +13,8 @@ export default {
   'Dict paths': 'Dict paths',
   'Dict paths2': 'Dictionary storage path. You can save it in the document library for easy editing at any time, such as ./dict/; \n\
 You can also save the dictionary in the plugin file, such as ./.obsidian/plugins/any-menu/',
+  'Dict online source': 'Dict online source',
+  'Dict online source2': 'Source of online dictionary: gitee or github',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use',
 
