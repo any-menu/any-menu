@@ -49,20 +49,12 @@ export class API {
     });
   }
 
-  /// 获取网络文件内容
-  public async giteeGetDict(relPath: string) {
-    return await global_setting.api.urlRequest({
-      url: `${this.giteeBaseUrl}store/dict/${relPath}`,
-      method: 'GET',
-      ...(!this.giteeToken ? {} : { headers: {
-        "Authorization": `Bearer ${this.giteeToken}`
-      }}),
-      isParseJson: false,
-    });
-  }
-
-  /// 获取网络目录 (有那些词典可以下载)
-  public async giteeGetDirectory3() {
+  /**
+   * 获取网络目录 (有那些词典可以下载)
+   *
+   * @deprecated 使用 giteeGetDirectory 代替
+   */
+  public async giteeGetDirectory_byApi() {
     const res = await global_setting.api.urlRequest({
       url: `${this.giteeApiUrl}contents/store/directory/dir.json?ref=${this.giteeBranch}`,
       method: 'GET',
@@ -72,7 +64,7 @@ export class API {
       isParseJson: true,
     })
 
-    if (global_setting.isDebug) console.log('giteeGetDirectory3 res', res)
+    if (global_setting.isDebug) console.log('giteeGetDirectory_byApi res', res)
 
     // if (res && res.data && res.data.text) {
     //   // Gitee API returns content base64 encoded, so we need to decode it.
@@ -91,7 +83,22 @@ export class API {
   }
 
   /// 获取网络文件内容
-  public async giteeGetDict3(relPath: string) {
+  public async giteeGetDict(relPath: string) {
+    return await global_setting.api.urlRequest({
+      url: `${this.giteeBaseUrl}store/dict/${relPath}`,
+      method: 'GET',
+      ...(!this.giteeToken ? {} : { headers: {
+        "Authorization": `Bearer ${this.giteeToken}`
+      }}),
+      isParseJson: false,
+    });
+  }
+
+  /**
+   * 获取网络文件内容
+   * @deprecated 使用 downloadDict 代替
+   */
+  public async giteeGetDict_byApi(relPath: string) {
     const res = await global_setting.api.urlRequest({
       url: `${this.giteeApiUrl}contents/store/dict/${relPath}?ref=${this.giteeBranch}`,
       method: 'GET',
@@ -101,7 +108,7 @@ export class API {
       isParseJson: true // The API response is JSON
     })
 
-    if (global_setting.isDebug) console.log('giteeGetDict3 res', res)
+    if (global_setting.isDebug) console.log('giteeGetDict_byApi res', res)
 
     // if (res && res.data && res.data.content) {
     //   // Content is base64 encoded
@@ -116,12 +123,6 @@ export class API {
     //     res.data = { text: '' };
     // }
     return res;
-  }
-
-  /// 获取本地目录 (已经下载了哪些词典)
-  public async localGetDirectory() {
-    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    return ret
   }
 
   /**
@@ -139,4 +140,9 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${relPath}`, ret.data.text);
   }
 
+  /// 获取本地目录 (已经下载了哪些词典)
+  public async localGetDirectory() {
+    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+    return ret
+  }
 }
