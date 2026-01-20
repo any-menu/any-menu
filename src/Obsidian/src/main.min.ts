@@ -254,13 +254,17 @@ export default class AnyMenuPlugin extends Plugin {
     const data = await this.loadData() // 如果没有配置文件则为null
     this.settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
 
+    // 需要保持一致性，obsidian 专属设置与通用的 global 设置 // [!code hl]
+    global_setting.isDebug = this.settings.isDebug
+    global_setting.config = this.settings.config
+
     // 如果没有配置文件则生成一个默认值的配置文件
     if (!data) {
       this.saveData(this.settings)
     }
   }
   async saveSettings() {
-    // 需要保持一致性 // [!code hl]
+    // 需要保持一致性，obsidian 专属设置与通用的 global 设置 // [!code hl]
     global_setting.isDebug = this.settings.isDebug
     global_setting.config = this.settings.config
 
