@@ -176,6 +176,8 @@ send_text_method = "clipboard"
 # 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
 search_limit = 500
 
+# 在线词库来源 'gitee'|'github'
+dict_online_source = "gitee"
 # 词库路径列表。在debug模式下不使用这个路径，而是硬编码
 dict_paths = "./dict/"
 # 记录笔记的基础路径

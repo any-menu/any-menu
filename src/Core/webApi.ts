@@ -18,32 +18,49 @@ import { global_setting } from './setting'
  * 注意: apiUrl 或加 token，通常有更高的速度 (1000次/h) 和访问次数，普通 url 则很容易出现 403
  */
 export class API {
-  giteeOwner = 'any-menu';
-  giteeRepo = 'any-menu';
-  giteeBranch = 'main';
+  // #region 仓库配置
+
+  // 当前使用的源：'gitee' | 'github'
+  source: 'gitee' | 'github' = global_setting.config.dict_online_source;
+
+  // gitee/github 通用
+  private repoOwner = 'any-menu';
+  private repoRepo = 'any-menu';
+  private repoBranch = 'main';
+  public baseUrl() { return this.source === 'gitee' ? this.giteeBaseUrl : this.githubBaseUrl; }
+  public blobUrl() { return this.source === 'gitee' ? this.giteeBlobUrl : this.githubBlobUrl; }
+  public apiUrl() { return this.source === 'gitee' ? this.giteeApiUrl : this.githubApiUrl; }
+  private token() { return this.source === 'gitee' ? this.giteeToken : this.githubToken; }
 
   // gitee 相关
-  giteeBaseUrl = `https://gitee.com/${this.giteeOwner}/${this.giteeRepo}/raw/${this.giteeBranch}/`; // raw是原文本，blob是网页
-  giteeBlobUrl = `https://gitee.com/${this.giteeOwner}/${this.giteeRepo}/blob/${this.giteeBranch}/`; // raw是原文本，blob是网页
-  giteeApiUrl = `https://gitee.com/api/v5/repos/${this.giteeOwner}/${this.giteeRepo}/`;
+  giteeBaseUrl = `https://gitee.com/${this.repoOwner}/${this.repoRepo}/raw/${this.repoBranch}/`; // raw是原文本，blob是网页
+  giteeBlobUrl = `https://gitee.com/${this.repoOwner}/${this.repoRepo}/blob/${this.repoBranch}/`; // raw是原文本，blob是网页
+  giteeApiUrl = `https://gitee.com/api/v5/repos/${this.repoOwner}/${this.repoRepo}/`;
   // 后面的子api一般有: contents issue collaborators releases raw 等，见: https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoRawPath
   // https://gitee.com/api/v5/repos/{owner}/{repo}/raw/{path}  
-  giteeToken: string|null = '6ca4bf01f660cc1b4fdc98f14aaff4f9'; // onlyReadApi x
+  private giteeToken: string|null = '6ca4bf01f660cc1b4fdc98f14aaff4f9'; // onlyReadApi x
+
+  // github 相关
+  githubBaseUrl = `https://raw.githubusercontent.com/${this.repoOwner}/${this.repoRepo}/${this.repoBranch}/`; // raw是原文本，blob是网页
+  githubBlobUrl = `https://github.com/${this.repoOwner}/${this.repoRepo}/blob/${this.repoBranch}/`;
+  githubApiUrl = `https://api.github.com/repos/${this.repoOwner}/${this.repoRepo}/`;
+  private githubToken: string|null = null;
+
+  // #endregion
 
   // 弃用
   // path = `store/dict/`
-  // giteeLanguage = 'zh-cn';
-  // I18N_ADMIN_TOKEN = '';
+  // language = 'zh-cn';
 
   constructor() {}
 
   /// 获取网络目录 (有那些词典可以下载)
-  public async giteeGetDirectory() {
+  public async repoGetDirectory() {
     return await global_setting.api.urlRequest({
-      url: `${this.giteeBaseUrl}store/directory/dir.json`,
+      url: `${this.baseUrl()}store/directory/dir.json`,
       method: 'GET',
-      ...(!this.giteeToken ? {} : { headers: {
-        "Authorization": `Bearer ${this.giteeToken}`
+      ...(!this.token() ? {} : { headers: {
+        "Authorization": `Bearer ${this.token()}`
       }}),
       isParseJson: true
     });
@@ -52,19 +69,19 @@ export class API {
   /**
    * 获取网络目录 (有那些词典可以下载)
    *
-   * @deprecated 使用 giteeGetDirectory 代替
+   * @deprecated 使用 repoGetDirectory 代替
    */
-  public async giteeGetDirectory_byApi() {
+  public async repoGetDirectory_byApi() {
     const res = await global_setting.api.urlRequest({
-      url: `${this.giteeApiUrl}contents/store/directory/dir.json?ref=${this.giteeBranch}`,
+      url: `${this.apiUrl()}contents/store/directory/dir.json?ref=${this.repoBranch}`,
       method: 'GET',
-      ...(!this.giteeToken ? {} : { headers: {
-        "Authorization": `Bearer ${this.giteeToken}`
+      ...(!this.token() ? {} : { headers: {
+        "Authorization": `Bearer ${this.token()}`
       }}),
       isParseJson: true,
     })
 
-    if (global_setting.isDebug) console.log('giteeGetDirectory_byApi res', res)
+    if (global_setting.isDebug) console.log('repoGetDirectory_byApi res', res)
 
     // if (res && res.data && res.data.text) {
     //   // Gitee API returns content base64 encoded, so we need to decode it.
@@ -82,13 +99,16 @@ export class API {
     return res;
   }
 
-  /// 获取网络文件内容
-  public async giteeGetDict(relPath: string) {
+  /**
+   * 获取网络文件内容
+   * @description 使用 repoDownloadDict 代替
+   */
+  public async repoGetDict(relPath: string) {
     return await global_setting.api.urlRequest({
-      url: `${this.giteeBaseUrl}store/dict/${relPath}`,
+      url: `${this.baseUrl()}store/dict/${relPath}`,
       method: 'GET',
-      ...(!this.giteeToken ? {} : { headers: {
-        "Authorization": `Bearer ${this.giteeToken}`
+      ...(!this.token() ? {} : { headers: {
+        "Authorization": `Bearer ${this.token()}`
       }}),
       isParseJson: false,
     });
@@ -96,19 +116,19 @@ export class API {
 
   /**
    * 获取网络文件内容
-   * @deprecated 使用 downloadDict 代替
+   * @deprecated 使用 repoDownloadDict 代替
    */
-  public async giteeGetDict_byApi(relPath: string) {
+  public async repoGetDict_byApi(relPath: string) {
     const res = await global_setting.api.urlRequest({
-      url: `${this.giteeApiUrl}contents/store/dict/${relPath}?ref=${this.giteeBranch}`,
+      url: `${this.apiUrl()}contents/store/dict/${relPath}?ref=${this.repoBranch}`,
       method: 'GET',
-      ...(!this.giteeToken ? {} : { headers: {
-        "Authorization": `Bearer ${this.giteeToken}`
+      ...(!this.token() ? {} : { headers: {
+        "Authorization": `Bearer ${this.token()}`
       }}),
       isParseJson: true // The API response is JSON
     })
 
-    if (global_setting.isDebug) console.log('giteeGetDict_byApi res', res)
+    if (global_setting.isDebug) console.log('repoGetDict_byApi res', res)
 
     // if (res && res.data && res.data.content) {
     //   // Content is base64 encoded
@@ -126,14 +146,14 @@ export class API {
   }
 
   /**
-   * 从 Gitee 下载词典文件到本地
+   * 从 Gitee/Github repo 下载词典文件到本地
    * @param relPath 词典文件的相对路径，例如 'example.json'
    * @returns {Promise<boolean>} 下载并写入成功返回 true，否则返回 false
    */
-  public async downloadDict(relPath: string): Promise<boolean> {
-    const ret = await this.giteeGetDict(relPath);
+  public async repoDownloadDict(relPath: string): Promise<boolean> {
+    const ret = await this.repoGetDict(relPath);
     if (ret === null || ret.code !== 0 || !ret.data) {
-      console.error(`Failed to download dict from Gitee: ${relPath}`, ret);
+      console.error(`Failed to download dict from repo: ${relPath}`, ret);
       return false;
     }
 

@@ -139,7 +139,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   async function getDict() {
     table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载中...`
 
-    const ret = await api.giteeGetDirectory()
+    const ret = await api.repoGetDirectory()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
       table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
       return
@@ -187,7 +187,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                 }
               })
             } else { // 未下载/下载失败
-              api.downloadDict(item.relPath).then(success => {
+              api.repoDownloadDict(item.relPath).then(success => {
                 if (!success) {
                   td4.textContent = '下载失败'; td4.setAttribute('color', 'red');
                   return

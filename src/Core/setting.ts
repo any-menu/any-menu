@@ -38,6 +38,8 @@ export const global_setting: {
     // 对于前缀树引擎: 是查询数
     // 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
     search_limit: number,
+    // 在线词库来源 'gitee'|'github'
+    dict_online_source: 'gitee'|'github',
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
     // 记录笔记的基础路径
@@ -98,6 +100,7 @@ export const global_setting: {
     search_engine: 'reverse',
     send_text_method: 'clipboard',
     search_limit: 500,
+    dict_online_source: 'gitee',
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
     note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     app_black_list: ['- Obsidian v'],
