@@ -14,7 +14,7 @@ export default {
   'Dict paths2': '词典保存路径。你可以保存在文档库中方便随时编辑，如 ./dict/；\n\
 也可以把词典保存在插件文件中，如 ./.obsidian/plugins/any-menu/',
   'Dict online source': '在线词库来源',
-  'Dict online source2': '在线词库来源: gitee 或 github',
+  'Dict online source2': '在线词库来源: gitee 或 github (无法访问 github 则推荐用 gitee)',
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用',
 

@@ -161,7 +161,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         }
         const td2 = document.createElement('td'); tr.appendChild(td2);
           const a = document.createElement('a'); td2.appendChild(a);
-          a.href = `${api.giteeBlobUrl}store/dict/${item.relPath}`
+          a.href = `${api.blobUrl()}store/dict/${item.relPath}`
           a.textContent = item.relPath
           a.target = '_blank'
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;

@@ -157,5 +157,5 @@ App版可以在任何文本环境下使用:
   - [-] 支持代码着色
   - [x] 支持文本更宽更多行的情况
   - 加入翻译 api
-- 允许切换 github/gitee 源
+- [x] 允许切换 github/gitee 源
 - [x] 需要修复 obsidian dict_path 修改后不生效的问题

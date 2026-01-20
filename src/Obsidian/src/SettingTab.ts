@@ -85,7 +85,7 @@ export class AMSettingTab extends PluginSettingTab {
       .addDropdown(dropdown => {
         dropdown.addOption('gitee', 'gitee')
         dropdown.addOption('github', 'github')
-        dropdown.setValue(settings.config.dict_online_source)
+        dropdown.setValue(settings.config.dict_online_source as 'gitee' | 'github')
         dropdown.onChange(async (value) => {
           settings.config.dict_online_source = value as 'gitee' | 'github'
           await this.plugin.saveSettings()
