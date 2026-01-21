@@ -1,6 +1,6 @@
 import { global_setting } from "../../../Core/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
-// import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
+import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { EditableBlock_Code } from "@editableblock/code/dist/EditableBlock_Code/src/" // [!code hl]
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
 
@@ -9,8 +9,9 @@ export class AMMiniEditor {
   public el: HTMLElement;
 
   public cache_text: string = ''
-  // public editableBlock_cm: EditableBlock_Cm
-  public editableBlock_cm: EditableBlock_Code  // [!code hl]
+  public editableBlock: EditableBlock_Cm | EditableBlock_Code
+  private editableBlock_cm: EditableBlock_Cm
+  private editableBlock_code: EditableBlock_Code
   
   isShow = true
 
@@ -44,11 +45,22 @@ export class AMMiniEditor {
       this.cache_text = str_with_prefix
       return Promise.resolve()
     }
-    const editableblock_p = document.createElement('div'); this.el.appendChild(editableblock_p); editableblock_p.classList.add('editable-codeblock-p')
-    // this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, editableblock_p, outterEditor)
-    this.editableBlock_cm = new EditableBlock_Code(rangeSpec_None, editableblock_p, outterEditor) // [!code hl]
-    // this.editableBlock_cm.settings. ...
-    this.editableBlock_cm.emit_render() // [!code hl]
+    let editableblock_p = document.createElement('div'); this.el.appendChild(editableblock_p); editableblock_p.classList.add('editable-codeblock-p')
+    this.editableBlock_code = new EditableBlock_Code(rangeSpec_None, editableblock_p, outterEditor)
+    this.editableBlock_code.emit_render()
+    editableblock_p = document.createElement('div'); this.el.appendChild(editableblock_p); editableblock_p.classList.add('editable-codeblock-p')
+    this.editableBlock_cm = new EditableBlock_Cm(rangeSpec_None, editableblock_p, outterEditor)
+    this.editableBlock_cm.emit_render()
+    if (global_setting.state.editor_engine === 'codeblock') {
+      this.editableBlock = this.editableBlock_code
+      this.editableBlock_code.el.classList.remove('am-hide')
+      this.editableBlock_cm.el.classList.add('am-hide')
+    } else {
+      this.editableBlock = this.editableBlock_cm
+      this.editableBlock_cm.el.classList.remove('am-hide')
+      this.editableBlock_code.el.classList.add('am-hide')
+      // this.editableBlock_cm.settings. ...
+    }
 
     // buttons
     // const editor = document.createElement('div'); this.el.appendChild(editor);
@@ -82,6 +94,9 @@ export class AMMiniEditor {
         this.hide(); // 隐藏窗口
       }
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
+      btn_md_mode.onclick = () => {
+        this.changeEngine()
+      }
     const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
     
   }
@@ -99,6 +114,39 @@ export class AMMiniEditor {
     this.flag = mode
   }
 
+  changeEngine(engine?: 'codeblock'|'cm') {
+    // 空则交换
+    if (!engine) {
+      if (this.editableBlock instanceof EditableBlock_Code) {
+        engine = 'cm'
+      } else {
+        engine = 'codeblock'
+      }
+    }
+
+    if (engine === 'codeblock') {
+      global_setting.state.editor_engine = 'codeblock'
+      this.editableBlock_code.el.classList.remove('am-hide')
+      this.editableBlock_cm.el.classList.add('am-hide')
+
+      this.editableBlock = this.editableBlock_code
+      this.editableBlock.rangeSpec.text_content = this.cache_text
+      this.editableBlock.outerInfo.source = this.cache_text
+      this.editableBlock.innerInfo.source_old = this.cache_text
+      this.editableBlock.re_render()
+    } else {
+      global_setting.state.editor_engine = 'cm'
+      this.editableBlock_cm.el.classList.remove('am-hide')
+      this.editableBlock_code.el.classList.add('am-hide')
+
+      this.editableBlock = this.editableBlock_cm
+      this.editableBlock.rangeSpec.text_content = this.cache_text
+      this.editableBlock.outerInfo.source = this.cache_text
+      this.editableBlock.innerInfo.source_old = this.cache_text
+      this.editableBlock.update_content(this.cache_text)
+    }
+  }
+
   // #region 显示/隐藏菜单
 
   show(x?: number, y?: number, new_text?: string, is_focus: boolean = false) {
@@ -109,18 +157,22 @@ export class AMMiniEditor {
     if (new_text) this.cache_text = new_text
     else { this.cache_text = '' } // 策略应该显示旧内容还是空内容? 若是前者，此处不变。否则此处应该不执行
 
-    this.editableBlock_cm.rangeSpec.text_content = this.cache_text
-    // this.editableBlock_cm.update_content(this.cache_text)
-    // [!code hl]
-    this.editableBlock_cm.outerInfo.source = this.cache_text
-    this.editableBlock_cm.innerInfo.source_old = this.cache_text
-    this.editableBlock_cm.re_render()
+    this.editableBlock.rangeSpec.text_content = this.cache_text
+    this.editableBlock.outerInfo.source = this.cache_text
+    this.editableBlock.innerInfo.source_old = this.cache_text
+    if (this.editableBlock instanceof EditableBlock_Code) {
+      this.editableBlock.re_render()
+    } else {
+      this.editableBlock.update_content(this.cache_text)
+    }
 
     // 显示后聚焦，否则 focus 无效
     ;(() => {
       if (!is_focus) return
       if (!global_setting.focusStrategy) return
-      this.editableBlock_cm.focus(0, this.cache_text.length + 2) // [!code warn] 我也没明白为什么要+2，好像每行都要，换行符? 还是原依赖库有bug
+      // [!code warn] TODO 我也没明白为什么要+2，好像每行都要，换行符? 还是原依赖库有bug?
+      // 目前这里还是会有一些问题，待修复
+      this.editableBlock.focus(0, this.cache_text.length + 2)
     })();
 
     window.addEventListener('click', this.visual_listener_click)
