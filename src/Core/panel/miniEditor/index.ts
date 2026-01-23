@@ -93,12 +93,15 @@ export class AMMiniEditor {
         // TODO Tauri 版本存在bug，Tauri 版本中，鼠标外点会分别隐藏元素+窗口。但这里只会影响元素而不影响窗口
         this.hide(); // 隐藏窗口
       }
-    const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode); btn_md_mode.textContent = 'Md mode';
-      btn_md_mode.onclick = () => {
-        this.changeEngine()
+    const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode);
+      if (global_setting.state.editor_engine === 'codeblock') {
+        btn_md_mode.textContent = 'Md mode';
+      } else {
+        btn_md_mode.textContent = 'Source mode';
       }
-    const btn_source_mode = document.createElement('button'); buttons.appendChild(btn_source_mode); btn_source_mode.textContent = 'Source mode';
-    
+      btn_md_mode.onclick = () => {
+        this.changeEngine(btn_md_mode)
+      }
   }
 
   // 用来标记是显示 info 还是 selectedText，避免异步更新进行不合适的覆盖
@@ -114,7 +117,7 @@ export class AMMiniEditor {
     this.flag = mode
   }
 
-  changeEngine(engine?: 'codeblock'|'cm') {
+  changeEngine(btn_md_mode: HTMLElement, engine?: 'codeblock'|'cm') {
     // 空则交换
     if (!engine) {
       if (this.editableBlock instanceof EditableBlock_Code) {
@@ -126,6 +129,7 @@ export class AMMiniEditor {
 
     if (engine === 'codeblock') {
       global_setting.state.editor_engine = 'codeblock'
+      btn_md_mode.textContent = 'Md mode'
       this.editableBlock_code.el.classList.remove('am-hide')
       this.editableBlock_cm.el.classList.add('am-hide')
 
@@ -136,6 +140,7 @@ export class AMMiniEditor {
       this.editableBlock.re_render()
     } else {
       global_setting.state.editor_engine = 'cm'
+      btn_md_mode.textContent = 'Source mode'
       this.editableBlock_cm.el.classList.remove('am-hide')
       this.editableBlock_code.el.classList.add('am-hide')
 
