@@ -37,7 +37,28 @@ const SHORTCUT_3_EVENT = async () => {
   })
 }
 
-const turndownService = new TurndownService()
+// html2md 库的配置
+const turndownService = new TurndownService({
+  // option docs: https://github.com/mixmark-io/turndown#options
+  headingStyle: 'atx',      // 标题样式 (默认setext，会用 === 和 --- 表示h1和h2)
+  hr: '---',                // 水平线样式 (默认 * * *)
+  bulletListMarker: '-',    // 列表符号 (默认*)
+  codeBlockStyle: 'fenced', // 代码围栏风格 (默认 indented 缩进)
+  fence: '```',             // 代码块围栏标识 (默认值)
+  emDelimiter: '*',         // 斜体标识 (默认_)
+  strongDelimiter: '**',    // 加粗标识 (默认值)
+  linkStyle: 'inlined',     // 链接样式 (默认值，`[]()` 形式而非注脚形式)
+  linkReferenceStyle: 'full', // 注脚形式 (默认值)
+  preformattedCode: false,  // 代码中折叠还是保留空格 (默认值，没看懂)
+})
+// 取消 "缩进对齐"。即 `-   aa` 变成 `- aa`
+turndownService.addRule('listItemNoIndent', {
+  filter: 'li',
+  replacement(content) {
+    return '- ' + content.trim() + '\n'
+  }
+})
+
 /** 注册事件监听 - 聚焦窗口改变 */
 export function setupAppChangeListener() {
   listen('active-app-changed', (event) => {
