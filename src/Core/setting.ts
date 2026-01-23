@@ -57,6 +57,7 @@ export const global_setting: {
   // 运行时状态
   state: {
     isPin: boolean, // 置顶面板和子面板 (主要用于debug，避免面板在调试过程中失焦而隐藏)
+    editor_engine: 'codeblock'|'cm', // mini 编辑器渲染引擎 (可运行中切换)
     selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
     infoText: string, // 当前信息文本 (仅debug模式会注册info面板，从而才会使用这里)
     activeAppName: string, // 当前激活的应用名称 (每次窗口聚焦改变时更新)
@@ -94,7 +95,7 @@ export const global_setting: {
   env: 'app',
   isDebug: false,
   focusStrategy: true,
-  config: {    
+  config: {
     pinyin_index: true,
     pinyin_first_index: true,
     search_engine: 'reverse',
@@ -113,6 +114,7 @@ export const global_setting: {
   },
   state: {
     isPin: false,
+    editor_engine: 'codeblock',
     selectedText: undefined,
     infoText: '',
     activeAppName: '',
