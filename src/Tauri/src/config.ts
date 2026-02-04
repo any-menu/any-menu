@@ -150,6 +150,7 @@ export function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
 // 这样的toml配置会有注释，如果用 global_setting.config 转toml则没注释
 const DEFAULT_TOML = `\
 [config]
+language = English          # 语言 'auto'|'English'|'中文'|string
 pinyin_index = true         # 是否为中文key自动构建拼音索引
 pinyin_first_index = true   # 是否为中文key自动构建拼音首字母索引
 

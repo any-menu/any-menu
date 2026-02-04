@@ -1,4 +1,4 @@
-import {App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice} from "obsidian"
+import { App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice } from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { global_setting } from "@/Core/setting";
 import { t } from "./locales/helper";

@@ -1,5 +1,6 @@
 // Code from https://github.com/valentine195/obsidian-admonition/blob/master/src/lang/helpers.ts
 
+import { global_setting } from '../setting';
 import en from './en';
 import zhCN from './zh-cn'
 
@@ -38,13 +39,18 @@ export const localeMap: { [key: string]: Partial<typeof en> } = {
  * obsidian 版本用 import { getLanguage } from 'obsidian'; getLanguage()
  * app 版本用系统 api
  */
-export const localeConfig = {
-  locale: localeMap["en"]
-}
+export let locale: Partial<typeof en> | undefined
 
 /**
  * 翻译接口函数
  */
 export function t(str: keyof typeof en): string {
-  return (localeConfig.locale && localeConfig.locale[str]) || en[str]; // 无翻译对应语言翻译则用英语
+  if (!locale == undefined) {
+    // 别名
+    if (global_setting.state.language == 'English') global_setting.state.language = 'en'
+    else if (global_setting.state.language == '中文') global_setting.state.language = 'zh'
+
+    locale = localeMap[global_setting.state.language]
+  }
+  return (locale && locale[str]) || en[str]; // 无翻译对应语言翻译则用英语
 }

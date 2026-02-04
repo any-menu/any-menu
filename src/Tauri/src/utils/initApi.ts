@@ -1,10 +1,13 @@
 import { global_setting, UrlRequestConfig, UrlResponse } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
 import { invoke } from "@tauri-apps/api/core"
-import { fetch as tauri_fetch } from '@tauri-apps/plugin-http';
+import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
+  // TODO 调用 Tauri Windows 接口处理 'auto' 类型
+  global_setting.state.language = global_setting.config.language
+
   global_setting.env = 'app'
 
   global_setting.api.getCursorXY = async () => {

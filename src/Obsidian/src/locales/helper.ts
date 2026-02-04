@@ -2,7 +2,8 @@
 
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
 
-import { localeConfig, localeMap } from '@/Core/locales/helper';
+import { global_setting } from '@/Core/setting';
 export { t } from '@/Core/locales/helper'
 
-localeConfig.locale = localeMap[getLanguage()]
+// obsidian 强制为 'auto' 类型
+global_setting.state.language = getLanguage()
