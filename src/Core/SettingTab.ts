@@ -103,12 +103,12 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
     if (global_setting.isDebug) {
-      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = 'id';
+      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = t('Id');
     }
-    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'path';
-    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'name';
-    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'downloaded'; td4.classList.add('btn');
-    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
+    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Path');
+    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Name');
+    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Is downloaded'); td4.classList.add('btn');
+    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh dict list'
@@ -118,14 +118,14 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载中...`
+    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
 
     const ret = await api.repoGetDirectory()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
       return
     }
-    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = '加载成功'
+    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
     table_tbody.innerHTML = ''
     try {
       const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
@@ -148,19 +148,19 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
         const td4 = document.createElement('td'); tr.appendChild(td4); td4.classList.add('btn');
           if (local_dict_list.find(d => d.relPath === item.relPath)) {
-            td4.textContent = '已下载'; td4.setAttribute('color', 'green');
+            td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
           } else {
-            td4.textContent = '未下载'; td4.setAttribute('color', 'gray');
+            td4.textContent = t('Download'); td4.setAttribute('color', 'gray');
           }
           td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
               global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.relPath}`).then(success => {
                 if (!success) {
-                  td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
+                  td4.textContent = t('Uninstalled failed'); td4.setAttribute('color', 'green');
                   return
                 }
-                td4.textContent = '已卸载'; td4.setAttribute('color', 'gray');
+                td4.textContent = t('Uninstalled'); td4.setAttribute('color', 'gray');
                 const index = local_dict_list.findIndex(d => d.relPath === item.relPath)
                 if (index >= 0) {
                   local_dict_list.splice(index, 1)
@@ -170,10 +170,10 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
             } else { // 未下载/下载失败
               api.repoDownloadDict(item.relPath).then(success => {
                 if (!success) {
-                  td4.textContent = '下载失败'; td4.setAttribute('color', 'red');
+                  td4.textContent = t('Download failed'); td4.setAttribute('color', 'red');
                   return
                 }
-                td4.textContent = '已下载'; td4.setAttribute('color', 'green');
+                td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
                 local_dict_list.push({path: `${global_setting.config.dict_paths}${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
                 local_dict_list_onChange()
               })
@@ -201,8 +201,8 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     table.classList.add('dict-table');
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
-    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = 'name';
-    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = 'path';
+    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Name');
+    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Path');
     const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'uninstall'; td4.classList.add('btn');
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);

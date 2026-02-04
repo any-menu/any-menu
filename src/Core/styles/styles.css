@@ -1050,6 +1050,10 @@ html, body, #main {
   display: none !important;
 }
 
+.am-inner-html {
+  white-space: nowrap !important;
+}
+
 #main a, #am-config a {
   font-weight: 500;
   color: #646cff;

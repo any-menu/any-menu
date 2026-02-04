@@ -32,6 +32,22 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use',
 
+  // Online dict / Local dict
+  'Id': 'Id',
+  'Path': 'Path',
+  'Name': 'Name',
+  'Is downloaded': 'Downloaded',
+  'Is enabled': 'Enabled',
+  'Download': 'Download',
+  'Downloaded': 'Downloaded',
+  'Download failed': 'Download failed',
+  'Uninstall': 'Uninstall',
+  'Uninstalled': 'Uninstalled',
+  'Uninstalled failed': 'Uninstalled failed',
+  'Loading': 'Loading',
+  'Load failed': 'Load failed',
+  'Load successed': 'Load successed',
+
   // General
   'Submit': 'Submit',
   'Edit': 'Edit',

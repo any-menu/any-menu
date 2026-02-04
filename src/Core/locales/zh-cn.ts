@@ -32,6 +32,22 @@ export default {
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用',
 
+  // Online dict / Local dict
+  'Id': 'Id',
+  'Path': '路径',
+  'Name': '名字',
+  'Is downloaded': '是否已下载',
+  'Is enabled': '是否已启用',
+  'Download': '下载',
+  'Downloaded': '已下载',
+  'Download failed': '下载失败',
+  'Uninstall': '卸载',
+  'Uninstalled': '已卸载',
+  'Uninstalled failed': '卸载失败',
+  'Loading': '加载中',
+  'Load failed': '加载失败',
+  'Load successed': '加载成功',
+
   // General
   'Submit': '提交',
   'Edit': '编辑',
