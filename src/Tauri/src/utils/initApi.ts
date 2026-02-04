@@ -5,8 +5,15 @@ import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
-  // TODO 调用 Tauri Windows 接口处理 'auto' 类型
-  global_setting.state.language = global_setting.config.language
+  // 使用浏览器原生 API
+  // 也可以改为调用 Tauri Windows 接口处理 'auto' 类型
+  const userLocale = navigator.language; // 例如: 'zh-CN', 'en-US', 'ja-JP'
+  const mainLanguage = userLocale.split('-')[0]; // 'zh', 'en', 'ja'
+  if (global_setting.config.language == 'auto') {
+    global_setting.state.language = mainLanguage
+  } else {
+    global_setting.state.language = global_setting.config.language
+  }
 
   global_setting.env = 'app'
 
