@@ -1,3 +1,4 @@
+import { t } from './locales/helper';
 import { global_setting } from './setting';
 import { API } from './webApi'
 
@@ -48,39 +49,19 @@ export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_con
 // mini docs (用于在首页显示一些简单的使用说明、链接)
 function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = 'Mini docs';
+    tab_nav.textContent = t('Mini docs');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'mini-docs'); tab_content.setAttribute('index', 'mini-docs');
 
-  const div = document.createElement('div'); tab_content.appendChild(div);
+  const div = document.createElement('div'); tab_content.appendChild(div); div.classList.add('am-inner-html');
     // white-space: normal
-    div.innerHTML = `\
-<details>
-  <summary>使用说明 (中文)</summary>
-  默认使用 Alt+A 打开搜索框和菜单、Alt+S 打开快速编辑器 (App版也可以用高级快捷键 Caps+M 或 Caps+N) (均可在设置中修改快捷键)
-  <br><br>
-  (以上是推荐设置的快捷键，由于Obsidian官方不推荐插件默认使用快捷键，请自行分别设置 "Show panel: search and menu" 和 "Show panel: miniEditor" 这两个命令的快捷键)
-  <br><br>
-  更多说明和教程浏览:
-  <ul>
-    <li>仓库: https://github.com/any-menu/any-menu</li>
-    <li>文档: https://any-menu.github.io/any-menu/</li>
-  </ul>
-  !!! 注意: 当前设置面板修改过后，需要重启插件/软件才能生效
-</details>
-<details>
-  <summary>Instructions for Use (English)</summary>
-  The default shortcuts are Alt+A to open the search box and menu, and Alt+S to open the quick editor (The App version can also use the advanced shortcuts Caps+M or Caps+N) (All shortcuts can be modified in the settings).
-  <br><br>
-  (The shortcuts above are the recommended settings. Because Obsidian officially does not recommend plugins using shortcuts by default, please manually set the shortcuts for the two commands: "Show panel: search and menu" and "Show panel: miniEditor").
-  <br><br>
-  For more instructions and tutorials:
-  <ul>
-    <li>repository: https://github.com/any-menu/any-menu</li>
-    <li>document: https://any-menu.github.io/any-menu/</li>
-  </ul>
-  !!! Note: After modifying the current settings panel, you need to restart the plugin/software for the changes to take effect.
-</details>`
+    /**
+     * @security 此处使用 innerHTML 渲染 i18n 静态内容
+     * - 内容来源：开发者维护的翻译文件
+     * - 风险评估：低 (无用户输入)
+     * - 审查周期：每次翻译文件更新时人工审查
+     */
+    div.innerHTML = t('Mini docs2')
 
   tab_nav.classList.add('active');
   tab_content.classList.add('active');
@@ -110,7 +91,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const api = new API()
 
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = 'Online dict';
+    tab_nav.textContent = t('Online dict');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'web-dict'); tab_content.setAttribute('index', 'web-dict');
 
@@ -209,7 +190,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
 /** 本地字典 */
 async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = 'Local dict';
+    tab_nav.textContent = t('Local dict');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'local-dict'); tab_content.setAttribute('index', 'local-dict');
 

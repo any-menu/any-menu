@@ -618,6 +618,11 @@ html, body, #main {
   display: none !important;
 }
 
+// 用来表示 innerHTML 的情况
+.am-inner-html {
+  white-space: nowrap !important;
+}
+
 #main, #am-config {
   a {
     font-weight: 500;

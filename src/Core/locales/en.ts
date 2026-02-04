@@ -1,9 +1,23 @@
 export default {
-  // setting.ts
+  // Core setting tab
   'Mini docs': 'Mini docs',
+  'Mini docs2': `Instructions for Use
+<br><br>
+The default shortcuts are Alt+A to open the search box and menu, and Alt+S to open the quick editor (The App version can also use the advanced shortcuts Caps+M or Caps+N) (All shortcuts can be modified in the settings).
+<br><br>
+(The shortcuts above are the recommended settings. Because Obsidian officially does not recommend plugins using shortcuts by default, please manually set the shortcuts for the two commands: "Show panel: search and menu" and "Show panel: miniEditor").
+<br><br>
+For more instructions and tutorials:
+<ul>
+  <li>repository: https://github.com/any-menu/any-menu</li>
+  <li>document: https://any-menu.github.io/any-menu/</li>
+</ul>
+!!! Note: After modifying the current settings panel, you need to restart the plugin/software for the changes to take effect.
+`,
   'Local dict': 'Local dict',
   'Online dict': 'Online dict',
 
+  // Obsidian setting.ts
   'Config file': 'Config file',
   'Config file2': 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.',
   'Pinyin index': 'Pinyin index',
