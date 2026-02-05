@@ -2,7 +2,7 @@
 
 import { t } from '../../Core/locales/helper'
 import { toml_parse } from '../../Core/panel/contextmenu/demo'
-import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
+// import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
 import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab'
 import { global_setting } from '../../Core/setting'
 import { initApi } from './utils/initApi'
