@@ -15,6 +15,7 @@ export const global_setting: {
    * - 用户不可配置的硬编码也不放在这
    */
   config: {
+    language: 'auto'|'English'|'中文'|string // 语言
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
     // 搜索引擎类型，'reverse'|'trie' (模糊匹配/倒序 | 前缀树)
@@ -56,6 +57,7 @@ export const global_setting: {
   },
   // 运行时状态
   state: {
+    language: 'en'|'zh'|'zh-TW'|string // 语言 (字典语言标志: 本地化语言名转标志, 不存在语言转en，自动选择转实际语言)
     isPin: boolean, // 置顶面板和子面板 (主要用于debug，避免面板在调试过程中失焦而隐藏)
     editor_engine: 'codeblock'|'cm', // mini 编辑器渲染引擎 (可运行中切换)
     selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
@@ -96,6 +98,7 @@ export const global_setting: {
   isDebug: false,
   focusStrategy: true,
   config: {
+    language: 'auto',
     pinyin_index: true,
     pinyin_first_index: true,
     search_engine: 'reverse',
@@ -113,6 +116,7 @@ export const global_setting: {
     menu_position: 'cursor',
   },
   state: {
+    language: 'en',
     isPin: false,
     editor_engine: 'codeblock',
     selectedText: undefined,
