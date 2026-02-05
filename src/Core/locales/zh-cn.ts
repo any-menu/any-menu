@@ -1,6 +1,6 @@
 export default {
   // Core setting tab
-  'Mini docs': 'mini文档',
+  'Mini docs': '简易文档',
   'Mini docs2': `使用说明
 <br><br>
 默认使用 Alt+A 打开搜索框和菜单、Alt+S 打开快速编辑器 (App版也可以用高级快捷键 Caps+M 或 Caps+N) (均可在设置中修改快捷键)
@@ -17,9 +17,12 @@ export default {
   'Local dict': '本地词典',
   'Online dict': '在线词典',
 
-  // Obsidian setting.ts (obsidian 的可视化设置)
+  // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': '配置文件',
-  'Config file2': '暂时并非所有可配置项均支持可视化编辑，部分配置可到插件文件夹下手动编辑data.json文件',
+
+  // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
+  'Config': '配置',
+  'Config2': '暂时并非所有可配置项均支持可视化编辑，部分配置可到插件文件夹下手动编辑data.json文件',
   'Pinyin index': '拼音索引',
   'Pinyin index2': '是否为中文key自动构建拼音索引',
   'Pinyin first index': '拼音首字母索引',

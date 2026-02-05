@@ -1,5 +1,6 @@
 /** 配置面板相关 */
 
+import { t } from '../../Core/locales/helper'
 import { toml_parse } from '../../Core/panel/contextmenu/demo'
 import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
 import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab'
@@ -20,7 +21,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // #region config
   {
     const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-      tab_nav.textContent = 'Config file';
+      tab_nav.textContent = t('Config file');
     const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
     tab_nav.setAttribute('index', 'config-file'); tab_content.setAttribute('index', 'config-file');
 
@@ -39,7 +40,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // #endregion
 
   // #region plugin manager
-  {
+  /*{
     const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
       tab_nav.textContent = 'Plugin manager';
     const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -62,7 +63,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     }
     load_plugins()
-  }
+  }*/
   // #endregion
 
   initSettingTab_2(tab_nav_container, tab_content_container)

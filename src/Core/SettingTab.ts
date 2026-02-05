@@ -203,8 +203,8 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Name');
     const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Path');
-    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = 'uninstall'; td4.classList.add('btn');
-    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = 'enabled'; td5.classList.add('btn');
+    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
+    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
     refresh_btn.textContent = 'Refresh dict list'

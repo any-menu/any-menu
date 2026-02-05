@@ -17,9 +17,12 @@ For more instructions and tutorials:
   'Local dict': 'Local dict',
   'Online dict': 'Online dict',
 
-  // Obsidian setting.ts
+  // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': 'Config file',
-  'Config file2': 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.',
+
+  // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
+  'Config': 'Config',
+  'Config2': 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.',
   'Pinyin index': 'Pinyin index',
   'Pinyin index2': 'Is it the case that the Chinese "key" is automatically constructed with a pinyin index?',
   'Pinyin first index': 'Pinyin first index',

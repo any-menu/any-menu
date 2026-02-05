@@ -41,9 +41,9 @@ export class AMSettingTab extends PluginSettingTab {
     let settings: AMSettingInterface = this.plugin.settings
     {
       const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-        tab_nav.textContent = t('Config file');
+        tab_nav.textContent = t('Config');
       const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-        tab_content.createEl('div', { text: t('Config file2') });
+        tab_content.createEl('div', { text: t('Config2') });
       tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
 
       new Setting(tab_content)

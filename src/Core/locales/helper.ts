@@ -45,7 +45,7 @@ export let locale: Partial<typeof en> | undefined
  * 翻译接口函数
  */
 export function t(str: keyof typeof en): string {
-  if (!locale == undefined) {
+  if (locale == undefined) {
     // 别名
     if (global_setting.state.language == 'English') global_setting.state.language = 'en'
     else if (global_setting.state.language == '中文') global_setting.state.language = 'zh'
