@@ -128,6 +128,11 @@ cargo update tauri
 ```bash
 # 升级 rust 编译器
 rustup update stable
+# 检查
+rustc --version  # 验证版本
+
+# node/npm
+# 略
 ```
 
 ## 模板原README
