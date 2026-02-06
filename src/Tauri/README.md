@@ -98,6 +98,38 @@ src-tauri/capabilities/default.json
 }
 ```
 
+## 开发备注
+
+有时项目在无改动时会突然报错:
+
+```bash
+        Info Looking up installed tauri packages to check mismatched versions...
+Found version mismatched Tauri packages. Make sure the NPM package and Rust crate versions are on the same major/minor releases:
+tauri (v2.9.4) : @tauri-apps/api (v2.10.1)
+       Error Found version mismatched Tauri packages. Make sure the NPM package and Rust crate versions are on the same major/minor releases:
+tauri (v2.9.4) : @tauri-apps/api (v2.10.1)
+ ELIFECYCLE  Command failed with exit code 1.
+Error: Process completed with exit code 1.
+```
+
+他这里说了: Tauri 是 2.9.4，而 npm 中的 @tauri-apps/api 是 2.10.1
+
+升级方法: (你也可以降级，但此处忽略该方案)
+
+```bash
+# 一是手动直接修改 src-tauri/Cargo.toml 的 tauri 版本号，为 "2.10"
+# 二是用命令
+cd src-tauri
+cargo update tauri
+```
+
+有时版本的对应还会需要升级 node/npm/tauri 版本，例如:
+
+```bash
+# 升级 rust 编译器
+rustup update stable
+```
+
 ## 模板原README
 
 ```md
