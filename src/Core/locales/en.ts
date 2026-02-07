@@ -19,6 +19,7 @@ For more instructions and tutorials:
 
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': 'Config file',
+  'Save config': 'Save config',
 
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': 'Config',
@@ -52,6 +53,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Loading': 'Loading',
   'Load failed': 'Load failed',
   'Load successed': 'Load successed',
+  'Refresh dict list': 'Refresh dict list',
 
   // General
   'Submit': 'Submit',

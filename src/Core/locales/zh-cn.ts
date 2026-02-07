@@ -19,6 +19,7 @@ export default {
 
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': '配置文件',
+  'Save config': '保存配置',
 
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': '配置',
@@ -52,6 +53,7 @@ export default {
   'Loading': '加载中',
   'Load failed': '加载失败',
   'Load successed': '加载成功',
+  'Refresh dict list': '刷新字典列表',
 
   // General
   'Submit': '提交',

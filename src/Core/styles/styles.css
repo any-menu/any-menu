@@ -1051,7 +1051,7 @@ html, body, #main {
 }
 
 .am-inner-html {
-  white-space: nowrap !important;
+  white-space: normal !important;
 }
 
 #main a, #am-config a {

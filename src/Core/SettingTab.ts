@@ -111,7 +111,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
-    refresh_btn.textContent = 'Refresh dict list'
+    refresh_btn.textContent = t('Refresh dict list')
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 
@@ -207,7 +207,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
-    refresh_btn.textContent = 'Refresh dict list'
+    refresh_btn.textContent = t('Refresh dict list')
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 

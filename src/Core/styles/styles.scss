@@ -619,8 +619,9 @@ html, body, #main {
 }
 
 // 用来表示 innerHTML 的情况
+// 自动换行 + 忽略 `\n` 便于 html 标签排版
 .am-inner-html {
-  white-space: nowrap !important;
+  white-space: normal !important;
 }
 
 #main, #am-config {
