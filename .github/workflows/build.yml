@@ -115,7 +115,7 @@ jobs:
   create-release:
     name: Create Release
     if: github.event_name == 'push' # 跳过PR
-    needs: [build-obsidian, build-tauri] # 需要等待两个 build job 都成功
+    needs: [build-obsidian, build-tauri] # 需要等待相关 build job 都成功
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
