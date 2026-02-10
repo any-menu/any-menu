@@ -139,7 +139,6 @@ pub fn run() {
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
             let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
             let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 配置菜单项
-
             // 菜单项数组
             #[cfg(debug_assertions)]
             let menu = {

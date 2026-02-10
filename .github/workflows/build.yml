@@ -3,7 +3,7 @@ name: Build Any-Menu
 on:
   push:
     branches: [main]
-    tags: ['**'] # tags: ['v*']
+    tags: ['**'] # or tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -122,7 +122,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           # 将所有构建产物下载到 'dist' 目录
-          # 这将创建 'dist/obsidian-any-menu'、'dist/any-menu-windows-msi' 等子目录
+          # 这将创建 'dist/artifact1'、'dist/artifact2' 等子目录
           path: ./dist
       
       - name: List downloaded artifacts

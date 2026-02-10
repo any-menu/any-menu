@@ -129,7 +129,7 @@ cargo update tauri
 # 升级 rust 编译器
 rustup update stable
 # 检查
-rustc --version  # 验证版本
+rustc --version
 
 # node/npm
 # 略
