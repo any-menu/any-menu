@@ -16,11 +16,22 @@ export const global_setting: {
    */
   config: {
     language: 'auto'|'English'|'中文'|string // 语言
+    // 抢焦点模式 = 默认聚焦+默认置顶。隐藏条件: 失焦、直接点击窗口的#main/body、点击菜单项
+    // 不抢焦点模式 = 不聚焦+默认置顶。隐藏条件: 失焦[-]、直接点击窗口的#main/body、点击菜单项、窗口外点击[+]
+    panel_focus_mode: boolean, // 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
+    panel_default_always_top: boolean, // 默认置顶窗口/不置顶窗口 (pin键是临时切换)
+
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
     // 搜索引擎类型，'reverse'|'trie' (模糊匹配/倒序 | 前缀树)
     // TODO 新选项: 混合使用策略
     search_engine: 'reverse'|'trie',
+    // 查询结果的首页显示数
+    // 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
+    // 对于前缀树引擎: 是查询数
+    // 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
+    search_limit: number,
+
     /** 发送文本的方式。
      * 'keyboard'|'clipboard'|'auto'
      * enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
@@ -34,11 +45,6 @@ export const global_setting: {
      * TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
      */
     send_text_method: 'keyboard'|'clipboard'|'auto',
-    // 查询结果的首页显示数
-    // 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
-    // 对于前缀树引擎: 是查询数
-    // 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
-    search_limit: number,
     // 在线词库来源 'gitee'|'github'
     dict_online_source: 'gitee'|'github',
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
@@ -99,11 +105,15 @@ export const global_setting: {
   focusStrategy: true,
   config: {
     language: 'auto',
+    panel_focus_mode: true,  // false为不抢焦点模式，true为抢焦点模式
+    panel_default_always_top: true,
+
     pinyin_index: true,
     pinyin_first_index: true,
     search_engine: 'reverse',
-    send_text_method: 'clipboard',
     search_limit: 500,
+
+    send_text_method: 'clipboard',
     dict_online_source: 'gitee',
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
     note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"

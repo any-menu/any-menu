@@ -259,8 +259,17 @@ async function showWindow(panel_list?: string[]) {
   await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
-  await appWindow.setFocus() // 聚焦窗口
-    // 这是必须的，否则不会显示/置顶窗口。注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
+
+  // step5.2. 焦点模式/不抢焦点模式，需要 show() 完后运行 TODO 完善
+  if (global_setting.config.panel_focus_mode) {
+    await appWindow.setFocus() // 聚焦窗口
+    // 注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
+  } else {}
+  if (global_setting.config.panel_default_always_top) {
+    await appWindow.setAlwaysOnTop(true)
+  } else {
+    await appWindow.setAlwaysOnTop(false)
+  }
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
   AMPanel.show(0, 0, panel_list)

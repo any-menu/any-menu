@@ -149,14 +149,22 @@ export function save_config(new_str: string, textarea?: HTMLTextAreaElement) {
 }
 
 // 这样的toml配置会有注释，如果用 global_setting.config 转toml则没注释
+// 会自动与 global_setting.config 合并
 const DEFAULT_TOML = `\
 [config]
 language = English          # 语言 'auto'|'English'|'中文'|string
+panel_focus_mode = true     # 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
+panel_default_always_top = false # 默认置顶窗口/不置顶窗口 (pin键是临时切换)
+
 pinyin_index = true         # 是否为中文key自动构建拼音索引
 pinyin_first_index = true   # 是否为中文key自动构建拼音首字母索引
-
 # 搜索引擎类型，'reverse'|'trie' (模糊匹配/倒序 | 前缀树)
 search_engine = "reverse"
+# 查询结果的首页显示数
+# 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
+# 对于前缀树引擎: 是查询数
+# 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
+search_limit = 500
 
 #  发送文本的方式。
 # 'keyboard'|'clipboard'|'auto'
@@ -171,13 +179,6 @@ search_engine = "reverse"
 # TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
 # 
 send_text_method = "clipboard"
-
-# 查询结果的首页显示数
-# 对于模糊匹配引擎: 是显示数，目前不影响搜索引擎的查询数量，即只影响渲染
-# 对于前缀树引擎: 是查询数
-# 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
-search_limit = 500
-
 # 在线词库来源 'gitee'|'github'
 dict_online_source = "gitee"
 # 词库路径列表。在debug模式下不使用这个路径，而是硬编码
