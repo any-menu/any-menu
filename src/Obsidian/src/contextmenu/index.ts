@@ -46,7 +46,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     // ]
   })
 
-  const show_panel = async (editor: Editor, view: MarkdownView | unknown, panel_names?: string[]) => {
+  const show_panel = async (editor: Editor, view: MarkdownView | unknown, panel_list?: string[]) => {
     // 1. 光标位置
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return
@@ -56,11 +56,11 @@ export function registerAMContextMenu(plugin: Plugin) {
     const screen_size = { width: window.innerWidth, height: window.innerHeight }
 
     // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
-    const panel_size = AMPanel.get_size()
+    const panel_size = AMPanel.get_size(panel_list)
     const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
     // 3. 显示面板
-    AMPanel.show(cursor3.x + 2, cursor3.y + 2, panel_names)
+    AMPanel.show(cursor3.x + 2, cursor3.y + 2, panel_list)
   }
 
   // 注册工具带

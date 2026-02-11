@@ -24,6 +24,7 @@ export * from './search/index'
 import { AMSearch } from './search/index'
 import { ABContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
+import { AMToolbar } from './toolbar/index'
 import { global_setting } from '../setting'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
@@ -35,12 +36,14 @@ export const global_el: {
   amSearch: AMSearch | null,
   amContextMenu: ABContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
+  amToolbar: AMToolbar | null,
   alt_v_state: boolean,  // 虚拟alt状态
 } = {
   amPanel: null,
   amSearch: null,
   amContextMenu: null,
   amMiniEditor: null,
+  amToolbar: null,
   alt_v_state: false
 }
 let alt_key_flag = false        // 按下过 alt+key 组合键
@@ -60,6 +63,9 @@ export class AMPanel {
     }
     if (!global_el.amMiniEditor) {
       global_el.amMiniEditor = AMMiniEditor.factory(el)
+    }
+    if (!global_el.amToolbar) {
+      global_el.amToolbar = AMToolbar.factory(el)
     }
 
     // alt切换快捷提示
@@ -136,6 +142,10 @@ export class AMPanel {
           global_el.amMiniEditor?.show(undefined, undefined, global_setting.state.infoText, false)
         })
       }
+      else if (item == 'toolbar') {
+        global_el.amToolbar?.show(x, y)
+        if (y !== undefined) { y += 32 }
+      }
       else {
         continue
       }
@@ -146,6 +156,7 @@ export class AMPanel {
     global_el.amSearch?.hide()
     global_el.amContextMenu?.hide()
     global_el.amMiniEditor?.hide()
+    global_el.amToolbar?.hide()
   }
 
   // TODO 目前的一个问题在于: 用户无法很好地自定义css
@@ -167,6 +178,12 @@ export class AMPanel {
       }
       else if (item == 'miniEditor') {
         height += 276
+      }
+      else if (item == 'info') {
+        height += 276
+      }
+      else if (item == 'toolbar') {
+        height += 32
       }
       else {
         continue
