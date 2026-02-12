@@ -2,21 +2,6 @@
 /**
  * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
  */
-.am-toolbar {
-  box-sizing: border-box;
-  position: fixed;
-  left: 0;
-  top: 32px;
-  margin: 0;
-  height: 32px;
-  width: auto;
-  min-width: 200px;
-  color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
-  border-radius: 8px;
-  border: 1px solid var(--ab-tab-root-bd-color);
-}
-
 /*
  * shiki transformers style
  * https://shiki.style/packages/transformers#unstyled
@@ -555,203 +540,6 @@ div.editable-textarea-textarea {
   margin: 0 !important;
 }
 
-.editable-codeblock-p {
-  margin: 1px;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-:root {
-  --am-bright-color: #23A8F2;
-  --am-text-color: #f6f6f6;
-  --am-background-color: #2f2f2f;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --am-text-color: #1E1E1E;
-    --am-background-color: #f6f6f6;
-  }
-}
-:root {
-  --ab-tab-root-bg-color: #0d1117;
-  --ab-tab-root-bd-color: #34343f;
-  --ab-tab-root-hv-color: #363639;
-  --ab-tab-root-tx-color: #9e9e9e;
-  --ab-bright-color: orange;
-  --pre-background-color: #1b1b1b;
-  --ab-table-border-width: 1px;
-  --ab-table-border-color: #363636;
-  --ab-width-inner: 100%;
-  --ab-width-outer: 100%;
-  --ab-menu-bg-color: #1B1B1B;
-  --ab-menu-text-color: #CCCCCC;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --ab-tab-root-bg-color: #ffffff;
-    --ab-tab-root-bd-color: #e0e0e0;
-    --ab-tab-root-hv-color: #d7d7d7;
-    --ab-tab-root-tx-color: #5c5c5c;
-    --pre-background-color: #f2f2f2;
-    --ab-menu-bg-color: #ffffff;
-    --ab-menu-text-color: black;
-  }
-}
-html, body, #main, #am-config {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-html, body, #main {
-  background: transparent !important;
-}
-
-#main {
-  position: relative;
-  /* 透明区域不接收鼠标事件 */
-  pointer-events: none;
-  /* 这个区域可以接收鼠标事件 */
-}
-#main > * {
-  pointer-events: auto;
-}
-#main > button {
-  position: absolute;
-  box-sizing: border-box;
-  margin: 0;
-  bottom: 5px;
-  left: 0px;
-  height: 26px;
-  padding: 0 !important;
-  z-index: 1;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background: transparent;
-  color: var(--am-text-color);
-}
-#main > button:hover {
-  background: rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-#main > button.active > svg {
-  stroke: var(--am-bright-color);
-}
-#main > .btn-1 {
-  bottom: 5px;
-  width: 34px;
-}
-#main > .btn-2 {
-  bottom: 50px;
-}
-
-/* -------------------------------- 总菜单面板 (组合基) ------------------ */
-.show-altkey > .am-context-menu .am-context-menu-item::after {
-  display: block !important;
-}
-.show-altkey > .am-search > .am-search-suggestion > div.item::after {
-  display: block !important;
-}
-
-/* -------------------------------- 多级菜单 ---------------------------- */
-/** 基本样式
- * - am-context-menu.root-menu
- *   - li.has-children
- *     - content
- *     - am-context-menu.sub-menu (并嵌套)
- */
-.am-context-menu {
-  box-sizing: border-box;
-  position: fixed;
-  left: 0;
-  top: 32px;
-  margin: 0;
-  min-width: 180px;
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(8, auto);
-  gap: 0 0;
-  color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
-  border: 1px solid var(--ab-tab-root-bd-color);
-  border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  list-style: none;
-  padding: 4px;
-  counter-reset: alt-index 0;
-}
-.am-context-menu:not(.visible) {
-  display: none;
-}
-.am-context-menu.sub-menu:not(.visible) {
-  display: none;
-}
-.am-context-menu .am-context-menu-item {
-  box-sizing: border-box;
-  position: relative;
-  width: 100%;
-  min-width: 180px;
-  min-height: 28px;
-  margin: 0;
-  padding: 4px 12px;
-  line-height: 20px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-.am-context-menu .am-context-menu-item .left {
-  margin-right: 10px;
-}
-.am-context-menu .am-context-menu-item:hover {
-  background-color: var(--ab-tab-root-hv-color);
-}
-.am-context-menu .am-context-menu-item.focus-active {
-  background-color: var(--am-bright-color) !important;
-  color: #ffffff;
-}
-.am-context-menu .am-context-menu-item::after {
-  counter-increment: alt-index 1;
-  content: attr(data-altkey);
-  display: none;
-  position: absolute;
-  right: 28px;
-  top: 6px;
-  font-size: 12px;
-  color: var(--ab-tab-root-tx-color);
-  opacity: 0.6;
-  color: #ffffff;
-}
-.am-context-menu .am-context-menu-item.has-children::before {
-  content: "▶";
-  float: right;
-  font-size: 12px;
-  margin-top: 2px;
-}
-.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
-  position: absolute;
-  top: -4px;
-  left: calc(0px + 100%);
-}
-
-.ab-contextmenu-tooltip {
-  position: fixed;
-  z-index: 9999;
-  background: var(--background-secondary);
-  padding: 8px;
-  border-radius: 4px;
-  box-shadow: var(--shadow-elevation-high);
-  max-width: 400px;
-  min-width: 200px;
-}
-
 /* -------------------------------- 搜索栏 ------------------------------- */
 .am-search {
   width: 500px;
@@ -865,6 +653,231 @@ html, body, #main {
 .am-search .am-search-suggestion > div.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
+}
+
+/* -------------------------------- 多级菜单 ---------------------------- */
+/** 基本样式
+ * - am-context-menu.root-menu
+ *   - li.has-children
+ *     - content
+ *     - am-context-menu.sub-menu (并嵌套)
+ */
+.am-context-menu {
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  top: 32px;
+  margin: 0;
+  min-width: 180px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(8, auto);
+  gap: 0 0;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  list-style: none;
+  padding: 4px;
+  counter-reset: alt-index 0;
+}
+.am-context-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu.sub-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu .am-context-menu-item {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  min-width: 180px;
+  min-height: 28px;
+  margin: 0;
+  padding: 4px 12px;
+  line-height: 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.am-context-menu .am-context-menu-item .left {
+  margin-right: 10px;
+}
+.am-context-menu .am-context-menu-item:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-context-menu .am-context-menu-item.focus-active {
+  background-color: var(--am-bright-color) !important;
+  color: #ffffff;
+}
+.am-context-menu .am-context-menu-item::after {
+  counter-increment: alt-index 1;
+  content: attr(data-altkey);
+  display: none;
+  position: absolute;
+  right: 28px;
+  top: 6px;
+  font-size: 12px;
+  color: var(--ab-tab-root-tx-color);
+  opacity: 0.6;
+  color: #ffffff;
+}
+.am-context-menu .am-context-menu-item.has-children::before {
+  content: "▶";
+  float: right;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
+  position: absolute;
+  top: -4px;
+  left: calc(0px + 100%);
+}
+
+.ab-contextmenu-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: var(--background-secondary);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-high);
+  max-width: 400px;
+  min-width: 200px;
+}
+
+.am-toolbar {
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  top: 32px;
+  margin: 0;
+  height: 32px;
+  width: auto;
+  min-width: 200px;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+}
+.am-toolbar .am-toolbar-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 100%;
+  line-height: 32px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.am-toolbar .am-toolbar-item:hover {
+  background-color: var(--ab-menu-hover-bg-color);
+}
+
+.editable-codeblock-p {
+  margin: 1px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+:root {
+  --am-bright-color: #23A8F2;
+  --am-text-color: #f6f6f6;
+  --am-background-color: #2f2f2f;
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --am-text-color: #1E1E1E;
+    --am-background-color: #f6f6f6;
+  }
+}
+:root {
+  --ab-tab-root-bg-color: #0d1117;
+  --ab-tab-root-bd-color: #34343f;
+  --ab-tab-root-hv-color: #363639;
+  --ab-tab-root-tx-color: #9e9e9e;
+  --ab-bright-color: orange;
+  --pre-background-color: #1b1b1b;
+  --ab-table-border-width: 1px;
+  --ab-table-border-color: #363636;
+  --ab-width-inner: 100%;
+  --ab-width-outer: 100%;
+  --ab-menu-bg-color: #1B1B1B;
+  --ab-menu-text-color: #CCCCCC;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --ab-tab-root-bg-color: #ffffff;
+    --ab-tab-root-bd-color: #e0e0e0;
+    --ab-tab-root-hv-color: #d7d7d7;
+    --ab-tab-root-tx-color: #5c5c5c;
+    --pre-background-color: #f2f2f2;
+    --ab-menu-bg-color: #ffffff;
+    --ab-menu-text-color: black;
+  }
+}
+html, body, #main, #am-config {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+html, body, #main {
+  background: transparent !important;
+}
+
+#main {
+  position: relative;
+  /* 透明区域不接收鼠标事件 */
+  pointer-events: none;
+  /* 这个区域可以接收鼠标事件 */
+}
+#main > * {
+  pointer-events: auto;
+}
+#main > button {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  bottom: 5px;
+  left: 0px;
+  height: 26px;
+  padding: 0 !important;
+  z-index: 1;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  color: var(--am-text-color);
+}
+#main > button:hover {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+#main > button.active > svg {
+  stroke: var(--am-bright-color);
+}
+#main > .btn-1 {
+  bottom: 5px;
+  width: 34px;
+}
+#main > .btn-2 {
+  bottom: 50px;
+}
+
+/* -------------------------------- 总菜单面板 (组合基) ------------------ */
+.show-altkey > .am-context-menu .am-context-menu-item::after {
+  display: block !important;
+}
+.show-altkey > .am-search > .am-search-suggestion > div.item::after {
+  display: block !important;
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */

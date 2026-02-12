@@ -1,0 +1,132 @@
+/* -------------------------------- 搜索栏 ------------------------------- */
+
+.am-search {
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0; // override by js
+  left: 0; // override by js
+  z-index: 100; // 高于多级菜单
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
+
+  input.am-search-input {
+    height: 32px;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0 12px;
+    border: none;
+    outline: none;
+    color: var(--am-text-color);
+    background-color: var(--am-background-color);
+    border-radius: 8px;
+    // box-shadow: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .am-search-suggestion {
+    width: 500px;
+    box-sizing: border-box;
+    position: absolute;
+    // transform: translate(0, 2px);
+    left: 0;
+    right: 0;
+
+    z-index: 12;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: var(--ab-menu-bg-color);
+    opacity: 0.98;
+    border: 1px solid var(--ab-tab-root-bd-color);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    max-height: 400px;
+    overflow-y: auto;
+
+    >div.item {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      min-height: 28px; // (20+8+0)
+      padding: 4px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: var(--ab-tab-root-hv-color);
+      }
+
+      // Alt+Key 快捷键提示
+      &::after {
+        content: attr(data-altkey); // counter(alt-index);
+        display: none;
+        position: absolute;
+        right: 7px;
+        top: unset;
+        font-size: 12px;
+        color: var(--ab-tab-root-tx-color);
+        opacity: 0.6;
+        color: #ffffff;
+      }
+
+      // TODO value 有可能是多行文本，这里最好是有个flag来说明是不是多行，以使用不同样式
+      >.value {
+        text-overflow: ellipsis;
+        white-space: pre-wrap;
+        overflow: hidden;
+        height: auto;
+        min-height: 20px;
+        max-height: 70px; // 三行半
+      }
+      >.key {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-left: 10px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 建议列表 */
+.am-search .am-search-suggestion {
+  // .autocomplete-items
+  top: 100%;
+
+  color: var(--ab-tab-root-tx-color);
+  background-color:  var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  padding: 4px;
+  z-index: 100;    
+  max-height: 260px; // (28*9+8+0)
+  overflow-y: auto;
+
+  /* 建议列表项 */
+  >div {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 28px; // (20+8+0)
+    max-height: 98px; // 三行半
+    margin: 0;
+    padding: 4px 12px;
+    line-height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    // border-bottom: 1px solid var(--ab-tab-root-bd-color);
+
+    &:hover {
+      background-color: var(--ab-tab-root-hv-color);
+    }
+    &.focus-active {
+      background-color: var(--am-bright-color) !important; // 优先于 :hover
+      color: #ffffff;
+    }
+  }
+}
