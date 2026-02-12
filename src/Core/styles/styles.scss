@@ -3,14 +3,14 @@
  */
 
 // @use "./EditableBlock.scss";
+@use "./toolbar.scss";
 @use "../node_modules/@editableblock/core/styles/EditableBlock.scss";
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;
   max-height: 100%;
 }
-
-@use "./toolbar.scss";
 
 // #region color var
 

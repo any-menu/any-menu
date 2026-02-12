@@ -12,7 +12,7 @@ For more instructions and tutorials:
   <li>repository: https://github.com/any-menu/any-menu</li>
   <li>document: https://any-menu.github.io/any-menu/</li>
 </ul>
-!!! Note: After modifying the current settings panel, you need to restart the plugin/software for the changes to take effect.
+!!! Note: After modifying the current settings panel, when using the plugin, you need to restart the plugin; when using the software version, you need to restart the software for the changes to take effect.
 `,
   'Local dict': 'Local dict',
   'Online dict': 'Online dict',

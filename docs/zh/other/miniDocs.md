@@ -2,14 +2,14 @@
   <summary>使用说明 (中文)</summary>
   默认使用 Alt+A 打开搜索框和菜单、Alt+S 打开快速编辑器 (App版也可以用高级快捷键 Caps+M 或 Caps+N) (均可在设置中修改快捷键)
   <br><br>
-  (以上是推荐设置的快捷键，由于Obsidian官方不推荐插件默认使用快捷键，请自行分别设置 "Show panel: search and menu" 和 "Show panel: miniEditor" 这两个命令的快捷键)
+  (以上是推荐设置的快捷键，由于 Obsidian 官方不推荐插件默认使用快捷键，请自行分别设置 "Show panel: search and menu" 和 "Show panel: miniEditor" 这两个命令的快捷键)
   <br><br>
   更多说明和教程浏览:
   <ul>
     <li>仓库: https://github.com/any-menu/any-menu</li>
     <li>文档: https://any-menu.github.io/any-menu/</li>
   </ul>
-  !!! 注意: 当前设置面板修改过后，需要重启插件/软件才能生效
+  !!! 注意: 当前设置面板修改过后，需要重启插件(作为插件使用时)/软件(App版时)才能生效
 </details>
 <details>
   <summary>Instructions for Use (English)</summary>
