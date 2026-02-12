@@ -27,7 +27,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: 'Show panel: search and menu',
     // callback: () => {},
     editorCallback: async (editor, view) => { // 仅于编辑器界面才能触发的回调
-      void show_panel(editor, view)
+      void show_panel(editor, view, global_setting.key_panel.panel1)
     },
     // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
     //   { modifiers: ["Alt"], key: "A" }
@@ -39,7 +39,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: 'Show panel: miniEditor',
     // callback: () => {},
     editorCallback: (editor, view) => {
-      void show_panel(editor, view, ["miniEditor"])
+      void show_panel(editor, view, global_setting.key_panel.panel2)
     },
     // hotkeys: [
     //   { modifiers: ["Alt"], key: "S" }

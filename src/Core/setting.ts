@@ -9,6 +9,15 @@ export const global_setting: {
    *   可以在聚焦不改变的情况下直接输出文本，少了等待理论上会更快，而且能在窗口上多次操作和多次输出
    */
   focusStrategy: true | false,
+  // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
+  key_panel: {
+    panel1: string[], // 通常是搜索+多极菜单。其中 penel1 也作为 default_panel 使用
+    panel2: string[], // 通常是 miniEditor
+    panel3: string[], // 通常是 info
+    key1: string,
+    key2: string,
+    key3: string,
+  },
   /** 跨平台的通用配置。
    * - 这里是通用模块，不跨平台的不存这
    * - 这里是可序列化的配置 (可对应配置文件)，不可序列化的不放在这
@@ -103,6 +112,14 @@ export const global_setting: {
   env: 'app',
   isDebug: false,
   focusStrategy: true,
+  key_panel: {
+    panel1: ['search', 'menu'],
+    panel2: ['miniEditor'],
+    panel3: ['info'],
+    key1: 'Alt+A',
+    key2: 'Alt+S',
+    key3: 'Alt+D',
+  },
   config: {
     language: 'auto',
     panel_focus_mode: true,  // false为不抢焦点模式，true为抢焦点模式

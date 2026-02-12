@@ -110,7 +110,7 @@ export class AMPanel {
   // TODO 添加显示项，仅显示哪几个面板这样
   static show(x?: number, y?: number, list?: string[]) {
     if (!list) {
-      list = ['search', 'menu']
+      list = global_setting.key_panel.panel1
     }
 
     let is_focued = false // 只聚焦到第一个可聚焦的子面板
@@ -164,7 +164,7 @@ export class AMPanel {
   // TODO 暂不支持宽度计算
   static get_size(list?: string[]): {width: number, height: number} {
     if (!list) {
-      list = ['search', 'menu']
+      list = global_setting.key_panel.panel1
     }
 
     let width = 0

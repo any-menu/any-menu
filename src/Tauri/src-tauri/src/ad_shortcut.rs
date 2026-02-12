@@ -816,7 +816,7 @@ fn layer_caps(
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyM) => {
-            app_handle.emit("active-window-toggle", ()).unwrap();
+            app_handle.emit("active-window-toggle", 1).unwrap();
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
         },
@@ -926,7 +926,7 @@ fn _layer_space(
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyM) => {
-            app_handle.emit("active-window-toggle", ()).unwrap();
+            app_handle.emit("active-window-toggle", 1).unwrap();
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
         },
@@ -1010,7 +1010,7 @@ fn layer_shift_r(
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyM) => {
-            app_handle.emit("active-window-toggle", ()).unwrap();
+            app_handle.emit("active-window-toggle", 1).unwrap();
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             return HandlerResult::Block
         },

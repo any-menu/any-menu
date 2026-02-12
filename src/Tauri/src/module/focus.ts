@@ -6,25 +6,25 @@ import { toggleWindow } from './window'
 import { global_el } from '../../../Core/panel'
 
 // 显示面板: 搜索框+菜单
-const SHORTCUT_1 = 'Alt+A'
+const SHORTCUT_1 = global_setting.key_panel.key1
 const SHORTCUT_1_EVENT = async () => {
   await register(SHORTCUT_1, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow()
+    void toggleWindow(global_setting.key_panel.panel1)
   })
 }
 
 // 显示面板: 迷你编辑器
-const SHORTCUT_2 = 'Alt+S'
+const SHORTCUT_2 = global_setting.key_panel.key2
 const SHORTCUT_2_EVENT = async () => {
   await register(SHORTCUT_2, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow(["miniEditor"])
+    void toggleWindow(global_setting.key_panel.panel2)
   })
 }
 
 // 显示面板: 当前窗口信息 (仅debug模式开启)
-const SHORTCUT_3 = 'Alt+D'
+const SHORTCUT_3 = global_setting.key_panel.key3
 const SHORTCUT_3_EVENT = async () => {
   if (global_setting.isDebug == false) {
     console.warn('Debug mode is off, shortcut Alt+D will not be registered')
@@ -33,7 +33,7 @@ const SHORTCUT_3_EVENT = async () => {
   await register(SHORTCUT_3, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
     global_setting.state.infoText = ''
-    void toggleWindow(["info"])
+    void toggleWindow(global_setting.key_panel.panel3)
   })
 }
 
@@ -81,10 +81,16 @@ export function setupAppChangeListener() {
     const payload: any = v.payload // 临时: 2|null
 
     if (payload === null) { // 对应rust返回 `()`
-      void toggleWindow()
+      void toggleWindow(global_setting.key_panel.panel1)
+    }
+    else if (typeof payload == 'number' && payload === 1) {
+      void toggleWindow(global_setting.key_panel.panel1)
     }
     else if (typeof payload == 'number' && payload === 2) {
-      void toggleWindow(["miniEditor"])
+      void toggleWindow(global_setting.key_panel.panel2)
+    }
+    else if (typeof payload == 'object' && Array.isArray(payload)) {
+      console.error('Unknown payload for active-window-toggle2:', payload)
     }
     else if (typeof payload == 'object') {
       const json_str = JSON.stringify(payload, null, 2)
@@ -131,6 +137,7 @@ export function setupAppChangeListener() {
       }
 
       // 更新 miniEditor 面板显示内容
+      // 不主动显示，但如果已经显示了，则更新内容
       // 除了miniEditor不会被显示的情况外，如果异步信息获取足够快，这里是可能在面板显示前更新的。这里也为false
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
         if (global_el.amMiniEditor.flag === 'info') {
