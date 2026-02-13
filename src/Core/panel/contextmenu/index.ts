@@ -63,7 +63,7 @@ type MENU_NODE = {
  * 
  * 事件要RAII式管理，确保运行时简单性
  */
-export class ABContextMenu {
+export class AMContextMenu {
   // - el_parent/body
   //   - el_container .am-context-menu
 
@@ -82,8 +82,8 @@ export class ABContextMenu {
     el_parent?: HTMLElement,
     menuItems?: ContextMenuItems,
     el_input?: HTMLInputElement,
-  ): ABContextMenu {
-    const abContextMenu = new ABContextMenu(el_parent, menuItems)
+  ): AMContextMenu {
+    const abContextMenu = new AMContextMenu(el_parent, menuItems)
     if (el_input) abContextMenu.vFocus_bind_arrowKeyArea(el_input)
     return abContextMenu
   }
@@ -617,7 +617,7 @@ export class ABContextMenu {
     ]
 
     // 创建菜单实例
-    const myMenu = ABContextMenu.factory(document.body as HTMLDivElement, menuItems)
+    const myMenu = AMContextMenu.factory(document.body as HTMLDivElement, menuItems)
 
     // 找到一个目标元素并附加菜单
     const targetArea = document.getElementById('my-app') // 假设你的应用挂载点是 #my-app

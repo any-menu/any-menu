@@ -22,7 +22,7 @@
 export * from './contextmenu/index'
 export * from './search/index'
 import { AMSearch } from './search/index'
-import { ABContextMenu } from './contextmenu/index'
+import { AMContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
 import { AMToolbar } from './toolbar/index'
 import { global_setting } from '../setting'
@@ -34,7 +34,7 @@ import { global_setting } from '../setting'
 export const global_el: {
   amPanel: AMPanel | null,
   amSearch: AMSearch | null,
-  amContextMenu: ABContextMenu | null,
+  amContextMenu: AMContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
   amToolbar: AMToolbar | null,
   alt_v_state: boolean,  // 虚拟alt状态
@@ -59,7 +59,7 @@ export class AMPanel {
       global_el.amSearch = AMSearch.factory(el)
     }
     if (!global_el.amContextMenu) {
-      global_el.amContextMenu = ABContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
+      global_el.amContextMenu = AMContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
     }
     if (!global_el.amMiniEditor) {
       global_el.amMiniEditor = AMMiniEditor.factory(el)

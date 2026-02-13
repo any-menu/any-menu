@@ -5,7 +5,7 @@ import {
   TFile,
 } from 'obsidian'
 
-import { ABContextMenu } from "@/Core/panel/contextmenu"
+import { AMContextMenu } from "@/Core/panel/contextmenu"
 import { root_menu, type ContextMenuItems } from "@/Core/panel/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
 
@@ -30,7 +30,7 @@ import { global_setting } from '@/Core/setting'
  *     监听由 append_xxx() 负责
  *   - 使用逻辑: registerABContextMenu(plugin) -> new ABContextMenu_Ob(...).append_xxx(...)
  */
-export class ABContextMenu_Ob extends ABContextMenu {
+export class ABContextMenu_Ob extends AMContextMenu {
   constructor(
     public plugin: Plugin,
     public target: string, // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...

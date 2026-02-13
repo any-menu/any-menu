@@ -4,7 +4,7 @@ import {
 import { AMPanel } from '@/Core/panel/'
 // import { ABContextMenu } from '@/Core/panel/contextmenu/index'
 // import { AMSearch } from "@/Core/panel/search"
-import { initMenuData } from "@/Core/panel/search/initTool"
+import { initMenuData } from "@/Core/panel/initTool"
 import { global_setting } from '@/Core/setting'
 // import { root_menu } from "@/Core/panel/contextmenu/demo"
 

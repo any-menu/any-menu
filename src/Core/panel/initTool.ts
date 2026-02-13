@@ -1,15 +1,15 @@
 /** 依赖于搜索框和多级菜单 */
 
-import { ABContextMenu } from "../contextmenu"
-import { global_setting } from "../../setting"
-import { SEARCH_DB } from "./SearchDB"
-import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
-import { type ContextMenuItems, toml_parse } from "../contextmenu/demo"
+import { AMContextMenu } from "./contextmenu"
+import { global_setting } from "../setting"
+import { SEARCH_DB } from "./search/SearchDB"
+import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
+import { type ContextMenuItems, toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
 
 /// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
 /// 这里也要区分是 搜索框数据 / 静态菜单数据 / 动态菜单数据
-export async function initMenuData(myMenu: ABContextMenu) {
+export async function initMenuData(myMenu: AMContextMenu) {
   // #region key-value 数据
 
   // 测试数据 (非Tauri环境下或其他环境下，不让数据为空)
