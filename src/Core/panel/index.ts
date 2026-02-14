@@ -169,9 +169,11 @@ export class AMPanel {
 
     let width = 0
     let height = 0
+    let min_height = 0
     for (const item of list) {
       if (item == 'search') {
         height += 32
+        min_height = min_height > 32+260 ? min_height : 32+260 // 加建议栏的高度
       }
       else if (item == 'menu') {
         height += 248
@@ -190,6 +192,9 @@ export class AMPanel {
       }
     }
 
+    if (height < min_height) {
+      height = min_height
+    }
     return { width, height }
   }
 
