@@ -13,13 +13,9 @@ export * from './ABContextMenu_Ob'
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
   // 搜索框和多极菜单 - 元素
-  const { amSearch, amContextMenu } = AMPanel.factory(document.body as HTMLElement)
-  // const amSearch = AMSearch.factory(document.body as HTMLElement)
-  // const amContextMenu = ABContextMenu.factory(document.body as HTMLElement)
-
+  AMPanel.factory(document.body as HTMLElement)
   // 搜索框和多极菜单 - 数据内容
-  void initMenuData(amContextMenu)
-  // amContextMenu.append_data(root_menu)
+  void initMenuData()
 
   // 注册命令
   plugin.addCommand({

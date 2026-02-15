@@ -1,15 +1,44 @@
 /** 依赖于搜索框和多级菜单 */
 
-import { AMContextMenu } from "./contextmenu"
+import { global_el } from "."
+import { type AMContextMenu } from "./contextmenu"
 import { global_setting } from "../setting"
 import { SEARCH_DB } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { type ContextMenuItems, toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
 
-/// TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
-/// 这里也要区分是 搜索框数据 / 静态菜单数据 / 动态菜单数据
-export async function initMenuData(myMenu: AMContextMenu) {
+/**
+ * TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
+ * 这里也要区分是 搜索框数据 / 静态菜单数据 / 动态菜单数据
+ * 
+ * TODO 工具栏数据
+ * 
+ * TODO id 制，方便自定义脚本/按钮去引用其他词典的功能
+ * 拟定策略:
+ * - 脚本: id 为路径名
+ * - 非结构化: id 为路径+词条id
+ *   不应该用序数，这样的话字典在增删改查后会改换id (策略: 保留该方法但告知用户风险?)
+ * 话说字典应该入 id 制吗，会不会导致内存臃肿
+ * 
+ * TODO 应该可以自由指定各个字典是否是否进入: 搜索数据库、多级菜单、工具栏。为此，需要插件管理器、id 制
+ * 目前的策略是:
+ * - 量多
+ *   - 进搜索数据库，不进多级菜单
+ *   - 特性: 非结构化字典，条目数较多 (几十万)，必须动态渲染 dom
+ *   - 默认文件: 'csv', 'txt', 'json', 'yaml', 'yml'
+ * - 量少
+ *   - 进搜索数据库 + 多级菜单
+ *   - 特性: 结构化字典，条目数较少 (<1000)，可以静态渲染 dom
+ *   - 默认文件: 'toml', 'js'
+ */
+export async function initMenuData() {
+  if (!global_el.amContextMenu) {
+    console.error("AMContextMenu is not initialized")
+    return
+  }
+  const myMenu: AMContextMenu = global_el.amContextMenu
+
   // #region key-value 数据
 
   // 测试数据 (非Tauri环境下或其他环境下，不让数据为空)
@@ -133,76 +162,6 @@ export async function initMenuData(myMenu: AMContextMenu) {
       console.error("Parse error:", error)
     }
   }
-
-  // #endregion
-
-  // #region 多级展开菜单 弃用默认菜单，必须由词典提供
-  // myMenu.append_data([
-  //   {
-  //     label: 'Markdown',
-  //     children: [
-  //       { label: "表格" },
-  //       { label: "引用" },
-  //       { label: "代码块" },
-  //       { label: "公式块" },
-  //       { label: "有序列表" },
-  //       { label: "无序列表" },
-  //       { label: "---" },
-  //       { label: "标题" },
-  //       { label: "分割线" },
-  //       { label: "粗体" },
-  //       { label: "斜体" },
-  //     ]
-  //   },
-  //   {
-  //     label: 'Mermaid',
-  //     children: [
-  //       { label: "待补充" }
-  //     ]
-  //   },
-  //   {
-  //     label: '代码片段',
-  //     children: [
-  //       { label: "待补充" }
-  //     ]
-  //   },
-  //   {
-  //     label: '自定义短语',
-  //     children: [
-  //       { label: "待补充" }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Plantuml',
-  //     children: [
-  //       { label: "待补充" }
-  //     ]
-  //   },
-  //   {
-  //     label: 'Emoji',
-  //     children: [
-  //       { label: "Too many. You should use the search bar." }
-  //     ]
-  //   },
-  //   {
-  //     label: '颜表情',
-  //     children: [
-  //       { label: "Too many. You should use the search bar." }
-  //     ]
-  //   },
-  //   {
-  //     label: '表情包', // 以及svg icon。这功能会用到本体存储，要么app版才支持，要么这里应该需要联网查询。
-  //     children: [
-  //       { label: "Too many. You should use the search bar." }
-  //     ]
-  //   },
-  //   // {
-  //   //   label: '最近', // 缓存最近通过菜单插入的内容项
-  //   //   children: [
-  //   //     { label: "Too many. You should use the search bar." }
-  //   //   ]
-  //   // },
-  // ])
 
   // #endregion
 
