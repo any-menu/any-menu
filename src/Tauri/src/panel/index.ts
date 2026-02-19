@@ -1,4 +1,4 @@
-import { AMPanel, global_el } from "../../../Core/panel"
+import { AMPanel } from "../../../Core/panel"
 // import { ABContextMenu } from "../../../Core/panel/contextmenu"
 // import { AMSearch } from "../../../Core/panel/search"
 import { initMenuData } from "../../../Core/panel/initTool"
