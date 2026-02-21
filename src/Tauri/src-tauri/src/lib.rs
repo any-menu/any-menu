@@ -193,10 +193,13 @@ pub fn run() {
                         if path.exists() {
                             let _ = tauri_plugin_opener::open_path(path, None::<&str>);
                         } else {
-                            let _ = tauri_plugin_notification::NotificationExt::notification(app)
-                                .title("路径不存在")
-                                .body("找不到用户文件夹：./dict/")
-                                .show();
+                            use tauri_plugin_notification::NotificationExt;
+                                    app.notification()
+                                        .builder()
+                                        .title("Anymenu: 路径不存在")
+                                        .body("找不到用户文件夹：./dict/")
+                                        .show()
+                                        .unwrap();
                         }
                     }
                     // 仅调试用 (如正常情况无法召唤main窗口时。正常不应使用，缺少一些窗口显示后的后操作)
