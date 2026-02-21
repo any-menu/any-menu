@@ -144,7 +144,8 @@ pub fn run() {
             let menu = {
                 // 只在 debug 模式下创建 "Main (Debug)" 菜单项
                 let main_debug_item = MenuItem::with_id(app, "main", "Main (Debug)", true, None::<&str>)?;
-                Menu::with_items(app, &[&main_debug_item, &config_item, &restart_item, &quit_item])?
+                let open_user_dir_item = MenuItem::with_id(app, "open_user_dir", "Open User Dir (Debug)", true, None::<&str>)?; // 打开用户文件夹菜单项
+                Menu::with_items(app, &[&main_debug_item, &open_user_dir_item, &config_item, &restart_item, &quit_item])?
             };
             #[cfg(not(debug_assertions))]
             let menu = Menu::with_items(app, &[&config_item, &restart_item, &quit_item])?;
@@ -184,6 +185,11 @@ pub fn run() {
                             .resizable(true)
                             .build();
                         }
+                    }
+                    // 打开用户文件夹
+                    "open_user_dir" => {
+                        let path = "./dict/"; // 暂时硬编码即可
+                        let _ = tauri_plugin_opener::open_path(path, None::<&str>);
                     }
                     // 仅调试用 (如正常情况无法召唤main窗口时。正常不应使用，缺少一些窗口显示后的后操作)
                     "main" => {
