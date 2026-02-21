@@ -122,6 +122,7 @@ pub fn run() {
         .plugin(log_plugin) // 日志插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
+        .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .setup(|app| {
             if let Ok(mut state) = utils::AM_STATE.lock() {
                 state.app_handle = Some(app.app_handle().clone());
@@ -188,8 +189,15 @@ pub fn run() {
                     }
                     // 打开用户文件夹
                     "open_user_dir" => {
-                        let path = "./dict/"; // 暂时硬编码即可
-                        let _ = tauri_plugin_opener::open_path(path, None::<&str>);
+                        let path = std::path::Path::new("./dict/"); // 暂时硬编码即可
+                        if path.exists() {
+                            let _ = tauri_plugin_opener::open_path(path, None::<&str>);
+                        } else {
+                            let _ = tauri_plugin_notification::NotificationExt::notification(app)
+                                .title("路径不存在")
+                                .body("找不到用户文件夹：./dict/")
+                                .show();
+                        }
                     }
                     // 仅调试用 (如正常情况无法召唤main窗口时。正常不应使用，缺少一些窗口显示后的后操作)
                     "main" => {
