@@ -2,6 +2,7 @@
 
 import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
+import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
 import { SEARCH_DB } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
@@ -31,6 +32,10 @@ import * as yaml from 'js-yaml';
  *   - 进搜索数据库 + 多级菜单
  *   - 特性: 结构化字典，条目数较少 (<1000)，可以静态渲染 dom
  *   - 默认文件: 'toml', 'js'
+ * 
+ * TODO 设计上应该直接区分两种类型:
+ * - 命令试: 限制只能1000条
+ * - 字典: 无限制
  */
 export async function initMenuData() {
   if (!global_el.amContextMenu) {
@@ -38,6 +43,11 @@ export async function initMenuData() {
     return
   }
   const myMenu: AMContextMenu = global_el.amContextMenu
+  if (!global_el.amToolbar) {
+    console.error("AMToolbar is not initialized")
+    return
+  }
+  const myToolbar: AMToolbar = global_el.amToolbar
 
   // #region key-value 数据
 
@@ -83,7 +93,7 @@ export async function initMenuData() {
       return
     }
 
-    // 分发各种扩展名 // TODO 存在顺序问题
+    // 分发各种扩展名/特定文件名 // TODO 存在顺序问题
     if (file_ext === 'toml') {
       void fillDB_by_toml(file_content, file_name_short)
     } else if (file_ext === 'csv' || file_ext === 'txt') {
@@ -183,6 +193,25 @@ export async function initMenuData() {
           callback: plugin.process
         }
       ])
+
+      // toolbar 部分
+      // myToolbar.append_data([
+      //   {
+      //     label: 'test1',
+      //     callback: 'test1',
+      //   },
+      //   {
+      //     label: 'test2',
+      //     callback: 'test2',
+      //   }
+      // ])
+      myToolbar.append_data([
+        {
+          label: file_name_short,
+          callback: plugin.process
+        }
+      ])
+
     } catch (error) {
       console.error("Parse script error:", error)
     }

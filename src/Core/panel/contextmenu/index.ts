@@ -567,12 +567,8 @@ export class AMContextMenu {
   // #endregion
 
   public async sendText(str: string) {
-    // app环境
-    if (global_setting.env === 'app') {
-      await global_setting.api.sendText(str); this.hide(); return;
-    }
-    // obsidian插件环境
-    else if (global_setting.env === 'obsidian-plugin') {
+    // app环境 / obsidian插件环境
+    if (global_setting.env === 'app' || global_setting.env === 'obsidian-plugin') {
       await global_setting.api.sendText(str); this.hide(); return;
     }
     // 后面是通用 browser 环境
