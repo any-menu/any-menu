@@ -1,4 +1,5 @@
 import { global_setting } from "../../../Core/setting"
+import { textToIcon } from "../utils"
 
 type ToolbarItem = {
   label: string // 显示名，众多别名中的主名称
@@ -51,7 +52,8 @@ export class AMToolbar {
       const li = document.createElement('span'); this.el.appendChild(li); li.classList.add('am-toolbar-item');
         // li.setAttribute('data-altkey', alt_key_key);
         // sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
-      li.textContent = item.label
+      // li.textContent = item.label
+      li.innerHTML = textToIcon(item.label, { twoLettersForEnglish: true }).html
 
       // 菜单项图标 (非ob版暂不支持)
       if (item.icon) {}

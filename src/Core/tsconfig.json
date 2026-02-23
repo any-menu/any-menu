@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+    },
+    "module": "ESNext",
+    "target": "ES6",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true, // 导入markdown-it/plantuml-encoder等cjs模块要加这个
+    "isolatedModules": true,
+    "strictNullChecks": true,
+    "lib": [
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7",
+      "ES2021",
+      "dom.iterable"
+    ],
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": []
+}
