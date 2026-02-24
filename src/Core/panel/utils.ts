@@ -4,59 +4,50 @@
 
 type TextIconOptions = {
   /** icon 宽高（px） */
-  size?: number;
+  size: number;
   /** 圆角（px），设为 size/2 可变圆形 */
-  radius?: number;
+  // radius: number;
   /** 字体族 */
-  fontFamily?: string;
+  // fontFamily: string;
   /** 字重 */
-  fontWeight?: number | string;
+  // fontWeight: number | string;
   /** 自动根据背景色选择黑/白字；也可以手动指定如 "#fff" */
-  textColor?: "auto" | string;
+  textColor: "auto" | string;
   /** 背景色生成方式 */
-  bgMode?: "hsl" | "hex";
+  bgMode: "hsl" | "hex";
   /** HSL 模式下：饱和度与亮度 */
-  saturation?: number; // 0-100
-  lightness?: number; // 0-100
+  saturation: number; // 0-100
+  lightness: number; // 0-100
   /** 取首字符策略 */
-  pick?: "grapheme" | "codePoint";
+  pick: "grapheme" | "codePoint";
   /** 文本为空时的占位字符 */
-  fallbackChar?: string;
-
+  // fallbackChar: string;
   /**
    * 若为 true：当文本是英文/拉丁字母开头时，使用 2 个字符作为图标内容（如 "GitHub" => "GI"）
    * - 仅对 [A-Za-z] 开头的情况启用（避免中文/emoji 被截成两段）
    * - 会自动 upperCase
    */
+  twoLettersForEnglish: boolean;
+};
+
+/** 全可选版本的 TextIconOptions */
+type TextIconOptions_arg = {
+  size?: number;
+  textColor?: "auto" | string;
+  bgMode?: "hsl" | "hex";
+  saturation?: number; // 0-100
+  lightness?: number; // 0-100
+  pick?: "grapheme" | "codePoint";
   twoLettersForEnglish?: boolean;
 };
 
-const textIconOptions_default: Required< // 类型是不为空版的 TextIconOptions
-  Pick<
-    TextIconOptions,
-    | "size"
-    | "radius"
-    | "fontFamily"
-    | "fontWeight"
-    | "textColor"
-    | "bgMode"
-    | "saturation"
-    | "lightness"
-    | "pick"
-    | "fallbackChar"
-    | "twoLettersForEnglish"
-  >
-> = {
+const textIconOptions_default: TextIconOptions = {
   size: 32,
-  radius: 8,
-  fontFamily: `system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif`,
-  fontWeight: 600,
   textColor: "auto",
   bgMode: "hsl",
   saturation: 65,
   lightness: 50,
   pick: "grapheme",
-  fallbackChar: "?",
   twoLettersForEnglish: false,
 };
 
@@ -83,7 +74,7 @@ export function fnv1a32(input: string): number {
   return hash >>> 0;
 }
 
-/** 尝试按“用户可见字符”(grapheme)截取首字符（支持 emoji/组合字符更��） */
+/** 尝试按 “用户可见字符” (grapheme) 截取首字符（支持 emoji/组合字符） */
 function pickFirstGrapheme(text: string): string {
   const trimmed = text.trim();
   if (!trimmed) return "";
@@ -123,7 +114,7 @@ function clamp(n: number, min: number, max: number): number {
 }
 
 /** 计算背景色的相对亮度，决定用黑/白字（粗略但实用） */
-export function pickReadableTextColor(bgColor: string): "#000" | "#fff" {
+function pickReadableTextColor(bgColor: string): "#000" | "#fff" {
   if (bgColor.startsWith("#") && bgColor.length === 7) {
     const r = parseInt(bgColor.slice(1, 3), 16) / 255;
     const g = parseInt(bgColor.slice(3, 5), 16) / 255;
@@ -178,24 +169,31 @@ function pickTwoAsciiLetters(s: string): string {
 }
 
 /** 生成 icon 信息与 HTML 字符串 */
-export function textToIcon(text: string, opts: TextIconOptions = {}): TextIconResult {
+export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIconResult {
+  // 总配置
   const o = { ...textIconOptions_default, ...opts };
 
   const trimmed = (text ?? "").trim();
 
   let char: string;
+  const fallbackChar = '?'
+  // 空内容，用默认占位
   if (trimmed.length === 0) {
-    char = o.fallbackChar;
-  } else if (o.twoLettersForEnglish && startsWithAsciiLetter(trimmed)) {
-    char = pickTwoAsciiLetters(trimmed) || o.fallbackChar;
-  } else {
+    char = fallbackChar;
+  }
+  // 两个英文字母模式
+  else if (o.twoLettersForEnglish && startsWithAsciiLetter(trimmed)) {
+    char = pickTwoAsciiLetters(trimmed) || fallbackChar;
+  }
+  // 单字模式
+  else {
     char =
       o.pick === "grapheme"
-        ? (pickFirstGrapheme(trimmed) || o.fallbackChar)
-        : (Array.from(trimmed)[0] || o.fallbackChar);
+        ? (pickFirstGrapheme(trimmed) || fallbackChar)
+        : (Array.from(trimmed)[0] || fallbackChar);
   }
 
-  const hash = fnv1a32(trimmed || o.fallbackChar);
+  const hash = fnv1a32(trimmed || fallbackChar);
 
   const bgColor = o.bgMode === "hex" ? hashToHex(hash) : hashToHsl(hash, o.saturation, o.lightness);
   const fgColor = o.textColor === "auto" ? pickReadableTextColor(bgColor) : o.textColor;
@@ -204,31 +202,33 @@ export function textToIcon(text: string, opts: TextIconOptions = {}): TextIconRe
   const baseFontSize = Math.floor(o.size * 0.5);
   const fontSize = char.length >= 2 ? Math.floor(baseFontSize * 0.82) : baseFontSize;
 
+  // 如果需要硬编码不同风格的 textToIcon，则可以通过函数参数设置这里
+  // 如果需要方便用户自定义样式，则推荐使用 css 限制这里
   const style =
     [
-      "display:inline-flex",
-      "align-items:center",
-      "justify-content:center",
-      `width:${o.size}px`,
-      `height:${o.size}px`,
-      `border-radius:${o.radius}px`,
+      // "display:inline-flex",
+      // "align-items:center",
+      // "justify-content:center",
+      // "line-height:1",
+      // "user-select:none",
+      // "flex:0 0 auto",
+      // `width:${o.size}px`,
+      // `height:${o.size}px`,
+      // `border-radius:${o.radius}px`,
+      // `font-family:${o.fontFamily}`,
+      // `font-weight:${o.fontWeight}`,
       `background:${bgColor}`,
       `color:${fgColor}`,
-      `font-family:${o.fontFamily}`,
-      `font-weight:${o.fontWeight}`,
       `font-size:${fontSize}px`,
-      "line-height:1",
-      "user-select:none",
-      "flex:0 0 auto",
     ].join(";") + ";";
 
-  const html = `<span aria-label="${escapeHtml(trimmed || text)}" title="${escapeHtml(trimmed || text)}" style="${escapeHtml(style)}">${escapeHtml(char)}</span>`;
+  const html = `<span class="am-icon am-icon-auto" aria-label="${escapeHtml(trimmed || text)}" title="${escapeHtml(trimmed || text)}" style="${escapeHtml(style)}">${escapeHtml(char)}</span>`;
 
   return { text, trimmed, char, hash, bgColor, fgColor, html, style };
 }
 
 /** 直接创建 DOM 元素（浏览器环境） */
-export function createTextIconElement(text: string, opts: TextIconOptions = {}): HTMLSpanElement {
+function createTextIconElement(text: string, opts: TextIconOptions_arg = {}): HTMLSpanElement {
   const r = textToIcon(text, opts);
   const span = document.createElement("span");
   span.setAttribute("aria-label", r.trimmed || r.text);

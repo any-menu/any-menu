@@ -11,21 +11,46 @@
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
-  border: 1px solid var(--ab-tab-root-bd-color);
+  // border: 1px solid var(--ab-tab-root-bd-color);
+  border: none;
 
   // 单行 or 多行
   .am-toolbar-item {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 8px;
     height: 100%;
-    line-height: 32px;
+    padding: 0;
+    margin: 0 3px;
+
+    line-height: 100%;
     white-space: nowrap;
     cursor: pointer;
 
     &:hover {
-      background-color: var(--ab-menu-hover-bg-color);
+      background-color: var(--ab-menu-hover-bg-color) !important;
+    }
+
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
     }
   }
+}
+
+.am-icon-auto {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-weight: 600;
 }

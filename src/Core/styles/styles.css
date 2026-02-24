@@ -410,6 +410,12 @@ code > span.line {
 }
 
 /* ----------------------------- EditableBlock_Cm ------------------- */
+.cm-editor .cm-scroller .editable-codeblock-p[has-prefix=true] {
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0.5em !important;
+}
 .cm-editor .cm-scroller {
   /* cm 的 img.cm-widgetBuffer
    * 
@@ -426,12 +432,6 @@ code > span.line {
    * HyperMd-xxx 是使用了 HyperMd 插件的版本 (Obsidian中属于这种情况)
    * cm-xxx 是普通 codemirror 的版本 (App版本中属于这种情况)
    */
-}
-.cm-editor .cm-scroller .editable-codeblock-p[has-prefix=true] {
-  width: auto;
-  display: inline-block;
-  vertical-align: top;
-  margin-bottom: 0.5em !important;
 }
 .cm-editor .cm-scroller .HyperMD-quote.cm-line > .editable-codeblock-p,
 .cm-editor .cm-scroller .HyperMD-codeblock.cm-line > .editable-codeblock-p {
@@ -662,6 +662,12 @@ div.editable-textarea-textarea {
  *     - content
  *     - am-context-menu.sub-menu (并嵌套)
  */
+.am-context-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu.sub-menu:not(.visible) {
+  display: none;
+}
 .am-context-menu {
   box-sizing: border-box;
   position: fixed;
@@ -682,12 +688,6 @@ div.editable-textarea-textarea {
   list-style: none;
   padding: 4px;
   counter-reset: alt-index 0;
-}
-.am-context-menu:not(.visible) {
-  display: none;
-}
-.am-context-menu.sub-menu:not(.visible) {
-  display: none;
 }
 .am-context-menu .am-context-menu-item {
   box-sizing: border-box;
@@ -759,20 +759,43 @@ div.editable-textarea-textarea {
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
-  border: 1px solid var(--ab-tab-root-bd-color);
+  border: none;
 }
 .am-toolbar .am-toolbar-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px;
+  padding: 0;
+  margin: 0 3px;
   height: 100%;
-  line-height: 32px;
+  line-height: 100%;
   white-space: nowrap;
   cursor: pointer;
 }
 .am-toolbar .am-toolbar-item:hover {
-  background-color: var(--ab-menu-hover-bg-color);
+  background-color: var(--ab-menu-hover-bg-color) !important;
+}
+.am-toolbar .am-toolbar-item:first-child {
+  margin-left: 0;
+}
+.am-toolbar .am-toolbar-item:last-child {
+  margin-right: 0;
+}
+
+.am-icon-auto {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-weight: 600;
 }
 
 .editable-codeblock-p {
