@@ -759,34 +759,35 @@ div.editable-textarea-textarea {
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
-  border: none;
+  border: 1px solid var(--ab-tab-root-bd-color);
 }
 .am-toolbar .am-toolbar-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  margin: 0 3px;
   height: 100%;
+  padding: 0;
+  margin: 0 4px;
   line-height: 100%;
+  border-radius: 8px;
   white-space: nowrap;
   cursor: pointer;
 }
 .am-toolbar .am-toolbar-item:hover {
-  background-color: var(--ab-menu-hover-bg-color) !important;
+  background-color: var(--ab-tab-root-hv-color) !important;
 }
 .am-toolbar .am-toolbar-item:first-child {
-  margin-left: 0;
+  margin-left: 4px;
 }
 .am-toolbar .am-toolbar-item:last-child {
-  margin-right: 0;
+  margin-right: 4px;
 }
 
-.am-icon-auto {
+.am-icon, .am-icon-auto {
   display: inline-flex;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
   align-items: center;
   justify-content: center;
   -webkit-user-select: none;
@@ -796,6 +797,11 @@ div.editable-textarea-textarea {
   border-radius: 8px;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight: 600;
+  background-color: var(--ab-menu-bg-color) !important;
+  color: currentColor !important;
+}
+.am-icon:hover, .am-icon-auto:hover {
+  background-color: var(--ab-tab-root-hv-color) !important;
 }
 
 .editable-codeblock-p {
