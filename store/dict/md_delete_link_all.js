@@ -20,7 +20,7 @@ const plugin = {
             // const headingMatch = lines[i].match(/^(#{1,6})\s*(.*)$/)
             // if (!headingMatch) continue
             
-            lines[i] = lines[i].replace(/\[([^\]]+)\]\([^)]+\)/g, '') // 去除链接文本
+            lines[i] = lines[i].replace(/\[([^\]]*)\]\([^)]+\)/g, '') // 去除链接文本
         }
         str = lines.join('\n')
 
