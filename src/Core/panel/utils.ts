@@ -227,13 +227,13 @@ export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIc
   return { text, trimmed, char, hash, bgColor, fgColor, html, style };
 }
 
-/** 直接创建 DOM 元素（浏览器环境） */
-function createTextIconElement(text: string, opts: TextIconOptions_arg = {}): HTMLSpanElement {
-  const r = textToIcon(text, opts);
-  const span = document.createElement("span");
-  span.setAttribute("aria-label", r.trimmed || r.text);
-  span.title = r.trimmed || r.text;
-  span.style.cssText = r.style;
-  span.textContent = r.char;
-  return span;
-}
+// /** 直接创建 DOM 元素（浏览器环境） */
+// function createTextIconElement(text: string, opts: TextIconOptions_arg = {}): HTMLSpanElement {
+//   const r = textToIcon(text, opts);
+//   const span = document.createElement("span");
+//   span.setAttribute("aria-label", r.trimmed || r.text);
+//   span.title = r.trimmed || r.text;
+//   span.style.cssText = r.style;
+//   span.textContent = r.char;
+//   return span;
+// }
