@@ -46,7 +46,7 @@ export const global_el: {
   amToolbar: null,
   alt_v_state: false
 }
-let alt_key_flag = false        // 按下过 alt+key 组合键
+let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况
 
 /** AMPanel 使用单例模式管理 */
 export class AMPanel {
@@ -72,6 +72,7 @@ export class AMPanel {
     {
       el.addEventListener('keydown', (ev) => {
         if (ev.key === 'Alt') {
+          alt_key_flag = false
           ev.preventDefault() // 不要触发窗口的alt键功能
           el?.classList.add('show-altkey')
         }
@@ -109,6 +110,16 @@ export class AMPanel {
 
   // TODO 添加显示项，仅显示哪几个面板这样
   static show(x?: number, y?: number, list?: string[]) {
+    // 设置初始的 alt 状态
+    // 
+    // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
+    // 但事实上，在 app 环境中，alt 按下的时候前端未显示，前端是无法获取该 alt 按下状态的
+    // 
+    // 例如: global_el.alt_v_state = false
+    // 这里最好是根据是否 alt+key 召唤出面板来决定初始的虚拟 alt 状态
+    // 可惜前端无法实现，又不想弄后端，搞太复杂
+    alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
+
     if (!list) {
       list = global_setting.key_panel.panel1
     }
