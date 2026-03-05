@@ -5,17 +5,18 @@ import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
+  global_setting.env = 'app'
+
+  // 语言环境
   // 使用浏览器原生 API
   // 也可以改为调用 Tauri Windows 接口处理 'auto' 类型
-  const userLocale = navigator.language; // 例如: 'zh-CN', 'en-US', 'ja-JP'
+  const userLocale = navigator.language // 例如: 'zh-CN', 'en-US', 'ja-JP'
   const mainLanguage = userLocale.split('-')[0]; // 'zh', 'en', 'ja'
   if (global_setting.config.language == 'auto') {
     global_setting.state.language = mainLanguage
   } else {
     global_setting.state.language = global_setting.config.language
   }
-
-  global_setting.env = 'app'
 
   global_setting.api.getCursorXY = async () => {
     const pos: any = await invoke("get_caret");
@@ -60,15 +61,6 @@ export function initApi() {
     await invoke("send", { text: str, method: global_setting.config.send_text_method })
   }
 
-  global_setting.api.readFile = async (relPath: string) => {
-    const file_content: string|unknown = await invoke("read_file", { path: relPath })
-    if (typeof file_content !== 'string') {
-      console.error("Invalid file content format")
-      return null
-    }
-    return file_content
-  }
-
   global_setting.api.readFolder = async (relPath: string) => {
     const files: string[]|null = await invoke("read_folder", { path: relPath })
     if (typeof files !== 'object' || !Array.isArray(files)) {
@@ -76,6 +68,15 @@ export function initApi() {
       return []
     }
     return files
+  }
+
+  global_setting.api.readFile = async (relPath: string) => {
+    const file_content: string|unknown = await invoke("read_file", { path: relPath })
+    if (typeof file_content !== 'string') {
+      console.error("Invalid file content format")
+      return null
+    }
+    return file_content
   }
 
   global_setting.api.writeFile = async (relPath: string, content: string, _isappend?: boolean): Promise<boolean> => {
