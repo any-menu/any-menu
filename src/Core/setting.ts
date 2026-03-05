@@ -102,21 +102,27 @@ export const global_setting: {
    *   获得编辑器对象并使用editor api (又可能是通用浏览器环境、obsidian api、其他) 等
    * 
    * 所有的 relPath 均基于 "不基于" config.dict_paths 目录进行，如果要进 dict_paths 自行拼接
+   * 
+   * 通用 api 需要满足能在通用环境下执行，尽管不一定存在在通用环境下调用的情况
    */
   api: {
     readFile: (relPath: string) => Promise<string | null>
     readFolder: (relPath: string) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
-    loadConfig: () => Promise<boolean> // 从配置文件同步的 global config 对象 (注意 app 和 obsidian 版配置文件不同)
-    saveConfig: () => Promise<boolean> // 从 global config 对象同步到配置文件 (注意 app 和 obsidian 版配置文件不同)
+    // 从配置文件同步的 global config 对象 (注意 app 和 obsidian 版配置文件不同)
+    // 如果没有文件，则自动生成默认配置文件
+    // string 类型是为了 toml 以 raw 形式读取
+    loadConfig: () => Promise<boolean|string>
+    // 从 global config 对象同步到配置文件 (注意 app 和 obsidian 版配置文件不同)
+    saveConfig: () => Promise<boolean>
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
     sendText: (text: string) => Promise<void>
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null> // 统一的网络请求接口，并简化try/catch
   },
-  /** 通常是any|null类型，是特有环境临时存的东西 */
+  /** 通常是 any|null 类型，特有环境临时存的东西，部分环境使用而部分环境用不着 */
   other: {
     obsidian_plugin: any|null,
     obsidian_ctx: any|null, // type: MarkdownPostProcessorContext

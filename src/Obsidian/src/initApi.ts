@@ -6,8 +6,9 @@ import {
 } from 'obsidian'
 import { RequestUrlParam, requestUrl } from 'obsidian'
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
-import { getCursorInfo } from './contextmenu'
 import { global_setting, UrlRequestConfig, UrlResponse } from '@/Core/setting'
+import { getCursorInfo } from './contextmenu'
+import { AM_SETTINGS_DEFAULT } from "./SettingTab"
 
 export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用
@@ -173,6 +174,38 @@ export function initApi(plugin: Plugin) {
       console.error(`Failed to delete file at path: ${targetPath}`, error);
       return false;
     }
+  }
+
+  // obsidian 专用api: plugin.loadData, plugin.saveData 的封装
+  global_setting.api.loadConfig = async (): Promise<boolean> => {
+    if (!global_setting.other.obsidian_plugin) return false
+    const plugin = global_setting.other.obsidian_plugin
+
+    const data = await plugin.loadData() // 如果没有配置文件则为null
+    plugin.settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
+
+    // 需要保持一致性，obsidian 专属设置与通用的 global 设置
+    global_setting.isDebug = plugin.settings.isDebug
+    global_setting.config = plugin.settings.config
+
+    // 如果没有配置文件则生成一个默认值的配置文件
+    if (!data) {
+      plugin.saveData(plugin.settings)
+    }
+    return true
+  }
+
+  // obsidian 专用api: plugin.loadData, plugin.saveData 的封装
+  global_setting.api.saveConfig = async (): Promise<boolean> => {
+    if (!global_setting.other.obsidian_plugin) return false
+    const plugin = global_setting.other.obsidian_plugin
+
+    // 需要保持一致性，obsidian 专属设置与通用的 global 设置
+    global_setting.isDebug = plugin.settings.isDebug
+    global_setting.config = plugin.settings.config
+
+    await plugin.saveData(plugin.settings)
+    return true
   }
 
   // 后端为 obsidian 时使用

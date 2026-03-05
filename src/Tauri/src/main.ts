@@ -6,16 +6,12 @@ initApi()
 
 // #region 启动时阅读配置文件
 
-import { load_config, save_config } from './config'
-
 let is_init = false
 async function init() {
-  if (!is_init) {
-    is_init = true
-    const result = await load_config()
-    if (result.trim() == '') { console.error('配置文件读取/初始化失败'); return }
-    await save_config(result)
-  }
+  if (is_init) return
+  is_init = true
+  const result = await global_setting.api.loadConfig()
+  if (!result) { console.error('配置文件读取/初始化失败'); return }
 }
 void init()
 
