@@ -1,7 +1,7 @@
 {
   "name": "any-menu",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.5",
   "author": "LincZero",
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",

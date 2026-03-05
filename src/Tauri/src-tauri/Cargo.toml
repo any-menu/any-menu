@@ -1,6 +1,6 @@
 [package]
 name = "any-menu-app"
-version = "0.1.0"
+version = "1.0.5"
 description = "A powerful input method assistant / editor assistant"
 authors = ["LincZero"]
 edition = "2024"
