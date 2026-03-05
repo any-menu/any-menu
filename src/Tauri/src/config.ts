@@ -69,14 +69,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   initSettingTab_2(tab_nav_container, tab_content_container)
 })
 
-export async function load_config() {
+export async function load_config(): Promise<string> {
   let file_content: string = ''
 
   // 读取配置文件
   try {
-    const result = await invoke("read_file", {
-      path: CONFIG_PATH,
-    })
+    const result = await global_setting.api.readFile(CONFIG_PATH)
     if (typeof result !== 'string') {
       throw new Error("Invalid file content format")
     }
