@@ -245,7 +245,7 @@ pub fn run() {
             get_info, // 其他类 // get_selected, 
             text::send,
             read_file, read_folder, create_file, write_file, delete_file, // 文件类
-            toml::config_read_as_json, toml::config_write_from_json, // 文件类 - 配置文件版
+            toml::config_read_to_json, toml::config_write_from_json, // 文件类 - 配置文件版
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

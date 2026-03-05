@@ -8,32 +8,35 @@
  * - 读取toml
  * - 然后像修改 object 那样任意修改内容 (增删查改字段)
  * - 最后保存回 toml 文件 (且必须保留注释)
+ * 
+ * 注意:
+ * 该模块来源于 GPT-5.2 + review 修改
  */
 
 use std::{fs, path::PathBuf};
 
-// use tauri::Manager;
 use serde_json::Value as Json;
 use toml_edit::{Array, DocumentMut, Item, Table, Value};
 
 #[tauri::command]
 fn config_read_raw(path: &str) -> Result<String, String> {
-    ensure_default_file(&path)?;
+    config_ensure_file(&path)?;
     fs::read_to_string(&path).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn config_read_as_json(path: &str) -> Result<Json, String> {
+pub fn config_read_to_json(path: &str) -> Result<Json, String> {
     let raw = config_read_raw(path)?;
-    // 注意：这里用 toml_edit parse，然后转成“普通 JSON”
+    // 先用 toml_edit::DocumentMut 解析
     let doc = raw.parse::<DocumentMut>().map_err(|e| e.to_string())?;
+    // 然后转 JSON 返回
     Ok(item_to_json(doc.as_item()))
 }
 
 /// 前端传入“最终 object”（任意增删改字段），后端合并到原 TOML，并写回（保留注释）
 #[tauri::command]
 pub fn config_write_from_json(path: &str, new_json: Json) -> Result<(), String> {
-    ensure_default_file(&path)?;
+    config_ensure_file(&path)?;
     let raw = fs::read_to_string(&path).map_err(|e| e.to_string())?;
     let mut doc = raw.parse::<DocumentMut>().map_err(|e| e.to_string())?;
 
@@ -43,9 +46,9 @@ pub fn config_write_from_json(path: &str, new_json: Json) -> Result<(), String> 
     Ok(())
 }
 
-// -----------------------------
-// 核心：合并逻辑（尽量“原地改”，从而保留注释/格式）
-// -----------------------------
+/// json -> toml (保留原 toml 注释)
+/// 核心：合并逻辑（尽量“原地改”，从而保留注释/格式）
+/// @author GPT-5.2
 fn merge_item_with_json(item: &mut Item, json: &Json) -> Result<(), String> {
     match json {
         Json::Object(map) => {
@@ -101,9 +104,7 @@ fn ensure_table(item: &mut Item) -> &mut Table {
     item.as_table_mut().unwrap()
 }
 
-// -----------------------------
-// JSON <-> TOML (toml_edit::Item) 转换（最小 demo 版本）
-// -----------------------------
+/// json -> toml (toml_edit::Item) 转换（最小 demo 版本）
 fn json_to_item(json: &Json) -> Result<Item, String> {
     match json {
         Json::Null => Err("TOML has no null; use null only as 'delete' marker".into()),
@@ -140,6 +141,7 @@ fn json_to_item(json: &Json) -> Result<Item, String> {
     }
 }
 
+/// json -> value
 fn json_to_value(json: &Json) -> Result<Value, String> {
     match json {
         Json::Null => Err("TOML has no null".into()),
@@ -168,7 +170,7 @@ fn json_to_value(json: &Json) -> Result<Value, String> {
     }
 }
 
-/** 转 json */
+/// toml -> json
 fn item_to_json(item: &Item) -> Json {
     match item {
         Item::None => Json::Null,
@@ -197,6 +199,7 @@ fn item_to_json(item: &Item) -> Json {
     }
 }
 
+/// value -> json
 fn value_to_json(v: &Value) -> Json {
     match v {
         Value::String(s) => Json::String(s.value().to_string()),
@@ -217,7 +220,7 @@ fn value_to_json(v: &Value) -> Json {
 }
 
 // 文件路径与默认内容 (相对路径转绝对路径)
-// fn toml_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+// fn config_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
 //     let dir = app
 //         .path()
 //         .app_config_dir()
@@ -226,8 +229,8 @@ fn value_to_json(v: &Value) -> Json {
 //     Ok(dir.join("app.toml"))
 // }
 
-// 保证配置文件存在
-fn ensure_default_file(path: &str) -> Result<(), String> {
+/// 保证配置文件和内容存在
+fn config_ensure_file(path: &str) -> Result<(), String> {
     if PathBuf::from(path).exists() {
         return Ok(());
     }
@@ -283,7 +286,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export async function demo() {
   // 1) 读成 object
-  const obj = (await invoke("read_toml_as_json")) as any;
+  const obj = (await invoke("config_read_to_json")) as any;
 
   // 2) 像改普通 JS object 一样随便改（增删查改）
   obj.title = "Changed Title";
@@ -299,7 +302,7 @@ export async function demo() {
   obj.version = null;
 
   // 3) 写回（保留注释）
-  await invoke("write_toml_from_json", { newJson: obj });
+  await invoke("config_write_from_json", { newJson: obj });
 
   // 你也可以再读 raw 看注释是否还在
   const raw = (await invoke("read_toml_raw")) as string;
