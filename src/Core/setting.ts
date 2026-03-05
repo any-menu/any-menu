@@ -22,6 +22,8 @@ export const global_setting: {
    * - 这里是通用模块，不跨平台的不存这
    * - 这里是可序列化的配置 (可对应配置文件)，不可序列化的不放在这
    * - 用户不可配置的硬编码也不放在这
+   * 
+   * 该内容修改后，应该同步到配置文件
    */
   config: {
     language: 'auto'|'English'|'中文'|string // 语言
@@ -64,8 +66,19 @@ export const global_setting: {
     app_black_list: string[],
     // app是否使用高级快捷键，TODO 未起作用
     app_ad_shortcut: boolean,
+
+    // 本地的词典/插件管理
+    plugins: {
+      name: string,
+      version?: string,
+      enabled: boolean,
+      enabled_by_searchDB: boolean,
+      enabled_by_toolbar: boolean,    // 词典来源不可用，避免数量过多 (未支持动态加载)
+      enabled_by_contextMenu: boolean,// 词典来源不可用，避免数量过多 (未支持动态加载)
+    }[],
   },
-  config_: { // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
+  // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
+  config_: {
     is_auto_startup: boolean, // 是否开机自启
     pinyin_method: 'pinyin', //  目前仅支持普通拼音，后续可能加入其他拼音方案甚至形码
     menu_position: 'cursor'|'mouse'|'screen', // 窗口出现位置，插入符光标优先|鼠标位置|屏幕中心
@@ -95,6 +108,8 @@ export const global_setting: {
     readFolder: (relPath: string) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
+    loadConfig: () => Promise<boolean> // 从配置文件同步的 global config 对象
+    saveConfig: () => Promise<boolean> // 从 global config 对象同步到配置文件
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
@@ -136,6 +151,8 @@ export const global_setting: {
     note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     app_black_list: ['- Obsidian v'],
     app_ad_shortcut: true,
+
+    plugins: [],
   },
   config_: {
     is_auto_startup: false,
@@ -155,6 +172,8 @@ export const global_setting: {
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
+    loadConfig: async () => { console.error("需实现 api.readConfig 方法"); return false },
+    saveConfig: async () => { console.error("需实现 api.writeConfig 方法"); return false },
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     getInfo: async () => { console.error("需实现 api.getInfo 方法"); return null },
