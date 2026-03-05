@@ -108,8 +108,8 @@ export const global_setting: {
     readFolder: (relPath: string) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
-    loadConfig: () => Promise<boolean> // 从配置文件同步的 global config 对象
-    saveConfig: () => Promise<boolean> // 从 global config 对象同步到配置文件
+    loadConfig: () => Promise<boolean> // 从配置文件同步的 global config 对象 (注意 app 和 obsidian 版配置文件不同)
+    saveConfig: () => Promise<boolean> // 从 global config 对象同步到配置文件 (注意 app 和 obsidian 版配置文件不同)
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
