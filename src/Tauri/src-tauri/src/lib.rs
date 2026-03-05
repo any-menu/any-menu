@@ -37,6 +37,7 @@ use file::{
     write_file,
     delete_file
 };
+mod toml;
 mod focus;
 mod ad_shortcut;
 mod utils;
@@ -240,10 +241,11 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             greet,
-            get_caret, get_caret_debug, get_screen_size, // size类
+            get_caret, get_caret_debug, get_screen_size, // caret size 类
             get_info, // 其他类 // get_selected, 
             text::send,
             read_file, read_folder, create_file, write_file, delete_file, // 文件类
+            toml::config_read_as_json, toml::config_write_from_json, // 文件类 - 配置文件版
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

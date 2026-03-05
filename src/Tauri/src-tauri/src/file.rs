@@ -1,6 +1,10 @@
 use std::fs;
 use std::path::Path;
 
+// TODO 后端应拥有一份与前端一致的配置，有时会用到
+// 目前的逻辑是后端读取文件并配置给前端后，自己没存一份配置
+// 而且后端只提供了读写 api，不参与解析
+
 #[tauri::command]
 pub fn read_file(path: &str) -> Option<String> {
     match fs::read_to_string(&path) {
