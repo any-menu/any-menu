@@ -72,10 +72,12 @@ export const global_setting: {
       name: string,
       version?: string,
       enabled: boolean,
-      enabled_by_searchDB: boolean,
-      enabled_by_toolbar: boolean,    // 词典来源不可用，避免数量过多 (未支持动态加载)
-      enabled_by_contextMenu: boolean,// 词典来源不可用，避免数量过多 (未支持动态加载)
+      // 弃用原因: 自定义顺序不方便
+      // enabled_by_searchDB: boolean,
+      // enabled_by_toolbar: boolean, // 词典来源不可用，避免数量过多 (未支持动态加载)
+      // enabled_by_contextMenu: boolean,// 词典来源不可用，避免数量过多 (未支持动态加载)
     }[],
+    toolbar_list: string[],
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -131,10 +133,10 @@ export const global_setting: {
   }
 } = {
   env: 'app',
-  isDebug: false,
+  isDebug: true,
   focusStrategy: true,
   key_panel: {
-    panel1: ['search', 'menu'],
+    panel1: ['search', 'toolbar', 'menu'],
     panel2: ['miniEditor'],
     panel3: ['info'],
     key1: 'Alt+A',
@@ -159,6 +161,7 @@ export const global_setting: {
     app_ad_shortcut: true,
 
     plugins: [],
+    toolbar_list: ['1', '2', '3'],
   },
   config_: {
     is_auto_startup: false,

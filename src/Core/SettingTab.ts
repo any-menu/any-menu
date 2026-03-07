@@ -22,6 +22,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   // 或者像 vue 那样响应式更新，watch (local_dict_list -> update web_dict_list)
   void initSettingTab_localDict(tab_nav_container, tab_content_container)
   void initSettingTab_webDict(tab_nav_container, tab_content_container)
+  void initSettingTab_toolbar(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
 }
@@ -86,7 +87,10 @@ function local_dict_list_onChange() {
 // function local_dict_list_add() {}
 // function local_dict_list_remove() {}
 
-/** 网络字典 */
+/**
+ * 网络字典
+ * id (debug) | 路径 | 名字 | 是否下载 | 是否启用
+ */
 async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const api = new API()
 
@@ -187,7 +191,10 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   }
 }
 
-/** 本地字典 */
+/**
+ * 本地字典
+ * 名字 | 路径 | 卸载 | 是否启用
+ */
 async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Local dict');
@@ -202,7 +209,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
     const tr = document.createElement('tr'); table_thead.appendChild(tr);
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Name');
-    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Path');
+    // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Path');
     const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
@@ -225,8 +232,10 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         const relPath = item.replace(global_setting.config.dict_paths, '')
         local_dict_list.push({path: item, relPath: relPath, isDownloaded: false, isEnabled: false})
         const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item);
+        // TODO 如果是 app 版本，这里可以打开配置所在文件夹的
+        // obsidian 版本似乎没办法 (如果在库内倒能高亮定位，库外应该不行？)
         const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
-        const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
+        // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
         const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '卸载'; td4.classList.add('btn');
           td4.textContent = '已下载'; td4.setAttribute('color', 'green');
           td4.onclick = async () => {
@@ -251,5 +260,22 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     } catch (error) {
       table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
     }
+  }
+}
+
+/**
+ * 自定义工具栏
+ */
+function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = ('工具栏');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'toolbar-custom'); tab_content.setAttribute('index', 'toolbar-custom');
+
+  const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = `工具栏自定义。可自定义图标、顺序、启用哪些文件等
+\n如果未配置，则默认会使用已启用的脚本文件`;
+  for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
+    const toolbar_item = document.createElement('div'); tab_content.appendChild(toolbar_item);
+      toolbar_item.textContent = i + ' - ' + global_setting.config.toolbar_list[i];
   }
 }
