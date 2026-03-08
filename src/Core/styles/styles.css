@@ -804,13 +804,13 @@ div.editable-textarea-textarea {
   background-color: var(--ab-tab-root-hv-color) !important;
 }
 
-div.toolbar-setting {
+.tab-root div.toolbar-setting {
   width: 100%;
   height: auto;
   margin: 20px 0;
   padding: 0 10px;
 }
-div.toolbar-setting button {
+.tab-root div.toolbar-setting button {
   position: unset;
   margin: 0;
   padding: 0;
@@ -818,7 +818,7 @@ div.toolbar-setting button {
   color: currentColor;
   border: none;
 }
-div.toolbar-setting > div {
+.tab-root div.toolbar-setting > div {
   display: block;
   width: 100%;
   height: 32px;
@@ -827,27 +827,37 @@ div.toolbar-setting > div {
   display: flex;
   align-items: center;
 }
-div.toolbar-setting > div > * {
+.tab-root div.toolbar-setting > div > * {
   height: 30px;
   border: none;
   box-shadow: none;
   outline: none;
 }
-div.toolbar-setting > div > .drag-btn {
+.tab-root div.toolbar-setting > div > .drag-btn {
   flex: 0 0 auto;
   margin-right: 10px;
 }
-div.toolbar-setting > div > .name {
+.tab-root div.toolbar-setting > div > .name {
   flex: 1 1 auto;
   background: none;
   color: currentColor;
 }
-div.toolbar-setting > div > .delete-btn {
+.tab-root div.toolbar-setting > div > .delete-btn {
   flex: 0 0 auto;
   margin-left: auto;
 }
-div.toolbar-setting .add-btn {
+
+.tab-root .toolbar-setting-add-btn, .tab-root .toolbar-setting-refresh-btn {
+  position: unset;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: currentColor;
+  border: none;
   float: right;
+}
+.tab-root .toolbar-setting-add-btn {
+  margin: 0 10px 0 16px;
 }
 
 .editable-codeblock-p {

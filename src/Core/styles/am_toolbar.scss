@@ -64,7 +64,7 @@
   }
 }
 
-div.toolbar-setting {
+.tab-root div.toolbar-setting {
   width: 100%;
   height: auto;
   margin: 20px 0;
@@ -113,7 +113,20 @@ div.toolbar-setting {
       margin-left: auto;
     }
   }
-  .add-btn {
+}
+
+.tab-root {
+  .toolbar-setting-add-btn, .toolbar-setting-refresh-btn {
+    position: unset;
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: currentColor;
+    border: none;
+
     float: right;
+  }
+  .toolbar-setting-add-btn {
+    margin: 0 10px 0 16px;
   }
 }

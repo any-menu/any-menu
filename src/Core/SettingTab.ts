@@ -275,20 +275,62 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
   const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = `工具栏自定义。可自定义图标、顺序、启用哪些文件等
 \n如果未配置，则默认会使用已启用的脚本文件`;
 
-  // GUI 内容。将修改同步回
+  // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
   const toolbar_container = document.createElement('div'); tab_content.appendChild(toolbar_container); toolbar_container.classList.add('toolbar-setting')
+
+  // 初次渲染
   for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
+    create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
+  }
+
+  // Add 按钮
+  const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('toolbar-setting-add-btn');
+    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = 'Add';
+  add_btn.addEventListener('click', () => {
+    const newName = '';
+    const newIndex = global_setting.config.toolbar_list.length;
+    global_setting.config.toolbar_list.push(newName); global_setting.api.saveConfig();
+    const { toolbar_item_name } = create_toolbarItem_row(newName, newIndex);
+    toolbar_item_name.focus();
+  });
+
+  // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
+  const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('toolbar-setting-refresh-btn');
+    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = 'Refresh';
+  refresh_btn.addEventListener('click', () => {
+    toolbar_container.innerHTML = ''
+    for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
+      create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
+    }
+  });
+
+  // 创建一行 toolbar item，并负责把事件绑定到 global_setting
+  function create_toolbarItem_row(name: string, index: number) {
     const toolbar_item = document.createElement('div'); toolbar_container.appendChild(toolbar_item);
+
     const toolbar_item_drag = document.createElement('button'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
       toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
+
     const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
-      toolbar_item_name.value = global_setting.config.toolbar_list[i];
+      toolbar_item_name.value = name;
+    toolbar_item_name.addEventListener('change', () => {
+      global_setting.config.toolbar_list[index] = toolbar_item_name.value; global_setting.api.saveConfig();
+    });
+
     // icon 选项暂不支持
-    const toolbar_item_btn = document.createElement('button'); toolbar_item.appendChild(toolbar_item_btn); toolbar_item_btn.classList.add('delete-btn');
-      toolbar_item_btn.innerHTML = SVG_ICON_DELETE; toolbar_item_btn.title = 'Delete';
+
+    const toolbar_item_delete = document.createElement('button'); toolbar_item.appendChild(toolbar_item_delete); toolbar_item_delete.classList.add('delete-btn');
+      toolbar_item_delete.innerHTML = SVG_ICON_DELETE; toolbar_item_delete.title = 'Delete';
+    toolbar_item_delete.addEventListener('click', () => {
+      if (index < 0 || index >= global_setting.config.toolbar_list.length) return;
+
+      global_setting.config.toolbar_list.splice(index, 1); global_setting.api.saveConfig();
+      toolbar_item.remove();
+    });
+
+    return { toolbar_item, toolbar_item_name } // 返回 toolbar_item_name 方便聚焦
   }
-  const add_btn = document.createElement('button'); toolbar_container.appendChild(add_btn); add_btn.classList.add('add-btn');
-    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = 'Add';
+  // #endregion
 }
 
 // take from https://lucide.dev/icons/grip
@@ -310,4 +352,10 @@ const SVG_ICON_ADD = `<svg xmlns="http://www.w3.org/2000/svg"
   width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
   <path d="M5 12h14"/>
   <path d="M12 5v14"/>
+</svg>`
+// take from https://lucide.dev/icons/refresh-cw
+const SVG_ICON_REFRESH = `<svg xmlns="http://www.w3.org/2000/svg"
+  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw-icon lucide-refresh-cw">
+  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
+  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
 </svg>`
