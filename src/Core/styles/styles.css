@@ -818,7 +818,7 @@ div.editable-textarea-textarea {
   color: currentColor;
   border: none;
 }
-.tab-root div.toolbar-setting > div {
+.tab-root div.toolbar-setting > div.toolbar-setting-item {
   display: block;
   width: 100%;
   height: 32px;
@@ -827,22 +827,25 @@ div.editable-textarea-textarea {
   display: flex;
   align-items: center;
 }
-.tab-root div.toolbar-setting > div > * {
+.tab-root div.toolbar-setting > div.toolbar-setting-item > * {
   height: 30px;
+  line-height: 30px;
   border: none;
   box-shadow: none;
   outline: none;
 }
-.tab-root div.toolbar-setting > div > .drag-btn {
+.tab-root div.toolbar-setting > div.toolbar-setting-item > .drag-btn {
   flex: 0 0 auto;
   margin-right: 10px;
+  cursor: grab !important;
+  opacity: 0.6;
 }
-.tab-root div.toolbar-setting > div > .name {
+.tab-root div.toolbar-setting > div.toolbar-setting-item > .name {
   flex: 1 1 auto;
   background: none;
   color: currentColor;
 }
-.tab-root div.toolbar-setting > div > .delete-btn {
+.tab-root div.toolbar-setting > div.toolbar-setting-item > .delete-btn {
   flex: 0 0 auto;
   margin-left: auto;
 }

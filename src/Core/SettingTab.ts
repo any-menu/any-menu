@@ -276,9 +276,22 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 \n如果未配置，则默认会使用已启用的脚本文件`;
 
   // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
-  const toolbar_container = document.createElement('div'); tab_content.appendChild(toolbar_container); toolbar_container.classList.add('toolbar-setting')
 
-  // 初次渲染
+  // 行容器
+  const toolbar_container = document.createElement('div'); tab_content.appendChild(toolbar_container); toolbar_container.classList.add('toolbar-setting')
+  // dataset.index ('data-index') 用于表示当前行所在元素是第几行。并且该值能在 delete/drag 操作后保持正确性
+  // 重新给 DOM 行写回 index (保证 delete / drag 后 index 不会错)
+  function __sync_dom_indexes() {
+    const rows: NodeListOf<HTMLDivElement> = toolbar_container.querySelectorAll(':scope > div');
+    rows.forEach((row, i) => {
+      row.dataset.index = String(i);
+    });
+  }
+  let __drag_from_index = -1; // 标记 - 从第几行开始拖拽
+
+  // 行容器的项，初次渲染
+  // TODO 这里可能会有问题，多线程的问题。此处的 global_setting 和主线程的可能不一样。以后再解决
+  console.log('初次渲染 toolbar list', global_setting.config.toolbar_list)
   for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
     create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
   }
@@ -304,29 +317,101 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
     }
   });
 
-  // 创建一行 toolbar item，并负责把事件绑定到 global_setting
+  /// 创建一行 toolbar item，并负责把事件绑定到 global_setting
   function create_toolbarItem_row(name: string, index: number) {
-    const toolbar_item = document.createElement('div'); toolbar_container.appendChild(toolbar_item);
+    const toolbar_item = document.createElement('div'); toolbar_container.appendChild(toolbar_item); toolbar_item.classList.add('toolbar-setting-item');
+      toolbar_item.dataset.index = String(index);
+      toolbar_item.draggable = true; // 让整行可拖拽（但我们只允许从 drag-btn 发起）
 
-    const toolbar_item_drag = document.createElement('button'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
+    // Drag, 需注意: 拖动后 index 需要重排
+    const toolbar_item_drag = document.createElement('span'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
       toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
 
+    // Name
     const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
       toolbar_item_name.value = name;
     toolbar_item_name.addEventListener('change', () => {
-      global_setting.config.toolbar_list[index] = toolbar_item_name.value; global_setting.api.saveConfig();
+      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
+      global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
     });
 
-    // icon 选项暂不支持
+    // Icon, 选项暂不支持
 
+    // Delete
     const toolbar_item_delete = document.createElement('button'); toolbar_item.appendChild(toolbar_item_delete); toolbar_item_delete.classList.add('delete-btn');
       toolbar_item_delete.innerHTML = SVG_ICON_DELETE; toolbar_item_delete.title = 'Delete';
     toolbar_item_delete.addEventListener('click', () => {
-      if (index < 0 || index >= global_setting.config.toolbar_list.length) return;
-
-      global_setting.config.toolbar_list.splice(index, 1); global_setting.api.saveConfig();
-      toolbar_item.remove();
+      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
+      if (idx < 0 || idx >= global_setting.config.toolbar_list.length) return;
+      global_setting.config.toolbar_list.splice(idx, 1); global_setting.api.saveConfig();
+      toolbar_item.remove()
+      __sync_dom_indexes();
     });
+
+    // Toolbar_item 行为 + 排除非 Drag 发起
+    {
+      toolbar_item.addEventListener('dragstart', (e) => {
+        // TODO 只允许从 drag-btn 发起拖拽 (支持点击到 svg/path 等内部元素)
+        console.log('dragstart sdfsada', e.target)
+        // 这里的 e.target 始终为 toolbar-setting-item，无法判断是否从 drag-btn 发起
+        const target = e.target as HTMLElement;
+        // if (!target || !target.classList || !target.classList.contains('drag-btn')) {
+        //   console.log('dragstart sdfsada 1', e.target)
+        //   e.preventDefault();
+        //   return;
+        // }
+        // if (!target || !(target.closest && target.closest('.drag-btn'))) {
+        //   console.log('dragstart sdfsada 2', e.target)
+        // }
+
+        // 缓存开始行
+        const idx = Number(toolbar_item.dataset.index);
+        if (Number.isNaN(idx)) {
+          e.preventDefault();
+          return;
+        }
+        __drag_from_index = idx;
+        toolbar_item.classList.add('dragging');
+
+        // Firefox 需要 setData 才能拖
+        try { e.dataTransfer?.setData('text/plain', String(idx)); } catch {}
+        if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+      });
+      toolbar_item.addEventListener('dragend', () => {
+        toolbar_item.classList.remove('dragging');
+        __drag_from_index = -1;
+      });
+      toolbar_item.addEventListener('dragover', (e) => {
+        e.preventDefault(); // 必须阻止默认才能触发 drop
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      });
+      toolbar_item.addEventListener('drop', (e) => {
+        e.preventDefault();
+
+        const toIndex = Number(toolbar_item.dataset.index);
+        const fromIndex = __drag_from_index;
+
+        if (Number.isNaN(toIndex)) return;
+        if (fromIndex < 0) return;
+        if (fromIndex === toIndex) return;
+        if (fromIndex >= global_setting.config.toolbar_list.length) return;
+
+        // 1) 更新配置数组
+        const [moved] = global_setting.config.toolbar_list.splice(fromIndex, 1);
+        global_setting.config.toolbar_list.splice(toIndex, 0, moved);
+        global_setting.api.saveConfig();
+
+        // 2) 更新 DOM（移动行节点）
+        const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`);
+        if (fromRow) {
+          // 注意：fromIndex splice 后，toIndex 语义保持“放到目标行位置”
+          toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? toolbar_item.nextSibling : toolbar_item);
+        }
+
+        // 3) 重写 index，避免后续 change/delete 用旧 index
+        __sync_dom_indexes();
+      });
+    }
 
     return { toolbar_item, toolbar_item_name } // 返回 toolbar_item_name 方便聚焦
   }
@@ -335,27 +420,27 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
 // take from https://lucide.dev/icons/grip
 const SVG_ICON_GRIP = `<svg xmlns="http://www.w3.org/2000/svg"
-  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-icon lucide-grip">
+  width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-icon lucide-grip">
   <circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="5" r="1"/>
   <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
   <circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/><circle cx="5" cy="19" r="1"/>
 </svg>`
 // take from https://lucide.dev/icons/trash
 const SVG_ICON_DELETE = `<svg xmlns="http://www.w3.org/2000/svg"
-  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash">
+  width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash">
   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
   <path d="M3 6h18"/>
   <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
 </svg>`
 // take from https://lucide.dev/icons/plus
 const SVG_ICON_ADD = `<svg xmlns="http://www.w3.org/2000/svg"
-  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+  width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
   <path d="M5 12h14"/>
   <path d="M12 5v14"/>
 </svg>`
 // take from https://lucide.dev/icons/refresh-cw
 const SVG_ICON_REFRESH = `<svg xmlns="http://www.w3.org/2000/svg"
-  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw-icon lucide-refresh-cw">
+  width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw-icon lucide-refresh-cw">
   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
   <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
 </svg>`
