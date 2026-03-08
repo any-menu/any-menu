@@ -274,8 +274,40 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = `工具栏自定义。可自定义图标、顺序、启用哪些文件等
 \n如果未配置，则默认会使用已启用的脚本文件`;
+
+  // GUI 内容。将修改同步回
+  const toolbar_container = document.createElement('div'); tab_content.appendChild(toolbar_container); toolbar_container.classList.add('toolbar-setting')
   for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
-    const toolbar_item = document.createElement('div'); tab_content.appendChild(toolbar_item);
-      toolbar_item.textContent = i + ' - ' + global_setting.config.toolbar_list[i];
+    const toolbar_item = document.createElement('div'); toolbar_container.appendChild(toolbar_item);
+    const toolbar_item_drag = document.createElement('button'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
+      toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
+    const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
+      toolbar_item_name.value = global_setting.config.toolbar_list[i];
+    // icon 选项暂不支持
+    const toolbar_item_btn = document.createElement('button'); toolbar_item.appendChild(toolbar_item_btn); toolbar_item_btn.classList.add('delete-btn');
+      toolbar_item_btn.innerHTML = SVG_ICON_DELETE; toolbar_item_btn.title = 'Delete';
   }
+  const add_btn = document.createElement('button'); toolbar_container.appendChild(add_btn); add_btn.classList.add('add-btn');
+    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = 'Add';
 }
+
+// take from https://lucide.dev/icons/grip
+const SVG_ICON_GRIP = `<svg xmlns="http://www.w3.org/2000/svg"
+  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-icon lucide-grip">
+  <circle cx="12" cy="5" r="1"/><circle cx="19" cy="5" r="1"/><circle cx="5" cy="5" r="1"/>
+  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+  <circle cx="12" cy="19" r="1"/><circle cx="19" cy="19" r="1"/><circle cx="5" cy="19" r="1"/>
+</svg>`
+// take from https://lucide.dev/icons/trash
+const SVG_ICON_DELETE = `<svg xmlns="http://www.w3.org/2000/svg"
+  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash">
+  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+  <path d="M3 6h18"/>
+  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+</svg>`
+// take from https://lucide.dev/icons/plus
+const SVG_ICON_ADD = `<svg xmlns="http://www.w3.org/2000/svg"
+  width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+  <path d="M5 12h14"/>
+  <path d="M12 5v14"/>
+</svg>`

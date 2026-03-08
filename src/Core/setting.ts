@@ -161,7 +161,7 @@ export const global_setting: {
     app_ad_shortcut: true,
 
     plugins: [],
-    toolbar_list: ['1', '2', '3'],
+    toolbar_list: ['t1', 'test2', 't3'],
   },
   config_: {
     is_auto_startup: false,

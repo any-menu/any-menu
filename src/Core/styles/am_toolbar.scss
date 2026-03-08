@@ -63,3 +63,57 @@
     background-color: var(--ab-tab-root-hv-color) !important;
   }
 }
+
+div.toolbar-setting {
+  width: 100%;
+  height: auto;
+  margin: 20px 0;
+  padding: 0 10px;
+
+  // border: 1px solid var(--ab-tab-root-bd-color);
+  button {
+    position: unset;
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: currentColor;
+    border: none;
+  }
+
+  > div {
+    display: block;
+    width: 100%;
+    height: 32px;
+    margin: 0;
+    border-bottom: 1px solid var(--ab-tab-root-bd-color);
+
+    // 避免 input 子元素的基线对齐机制导致元素偏下
+    display: flex;
+    align-items: center;
+    
+    > * {
+      height: 30px;
+      border: none;
+      box-shadow: none;
+      outline: none;
+    }
+    > .drag-btn {
+      flex: 0 0 auto;
+
+      margin-right: 10px;
+    }
+    > .name { // input
+      flex: 1 1 auto;
+
+      background: none;
+      color: currentColor;
+    }
+    > .delete-btn {
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+  }
+  .add-btn {
+    float: right;
+  }
+}
