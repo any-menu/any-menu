@@ -145,7 +145,7 @@ export function initApi() {
   global_setting.api.saveConfig = async (): Promise<boolean> => {
     await invoke("config_write_from_json", {
       path: CONFIG_PATH,
-      new_json: { config: global_setting.config }
+      newJson: { config: global_setting.config }
     })
     return true
   }
@@ -249,7 +249,7 @@ export function initApi() {
 // 会自动与 global_setting.config 合并
 const DEFAULT_TOML = `\
 [config]
-language = English          # 语言 'auto'|'English'|'中文'|string
+language = "English"        # 语言 'auto'|'English'|'中文'|string
 panel_focus_mode = true     # 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
 panel_default_always_top = false # 默认置顶窗口/不置顶窗口 (pin键是临时切换)
 
