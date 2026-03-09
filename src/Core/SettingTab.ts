@@ -265,6 +265,14 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
 
 /**
  * 自定义工具栏
+ * 
+ * 拖拽失败 - 由 Tauri 机制导致的问题:
+ * Tauri 的安全策略阻止了拖拽事件。默认情况下，前端事件被 Tauri 拦截，走它自己的事件
+ * 比如说tauri://drag-drop, tauri://drag-leave, tauri://drag-enter等。
+ * 那么方案就有两个:
+ * (1) 声明"dragDropEnabled": false，这样前端的拖拽事件就能正常工作了。但既然Tauri以权限控制与安全为主，可能这会有问题
+ * (2) 使用 Tauri 提供的拖拽事件。但我这里是 Core 模块，并不一定用于 Tauri，不太想去依赖 Tauri
+ * 测试: window.addEventListener('pointerdown', () => { console.log('pointerdown works'); }); // 此处正常
  */
 function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
@@ -328,14 +336,15 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
       toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
 
     // Name
-    const toolbar_item_name = document.createElement('span'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
-      toolbar_item_name.innerHTML = name;
-    // toolbar_item_name.addEventListener('change', () => {
-    //   const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
-    //   global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
-    // });
+    const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
+      toolbar_item_name.value = name;
+    toolbar_item_name.addEventListener('change', () => {
+      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
+      global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
+    });
 
-    // Icon, 选项暂不支持
+    // Icon
+    // 该选项暂不支持
 
     // Delete
     const toolbar_item_delete = document.createElement('button'); toolbar_item.appendChild(toolbar_item_delete); toolbar_item_delete.classList.add('delete-btn');
@@ -352,9 +361,8 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
     {
       toolbar_item.addEventListener('dragstart', (e) => {
         // TODO 只允许从 drag-btn 发起拖拽 (支持点击到 svg/path 等内部元素)
-        console.log('dragstart sdfsada', e.target)
         // 这里的 e.target 始终为 toolbar-setting-item，无法判断是否从 drag-btn 发起
-        const target = e.target as HTMLElement;
+        // const target = e.target as HTMLElement;
         // if (!target || !target.classList || !target.classList.contains('drag-btn')) {
         //   console.log('dragstart sdfsada 1', e.target)
         //   e.preventDefault();
@@ -373,16 +381,13 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
         __drag_from_index = idx;
 
         toolbar_item.classList.add('dragging');
-        toolbar_container.classList.add('is-dragging');
 
         // Firefox 需要 setData 才能拖。同时这里允许拖拽到软件外任意文本区域并输出 `idx`
         try { e.dataTransfer?.setData('text/plain', String(idx)); } catch {}
-        // try { e.dataTransfer?.setData('application/x-toolbar-index', String(idx)); } catch {}
         if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
       });
       toolbar_item.addEventListener('dragend', () => {
         toolbar_item.classList.remove('dragging');
-        toolbar_container.classList.remove('is-dragging');
 
         __drag_from_index = -1;
       });
@@ -424,52 +429,6 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
     return { toolbar_item, toolbar_item_name } // 返回 toolbar_item_name 方便聚焦
   }
   // #endregion
-
-  // 写法2
-  // 整个 toolbar_container 都变成了合法的放置区
-  // {
-  //   toolbar_container.addEventListener('dragenter', (e) => {
-  //     e.preventDefault(); // 必须阻止默认
-  //   });
-
-  //   toolbar_container.addEventListener('dragover', (e) => {
-  //     e.preventDefault(); // 必须阻止默认，否则会显示红叉
-  //     if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-  //   });
-
-  //   toolbar_container.addEventListener('drop', (e) => {
-  //     e.preventDefault();
-      
-  //     // 通过 e.target 向上寻找真正被 drop 的那个 toolbar_item
-  //     const targetItem = ((e?.target) as any)?.closest('.toolbar-setting-item');
-  //     if (!targetItem) return; // 如果拖到了边缘空白处没命中 item，直接忽略
-
-  //     const toIndex = Number(targetItem.dataset.index);
-  //     const fromIndex = __drag_from_index;
-
-  //     if (Number.isNaN(toIndex)) return;
-  //     if (fromIndex < 0) return;
-  //     if (fromIndex === toIndex) return;
-  //     if (fromIndex >= global_setting.config.toolbar_list.length) return;
-
-  //     // 1) 更新配置数组
-  //     const [moved] = global_setting.config.toolbar_list.splice(fromIndex, 1);
-  //     global_setting.config.toolbar_list.splice(toIndex, 0, moved);
-  //     global_setting.api.saveConfig();
-
-  //     // 2) 更新 DOM（移动行节点）
-  //     const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`);
-  //     if (fromRow) {
-  //       toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? targetItem.nextSibling : targetItem);
-  //     }
-
-  //     // 3) 重写 index
-  //     __sync_dom_indexes();
-  //   });
-  // }
-
-  const input2 = document.createElement('input'); toolbar_container.appendChild(input2);
-  input2.value = 'test2';
 }
 
 // take from https://lucide.dev/icons/grip

@@ -20,6 +20,19 @@
         "skipTaskbar": true,
         "transparent": true,
         "shadow": false
+      },
+      {
+        "label": "am-config",
+        "title": "AnyMenu - Config",
+        "url": "config.html",
+        "width": 1000,
+        "height": 750,
+        "minWidth": 400,
+        "minHeight": 300,
+        "visible": false,
+        "center": true,
+        "resizable": true,
+        "dragDropEnabled": false
       }
     ],
     "security": {

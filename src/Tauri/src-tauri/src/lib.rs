@@ -175,17 +175,19 @@ pub fn run() {
                         }
                         // 如果窗口不存在，创建新窗口
                         else {
-                            let _config_window = tauri::WebviewWindowBuilder::new(
-                                app,
-                                "am-config",
-                                tauri::WebviewUrl::App("config.html".into()), // 或者你的配置页面路径
-                            )
-                            .title("AnyMenu - Config")
-                            .inner_size(1000.0, 750.0)
-                            .min_inner_size(400.0, 300.0)
-                            .center()
-                            .resizable(true)
-                            .build();
+                            // 弃用。现已改为在 tauri.config.json 中声明
+                            // let _config_window = tauri::WebviewWindowBuilder::new(
+                            //     app,
+                            //     "am-config",
+                            //     tauri::WebviewUrl::App("config.html".into()), // 或者你的配置页面路径
+                            // )
+                            // .title("AnyMenu - Config")
+                            // .inner_size(1000.0, 750.0)
+                            // .min_inner_size(400.0, 300.0)
+                            // .center()
+                            // .resizable(true)
+                            // .drag_drop_enabled(false) // 禁用 Tauri 默认的拖拽拦截，把控制权还给前端 HTML5
+                            // .build();
                         }
                     }
                     // 打开用户文件夹
