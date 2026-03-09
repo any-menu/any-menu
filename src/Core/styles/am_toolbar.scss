@@ -86,6 +86,9 @@
     height: 32px;
     margin: 0;
     border-bottom: 1px solid var(--ab-tab-root-bd-color);
+    // > .dragging * {
+    //   pointer-events: none; /* 当某一行正在被拖拽时，或者在整个容器上加上拖拽状态 */
+    // }
 
     // 避免 input 子元素的基线对齐机制导致元素偏下
     display: flex;
@@ -132,4 +135,11 @@
   .toolbar-setting-add-btn {
     margin: 0 10px 0 16px;
   }
+}
+
+.toolbar-setting.is-dragging .toolbar-setting-item * {
+  pointer-events: none;
+}
+.toolbar-setting .toolbar-setting-item.dragging * {
+  pointer-events: none;
 }

@@ -863,6 +863,14 @@ div.editable-textarea-textarea {
   margin: 0 10px 0 16px;
 }
 
+.toolbar-setting.is-dragging .toolbar-setting-item * {
+  pointer-events: none;
+}
+
+.toolbar-setting .toolbar-setting-item.dragging * {
+  pointer-events: none;
+}
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;

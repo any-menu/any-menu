@@ -328,12 +328,12 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
       toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
 
     // Name
-    const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
-      toolbar_item_name.value = name;
-    toolbar_item_name.addEventListener('change', () => {
-      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
-      global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
-    });
+    const toolbar_item_name = document.createElement('span'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
+      toolbar_item_name.innerHTML = name;
+    // toolbar_item_name.addEventListener('change', () => {
+    //   const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
+    //   global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
+    // });
 
     // Icon, 选项暂不支持
 
@@ -371,15 +371,23 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
           return;
         }
         __drag_from_index = idx;
-        toolbar_item.classList.add('dragging');
 
-        // Firefox 需要 setData 才能拖
+        toolbar_item.classList.add('dragging');
+        toolbar_container.classList.add('is-dragging');
+
+        // Firefox 需要 setData 才能拖。同时这里允许拖拽到软件外任意文本区域并输出 `idx`
         try { e.dataTransfer?.setData('text/plain', String(idx)); } catch {}
+        // try { e.dataTransfer?.setData('application/x-toolbar-index', String(idx)); } catch {}
         if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
       });
       toolbar_item.addEventListener('dragend', () => {
         toolbar_item.classList.remove('dragging');
+        toolbar_container.classList.remove('is-dragging');
+
         __drag_from_index = -1;
+      });
+      toolbar_item.addEventListener('dragenter', (e) => {
+        e.preventDefault();  // 必须阻止默认才能触发 drop
       });
       toolbar_item.addEventListener('dragover', (e) => {
         e.preventDefault(); // 必须阻止默认才能触发 drop
@@ -416,6 +424,52 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
     return { toolbar_item, toolbar_item_name } // 返回 toolbar_item_name 方便聚焦
   }
   // #endregion
+
+  // 写法2
+  // 整个 toolbar_container 都变成了合法的放置区
+  // {
+  //   toolbar_container.addEventListener('dragenter', (e) => {
+  //     e.preventDefault(); // 必须阻止默认
+  //   });
+
+  //   toolbar_container.addEventListener('dragover', (e) => {
+  //     e.preventDefault(); // 必须阻止默认，否则会显示红叉
+  //     if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  //   });
+
+  //   toolbar_container.addEventListener('drop', (e) => {
+  //     e.preventDefault();
+      
+  //     // 通过 e.target 向上寻找真正被 drop 的那个 toolbar_item
+  //     const targetItem = ((e?.target) as any)?.closest('.toolbar-setting-item');
+  //     if (!targetItem) return; // 如果拖到了边缘空白处没命中 item，直接忽略
+
+  //     const toIndex = Number(targetItem.dataset.index);
+  //     const fromIndex = __drag_from_index;
+
+  //     if (Number.isNaN(toIndex)) return;
+  //     if (fromIndex < 0) return;
+  //     if (fromIndex === toIndex) return;
+  //     if (fromIndex >= global_setting.config.toolbar_list.length) return;
+
+  //     // 1) 更新配置数组
+  //     const [moved] = global_setting.config.toolbar_list.splice(fromIndex, 1);
+  //     global_setting.config.toolbar_list.splice(toIndex, 0, moved);
+  //     global_setting.api.saveConfig();
+
+  //     // 2) 更新 DOM（移动行节点）
+  //     const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`);
+  //     if (fromRow) {
+  //       toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? targetItem.nextSibling : targetItem);
+  //     }
+
+  //     // 3) 重写 index
+  //     __sync_dom_indexes();
+  //   });
+  // }
+
+  const input2 = document.createElement('input'); toolbar_container.appendChild(input2);
+  input2.value = 'test2';
 }
 
 // take from https://lucide.dev/icons/grip
