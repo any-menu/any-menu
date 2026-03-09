@@ -86,6 +86,7 @@
     height: 32px;
     margin: 0;
     padding: 0 6px;
+    border-top: 1px solid #00000000;
     border-bottom: 1px solid var(--ab-tab-root-bd-color);
     border-radius: 5px;
 
@@ -140,6 +141,19 @@
   }
 }
 
-.toolbar-setting .toolbar-setting-item.dragging * {
-  pointer-events: none;
+// ----------------- 拖拽相关 -----------------
+
+.tab-root div.toolbar-setting {
+  > div.toolbar-setting-item {
+    &.dragging * {
+      pointer-events: none;
+    }
+
+    &.drag-over-top { /* 往上拖拽，插入到上方，显示上边框高亮 */
+      border-top: 1px solid #007bff; 
+    }
+    &.drag-over-bottom { /* 往下拖拽，插入到下方，显示下边框高亮 */
+      border-bottom: 1px solid #007bff; 
+    }
+  }
 }

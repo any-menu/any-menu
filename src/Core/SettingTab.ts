@@ -387,9 +387,9 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
         if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
       });
       toolbar_item.addEventListener('dragend', () => {
-        toolbar_item.classList.remove('dragging');
-
         __drag_from_index = -1;
+
+        toolbar_item.classList.remove('dragging');
       });
       toolbar_item.addEventListener('dragenter', (e) => {
         e.preventDefault();  // 必须阻止默认才能触发 drop
@@ -397,32 +397,47 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
       toolbar_item.addEventListener('dragover', (e) => {
         e.preventDefault(); // 必须阻止默认才能触发 drop
         if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+
+        // 高亮定位提醒
+        const toIndex = Number(toolbar_item.dataset.index);
+        const fromIndex = __drag_from_index;
+        if (fromIndex < 0 || Number.isNaN(toIndex) || fromIndex == toIndex) return
+        if (fromIndex < toIndex) { // 往下拖
+          toolbar_item.classList.add('drag-over-bottom')
+        } else { // 往上拖
+          toolbar_item.classList.add('drag-over-top')
+        }
+      });
+      toolbar_item.addEventListener('dragleave', (e) => {
+        // 高亮定位提醒
+        toolbar_item.classList.remove('drag-over-top', 'drag-over-bottom')
       });
       toolbar_item.addEventListener('drop', (e) => {
         e.preventDefault();
 
-        const toIndex = Number(toolbar_item.dataset.index);
-        const fromIndex = __drag_from_index;
+        // 高亮定位提醒
+        toolbar_item.classList.remove('drag-over-top', 'drag-over-bottom')
 
-        if (Number.isNaN(toIndex)) return;
-        if (fromIndex < 0) return;
-        if (fromIndex === toIndex) return;
-        if (fromIndex >= global_setting.config.toolbar_list.length) return;
+        // 1. 确认 from-to index
+        const toIndex = Number(toolbar_item.dataset.index)
+        const fromIndex = __drag_from_index
+        if (Number.isNaN(toIndex)) return
+        if (fromIndex < 0) return
+        if (fromIndex === toIndex) return
+        if (fromIndex >= global_setting.config.toolbar_list.length) return
 
-        // 1) 更新配置数组
+        // 2. 修改配置对象和文件
         const [moved] = global_setting.config.toolbar_list.splice(fromIndex, 1);
         global_setting.config.toolbar_list.splice(toIndex, 0, moved);
         global_setting.api.saveConfig();
 
-        // 2) 更新 DOM（移动行节点）
-        const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`);
+        // 3. 修改 DOM (移动行节点)
+        const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`)
         if (fromRow) {
           // 注意：fromIndex splice 后，toIndex 语义保持“放到目标行位置”
-          toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? toolbar_item.nextSibling : toolbar_item);
+          toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? toolbar_item.nextSibling : toolbar_item)
         }
-
-        // 3) 重写 index，避免后续 change/delete 用旧 index
-        __sync_dom_indexes();
+        __sync_dom_indexes() // 重写 index，避免后续 change/delete 用旧 index
       });
     }
 
