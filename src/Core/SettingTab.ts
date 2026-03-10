@@ -47,7 +47,7 @@ export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_con
   }
 }
 
-// mini docs (用于在首页显示一些简单的使用说明、链接)
+/** mini docs (用于在首页显示一些简单的使用说明、链接) */
 function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Mini docs');

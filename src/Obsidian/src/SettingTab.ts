@@ -37,73 +37,7 @@ export class AMSettingTab extends PluginSettingTab {
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
 
-    // #region setting panel
-    let settings: AMSettingInterface = this.plugin.settings
-    {
-      const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-        tab_nav.textContent = t('Config');
-      const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-        tab_content.createEl('div', { text: t('Config2') });
-      tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
-
-      new Setting(tab_content)
-      .setName(t('Pinyin index'))
-      .setDesc(t('Pinyin index2'))
-      .addToggle(toggle => toggle
-        .setValue(settings.config.pinyin_index)
-        .onChange(async (value) => {
-          settings.config.pinyin_index = value
-          await this.plugin.saveSettings()
-        })
-      )
-
-      new Setting(tab_content)
-      .setName(t('Pinyin first index'))
-      .setDesc(t('Pinyin first index2'))
-      .addToggle(toggle => toggle
-        .setValue(settings.config.pinyin_first_index)
-        .onChange(async (value) => {
-          settings.config.pinyin_first_index = value
-          await this.plugin.saveSettings()
-        })
-      )
-
-      new Setting(tab_content)
-      .setName(t('Dict paths'))
-      .setDesc(t('Dict paths2'))
-      .addText(text => text
-        .setValue(settings.config.dict_paths)
-        .onChange(async (value) => {
-          settings.config.dict_paths = value
-          await this.plugin.saveSettings()
-        })
-      )
-
-      new Setting(tab_content)
-      .setName(t('Dict online source'))
-      .setDesc(t('Dict online source2'))
-      .addDropdown(dropdown => {
-        dropdown.addOption('gitee', 'gitee')
-        dropdown.addOption('github', 'github')
-        dropdown.setValue(settings.config.dict_online_source as 'gitee' | 'github')
-        dropdown.onChange(async (value) => {
-          settings.config.dict_online_source = value as 'gitee' | 'github'
-          await this.plugin.saveSettings()
-        })
-      })
-
-      new Setting(tab_content)
-      .setName(t('Debug mode'))
-      .setDesc(t('Debug mode2'))
-      .addToggle(toggle => toggle
-        .setValue(settings.isDebug)
-        .onChange(async (value) => {
-          settings.isDebug = value
-          await this.plugin.saveSettings()
-        })
-      )
-    }
-    // #endregion
+    initSettingTab_obConfig(tab_nav_container, tab_content_container, this.plugin.settings)
 
     initSettingTab_2(tab_nav_container, tab_content_container)
 
@@ -148,4 +82,70 @@ export class AMSettingTab extends PluginSettingTab {
     new Notice('插件已成功重启') // 可选
     this.display() // (可选) 重新刷新设置面板
   }
+}
+
+/// Obsidian 可视化配置
+function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_container: HTMLElement, settings: AMSettingInterface) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Config');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+    tab_content.createEl('div', { text: t('Config2') });
+  tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
+
+  new Setting(tab_content)
+  .setName(t('Pinyin index'))
+  .setDesc(t('Pinyin index2'))
+  .addToggle(toggle => toggle
+    .setValue(settings.config.pinyin_index)
+    .onChange(async (value) => {
+      settings.config.pinyin_index = value
+      await this.plugin.saveSettings()
+    })
+  )
+
+  new Setting(tab_content)
+  .setName(t('Pinyin first index'))
+  .setDesc(t('Pinyin first index2'))
+  .addToggle(toggle => toggle
+    .setValue(settings.config.pinyin_first_index)
+    .onChange(async (value) => {
+      settings.config.pinyin_first_index = value
+      await this.plugin.saveSettings()
+    })
+  )
+
+  new Setting(tab_content)
+  .setName(t('Dict paths'))
+  .setDesc(t('Dict paths2'))
+  .addText(text => text
+    .setValue(settings.config.dict_paths)
+    .onChange(async (value) => {
+      settings.config.dict_paths = value
+      await this.plugin.saveSettings()
+    })
+  )
+
+  new Setting(tab_content)
+  .setName(t('Dict online source'))
+  .setDesc(t('Dict online source2'))
+  .addDropdown(dropdown => {
+    dropdown.addOption('gitee', 'gitee')
+    dropdown.addOption('github', 'github')
+    dropdown.setValue(settings.config.dict_online_source as 'gitee' | 'github')
+    dropdown.onChange(async (value) => {
+      settings.config.dict_online_source = value as 'gitee' | 'github'
+      await this.plugin.saveSettings()
+    })
+  })
+
+  new Setting(tab_content)
+  .setName(t('Debug mode'))
+  .setDesc(t('Debug mode2'))
+  .addToggle(toggle => toggle
+    .setValue(settings.isDebug)
+    .onChange(async (value) => {
+      settings.isDebug = value
+      await this.plugin.saveSettings()
+    })
+  )
 }
