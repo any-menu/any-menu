@@ -1,3 +1,5 @@
+/** 主面板相关 */
+
 import { global_setting } from '../../Core/setting'
 import { initApi } from './utils/initApi'
 import { invoke } from "@tauri-apps/api/core"
@@ -13,7 +15,6 @@ async function init() {
   const result = await global_setting.api.loadConfig()
   if (!result) { console.error('配置文件读取/初始化失败'); return }
 }
-void init()
 
 // #endregion
 
@@ -59,10 +60,12 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import { initMenu } from './panel'
 
 // 前端模块
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const main: HTMLDivElement | null = document.querySelector("#main")
   if (!main) return
-  
+
+  await init() // 保证先读取配置再初始化别的
+
   void initMenu(main)
 
   // 黏贴测试 paste test

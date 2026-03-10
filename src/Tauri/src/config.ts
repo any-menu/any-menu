@@ -3,17 +3,32 @@
 import { t } from '../../Core/locales/helper'
 import { toml_parse } from '../../Core/panel/contextmenu/demo'
 // import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
-import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab'
 import { global_setting } from '../../Core/setting'
+import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab'
 import { initApi } from './utils/initApi'
 
 initApi()
 
+// #region 启动时阅读配置文件
+
+let is_init = false
+async function init() {
+  if (is_init) return
+  is_init = true
+  const result = await global_setting.api.loadConfig()
+  if (!result) { console.error('配置文件读取/初始化失败'); return }
+}
+
+// #endregion
+
 const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
 
+// 前端模块
 window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
   if (!el) return
+
+  await init() // 保证先读取配置再初始化别的
 
   const { tab_nav_container, tab_content_container } = initSettingTab_1(el as HTMLElement)
 

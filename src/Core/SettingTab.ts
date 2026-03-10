@@ -298,8 +298,6 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
   let __drag_from_index = -1; // 标记 - 从第几行开始拖拽
 
   // 行容器的项，初次渲染
-  // TODO 这里可能会有问题，多线程的问题。此处的 global_setting 和主线程的可能不一样。以后再解决
-  console.log('初次渲染 toolbar list', global_setting.config.toolbar_list)
   for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
     create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
   }

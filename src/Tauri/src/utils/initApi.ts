@@ -98,6 +98,7 @@ export function initApi() {
     // global_setting.config = ...
     // ```
     // 来代替
+    // 不过这里还要支持纯文本编辑配置文件，所以就使用前端解析方案了
 
     // 读取配置文件
     let file_content: string = ''
