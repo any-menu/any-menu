@@ -405,7 +405,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
           toolbar_item.classList.add('drag-over-top')
         }
       });
-      toolbar_item.addEventListener('dragleave', (e) => {
+      toolbar_item.addEventListener('dragleave', (_) => {
         // 高亮定位提醒
         toolbar_item.classList.remove('drag-over-top', 'drag-over-bottom')
       });
