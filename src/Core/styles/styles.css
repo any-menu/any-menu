@@ -1081,6 +1081,7 @@ html, body, #main {
 }
 .tab-root div:has(> textarea) {
   position: relative;
+  height: 100%;
 }
 .tab-root div:has(> textarea) textarea {
   box-sizing: border-box;
@@ -1095,16 +1096,15 @@ html, body, #main {
   color: var(--am-text-color);
   resize: none;
   border: none;
+  border-left: 1px solid rgba(0, 0, 0, 0);
   border-radius: 8px;
   outline: none;
   box-shadow: none;
 }
 .tab-root div:has(> textarea) textarea.no-save {
-  padding-left: 7px;
   border-left: 1px solid orange;
 }
 .tab-root div:has(> textarea) textarea.error-save {
-  padding-left: 7px;
   border-left: 1px solid red;
 }
 .tab-root button {

@@ -36,13 +36,12 @@ export class AMSettingTab extends PluginSettingTab {
     const tab_root = document.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
-
     initSettingTab_obConfig(tab_nav_container, tab_content_container, this.plugin.settings)
-
+    initSettingTab_obConfigFile(tab_nav_container, tab_content_container, this.plugin.settings)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
     tab_root.createEl('button',
-      { text: 'Refresh plugin', cls: 'am-ob-setting-btn' },
+      { text: t('Reload plugin'), cls: 'am-ob-setting-btn' },
       (el) => {
         el.onclick = async () => {
           await this.restartPlugin()
@@ -89,8 +88,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-    tab_content.createEl('div', { text: t('Config2') });
   tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
+
+  tab_content.createEl('div', { text: t('Config2') });
 
   new Setting(tab_content)
   .setName(t('Pinyin index'))
@@ -99,7 +99,7 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
     .setValue(settings.config.pinyin_index)
     .onChange(async (value) => {
       settings.config.pinyin_index = value
-      await this.plugin.saveSettings()
+      await global_setting.api.saveConfig()
     })
   )
 
@@ -110,7 +110,7 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
     .setValue(settings.config.pinyin_first_index)
     .onChange(async (value) => {
       settings.config.pinyin_first_index = value
-      await this.plugin.saveSettings()
+      await global_setting.api.saveConfig()
     })
   )
 
@@ -121,7 +121,7 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
     .setValue(settings.config.dict_paths)
     .onChange(async (value) => {
       settings.config.dict_paths = value
-      await this.plugin.saveSettings()
+      await global_setting.api.saveConfig()
     })
   )
 
@@ -134,7 +134,7 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
     dropdown.setValue(settings.config.dict_online_source as 'gitee' | 'github')
     dropdown.onChange(async (value) => {
       settings.config.dict_online_source = value as 'gitee' | 'github'
-      await this.plugin.saveSettings()
+      await global_setting.api.saveConfig()
     })
   })
 
@@ -145,7 +145,58 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
     .setValue(settings.isDebug)
     .onChange(async (value) => {
       settings.isDebug = value
-      await this.plugin.saveSettings()
+      await global_setting.api.saveConfig()
     })
   )
+}
+
+/** Obsidian 纯文本编辑 data.json
+ * 
+ * 这里有两种思路:
+ * - 一是 const ret = await global_setting.api.loadConfig() 获取 json 再转字符串
+ * - 二是使用 global_setting.api.readFile() 直接读取 data.json 的文本内容
+ *   该方案的一个缺点是: 插件的文件夹名是可以改变的
+ */
+function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement, settings: AMSettingInterface) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Config file');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'obsidian-setting-file'); tab_content.setAttribute('index', 'obsidian-setting-file');
+
+  tab_content.createEl('div', { text: `注意：在这编辑与你在插件文件夹中文本方式编辑 data.json，除多了 json 格式检查外没有区别。
+一般不推荐进行手动编辑，推荐使用其他标签页进行可视化编辑。如果需要在此编辑，建议编辑前先按下 "刷新" 按钮` });
+
+  const textarea_p = tab_content.createEl('div')
+  const textarea = textarea_p.createEl('textarea')
+  textarea.addEventListener('input', () => {
+    textarea.classList.add('no-save'); textarea.classList.remove('error-save');
+  })
+  void load_file_content()
+
+  const btn_refresh = tab_content.createEl('button', { text: t('Refresh'), attr: { style: 'position: absolute; bottom: 55px;' } })
+  btn_refresh.addEventListener('click', () => void load_file_content())
+
+  const btn_save = tab_content.createEl('button', { text: t('Save config'), attr: { style: 'position: absolute; bottom: 16px;' } })
+  btn_save.addEventListener('click', () => void save_file_content())
+
+  async function load_file_content() {
+    textarea.value = 'Loading...'
+    await global_setting.api.loadConfig()
+    const text = JSON.stringify(settings, null, 2)
+    textarea.value = text
+  }
+  async function save_file_content() {
+    try {
+      textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
+      const obj = JSON.parse(textarea.value)
+      settings.config = obj.config
+      settings.isDebug = obj.isDebug
+      await global_setting.api.saveConfig()
+    } catch (e) {
+      textarea.classList.remove('no-save'); textarea.classList.add('error-save');
+      new Notice('Invalid JSON format')
+      console.error('Save config error: invalid json format', e)
+      return
+    }
+  }
 }

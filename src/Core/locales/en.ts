@@ -22,8 +22,7 @@ For more instructions and tutorials:
 \nIf not configured, the enabled script files will be used by default`,
 
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
-  'Config file': 'Config file',
-  'Save config': 'Save config',
+  // 暂无
 
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': 'Config',
@@ -39,6 +38,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Dict online source2': 'Source of online dictionary: gitee or github',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use',
+  'Reload plugin': 'Reload plugin',
 
   // Online dict / Local dict
   'Id': 'Id',
@@ -69,4 +69,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Close': 'Close',
   'Add': 'Add',
   'Drag': 'Drag',
+
+  'Config file': 'Config file',
+  'Save config': 'Save config',
 }

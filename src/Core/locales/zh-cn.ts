@@ -22,8 +22,7 @@ export default {
 \n如果未配置，则默认会使用已启用的脚本文件`,
 
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
-  'Config file': '配置文件',
-  'Save config': '保存配置',
+  // 暂无
 
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': '配置',
@@ -39,6 +38,7 @@ export default {
   'Dict online source2': '在线词库来源: gitee 或 github (无法访问 github 则推荐用 gitee)',
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用',
+  'Reload plugin': '重启插件',
 
   // Online dict / Local dict
   'Id': 'Id',
@@ -69,4 +69,7 @@ export default {
   'Close': '关闭',
   'Add': '添加',
   'Drag': '拖动',
+
+  'Config file': '配置文件',
+  'Save config': '保存配置',
 }

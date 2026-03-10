@@ -254,6 +254,7 @@ html, body, #main {
   // textarea页 (toml editor)
   div:has(>textarea) { // textarea parent
     position: relative;
+    height: 100%;
     textarea {
       box-sizing: border-box;
       display: block;
@@ -270,16 +271,15 @@ html, body, #main {
       color: var(--am-text-color);
       resize: none;
       border: none;
+      border-left: 1px solid #00000000;
       border-radius: 8px;
       outline: none;
       box-shadow: none;
     }
     textarea.no-save {
-      padding-left: 7px;
       border-left: 1px solid orange;
     }
     textarea.error-save {
-      padding-left: 7px;
       border-left: 1px solid red;
     }
   }
