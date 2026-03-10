@@ -1,3 +1,15 @@
+/** 配置面板相关
+ * 
+ * ## 第一编辑对象 注意项
+ * 
+ * 一般情况下，第一编辑对象应该是 global_setting，然后再去同步到别的地方
+ * 因为 Core 模块中，第一编辑对象只能是 global_setting。
+ * 这样方便规范重载的 global_setting.api.saveConfig 行为
+ * 
+ * ~~同时这也满足 loadConfig 中 file -> ob setting -> global setting 的反序行为~~
+ * 现已弃用 ob plugins.settings
+ */
+
 import { App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice } from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { global_setting } from "@/Core/setting";
@@ -36,8 +48,8 @@ export class AMSettingTab extends PluginSettingTab {
     const tab_root = document.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
-    initSettingTab_obConfig(tab_nav_container, tab_content_container, this.plugin.settings)
-    initSettingTab_obConfigFile(tab_nav_container, tab_content_container, this.plugin.settings)
+    initSettingTab_obConfig(tab_nav_container, tab_content_container)
+    initSettingTab_obConfigFile(tab_nav_container, tab_content_container)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
     tab_root.createEl('button',
@@ -84,7 +96,7 @@ export class AMSettingTab extends PluginSettingTab {
 }
 
 /// Obsidian 可视化配置
-function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_container: HTMLElement, settings: AMSettingInterface) {
+function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -96,9 +108,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .setName(t('Pinyin index'))
   .setDesc(t('Pinyin index2'))
   .addToggle(toggle => toggle
-    .setValue(settings.config.pinyin_index)
+    .setValue(global_setting.config.pinyin_index)
     .onChange(async (value) => {
-      settings.config.pinyin_index = value
+      global_setting.config.pinyin_index = value
       await global_setting.api.saveConfig()
     })
   )
@@ -107,9 +119,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .setName(t('Pinyin first index'))
   .setDesc(t('Pinyin first index2'))
   .addToggle(toggle => toggle
-    .setValue(settings.config.pinyin_first_index)
+    .setValue(global_setting.config.pinyin_first_index)
     .onChange(async (value) => {
-      settings.config.pinyin_first_index = value
+      global_setting.config.pinyin_first_index = value
       await global_setting.api.saveConfig()
     })
   )
@@ -118,9 +130,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .setName(t('Dict paths'))
   .setDesc(t('Dict paths2'))
   .addText(text => text
-    .setValue(settings.config.dict_paths)
+    .setValue(global_setting.config.dict_paths)
     .onChange(async (value) => {
-      settings.config.dict_paths = value
+      global_setting.config.dict_paths = value
       await global_setting.api.saveConfig()
     })
   )
@@ -131,9 +143,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .addDropdown(dropdown => {
     dropdown.addOption('gitee', 'gitee')
     dropdown.addOption('github', 'github')
-    dropdown.setValue(settings.config.dict_online_source as 'gitee' | 'github')
+    dropdown.setValue(global_setting.config.dict_online_source as 'gitee' | 'github')
     dropdown.onChange(async (value) => {
-      settings.config.dict_online_source = value as 'gitee' | 'github'
+      global_setting.config.dict_online_source = value as 'gitee' | 'github'
       await global_setting.api.saveConfig()
     })
   })
@@ -142,9 +154,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .setName(t('Debug mode'))
   .setDesc(t('Debug mode2'))
   .addToggle(toggle => toggle
-    .setValue(settings.isDebug)
+    .setValue(global_setting.isDebug)
     .onChange(async (value) => {
-      settings.isDebug = value
+      global_setting.isDebug = value
       await global_setting.api.saveConfig()
     })
   )
@@ -157,7 +169,7 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
  * - 二是使用 global_setting.api.readFile() 直接读取 data.json 的文本内容
  *   该方案的一个缺点是: 插件的文件夹名是可以改变的
  */
-function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement, settings: AMSettingInterface) {
+function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config file');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -174,14 +186,17 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
   void load_file_content()
 
   const btn_refresh = tab_content.createEl('button', { text: t('Refresh'), attr: { style: 'position: absolute; bottom: 55px;' } })
-  btn_refresh.addEventListener('click', () => void load_file_content())
-
+    btn_refresh.addEventListener('click', () => void load_file_content())
   const btn_save = tab_content.createEl('button', { text: t('Save config'), attr: { style: 'position: absolute; bottom: 16px;' } })
-  btn_save.addEventListener('click', () => void save_file_content())
+    btn_save.addEventListener('click', () => void save_file_content())
 
   async function load_file_content() {
     textarea.value = 'Loading...'
     await global_setting.api.loadConfig()
+    const settings = {
+      config: global_setting.config,
+      isDebug: global_setting.isDebug
+    }
     const text = JSON.stringify(settings, null, 2)
     textarea.value = text
   }
@@ -189,8 +204,8 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
     try {
       textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
       const obj = JSON.parse(textarea.value)
-      settings.config = obj.config
-      settings.isDebug = obj.isDebug
+      global_setting.config = obj.config
+      global_setting.isDebug = obj.isDebug
       await global_setting.api.saveConfig()
     } catch (e) {
       textarea.classList.remove('no-save'); textarea.classList.add('error-save');

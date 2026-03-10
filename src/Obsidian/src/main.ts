@@ -17,7 +17,7 @@ import { type AMSettingInterface, AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
 export default class AnyMenuPlugin extends Plugin {
-  settings: AMSettingInterface
+  // settings: AMSettingInterface
 
   async onload() {
     if (global_setting.isDebug) console.log('>>> Loading plugin AnyMenu')

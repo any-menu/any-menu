@@ -182,15 +182,16 @@ export function initApi(plugin: Plugin) {
     const plugin = global_setting.other.obsidian_plugin
 
     const data = await plugin.loadData() // 如果没有配置文件则为null
-    plugin.settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
+    const settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
 
     // 需要保持一致性，obsidian 专属设置与通用的 global 设置
-    global_setting.isDebug = plugin.settings.isDebug
-    global_setting.config = plugin.settings.config
+    global_setting.isDebug = settings.isDebug
+    global_setting.config = settings.config
+
 
     // 如果没有配置文件则生成一个默认值的配置文件
     if (!data) {
-      plugin.saveData(plugin.settings)
+      plugin.saveData(settings)
     }
     return true
   }
@@ -200,11 +201,11 @@ export function initApi(plugin: Plugin) {
     if (!global_setting.other.obsidian_plugin) return false
     const plugin = global_setting.other.obsidian_plugin
 
-    // 需要保持一致性，obsidian 专属设置与通用的 global 设置
-    global_setting.isDebug = plugin.settings.isDebug
-    global_setting.config = plugin.settings.config
-
-    await plugin.saveData(plugin.settings)
+    const settings = {
+      config: global_setting.config,
+      isDebug: global_setting.isDebug,
+    }
+    await plugin.saveData(settings)
     return true
   }
 

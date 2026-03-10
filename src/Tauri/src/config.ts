@@ -1,4 +1,11 @@
-/** 配置面板相关 */
+/** 配置面板相关
+ * 
+ * ## 第一编辑对象 注意项
+ * 
+ * 一般情况下，第一编辑对象应该是 global_setting，然后再去同步到别的地方
+ * 因为 Core 模块中，第一编辑对象只能是 global_setting。
+ * 这样方便规范重载的 global_setting.api.saveConfig 行为
+ */
 
 import { t } from '../../Core/locales/helper'
 import { toml_parse } from '../../Core/panel/contextmenu/demo'
