@@ -63,11 +63,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2');
-      refresh_btn.textContent = t('Refresh'); refresh_btn.style = 'position: absolute; bottom: 55px;';
+      refresh_btn.textContent = t('Refresh'); refresh_btn.setAttribute('style', 'position: absolute; bottom: 55px;');
     refresh_btn.onclick = () => fn_refresh()
 
     const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2');
-      save_btn.textContent = t('Save config'); save_btn.style = 'position: absolute; bottom: 16px;';
+      save_btn.textContent = t('Save config'); save_btn.setAttribute('style', 'position: absolute; bottom: 16px;');
     save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
   }
   // #endregion
