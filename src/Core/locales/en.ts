@@ -27,6 +27,8 @@ For more instructions and tutorials:
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': 'Config',
   'Config2': 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.',
+  'Config file2': `Note: In this case, editing the data.json file in the plugin folder is the same as in the text mode you used before, except for the additional JSON format check. There is no difference.
+It is generally not recommended to perform manual editing. It is recommended to use other tabs for visual editing. If you need to edit here, it is suggested to press the "Refresh" button before doing so.`,
   'Pinyin index': 'Pinyin index',
   'Pinyin index2': 'Is it the case that the Chinese "key" is automatically constructed with a pinyin index?',
   'Pinyin first index': 'Pinyin first index',

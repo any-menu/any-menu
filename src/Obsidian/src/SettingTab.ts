@@ -175,8 +175,10 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'obsidian-setting-file'); tab_content.setAttribute('index', 'obsidian-setting-file');
 
-  tab_content.createEl('div', { text: `注意：在这编辑与你在插件文件夹中文本方式编辑 data.json，除多了 json 格式检查外没有区别。
-一般不推荐进行手动编辑，推荐使用其他标签页进行可视化编辑。如果需要在此编辑，建议编辑前先按下 "刷新" 按钮` });
+  // 自动刷新。注意不要用 `onclick =` 写法，会被标签页另一个行为覆盖；注意这可能会覆盖未保存的状态
+  tab_nav.addEventListener('click', () => void load_file_content())
+
+  tab_content.createEl('div', { text: t('Config file2') });
 
   const textarea_p = tab_content.createEl('div')
   const textarea = textarea_p.createEl('textarea')

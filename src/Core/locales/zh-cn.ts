@@ -27,6 +27,8 @@ export default {
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': '配置',
   'Config2': '暂时并非所有可配置项均支持可视化编辑，部分配置可到插件文件夹下手动编辑data.json文件',
+  'Config file2': `注意：在这编辑与你在插件文件夹中文本方式编辑 data.json，除多了 json 格式检查外没有区别。
+一般不推荐进行手动编辑，推荐使用其他标签页进行可视化编辑。如果需要在此编辑，建议编辑前先按下 "刷新" 按钮`,
   'Pinyin index': '拼音索引',
   'Pinyin index2': '是否为中文key自动构建拼音索引',
   'Pinyin first index': '拼音首字母索引',

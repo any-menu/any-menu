@@ -32,7 +32,7 @@ export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_con
   for (const nav of tab_nav_container.querySelectorAll('div.item')) {
     const index: string|null = nav.getAttribute('index')
     if (index == null) continue
-    ;(nav as HTMLElement).onclick = () => {
+    ;(nav as HTMLElement).addEventListener('click', () => {
       for (const nav_item of tab_nav_container.children) {
         nav_item.classList.remove('active');
       }
@@ -43,7 +43,7 @@ export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_con
         if (content_.getAttribute('index') === index) content = content_ as HTMLElement;
       }
       content?.classList.add('active');
-    }
+    });
   }
 }
 
@@ -280,6 +280,9 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'toolbar-custom'); tab_content.setAttribute('index', 'toolbar-custom');
 
+  // 自动刷新。但注意这可能会覆盖未保存的状态
+  tab_nav.addEventListener('click', fn_refresh)
+
   const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = t('Toolbar2');
 
   // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
@@ -315,12 +318,13 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
   // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
   const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('toolbar-setting-refresh-btn');
     refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
-  refresh_btn.addEventListener('click', () => {
+  function fn_refresh() {
     toolbar_container.innerHTML = ''
     for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
       create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
     }
-  });
+  };
+  refresh_btn.addEventListener('click', fn_refresh)
 
   /// 创建一行 toolbar item，并负责把事件绑定到 global_setting
   function create_toolbarItem_row(name: string, index: number) {

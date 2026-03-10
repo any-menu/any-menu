@@ -1,4 +1,4 @@
-/** 配置面板相关
+/** 配置 ~~面板~~ 窗口相关
  * 
  * ## 第一编辑对象 注意项
  * 
@@ -39,30 +39,40 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const { tab_nav_container, tab_content_container } = initSettingTab_1(el as HTMLElement)
 
-  // #region config
+  // #region Config file
   {
     const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
       tab_nav.textContent = t('Config file');
     const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
     tab_nav.setAttribute('index', 'config-file'); tab_content.setAttribute('index', 'config-file');
 
+    // 自动刷新。注意不要用 `onclick =` 写法，会被标签页另一个行为覆盖；注意这可能会覆盖未保存的状态
+    tab_nav.addEventListener('click', () => fn_refresh())
+
     const textarea = document.createElement('textarea'); tab_content.appendChild(textarea);
-       const result = await global_setting.api.loadConfig()
-       if (typeof result === 'string') textarea.value = result
-       else textarea.value = 'Error: Load config failed'
+    async function fn_refresh() {
+      textarea.classList.remove('no-save', 'error-save')
+      textarea.value = 'Loading...'
+      const result = await global_setting.api.loadConfig()
+      if (typeof result === 'string') textarea.value = result
+      else textarea.value = 'Error: Load config failed'
+    }
+    void fn_refresh()
     textarea.oninput = () => {
-      textarea.classList.add('no-save')
+      textarea.classList.add('no-save'); textarea?.classList.remove('error-save');
     }
 
+    const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2');
+      refresh_btn.textContent = t('Refresh'); refresh_btn.style = 'position: absolute; bottom: 55px;';
+    refresh_btn.onclick = () => fn_refresh()
+
     const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2');
-      save_btn.textContent = t('Save config')
-    save_btn.onclick = () => {
-      save_config_from_string(textarea.value, textarea)
-    }
+      save_btn.textContent = t('Save config'); save_btn.style = 'position: absolute; bottom: 16px;';
+    save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
   }
   // #endregion
 
-  // #region plugin manager
+  // #region Plugin manager
   /*{
     const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
       tab_nav.textContent = 'Plugin manager';
@@ -131,8 +141,7 @@ function save_config_from_string(new_str: string, textarea?: HTMLTextAreaElement
     textarea?.classList.remove('no-save', 'error-save')
     console.log('配置已保存，重启应用后生效')
   } catch (error) {
-    textarea?.classList.remove('no-save')
-    textarea?.classList.add('error-save')
+    textarea?.classList.remove('no-save'); textarea?.classList.add('error-save');
     console.error('配置保存失败，请检查格式是否正确', error)
   }
 }
