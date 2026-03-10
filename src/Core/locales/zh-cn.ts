@@ -17,6 +17,10 @@ export default {
   'Local dict': '本地词典',
   'Online dict': '在线词典',
 
+  'Toolbar': '工具栏',
+  'Toolbar2': `工具栏自定义。可自定义图标、顺序、启用哪些文件等
+\n如果未配置，则默认会使用已启用的脚本文件`,
+
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': '配置文件',
   'Save config': '保存配置',
@@ -63,4 +67,6 @@ export default {
   'Save': '保存',
   'Cancel': '取消',
   'Close': '关闭',
+  'Add': '添加',
+  'Drag': '拖动',
 }

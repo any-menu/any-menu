@@ -276,12 +276,11 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
  */
 function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = ('工具栏');
+    tab_nav.textContent = t('Toolbar');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'toolbar-custom'); tab_content.setAttribute('index', 'toolbar-custom');
 
-  const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = `工具栏自定义。可自定义图标、顺序、启用哪些文件等
-\n如果未配置，则默认会使用已启用的脚本文件`;
+  const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = t('Toolbar2');
 
   // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
 
@@ -304,7 +303,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   // Add 按钮
   const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('toolbar-setting-add-btn');
-    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = 'Add';
+    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = t('Add');
   add_btn.addEventListener('click', () => {
     const newName = '';
     const newIndex = global_setting.config.toolbar_list.length;
@@ -315,7 +314,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
   const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('toolbar-setting-refresh-btn');
-    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = 'Refresh';
+    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
   refresh_btn.addEventListener('click', () => {
     toolbar_container.innerHTML = ''
     for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
@@ -331,7 +330,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
     // Drag, 需注意: 拖动后 index 需要重排
     const toolbar_item_drag = document.createElement('span'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
-      toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = 'Drag';
+      toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = t('Drag');
 
     // Name
     const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
@@ -346,7 +345,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
     // Delete
     const toolbar_item_delete = document.createElement('button'); toolbar_item.appendChild(toolbar_item_delete); toolbar_item_delete.classList.add('delete-btn');
-      toolbar_item_delete.innerHTML = SVG_ICON_DELETE; toolbar_item_delete.title = 'Delete';
+      toolbar_item_delete.innerHTML = SVG_ICON_DELETE; toolbar_item_delete.title = t('Delete');
     toolbar_item_delete.addEventListener('click', () => {
       const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
       if (idx < 0 || idx >= global_setting.config.toolbar_list.length) return;

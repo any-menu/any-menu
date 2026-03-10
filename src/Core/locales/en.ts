@@ -17,6 +17,10 @@ For more instructions and tutorials:
   'Local dict': 'Local dict',
   'Online dict': 'Online dict',
 
+  'Toolbar': 'Toolbar',
+  'Toolbar2': `Toolbar customization. You can customize icons, order, which files to enable, etc.
+\nIf not configured, the enabled script files will be used by default`,
+
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   'Config file': 'Config file',
   'Save config': 'Save config',
@@ -63,4 +67,6 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Save': 'Save',
   'Cancel': 'Cancel',
   'Close': 'Close',
+  'Add': 'Add',
+  'Drag': 'Drag',
 }
