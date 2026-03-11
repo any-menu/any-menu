@@ -5,7 +5,7 @@
  */
 
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
-import { getCurrentWindow, cursorPosition } from '@tauri-apps/api/window'
+import { getCurrentWindow, cursorPosition, Window as TauriWindow } from '@tauri-apps/api/window'
 import { AMPanel } from '../../../Core/panel/'
 
 import { setupAppChangeListener } from './focus'
@@ -208,7 +208,9 @@ async function showWindow(panel_list?: string[]) {
   // });
 
   // step1. 鼠标位置 (类似于quciker app)
-  const appWindow = getCurrentWindow()
+  let appWindow = await TauriWindow.getByLabel('main')
+  if (!appWindow) appWindow = getCurrentWindow() // 弱化版，可能会对应应用的多个窗口
+
   const cursor = await cursorPosition()
   if (global_setting.isDebug) global_setting.state.infoText += `[mousePosition]\nx:${cursor.x}, y:${cursor.y}\n\n`
   cursor.x += 0
