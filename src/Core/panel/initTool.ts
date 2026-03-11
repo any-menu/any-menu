@@ -38,37 +38,49 @@ import * as yaml from 'js-yaml';
  * - 字典: 无限制
  */
 export async function initMenuData() {
+  // 准备元素
   if (!global_el.amContextMenu) {
     console.error("AMContextMenu is not initialized")
     return
   }
-  const myMenu: AMContextMenu = global_el.amContextMenu
+  const myContextMenu: AMContextMenu = global_el.amContextMenu
   if (!global_el.amToolbar) {
     console.error("AMToolbar is not initialized")
     return
   }
   const myToolbar: AMToolbar = global_el.amToolbar
+  // SEARCH_DB
+
+  // 测试一下
+  {
+    // 数据库系统 (非Tauri环境下或其他环境下，不让数据为空)
+    if (global_setting.isDebug) {
+      const result = 'testE	🙂‍↔️\ntest1\t读取词库文件失败\ntest2\ttest222\ntest3\ttest123超长测试超长测试超长测试超长测试超长测试5超长测试超长测试超长测试'
+      SEARCH_DB.add_data_by_csv(result as string, 'test')
+    }
+    // 脚本系统
+    if (global_setting.isDebug) PluginManager.demo()
+  }
 
   // #region key-value 数据
 
-  // 测试数据 (非Tauri环境下或其他环境下，不让数据为空)
-  if (global_setting.isDebug) {
-    const result = 'testE	🙂‍↔️\ntest1\t读取词库文件失败\ntest2\ttest222\ntest3\ttest123超长测试超长测试超长测试超长测试超长测试5超长测试超长测试超长测试'
-    SEARCH_DB.add_data_by_csv(result as string, 'test')
-  }
-
+  // fill_by_folder
   if (!global_setting.config.dict_paths.endsWith('/')) { global_setting.config.dict_paths += '/' }
-  try {
-    const files: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    if (!files || files.length === 0) throw new Error("No files found")
-    for (const file_path of files) {
-      fillDB_by_file(file_path)
+  fill_by_folder(global_setting.config.dict_paths)
+
+  async function fill_by_folder(folderPath: string) {
+    try {
+      const files: string[] = await global_setting.api.readFolder(folderPath)
+      if (!files || files.length === 0) throw new Error("No files found")
+      for (const file_path of files) {
+        fill_by_file(file_path)
+      }
+    } catch (error) {
+      console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
     }
-  } catch (error) {
-    console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
   }
 
-  async function fillDB_by_file(file_path: string) {
+  async function fill_by_file(file_path: string) {
     // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
     let file_name_short: string
     let file_ext: string
@@ -95,21 +107,21 @@ export async function initMenuData() {
 
     // 分发各种扩展名/特定文件名 // TODO 存在顺序问题
     if (file_ext === 'toml') {
-      void fillDB_by_toml(file_content, file_name_short)
+      void fill_by_toml(file_content, file_name_short)
     } else if (file_ext === 'csv' || file_ext === 'txt') {
-      void fillDB_by_csv(file_content, file_name_short)
+      void fill_by_csv(file_content, file_name_short)
     } else if (file_ext === 'json') {
-      void fillDB_by_json(file_content, file_name_short)
+      void fill_by_json(file_content, file_name_short)
     } else if (file_ext === 'yaml' || file_ext === 'yml') {
-      void fillDB_by_yaml(file_content, file_name_short)
+      void fill_by_yaml(file_content, file_name_short)
     } else if (file_ext === 'js') {
-      void load_script(file_content, file_name_short)
+      void fill_by_js(file_content, file_name_short)
     } else { // 无关文件
       console.error('Unreadable, file type:', file_ext)
     }
   }
 
-  async function fillDB_by_toml(file_content: string, file_name_short: string) {
+  async function fill_by_toml(file_content: string, file_name_short: string) {
     let menu_items: ContextMenuItems = []
     try {
       menu_items = toml_parse(file_content)["categories"] as ContextMenuItems
@@ -128,7 +140,7 @@ export async function initMenuData() {
       SEARCH_DB.add_data_by_json(records, file_name_short)
 
       // 多级菜单部分
-      myMenu.append_data([
+      myContextMenu.append_data([
         {
           label: file_name_short,
           children: menu_items
@@ -139,7 +151,7 @@ export async function initMenuData() {
     }
   }
 
-  async function fillDB_by_csv(file_content: string, file_name_short: string) {
+  async function fill_by_csv(file_content: string, file_name_short: string) {
     try {
       SEARCH_DB.add_data_by_csv(file_content, file_name_short)
     } catch (error) {
@@ -147,7 +159,7 @@ export async function initMenuData() {
     }
   }
 
-  async function fillDB_by_json(file_content: string, file_name_short: string) {
+  async function fill_by_json(file_content: string, file_name_short: string) {
     try {
       const jsonData = JSON.parse(file_content)
       let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
@@ -160,7 +172,7 @@ export async function initMenuData() {
     }
   }
 
-  async function fillDB_by_yaml(file_content: string, file_name_short: string) {
+  async function fill_by_yaml(file_content: string, file_name_short: string) {
     try {
       const yamlData: any = yaml.load(file_content)
       let records: {key: string, value: string, name?: string}[] = yamlData.map((item: any) => {
@@ -173,13 +185,7 @@ export async function initMenuData() {
     }
   }
 
-  // #endregion
-
-  // #region custom script 自定义脚本
-
-  if (global_setting.isDebug) PluginManager.demo()
-
-  async function load_script(file_content: string, file_name_short: string) {
+  async function fill_by_js(file_content: string, file_name_short: string) {
     try {
       // const fn = new Function(file_content)
 
@@ -187,7 +193,7 @@ export async function initMenuData() {
       if (plugin.onLoad) plugin.onLoad();
 
       // 多级菜单部分
-      myMenu.append_data([
+      myContextMenu.append_data([
         {
           label: file_name_short,
           callback: plugin.process
