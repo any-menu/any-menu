@@ -755,7 +755,6 @@ div.editable-textarea-textarea {
   margin: 0;
   height: 32px;
   width: auto;
-  min-width: 200px;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
