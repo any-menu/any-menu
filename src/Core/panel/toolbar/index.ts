@@ -1,7 +1,7 @@
 import { global_setting } from "../../../Core/setting"
 import { textToIcon } from "../utils"
 
-type ToolbarItem = {
+export type ToolbarItem = {
   label: string // 显示名，众多别名中的主名称
   // 如果是字符串则表示黏贴该字符串，方便声明demo模板 (TODO demo模板可能需要配图和help url?)
   callback?: string | ((str?: string) => Promise<void|string>)

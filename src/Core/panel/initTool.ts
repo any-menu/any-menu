@@ -2,7 +2,7 @@
 
 import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
-import { type AMToolbar } from "./toolbar"
+import { type AMToolbar, type ToolbarItem } from "./toolbar"
 import { global_setting } from "../setting"
 import { SEARCH_DB } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
@@ -62,19 +62,30 @@ export async function initMenuData() {
     if (global_setting.isDebug) PluginManager.demo()
   }
 
+  // toolbar list 1 - init, 用于规范 toolbar 顺序
+  const toolbar_list_null_flag = global_setting.config.toolbar_list.length === 0 // 空则视为全部放行
+  const toolbar_list_new: ToolbarItem[] = []
+  for (const item of global_setting.config.toolbar_list) {
+    toolbar_list_new.push({
+      label: item,
+      callback: undefined
+    })
+  }
+
   // #region key-value 数据
 
   // fill_by_folder
   if (!global_setting.config.dict_paths.endsWith('/')) { global_setting.config.dict_paths += '/' }
-  fill_by_folder(global_setting.config.dict_paths)
+  await fill_by_folder(global_setting.config.dict_paths)
 
-  async function fill_by_folder(folderPath: string) {
+  async function fill_by_folder(folder_path: string) {
     try {
-      const files: string[] = await global_setting.api.readFolder(folderPath)
+      const files: string[] = await global_setting.api.readFolder(folder_path)
       if (!files || files.length === 0) throw new Error("No files found")
-      for (const file_path of files) {
-        fill_by_file(file_path)
-      }
+      // 并发处理文件提升性能，但等待所有文件处理结束后再返回
+      // 旧: for (const file_path of files) await fill_by_file(file_path)
+      const promises = files.map(file_path => fill_by_file(file_path))
+      await Promise.all(promises)
     } catch (error) {
       console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
     }
@@ -122,73 +133,79 @@ export async function initMenuData() {
   }
 
   async function fill_by_toml(file_content: string, file_name_short: string) {
+    // 解析
     let menu_items: ContextMenuItems = []
     try {
       menu_items = toml_parse(file_content)["categories"] as ContextMenuItems
-
-      // 搜索建议部分
-      const records: {key: string, value: string, name?: string}[] = []
-      function recursive(items: ContextMenuItems) {
-        for (const item of items) {
-          if (item.callback && typeof item.callback === 'string') {
-            records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
-          }
-          if (item.children) recursive(item.children)
-        }
-      }
-      recursive(menu_items)
-      SEARCH_DB.add_data_by_json(records, file_name_short)
-
-      // 多级菜单部分
-      myContextMenu.append_data([
-        {
-          label: file_name_short,
-          children: menu_items
-        }
-      ])
     } catch (error) {
       console.error("Parse error:", error)
+      return
     }
+
+    // 搜索建议部分
+    const records: {key: string, value: string, name?: string}[] = []
+    function recursive(items: ContextMenuItems) {
+      for (const item of items) {
+        if (item.callback && typeof item.callback === 'string') {
+          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
+        }
+        if (item.children) recursive(item.children)
+      }
+    }
+    if (menu_items) recursive(menu_items)
+    SEARCH_DB.add_data_by_json(records, file_name_short)
+
+    // 多级菜单部分
+    myContextMenu.append_data([
+      {
+        label: file_name_short,
+        children: menu_items
+      }
+    ])
   }
 
   async function fill_by_csv(file_content: string, file_name_short: string) {
-    try {
-      SEARCH_DB.add_data_by_csv(file_content, file_name_short)
-    } catch (error) {
-      console.error("Parse error:", error)
-    }
+    // 搜索建议部分
+    SEARCH_DB.add_data_by_csv(file_content, file_name_short)
   }
 
   async function fill_by_json(file_content: string, file_name_short: string) {
+    // 解析
+    let jsonData: any
     try {
-      const jsonData = JSON.parse(file_content)
-      let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
-        return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
-        // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
-      })
-      SEARCH_DB.add_data_by_json(records, file_name_short)
+      jsonData = JSON.parse(file_content)
     } catch (error) {
       console.error("Parse error:", error)
+      return
     }
+
+    // 搜索建议部分
+    let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
+      return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
+    })
+    SEARCH_DB.add_data_by_json(records, file_name_short)
   }
 
   async function fill_by_yaml(file_content: string, file_name_short: string) {
+    // 解析
+    let yamlData: any
     try {
-      const yamlData: any = yaml.load(file_content)
-      let records: {key: string, value: string, name?: string}[] = yamlData.map((item: any) => {
-        return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
-        // return { key: item["tag"] + '/' + item["description"], value: item["text"] }
-      })
-      SEARCH_DB.add_data_by_json(records, file_name_short)
+      yamlData = yaml.load(file_content)
     } catch (error) {
       console.error("Parse error:", error)
+      return
     }
+
+    // 搜索建议部分
+    let records: {key: string, value: string, name?: string}[] = yamlData.map((item: any) => {
+      return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
+    })
+    SEARCH_DB.add_data_by_json(records, file_name_short)
   }
 
   async function fill_by_js(file_content: string, file_name_short: string) {
     try {
-      // const fn = new Function(file_content)
-
+      // 脚本部分
       const plugin = PLUGIN_MANAGER.loadPlugin(file_content)
       if (plugin.onLoad) plugin.onLoad();
 
@@ -201,23 +218,20 @@ export async function initMenuData() {
       ])
 
       // toolbar 部分
-      // myToolbar.append_data([
-      //   {
-      //     label: 'test1',
-      //     callback: 'test1',
-      //   },
-      //   {
-      //     label: 'test2',
-      //     callback: 'test2',
-      //   }
-      // ])
-      myToolbar.append_data([
-        {
+      if (toolbar_list_null_flag) {
+        toolbar_list_new.push({
           label: file_name_short,
           callback: plugin.process
+        })
+      }
+      else {
+        for (const item of toolbar_list_new) {
+          if (item.label === file_name_short) {
+            item.callback = plugin.process
+            return
+          }
         }
-      ])
-
+      }
     } catch (error) {
       console.error("Parse script error:", error)
     }
@@ -225,5 +239,13 @@ export async function initMenuData() {
 
   // #endregion
 
-  // myMenu.attach(el)
+  // toolbar list 2 - fill,
+  // TODO: 这里的排序需要等待所有文件加载完成后再加载，动态处理理论上这里更快更流程，但目前懒得做
+  void fill_by_toolbarList()
+  async function fill_by_toolbarList() {
+    for (const item of toolbar_list_new) {
+      if (item.callback == undefined) continue
+      myToolbar.append_data([item])
+    }
+  }
 }
