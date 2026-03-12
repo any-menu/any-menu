@@ -100,14 +100,14 @@ export async function initMenuData() {
     let isFound = false
     let isEnable = false
     for (const plugin of global_setting.config.plugins) {
-      if (plugin.name !== file_name_short) continue
+      if (plugin.name !== file_name_full) continue
       isFound = true
       if (plugin.enabled) isEnable = true
-      return
+      break
     }
     if (!isFound) {
       global_setting.config.plugins.push({
-        name: file_name_short,
+        name: file_name_full,
         enabled: false
       })
       global_setting.api.saveConfig()
