@@ -48,6 +48,8 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Name': 'Name',
   'Is enabled': 'Enabled',
   'Is downloaded': 'Downloaded',
+  'Enabled': 'Enabled',
+  'Disabled': 'Disabled',
   'Download': 'Download',
   'Downloaded': 'Downloaded',
   'Download failed': 'Download failed',

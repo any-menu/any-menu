@@ -48,6 +48,8 @@ export default {
   'Name': '名字',
   'Is enabled': '是否已启用',
   'Is downloaded': '是否已下载',
+  'Enabled': '已启用',
+  'Disabled': '已禁用',
   'Download': '下载',
   'Downloaded': '已下载',
   'Download failed': '下载失败',

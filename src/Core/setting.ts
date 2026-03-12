@@ -72,10 +72,6 @@ export const global_setting: {
       name: string,
       version?: string,
       enabled: boolean,
-      // 弃用原因: 自定义顺序不方便
-      // enabled_by_searchDB: boolean,
-      // enabled_by_toolbar: boolean, // 词典来源不可用，避免数量过多 (未支持动态加载)
-      // enabled_by_contextMenu: boolean,// 词典来源不可用，避免数量过多 (未支持动态加载)
     }[],
     toolbar_list: string[],
   },

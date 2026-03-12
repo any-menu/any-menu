@@ -99,6 +99,9 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'web-dict'); tab_content.setAttribute('index', 'web-dict');
 
+  // 自动刷新
+  tab_nav.addEventListener('click', () => void getDict())
+
   // 可能包含文字提醒状态 / 表格
   const container = document.createElement('div'); tab_content.appendChild(container);
   const span = document.createElement('span'); container.appendChild(span);
@@ -122,6 +125,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   // 动态加载内容
   await getDict()
   async function getDict() {
+    table.innerHTML = '';
     table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
 
     const ret = await api.repoGetDirectory()
@@ -183,8 +187,31 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
               })
             }
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
+        const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
+          let ret = global_setting.config.plugins.find(p => p.name === item.relPath)
+          if (!ret) {
+            ret = {
+              name: item.relPath,
+              enabled: false
+            }
+            global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
+          }
+          if (ret.enabled) {
+            td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+          } else {
+            td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+          }
+          td5.onclick = async () => {
+            ret.enabled = !ret.enabled; global_setting.api.saveConfig();
+            console.log('Plugin enabled status changed1:', global_setting.config.plugins)
+            if (ret.enabled) {
+              td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+            } else {
+              td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+            }
+          }
       })
+      // global_setting.api.saveConfig() // 假设有变动
     } catch (error) {
       table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
     }
@@ -200,6 +227,9 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     tab_nav.textContent = t('Local dict');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'local-dict'); tab_content.setAttribute('index', 'local-dict');
+
+  // 自动刷新
+  tab_nav.addEventListener('click', () => void getDict())
 
   // 可能包含文字提醒状态 / 表格
   const container = document.createElement('div'); tab_content.appendChild(container);
@@ -221,10 +251,11 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载中...`
+    table.innerHTML = '';
+    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading');
 
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = '加载成功'
+    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
     table_tbody.innerHTML = ''
     try {
       local_dict_list.length = 0 // clear array
@@ -236,14 +267,14 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         // obsidian 版本似乎没办法 (如果在库内倒能高亮定位，库外应该不行？)
         const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
         // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
-        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = '卸载'; td4.classList.add('btn');
-          td4.textContent = '已下载'; td4.setAttribute('color', 'green');
+        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
+          td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
           td4.onclick = async () => {
             const color = td4.getAttribute('color')
             if (color !== 'green') { console.error('Unreachable'); return }
             global_setting.api.deleteFile(`${global_setting.config.dict_paths}${relPath}`).then(success => {
               if (!success) {
-                td4.textContent = '卸载失败'; td4.setAttribute('color', 'green');
+                td4.textContent = t('Uninstalled failed'); td4.setAttribute('color', 'green');
                 return
               }
               tr.remove()
@@ -254,8 +285,31 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
               }
             })
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = '暂采用下载即启用策略'; td5.classList.add('btn');
+        const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
+          let ret = global_setting.config.plugins.find(p => p.name === relPath)
+          if (!ret) {
+            ret = {
+              name: relPath,
+              enabled: false
+            }
+            global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
+          }
+          if (ret.enabled) {
+            td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+          } else {
+            td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+          }
+          td5.onclick = async () => {
+            ret.enabled = !ret.enabled; global_setting.api.saveConfig();
+            console.log('Plugin enabled status changed2:', global_setting.config.plugins)
+            if (ret.enabled) {
+              td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+            } else {
+              td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+            }
+          }
       })
+      // global_setting.api.saveConfig() // 假设有变动
       local_dict_list_onChange()
     } catch (error) {
       table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`

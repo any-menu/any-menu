@@ -83,7 +83,7 @@ export async function initMenuData() {
 
   async function fill_by_file(file_path: string) {
     // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
-    let file_name_short: string
+    let file_name_short: string // 不加路径和扩展名
     let file_ext: string
     const file_name_full = file_path.split(/\/|\\/).pop()??''
     const file_part = file_name_full.split('.')
@@ -96,6 +96,26 @@ export async function initMenuData() {
       file_ext = file_part[file_part.length - 1].toLowerCase()
     }
 
+    // 插件是否已开启
+    let isFound = false
+    let isEnable = false
+    for (const plugin of global_setting.config.plugins) {
+      if (plugin.name !== file_name_short) continue
+      isFound = true
+      if (plugin.enabled) isEnable = true
+      return
+    }
+    if (!isFound) {
+      global_setting.config.plugins.push({
+        name: file_name_short,
+        enabled: false
+      })
+      global_setting.api.saveConfig()
+      return
+    }
+    if (!isEnable) return
+
+    // 文件内容
     let file_content: string|null = ''
     if (['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
       file_content = await global_setting.api.readFile(file_path)
