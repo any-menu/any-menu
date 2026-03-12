@@ -62,16 +62,6 @@ export async function initMenuData() {
     if (global_setting.isDebug) PluginManager.demo()
   }
 
-  // toolbar list 1 - init, 用于规范 toolbar 顺序
-  const toolbar_list_null_flag = global_setting.config.toolbar_list.length === 0 // 空则视为全部放行
-  const toolbar_list_new: ToolbarItem[] = []
-  for (const item of global_setting.config.toolbar_list) {
-    toolbar_list_new.push({
-      label: item,
-      callback: undefined
-    })
-  }
-
   // #region key-value 数据
 
   // fill_by_folder
@@ -218,34 +208,14 @@ export async function initMenuData() {
       ])
 
       // toolbar 部分
-      if (toolbar_list_null_flag) {
-        toolbar_list_new.push({
-          label: file_name_short,
-          callback: plugin.process
-        })
-      }
-      else {
-        for (const item of toolbar_list_new) {
-          if (item.label === file_name_short) {
-            item.callback = plugin.process
-            return
-          }
-        }
-      }
+      myToolbar.append_data([{
+        label: file_name_short,
+        callback: plugin.process
+      }])
     } catch (error) {
       console.error("Parse script error:", error)
     }
   }
 
   // #endregion
-
-  // toolbar list 2 - fill,
-  // TODO: 这里的排序需要等待所有文件加载完成后再加载，动态处理理论上这里更快更流程，但目前懒得做
-  void fill_by_toolbarList()
-  async function fill_by_toolbarList() {
-    for (const item of toolbar_list_new) {
-      if (item.callback == undefined) continue
-      myToolbar.append_data([item])
-    }
-  }
 }
