@@ -125,7 +125,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.innerHTML = '';
+    table_tbody.innerHTML = ''
     table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
 
     const ret = await api.repoGetDirectory()
@@ -134,7 +134,6 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       return
     }
     table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
-    table_tbody.innerHTML = ''
     try {
       const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
         id: item.id,
@@ -203,7 +202,6 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           }
           td5.onclick = async () => {
             ret.enabled = !ret.enabled; global_setting.api.saveConfig();
-            console.log('Plugin enabled status changed1:', global_setting.config.plugins)
             if (ret.enabled) {
               td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
             } else {
@@ -251,12 +249,11 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   // 动态加载内容
   await getDict()
   async function getDict() {
-    table.innerHTML = '';
+    table_tbody.innerHTML = '';
     table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading');
 
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
     table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
-    table_tbody.innerHTML = ''
     try {
       local_dict_list.length = 0 // clear array
       ret.forEach((item: string) => {
@@ -301,7 +298,6 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
           }
           td5.onclick = async () => {
             ret.enabled = !ret.enabled; global_setting.api.saveConfig();
-            console.log('Plugin enabled status changed2:', global_setting.config.plugins)
             if (ret.enabled) {
               td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
             } else {

@@ -16,7 +16,7 @@
 use std::{fs, path::PathBuf};
 
 use serde_json::Value as Json;
-use toml_edit::{Array, DocumentMut, Item, Table, Value};
+use toml_edit::{Array, ArrayOfTables, DocumentMut, Item, Table, Value};
 
 #[tauri::command]
 fn config_read_raw(path: &str) -> Result<String, String> {
@@ -120,13 +120,35 @@ fn json_to_item(json: &Json) -> Result<Item, String> {
         }
         Json::String(s) => Ok(Item::Value(Value::from(s.as_str()))),
         Json::Array(arr) => {
-            let mut a = Array::new();
-            for v in arr {
-                // 简化：数组元素只允许标量/数组（不支持对象；对象建议用 [[aot]]）
-                let tv = json_to_value(v)?;
-                a.push(tv);
+            // 检查数组是否包含对象
+            let has_objects = arr.iter().any(|v| v.is_object());
+            
+            if has_objects {
+                // 如果是对象数组，则转换为 TOML 的 ArrayOfTables ([[...]])
+                let mut aot = ArrayOfTables::new();
+                for v in arr {
+                    if let Json::Object(map) = v {
+                        let mut t = Table::new();
+                        for (k, val) in map {
+                            if !val.is_null() {
+                                t.insert(k, json_to_item(val)?);
+                            }
+                        }
+                        aot.push(t);
+                    } else {
+                        return Err("TOML does not support mixed arrays of objects and scalars".into());
+                    }
+                }
+                Ok(Item::ArrayOfTables(aot))
+            } else {
+                // 普通标量数组 (如 [1, 2, 3] 或 ["a", "b"])
+                let mut a = Array::new();
+                for v in arr {
+                    let tv = json_to_value(v)?;
+                    a.push(tv);
+                }
+                Ok(Item::Value(Value::Array(a)))
             }
-            Ok(Item::Value(Value::Array(a)))
         }
         Json::Object(map) => {
             let mut t = Table::new();
