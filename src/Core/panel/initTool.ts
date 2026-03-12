@@ -2,7 +2,7 @@
 
 import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
-import { type AMToolbar, type ToolbarItem } from "./toolbar"
+import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
 import { SEARCH_DB } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"

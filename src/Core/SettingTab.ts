@@ -187,12 +187,12 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
             }
           }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
-          let ret = global_setting.config.plugins.find(p => p.name === item.relPath)
-          if (!ret) {
-            ret = {
-              name: item.relPath,
-              enabled: false
-            }
+          const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
+          const ret = ret_ ?? {
+            name: item.relPath,
+            enabled: false
+          }
+          if (!ret_) {
             global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
           }
           if (ret.enabled) {
@@ -283,12 +283,12 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
             })
           }
         const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
-          let ret = global_setting.config.plugins.find(p => p.name === relPath)
-          if (!ret) {
-            ret = {
-              name: relPath,
-              enabled: false
-            }
+          const ret_ = global_setting.config.plugins.find(p => p.name === relPath)
+          const ret = ret_ ?? {
+            name: relPath,
+            enabled: false
+          }
+          if (!ret_) {
             global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
           }
           if (ret.enabled) {
