@@ -1106,7 +1106,7 @@ html, body, #main {
 .tab-root div:has(> textarea) textarea.error-save {
   border-left: 1px solid red;
 }
-.tab-root button {
+.tab-root button.absolute {
   position: absolute;
   height: 28px;
   right: 16px;
@@ -1125,26 +1125,36 @@ html, body, #main {
 .dict-table tbody {
   overflow-y: auto;
 }
+.dict-table tbody tr:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
 .dict-table tbody tr > td {
   white-space: pre;
 }
-.dict-table tbody tr > td.btn {
+.dict-table tbody tr > td .btn {
+  width: 100%;
+  height: 26px;
   padding: 0 10px;
+  line-height: 26px;
+  font-size: 0.95em;
+  border: none;
+  outline: none;
+  box-shadow: none;
   border-radius: 10px;
   text-align: center;
   cursor: pointer;
   background-color: gray;
   color: white;
 }
-.dict-table tbody tr > td.btn[color=green] {
+.dict-table tbody tr > td .btn[color=green] {
   background-color: #67C23A;
   color: white;
 }
-.dict-table tbody tr > td.btn[color=red] {
+.dict-table tbody tr > td .btn[color=red] {
   background-color: #F56C6C;
   color: white;
 }
-.dict-table tbody tr > td.btn[color=blue] {
+.dict-table tbody tr > td .btn[color=blue] {
   background-color: #409EFF;
   color: white;
 }

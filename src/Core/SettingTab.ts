@@ -115,9 +115,9 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Path');
     const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Name');
     const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Is downloaded'); td4.classList.add('btn');
-    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
+    // const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
-  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
+  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
     refresh_btn.textContent = t('Refresh dict list')
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
@@ -153,21 +153,22 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           a.textContent = item.relPath
           a.target = '_blank'
         const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
-        const td4 = document.createElement('td'); tr.appendChild(td4); td4.classList.add('btn');
+        const td4 = document.createElement('td'); tr.appendChild(td4);
+          const td4_btn = document.createElement('button'); td4.appendChild(td4_btn); td4_btn.classList.add('btn');
           if (local_dict_list.find(d => d.relPath === item.relPath)) {
-            td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
+            td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
-            td4.textContent = t('Download'); td4.setAttribute('color', 'gray');
+            td4_btn.textContent = t('Download'); td4_btn.setAttribute('color', 'gray');
           }
-          td4.onclick = async () => {
-            const color = td4.getAttribute('color')
+          td4_btn.onclick = async () => {
+            const color = td4_btn.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
               global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.relPath}`).then(success => {
                 if (!success) {
-                  td4.textContent = t('Uninstalled failed'); td4.setAttribute('color', 'green');
+                  td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                   return
                 }
-                td4.textContent = t('Uninstalled'); td4.setAttribute('color', 'gray');
+                td4_btn.textContent = t('Uninstalled'); td4_btn.setAttribute('color', 'gray');
                 const index = local_dict_list.findIndex(d => d.relPath === item.relPath)
                 if (index >= 0) {
                   local_dict_list.splice(index, 1)
@@ -177,37 +178,38 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
             } else { // 未下载/下载失败
               api.repoDownloadDict(item.relPath).then(success => {
                 if (!success) {
-                  td4.textContent = t('Download failed'); td4.setAttribute('color', 'red');
+                  td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
                   return
                 }
-                td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
+                td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
                 local_dict_list.push({path: `${global_setting.config.dict_paths}${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
                 local_dict_list_onChange()
               })
             }
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
-          const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
-          const ret = ret_ ?? {
-            name: item.relPath,
-            enabled: false
-          }
-          if (!ret_) {
-            global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
-          }
-          if (ret.enabled) {
-            td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
-          } else {
-            td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
-          }
-          td5.onclick = async () => {
-            ret.enabled = !ret.enabled; global_setting.api.saveConfig();
-            if (ret.enabled) {
-              td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
-            } else {
-              td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
-            }
-          }
+        // const td5 = document.createElement('td'); tr.appendChild(td5);
+        //   const td5_btn = document.createElement('button'); td5.appendChild(td5_btn); td5_btn.classList.add('btn');
+        //   const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
+        //   const ret = ret_ ?? {
+        //     name: item.relPath,
+        //     enabled: false
+        //   }
+        //   if (!ret_) {
+        //     global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
+        //   }
+        //   if (ret.enabled) {
+        //     td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
+        //   } else {
+        //     td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
+        //   }
+        //   td5_btn.onclick = async () => {
+        //     ret.enabled = !ret.enabled; global_setting.api.saveConfig();
+        //     if (ret.enabled) {
+        //       td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
+        //     } else {
+        //       td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
+        //     }
+        //   }
       })
       // global_setting.api.saveConfig() // 假设有变动
     } catch (error) {
@@ -241,7 +243,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
     const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
   const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
-  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn);
+  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
     refresh_btn.textContent = t('Refresh dict list')
     refresh_btn.onclick = async () => void getDict()
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
@@ -264,14 +266,15 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         // obsidian 版本似乎没办法 (如果在库内倒能高亮定位，库外应该不行？)
         const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
         // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
-        const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
-          td4.textContent = t('Downloaded'); td4.setAttribute('color', 'green');
-          td4.onclick = async () => {
-            const color = td4.getAttribute('color')
+        const td4 = document.createElement('td'); tr.appendChild(td4);
+          const td4_btn = document.createElement('button'); td4.appendChild(td4_btn); td4_btn.classList.add('btn');
+          td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
+          td4_btn.onclick = async () => {
+            const color = td4_btn.getAttribute('color')
             if (color !== 'green') { console.error('Unreachable'); return }
             global_setting.api.deleteFile(`${global_setting.config.dict_paths}${relPath}`).then(success => {
               if (!success) {
-                td4.textContent = t('Uninstalled failed'); td4.setAttribute('color', 'green');
+                td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                 return
               }
               tr.remove()
@@ -282,7 +285,8 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
               }
             })
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5); td5.classList.add('btn');
+        const td5 = document.createElement('td'); tr.appendChild(td5);
+          const td5_btn = document.createElement('button'); td5.appendChild(td5_btn); td5_btn.classList.add('btn');
           const ret_ = global_setting.config.plugins.find(p => p.name === relPath)
           const ret = ret_ ?? {
             name: relPath,
@@ -292,16 +296,16 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
             global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
           }
           if (ret.enabled) {
-            td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+            td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
           } else {
-            td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+            td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
           }
-          td5.onclick = async () => {
+          td5_btn.onclick = async () => {
             ret.enabled = !ret.enabled; global_setting.api.saveConfig();
             if (ret.enabled) {
-              td5.textContent = t('Enabled'); td5.setAttribute('color', 'green');
+              td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
             } else {
-              td5.textContent = t('Disabled'); td5.setAttribute('color', 'gray');
+              td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
             }
           }
       })

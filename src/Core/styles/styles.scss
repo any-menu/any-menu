@@ -284,7 +284,7 @@ html, body, #main {
     }
   }
 
-  button {
+  button.absolute {
     position: absolute;
     height: 28px;
     right: 16px;
@@ -303,11 +303,23 @@ html, body, #main {
   width: 100%;
   tbody {
     overflow-y: auto;
+    tr:hover {
+      background-color: var(--ab-tab-root-hv-color);
+    }
     tr>td {
       white-space: pre;
     }
-    tr>td.btn {
+    tr>td .btn {
+      width: 100%;
+      // height: 100%;
+      height: 26px;
       padding: 0 10px;
+
+      line-height: 26px;
+      font-size: 0.95em;
+      border: none;
+      outline: none;
+      box-shadow: none;
       border-radius: 10px;
       text-align: center;
       cursor: pointer;

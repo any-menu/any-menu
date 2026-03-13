@@ -62,11 +62,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       textarea.classList.add('no-save'); textarea?.classList.remove('error-save');
     }
 
-    const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2');
+    const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2', 'absolute');
       refresh_btn.textContent = t('Refresh'); refresh_btn.setAttribute('style', 'position: absolute; bottom: 55px;');
     refresh_btn.onclick = () => fn_refresh()
 
-    const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2');
+    const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2', 'absolute');
       save_btn.textContent = t('Save config'); save_btn.setAttribute('style', 'position: absolute; bottom: 16px;');
     save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
   }
