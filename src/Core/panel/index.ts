@@ -53,19 +53,19 @@ export class AMPanel {
   /** 单例模式 */
   static factory(el: HTMLElement) {
     if (!global_el.amPanel) {
-      global_el.amPanel = new AMPanel()
+      global_el.amPanel = new AMPanel(el)
     }
     if (!global_el.amSearch) {
       global_el.amSearch = AMSearch.factory(el)
+    }
+    if (!global_el.amToolbar) {
+      global_el.amToolbar = AMToolbar.factory(el)
     }
     if (!global_el.amContextMenu) {
       global_el.amContextMenu = AMContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
     }
     if (!global_el.amMiniEditor) {
       global_el.amMiniEditor = AMMiniEditor.factory(el)
-    }
-    if (!global_el.amToolbar) {
-      global_el.amToolbar = AMToolbar.factory(el)
     }
 
     // alt切换快捷提示
@@ -74,7 +74,7 @@ export class AMPanel {
         if (ev.key === 'Alt') {
           alt_key_flag = false
           ev.preventDefault() // 不要触发窗口的alt键功能
-          el?.classList.add('show-altkey')
+          el.classList.add('show-altkey')
         }
 
         // alt+key
@@ -89,14 +89,14 @@ export class AMPanel {
             alt_key_flag = false,
             global_el.alt_v_state = false
             ev.preventDefault() // 不要触发窗口的alt键功能
-            el?.classList.remove('show-altkey')
+            el.classList.remove('show-altkey')
           } else {
             global_el.alt_v_state = !global_el.alt_v_state
           }
 
           if (global_el.alt_v_state) {
             ev.preventDefault() // 不要触发窗口的alt键功能
-            el?.classList.add('show-altkey')
+            el.classList.add('show-altkey')
           } else {
             ev.preventDefault() // 不要触发窗口的alt键功能
             el?.classList.remove('show-altkey')
@@ -108,7 +108,21 @@ export class AMPanel {
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 
-  // TODO 添加显示项，仅显示哪几个面板这样
+  private constructor(public el: HTMLElement) {
+    el.classList.add('am-panel');
+  }
+
+  /** 显示面板
+   * 
+   * ## 面板与子组件、位置控制
+   * 
+   * 以前的旧方案是: 没有面板容器这个概念和元素，面板内的组件可以直接显示在页面上任意坐标
+   * 但后来的需求是经常需要几个组件同时显示在同一个位置，并且要让他们排列整齐好再显示
+   * 
+   * 所以现在的新方案是: 组件必须要在该面板容器内，组件不能单独控制位置，只能由面板控制位置
+   * 这样可以更好地处理多个组件需要显示在同一位置的情况。
+   * 同时面对边缘显示时，也能更方便检测出组件组合的总尺寸 (哪怕css影响了子组件的大小)
+   */
   static show(x?: number, y?: number, list?: string[]) {
     // 设置初始的 alt 状态
     // 
@@ -120,30 +134,34 @@ export class AMPanel {
     // 可惜前端无法实现，又不想弄后端，搞太复杂
     alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
 
+    // 定位
+    const el_panel = global_el.amPanel?.el
+    if (!el_panel) return
+    if (x !== undefined) el_panel.style.left = `${x}px`
+    if (y !== undefined) el_panel.style.top = `${y}px`
+
     if (!list) {
       list = global_setting.key_panel.panel1
     }
 
     let is_focued = false // 只聚焦到第一个可聚焦的子面板
-    for (const item of list) {
+    for (const item of list) { // TODO 除显示所有 list 中的元素，还需要排序
       if (item == 'search') {
-        global_el.amSearch?.show(x, y)
-        if (y !== undefined) { y += 32 }
+        global_el.amSearch?.show()
         is_focued = true
       }
       else if (item == 'menu') {
-        global_el.amContextMenu?.show(x, y)
-        if (y !== undefined) { y += 248 } // 不一定
+        global_el.amContextMenu?.show()
       }
       else if (item == 'miniEditor') {
         global_el.amMiniEditor?.set_flag('miniEditor')
-        global_el.amMiniEditor?.show(x, y,
+        global_el.amMiniEditor?.show(undefined, undefined,
           global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
         global_el.amMiniEditor?.set_flag('info')
-        global_el.amMiniEditor?.show(x, y,
+        global_el.amMiniEditor?.show(undefined, undefined,
           global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
 
@@ -154,8 +172,7 @@ export class AMPanel {
         })
       }
       else if (item == 'toolbar') {
-        global_el.amToolbar?.show(x, y)
-        if (y !== undefined) { y += 32 }
+        global_el.amToolbar?.show()
       }
       else {
         continue
@@ -170,14 +187,27 @@ export class AMPanel {
     global_el.amToolbar?.hide()
   }
 
-  // TODO 目前的一个问题在于: 用户无法很好地自定义css
-  //   如果用户需要调整尺寸，可能最后需要提供一个设置配置，去修改那里的宽高
-  // TODO 暂不支持宽度计算
+  /** 获取面板尺寸
+   * 
+   * 有新旧两种方案。预期最后的实现是先用旧方案约估，然后显示，然后再用新方案去调整 ?
+   * 
+   * TODO 目前的一个问题在于: 用户无法很好地自定义css
+   *   如果用户需要调整尺寸，可能最后需要提供一个设置配置，去修改那里的宽高
+   * TODO 暂不支持宽度计算
+   */
   static get_size(list?: string[]): {width: number, height: number} {
+
+    // // 新方案：直接获取 am-panel 的尺寸 (缺点是: 需要显示后才能获取)
+    // const el_panel = global_el.amPanel?.el
+    // if (!el_panel) return { width: 0, height: 0 }
+    // const rect = el_panel.getBoundingClientRect()
+    // const width = rect.width
+    // const height = rect.height
+
+    // 旧方案: 单独计算所有子组件的尺寸 (这可以显示前获取，但缺点是会被 css 影响尺寸)
     if (!list) {
       list = global_setting.key_panel.panel1
     }
-
     let width = 0
     let height = 0
     let min_height = 0
@@ -202,10 +232,10 @@ export class AMPanel {
         continue
       }
     }
-
     if (height < min_height) {
       height = min_height
     }
+
     return { width, height }
   }
 

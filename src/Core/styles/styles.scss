@@ -126,30 +126,38 @@ html, body, #main {
 
 /* -------------------------------- 总菜单面板 (组合基) ------------------ */
 
-// 多级菜单的菜单项 - altkey 显示控制
-.show-altkey {
-  >.am-context-menu .am-context-menu-item {
-    &::after {
-      display: block !important;
-    }
-  }
+.am-panel {
+  position: fixed;
+  // left: 0; // override by js
+  // top: 32px; // override by js
+  margin: 0;
+  padding: 0;
 
-  >.am-search>.am-search-suggestion>div.item {
-    &::after {
-      display: block !important;
+  // 多级菜单的菜单项 - altkey 显示控制
+  &.show-altkey {
+    >.am-context-menu .am-context-menu-item {
+      &::after {
+        display: block !important;
+      }
+    }
+
+    >.am-search>.am-search-suggestion>div.item {
+      &::after {
+        display: block !important;
+      }
     }
   }
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */
 .am-mini-editor {
+  position: relative;
+  // left: 0; // override by js
+  // top: 280px; // override by js
   box-sizing: border-box;
-  position: fixed;
-  left: 0; // override by js
-  top: 280px; // override by js
+  width: 700px;
   margin: 0;
   padding: 0;
-  width: 700px;
   height: 250px;
 
   color: var(--ab-tab-root-tx-color);

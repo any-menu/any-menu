@@ -16,12 +16,13 @@
     display: none;
   }
 
+  position: relative;
+  // left: 0; // override by js
+  // top: 32px; // override by js
   box-sizing: border-box;
-  position: fixed;
-  left: 0; // override by js
-  top: 32px; // override by js
-  margin: 0;
+  width: fit-content;
   min-width: 180px;
+  margin: 0;
 
   // 多列布局。一列满了再下一列，如果想平均分布则用 columns 而非这个
   display: grid;

@@ -53,7 +53,7 @@ export class AMSettingTab extends PluginSettingTab {
     initSettingTab_2(tab_nav_container, tab_content_container)
 
     tab_root.createEl('button',
-      { text: t('Reload plugin'), cls: 'am-ob-setting-btn' },
+      { text: t('Reload plugin'), cls: ['am-ob-setting-btn', 'absolute'] },
       (el) => {
         el.onclick = async () => {
           await this.restartPlugin()

@@ -1,12 +1,12 @@
 .am-toolbar {
+  position: relative;
+  // left: 0; // override by js
+  // top: 32px; // override by js
   box-sizing: border-box;
-  position: fixed;
-  left: 0; // override by js
-  top: 32px; // override by js
+  width: fit-content;
+  // min-width: 200px;
   margin: 0;
   height: 32px;
-  width: auto;
-  // min-width: 200px;
 
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);

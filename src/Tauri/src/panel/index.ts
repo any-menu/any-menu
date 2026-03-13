@@ -5,7 +5,7 @@ import { initMenuData } from "../../../Core/panel/initTool"
 
 /// 初始化菜单
 export async function initMenu(el: HTMLElement) {
-  const el_panel = document.createElement('div'); el.appendChild(el_panel); el_panel.classList.add('am-panel');
+  const el_panel = document.createElement('div'); el.appendChild(el_panel);
   // 搜索框和多级菜单 - 元素
   AMPanel.factory(el_panel)
   // 搜索框和多极菜单 - 数据内容

@@ -1,12 +1,12 @@
 /* -------------------------------- 搜索栏 ------------------------------- */
 
 .am-search {
+  position: relative;
+  // top: 0; // override by js
+  // left: 0; // override by js
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
-  position: fixed;
-  top: 0; // override by js
-  left: 0; // override by js
   z-index: 100; // 高于多级菜单
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
