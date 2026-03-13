@@ -51,7 +51,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
   /// 并支持 command_ob 类型
   override append_data(menuItems: ContextMenuItems) {
     // 预创建菜单版本
-    if (this.el_container) return super.append_data(menuItems)
+    if (this.el) return super.append_data(menuItems)
 
     if (this.target === 'editor' || this.target === 'editor-menu') {
       const plugin = this.plugin

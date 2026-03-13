@@ -12,12 +12,12 @@ declare var require: any;
  */
 export class AMSearch {
   el_parent: HTMLElement | null = null
-  el: HTMLElement | null = null
+  el: HTMLElement
   el_input: HTMLInputElement | null = null
   amSuggestion: AMSuggestion | null = null
 
-  static factory(el?: HTMLElement): AMSearch {
-    const instance = new AMSearch(el)
+  static factory(el_parent: HTMLElement): AMSearch {
+    const instance = new AMSearch(el_parent)
     return instance
   }
 
@@ -25,8 +25,8 @@ export class AMSearch {
    * @param el 挂载的元素
    * 如果是动态创建创建则不需要，则是在挂载时创建
    */
-  constructor(el?: HTMLElement) {
-    if (el) this.createDom(el)
+  constructor(el_parent: HTMLElement) {
+    this.createDom(el_parent)
     this.hide()
   }
 
@@ -38,7 +38,7 @@ export class AMSearch {
    *     - input.am-search-input (this.el_input)
    *     - .am-search-suggestion (this.el_suggestion)
    */
-  createDom(el: HTMLElement) {
+  createDom(el: HTMLElement): HTMLElement {
     // el_input
     this.el_parent = el
     this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search');
@@ -47,6 +47,8 @@ export class AMSearch {
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
 
     this.amSuggestion = AMSuggestion.factory(this.el_input, this.el)
+
+    return this.el
   }
 
   // #region 显示/隐藏

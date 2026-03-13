@@ -193,12 +193,14 @@ export class AMPanel {
     global_el.amToolbar?.hide()
   }
 
+  /// 失焦隐藏
+  /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
   static visual_listener_click = (ev: MouseEvent) => {
     if (!global_el.amPanel?.el) return
-    if (global_el.amPanel?.el.contains(ev.target as Node)) return
+    if (ev.target instanceof Element && ev.target.matches('.am-panel *')) return
     this.hide()
   }
-
+  /// ESC隐藏
   static visual_listener_keydown = (ev: KeyboardEvent) => {
     if (ev.key === 'Escape') {
       ev.preventDefault()

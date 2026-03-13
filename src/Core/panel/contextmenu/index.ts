@@ -71,7 +71,7 @@ export class AMContextMenu {
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
   public el_parent: HTMLElement|undefined
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
-  public el_container: HTMLDivElement|undefined // 菜单本体
+  public el: HTMLDivElement|undefined // 菜单本体
   /// 当前菜单是否处于显示状态
   private isShow: boolean = false
 
@@ -99,14 +99,14 @@ export class AMContextMenu {
     if (!el_parent) return
 
     // 创建菜单 DOM (默认隐藏)
-    this.el_container = document.createElement('div'); el_parent.appendChild(this.el_container); this.el_container.classList.add('am-context-menu', 'root-menu');
+    this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-context-menu', 'root-menu');
     this.hide()
 
     // 禁止右键切换光标。不阻止默认菜单和冒泡，不禁止菜单，仅禁止聚焦
     // 原因：聚焦切换到菜单内可能引起ab块重渲染，导致挂钩生命到ab块的菜单消失，而不挂钩生命到ab块则菜单项功能可能引起bug
     window.addEventListener('mousedown', (ev) => {
-      if (!this.el_container) return
-      if (this.el_container.contains(ev.target as Node)) return
+      if (!this.el) return
+      if (this.el.contains(ev.target as Node)) return
       if (ev.button != 2) return
       ev.preventDefault()
     })
@@ -121,11 +121,11 @@ export class AMContextMenu {
 
   /// 显示该菜单
   public show() {
-    if (!this.el_container) return
+    if (!this.el) return
     this.isShow = true
-    this.el_container.classList.remove('am-hide')
-    this.el_container.classList.add('visible')
-    this.el_container?.classList.remove('show-altkey')
+    this.el.classList.remove('am-hide')
+    this.el.classList.add('visible')
+    this.el?.classList.remove('show-altkey')
 
     // 状态重置
     this.menu_el_data_root.el = null
@@ -135,10 +135,10 @@ export class AMContextMenu {
   /// 隐藏该菜单
   public hide() {
     if (global_setting.state.isPin) return
-    if (!this.el_container) return
+    if (!this.el) return
     this.isShow = false
-    this.el_container.classList.add('am-hide')
-    this.el_container.classList.remove('visible')
+    this.el.classList.add('am-hide')
+    this.el.classList.remove('visible')
 
     // 状态重置
     this.vFocus_update('clean')
@@ -202,7 +202,7 @@ export class AMContextMenu {
    *       - li
    */
   append_data(menuItems: ContextMenuItems) {
-    if (!this.el_container) return
+    if (!this.el) return
 
     /** 递归生成菜单项
      * @param current_node 当前节点
@@ -313,7 +313,7 @@ export class AMContextMenu {
       })
     }
 
-    li_list(this.el_container, menuItems, this.menu_el_data_root)
+    li_list(this.el, menuItems, this.menu_el_data_root)
   }
 
   /** 添加菜单项 - 给菜单添加一个自定义元素
@@ -323,9 +323,9 @@ export class AMContextMenu {
    * 即该类不再是完整的 "右键菜单" 所展示的全部内容，而是右键菜单中的 "多级可展开菜单" 中的部分
    */
   append_el(el: HTMLElement) {
-    if (!this.el_container) return
+    if (!this.el) return
 
-    this.el_container.appendChild(el)
+    this.el.appendChild(el)
   }
 
   /** 添加菜单项 - 操作糖，添加header切换器
@@ -388,7 +388,7 @@ export class AMContextMenu {
         return
       }
 
-      if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el_container ?? null
+      if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el ?? null
       if (!this.menu_el_data_current.el) return
       // const el_items = this.menu_el_data_current.el.querySelectorAll(":scope>li") // li 可能有 .has-children，可换成 this.menu_el_data_current.children
 
