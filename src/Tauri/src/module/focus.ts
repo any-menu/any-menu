@@ -141,10 +141,10 @@ export function setupAppChangeListener() {
       // 除了miniEditor不会被显示的情况外，如果异步信息获取足够快，这里是可能在面板显示前更新的。这里也为false
       if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
         if (global_el.amMiniEditor.flag === 'info') {
-          global_el.amMiniEditor.show(undefined, undefined, global_setting.state.infoText, false)
+          global_el.amMiniEditor.show(global_setting.state.infoText, false)
         }
         else if (global_el.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
-          global_el.amMiniEditor.show(undefined, undefined, global_setting.state.selectedText, false)
+          global_el.amMiniEditor.show(global_setting.state.selectedText, false)
         }
       }
     }

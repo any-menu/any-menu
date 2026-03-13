@@ -72,8 +72,6 @@ export class AMContextMenu {
   public el_parent: HTMLElement|undefined
   /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
   public el: HTMLDivElement|undefined // 菜单本体
-  /// 当前菜单是否处于显示状态
-  private isShow: boolean = false
 
   // #region 特殊函数 big3
 
@@ -122,7 +120,6 @@ export class AMContextMenu {
   /// 显示该菜单
   public show() {
     if (!this.el) return
-    this.isShow = true
     this.el.classList.remove('am-hide')
     this.el.classList.add('visible')
     this.el?.classList.remove('show-altkey')
@@ -136,7 +133,6 @@ export class AMContextMenu {
   public hide() {
     if (global_setting.state.isPin) return
     if (!this.el) return
-    this.isShow = false
     this.el.classList.add('am-hide')
     this.el.classList.remove('visible')
 

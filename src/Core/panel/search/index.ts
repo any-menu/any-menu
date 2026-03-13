@@ -26,7 +26,7 @@ export class AMSearch {
    * 如果是动态创建创建则不需要，则是在挂载时创建
    */
   constructor(el_parent: HTMLElement) {
-    this.createDom(el_parent)
+    this.el = this.createDom(el_parent)
     this.hide()
   }
 
