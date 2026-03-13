@@ -53,15 +53,13 @@ export class AMSearch {
 
   private isShow: boolean = false
   
-  show(x?: number, y?: number) {
+  show() {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
     this.isShow = true
     if (this.el) {
       this.el.classList.remove('am-hide')
-      if (x !== undefined) this.el.style.left = `${x}px`
-      if (y !== undefined) this.el.style.top = `${y}px`
     }
 
     // 显示后聚焦，否则 focus 无效
@@ -70,9 +68,7 @@ export class AMSearch {
       this.el_input?.focus()
     })();
 
-    window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('mouseup', this.visual_listener_mouseup)
-    window.addEventListener('keydown', this.visual_listener_keydown)
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
     // if (global_setting.env == 'app') return
@@ -101,29 +97,16 @@ export class AMSearch {
       editor.focus()
     })();
 
-    window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('mouseup', this.visual_listener_mouseup)
-    window.removeEventListener('keydown', this.visual_listener_keydown)
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
     // if (global_setting.env == 'app') return
   }
 
-  // 动态事件组。菜单显示时注册，隐藏时销毁
-  // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单
-  visual_listener_click = (ev: MouseEvent) => {
-    if (!this.el) return
-    if (!this.isShow) return
-    if (this.el.contains(ev.target as Node)) return
-    this.hide()
-  }
+  // 动态事件组
   visual_listener_mouseup = (ev: MouseEvent) => {
     if (!this.isShow) return
     if (ev.button === 2) this.hide()
-  }
-  visual_listener_keydown = (ev: KeyboardEvent) => {
-    if (!this.isShow) return
-    if (ev.key === 'Escape') this.hide()
   }
 
   // #endregion

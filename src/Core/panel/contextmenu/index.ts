@@ -120,11 +120,9 @@ export class AMContextMenu {
   // #region 显示/隐藏菜单
 
   /// 显示该菜单
-  public show(x?: number, y?: number) {
+  public show() {
     if (!this.el_container) return
     this.isShow = true
-    if (x) this.el_container.style.left = `${x}px`
-    if (y) this.el_container.style.top = `${y}px`
     this.el_container.classList.remove('am-hide')
     this.el_container.classList.add('visible')
     this.el_container?.classList.remove('show-altkey')
@@ -133,10 +131,6 @@ export class AMContextMenu {
     this.menu_el_data_root.el = null
     this.menu_el_data_current = this.menu_el_data_root
     this.vFocus_update('clean')
-
-    window.addEventListener('click', this.visual_listener_click)
-    window.addEventListener('keydown', this.visual_listener_keydown)
-    window.addEventListener('mouseup', this.visual_listener_mouseup)
   }
   /// 隐藏该菜单
   public hide() {
@@ -148,63 +142,44 @@ export class AMContextMenu {
 
     // 状态重置
     this.vFocus_update('clean')
-
-    window.removeEventListener('click', this.visual_listener_click)
-    window.removeEventListener('keydown', this.visual_listener_keydown)
-    window.removeEventListener('mouseup', this.visual_listener_mouseup)
-  }
-  // 动态事件组。菜单显示时注册，隐藏时销毁
-  // 当菜单处于显示状态时，右键到其他区域/左键/Esc，则隐藏菜单
-  visual_listener_click = (ev: MouseEvent) => {
-    if (!this.el_container) return
-    if (!this.isShow) return
-    if (this.el_container.contains(ev.target as Node)) return
-    this.hide()
-  }
-  visual_listener_mouseup = (ev: MouseEvent) => {
-    if (!this.isShow) return
-    if (ev.button === 2) this.hide()
-  }
-  visual_listener_keydown = (ev: KeyboardEvent) => {
-    if (!this.isShow) return
-    if (ev.key === 'Escape') this.hide()
   }
 
   // #endregion
 
-  /** 在目标上监听 contextmenu 事件，并显示该菜单
-   * (仅于非App环境环境中使用。非App环境会在 document 对象中监听，而App环境则会在全局中监听按键事件)
-   * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
-   * 
-   * @deprecated 弃用，应该绑定在主面板上，主右键菜单上
-   * 这里重构后不再表示 "右键菜单"，只表示 "右键菜单" 内的 "多级可展开菜单"
-   */
-  public bind_emitArea(targetElement: HTMLElement | string) {
-    if (typeof targetElement == 'string') return
-
-    targetElement.addEventListener('contextmenu', (ev: MouseEvent) => {
-      ev.preventDefault() // 阻止默认菜单，及防止编辑光标失焦
-      ev.stopPropagation() // 阻止冒泡
-      let x = ev.clientX
-      let y = ev.clientY
-
-      // 获取选中的文本
-      const selectedText_ = window.getSelection()?.toString()
-      global_setting.state.selectedText = (selectedText_ && selectedText_.length > 0) ? selectedText_ : undefined
-
-      // 光标纠正: 在obsidian中，这个坐标是基于 workspace-tab-container 也就是md编辑区域的，而 非body的
-      const workspaceContainer = document.querySelector('.workspace-leaf.mod-active');
-      if (workspaceContainer) {
-        const rect = workspaceContainer.getBoundingClientRect()
-        const offsetX = rect.left + window.scrollX
-        const offsetY = rect.top + window.scrollY
-        x -= offsetX
-        y -= offsetY
-      }
-
-      this.show(x, y)
-    })
-  }
+  // 废弃。如果要恢复行为，这里也应该给面板去做，而非组件去做
+  // /** 在目标上监听 contextmenu 事件，并显示该菜单
+  //  * (仅于非App环境环境中使用。非App环境会在 document 对象中监听，而App环境则会在全局中监听按键事件)
+  //  * @param targetElement 目标元素，或用于表示已有元素的字符串 (如文件菜单/编辑器菜单: 'file'|'editor')
+  //  * 
+  //  * @deprecated 弃用，应该绑定在主面板上，主右键菜单上
+  //  * 这里重构后不再表示 "右键菜单"，只表示 "右键菜单" 内的 "多级可展开菜单"
+  //  */
+  // public bind_emitArea(targetElement: HTMLElement | string) {
+  //   if (typeof targetElement == 'string') return
+  // 
+  //   targetElement.addEventListener('contextmenu', (ev: MouseEvent) => {
+  //     ev.preventDefault() // 阻止默认菜单，及防止编辑光标失焦
+  //     ev.stopPropagation() // 阻止冒泡
+  //     let x = ev.clientX
+  //     let y = ev.clientY
+  // 
+  //     // 获取选中的文本
+  //     const selectedText_ = window.getSelection()?.toString()
+  //     global_setting.state.selectedText = (selectedText_ && selectedText_.length > 0) ? selectedText_ : undefined
+  // 
+  //     // 光标纠正: 在obsidian中，这个坐标是基于 workspace-tab-container 也就是md编辑区域的，而 非body的
+  //     const workspaceContainer = document.querySelector('.workspace-leaf.mod-active');
+  //     if (workspaceContainer) {
+  //       const rect = workspaceContainer.getBoundingClientRect()
+  //       const offsetX = rect.left + window.scrollX
+  //       const offsetY = rect.top + window.scrollY
+  //       x -= offsetX
+  //       y -= offsetY
+  //     }
+  // 
+  //     this.show(x, y)
+  //   })
+  // }
 
   /// 缓存多级菜单的容器
   menu_el_data_root: MENU_NODE = { el: null, parent: null, children: [], vFocus_index: -1 }
@@ -595,37 +570,38 @@ export class AMContextMenu {
   // -------------------- 使用示例 --------------------
 
   // 用例
-  static demo() {
-    const menuItems: ContextMenuItems = [
-      { label: '操作一', callback: async () => console.warn('执行了操作一') },
-      {
-        label: '操作二', callback: async () => console.warn('执行了操作二'), children: [
-          { label: '操作2.1', callback: async () => console.warn('执行了操作2.1') },
-          { label: '操作2.2', callback: async () => console.warn('执行了操作2.2') },
-        ]
-      },
-      {
-        label: '操作三', children: [
-          { label: '操作3.1', callback: async () => console.warn('执行了操作3.1') },
-          { label: '操作3.2', callback: async () => console.warn('执行了操作3.2') },
-        ]
-      }
-    ]
-
-    // 创建菜单实例
-    const myMenu = AMContextMenu.factory(document.body as HTMLDivElement, menuItems)
-
-    // 找到一个目标元素并附加菜单
-    const targetArea = document.getElementById('my-app') // 假设你的应用挂载点是 #my-app
-    if (targetArea) {
-      targetArea.style.height = '300px'
-      targetArea.style.backgroundColor = '#eef'
-      targetArea.style.display = 'flex'
-      targetArea.style.alignItems = 'center'
-      targetArea.style.justifyContent = 'center'
-      targetArea.innerText = '在这里右键试试'
-
-      myMenu.bind_emitArea(targetArea)
-    }
-  }
+  // @deprecated 废弃，如果要恢复行为，应该在 Panel 中重新实现。这里变更为组件，不负责直接挂载
+  // static demo() {
+  //   const menuItems: ContextMenuItems = [
+  //     { label: '操作一', callback: async () => console.warn('执行了操作一') },
+  //     {
+  //       label: '操作二', callback: async () => console.warn('执行了操作二'), children: [
+  //         { label: '操作2.1', callback: async () => console.warn('执行了操作2.1') },
+  //         { label: '操作2.2', callback: async () => console.warn('执行了操作2.2') },
+  //       ]
+  //     },
+  //     {
+  //       label: '操作三', children: [
+  //         { label: '操作3.1', callback: async () => console.warn('执行了操作3.1') },
+  //         { label: '操作3.2', callback: async () => console.warn('执行了操作3.2') },
+  //       ]
+  //     }
+  //   ]
+  // 
+  //   // 创建菜单实例
+  //   const myMenu = AMContextMenu.factory(document.body as HTMLDivElement, menuItems)
+  // 
+  //   // 找到一个目标元素并附加菜单
+  //   const targetArea = document.getElementById('my-app') // 假设你的应用挂载点是 #my-app
+  //   if (targetArea) {
+  //     targetArea.style.height = '300px'
+  //     targetArea.style.backgroundColor = '#eef'
+  //     targetArea.style.display = 'flex'
+  //     targetArea.style.alignItems = 'center'
+  //     targetArea.style.justifyContent = 'center'
+  //     targetArea.innerText = '在这里右键试试'
+  // 
+  //     myMenu.bind_emitArea(targetArea)
+  //   }
+  // }
 }

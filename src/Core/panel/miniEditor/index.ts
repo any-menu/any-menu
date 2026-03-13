@@ -154,11 +154,9 @@ export class AMMiniEditor {
 
   // #region 显示/隐藏菜单
 
-  show(x?: number, y?: number, new_text?: string, is_focus: boolean = false) {
+  show(new_text?: string, is_focus: boolean = false) {
     this.el.classList.remove('am-hide'); this.isShow = true;
 
-    if (x !== undefined) this.el.style.left = `${x}px`
-    if (y !== undefined) this.el.style.top = `${y}px`
     if (new_text) this.cache_text = new_text
     else { this.cache_text = '' } // 策略应该显示旧内容还是空内容? 若是前者，此处不变。否则此处应该不执行
 
@@ -180,7 +178,6 @@ export class AMMiniEditor {
       this.editableBlock.focus(0, this.cache_text.length + 2)
     })();
 
-    window.addEventListener('click', this.visual_listener_click)
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
@@ -188,23 +185,12 @@ export class AMMiniEditor {
     if (global_setting.state.isPin) return
     this.el.classList.add('am-hide'); this.isShow = false;
 
-    window.removeEventListener('click', this.visual_listener_click)
     window.removeEventListener('keydown', this.visual_listener_keydown)
   }
 
-  visual_listener_click = (ev: MouseEvent) => {
-    if (!this.el) return
-    if (this.el.contains(ev.target as Node)) return
-    this.hide()
-  }
-
+  // Enter 发送文本
   visual_listener_keydown = (ev: KeyboardEvent) => {
-    if (ev.key === 'Escape') {
-      ev.preventDefault()
-      this.hide()
-      return
-    }
-    else if (ev.key === 'Enter' && ev.ctrlKey) {
+    if (ev.key === 'Enter' && ev.ctrlKey) {
       // 阻止Enter原行为，避免输出结果带尾换行
       // ev.preventDefault() // 不过事件组织的话顺序不对，优先级不够。改为字符串修改
       if (this.cache_text.endsWith('\n')) this.cache_text = this.cache_text.slice(0, -1)

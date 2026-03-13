@@ -48,7 +48,20 @@ export const global_el: {
 }
 let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况
 
-/** AMPanel 使用单例模式管理 */
+/** AMPanel 使用单例模式管理
+ * 
+ * ## 面板与子组件、位置控制
+ * 
+ * 以前的旧方案是: 没有面板容器这个概念和元素，面板内的组件可以直接显示在页面上任意坐标。
+ * 但后来的需求是经常需要几个组件同时显示在同一个位置，并且要让他们排列整齐好再显示。
+ * 所以现在的新方案是: 组件必须要在该面板容器内，组件不能单独控制位置，只能由面板控制位置。好处:
+ * 
+ * - 简化子组件的实现。这样可以轻松实现更多子组件
+ *   - 可以更好地处理多个组件需要显示在同一位置的情况。子组件无需再考虑位置问题
+ *   - 更好地处理多个组件脱离焦点隐藏的逻辑。子组件无需再考虑脱离聚焦问题
+ *   - ... (抽离更多子组件的共同行为到面板中，进一步简化子组件)
+ * - 面对边缘显示时，也能更方便检测出组件组合的总尺寸 (哪怕css影响了子组件的大小) (该好处未完成)
+ */
 export class AMPanel {
   /** 单例模式 */
   static factory(el: HTMLElement) {
@@ -112,17 +125,7 @@ export class AMPanel {
     el.classList.add('am-panel');
   }
 
-  /** 显示面板
-   * 
-   * ## 面板与子组件、位置控制
-   * 
-   * 以前的旧方案是: 没有面板容器这个概念和元素，面板内的组件可以直接显示在页面上任意坐标
-   * 但后来的需求是经常需要几个组件同时显示在同一个位置，并且要让他们排列整齐好再显示
-   * 
-   * 所以现在的新方案是: 组件必须要在该面板容器内，组件不能单独控制位置，只能由面板控制位置
-   * 这样可以更好地处理多个组件需要显示在同一位置的情况。
-   * 同时面对边缘显示时，也能更方便检测出组件组合的总尺寸 (哪怕css影响了子组件的大小)
-   */
+  /** 显示面板 */
   static show(x?: number, y?: number, list?: string[]) {
     // 设置初始的 alt 状态
     // 
@@ -155,20 +158,18 @@ export class AMPanel {
       }
       else if (item == 'miniEditor') {
         global_el.amMiniEditor?.set_flag('miniEditor')
-        global_el.amMiniEditor?.show(undefined, undefined,
-          global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        global_el.amMiniEditor?.show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
         global_el.amMiniEditor?.set_flag('info')
-        global_el.amMiniEditor?.show(undefined, undefined,
-          global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        global_el.amMiniEditor?.show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
 
         // 异步添加 info 内容
         global_setting.api.getInfo().then((info_text: string|null) => {
           global_setting.state.infoText += '[info]\n' + (info_text ?? "null") + "\n\n"
-          global_el.amMiniEditor?.show(undefined, undefined, global_setting.state.infoText, false)
+          global_el.amMiniEditor?.show(global_setting.state.infoText, false)
         })
       }
       else if (item == 'toolbar') {
@@ -178,13 +179,32 @@ export class AMPanel {
         continue
       }
     }
+
+    window.addEventListener('click', this.visual_listener_click)
+    window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
+  /** 隐藏面板 */
   static hide() {
+    if (global_setting.state.isPin) return
     global_el.amSearch?.hide()
     global_el.amContextMenu?.hide()
     global_el.amMiniEditor?.hide()
     global_el.amToolbar?.hide()
+  }
+
+  static visual_listener_click = (ev: MouseEvent) => {
+    if (!global_el.amPanel?.el) return
+    if (global_el.amPanel?.el.contains(ev.target as Node)) return
+    this.hide()
+  }
+
+  static visual_listener_keydown = (ev: KeyboardEvent) => {
+    if (ev.key === 'Escape') {
+      ev.preventDefault()
+      this.hide()
+      return
+    }
   }
 
   /** 获取面板尺寸

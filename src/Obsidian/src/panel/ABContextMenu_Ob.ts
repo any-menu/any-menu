@@ -39,12 +39,12 @@ export class ABContextMenu_Ob extends AMContextMenu {
     super(undefined, menuItems)
   }
 
-  override bind_emitArea(targetElement: HTMLElement | string): void {
-    // 预创建菜单版本
-    if (this.el_container) return super.bind_emitArea(targetElement)
-
-    return
-  }
+  // override bind_emitArea(targetElement: HTMLElement | string): void {
+  //   // 预创建菜单版本
+  //   if (this.el_container) return super.bind_emitArea(targetElement)
+  // 
+  //   return
+  // }
 
   /// 支持obsidian原生菜单
   /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
