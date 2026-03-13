@@ -759,6 +759,10 @@ div.editable-textarea-textarea {
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
   border: 1px solid var(--ab-tab-root-bd-color);
+  display: block;
+}
+.am-toolbar:empty {
+  display: none;
 }
 .am-toolbar .am-toolbar-item {
   display: inline-flex;

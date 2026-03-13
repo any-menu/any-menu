@@ -14,6 +14,11 @@
   border: 1px solid var(--ab-tab-root-bd-color);
   // border: none;
 
+  display: block;
+  &:empty {
+    display: none;
+  }
+
   // 单行 or 多行
   .am-toolbar-item {
     display: inline-flex;
