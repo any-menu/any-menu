@@ -3,11 +3,17 @@ import { global_setting } from '../setting';
 import { PluginInterfaceDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
+// 需要开启 tsconfig.json 中的
+// "resolveJsonModule": true,
+// "esModuleInterop": true,
+import pkg from '../package.json';
+const currentAppVersion: string = pkg.version;
+
 // Schema
 const PluginMetadataSchema = z.object({
   id: z.string(),
   version: z.string(),
-  app_min_version: z.string(),
+  min_app_version: z.string(),
   name: z.string().optional(),
   author: z.string().optional(),
 });
@@ -66,16 +72,23 @@ export class PluginManager {
       }
     }
   }
-  /** 验证插件是否符合接口 - 新 */
+  /** 验证插件是否符合接口 */
   private loadPlugin_validatePlugin(rawPlugin: any): PluginInterface {
+    // 使用 Zod 进行结构和类型验证
     const result = PluginSchema.safeParse(rawPlugin); // 使用 safeParse 进行验证，而不是直接 parse
-
     if (!result.success) {
       // 提取格式化后的错误信息
       const errorMsg = result.error.issues
         .map(e => `字段 '${e.path.join('.')}' ${e.message}`)
         .join('; ');
-      throw new Error(`插件格式校验失败: ${errorMsg}`);
+      throw new Error(`Plugin validate error: #${rawPlugin?.metadata?.id} ${errorMsg}`);
+    }
+
+    // 检查版本号
+    const isCompatible = PluginManager.isVersionCompatible(rawPlugin.metadata.min_app_version, currentAppVersion);
+    if (!isCompatible) {
+      console.error(`Plugin "${rawPlugin.metadata.name || rawPlugin.metadata.id}" requires app version ${rawPlugin.metadata.min_app_version} or higher. Current version: ${currentAppVersion}`);
+      throw new Error(`Plugin "${rawPlugin.metadata.name || rawPlugin.metadata.id}" requires app version ${rawPlugin.metadata.min_app_version} or higher. Current version: ${currentAppVersion}`);
     }
 
     // 注意：我们直接返回 rawPlugin，而不是 result.data
@@ -154,21 +167,34 @@ export class PluginManager {
   static async demo() {
     const loader = new PluginManager();
 
-    try {
-      // 插件 - 加载 + 验证
-      const plugin = await loader.loadPlugin(PluginInterfaceDemo);
+    // 插件 - 加载 + 验证
+    const plugin = await loader.loadPlugin(PluginInterfaceDemo);
 
-      // 插件 - 调用常规接口
-      if (plugin.process) {
-        const result = await plugin.process('hello world');
-        if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
-      }
-
-      // 插件 - 卸载
-      if (plugin.onUnload) plugin.onUnload();
-    } catch (error) {
-      console.error('插件错误:', error);
+    // 插件 - 调用常规接口
+    if (plugin.process) {
+      const result = await plugin.process('hello world' as never);
+      if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
     }
+
+    // 插件 - 卸载
+    if (plugin.onUnload) plugin.onUnload();
+  }
+
+  /** 比较应用版本是否满足插件的最低要求
+   * @returns true: 当前版本 >= 最低要求版本; false: 当前版本 < 最低要求版本
+   */
+  static isVersionCompatible(minVersion: string, currentVersion: string): boolean {
+    const minParts = minVersion.split('.').map(Number);
+    const currParts = currentVersion.split('.').map(Number);
+
+    const maxLength = Math.max(minParts.length, currParts.length);
+    for (let i = 0; i < maxLength; i++) {
+      const min = minParts[i] || 0;
+      const curr = currParts[i] || 0;
+      if (curr > min) return true;  // 当前版本 > 最小版本
+      if (curr < min) return false; // 当前版本 < 最小版本
+    }
+    return true;                    // 当前版本 = 最小版本
   }
 }
 

@@ -11,7 +11,7 @@ export interface PluginInterface {
     /// 脚本版本
     version: string;
     /// 宿主应用版本要求
-    app_min_version: string;
+    min_app_version: string;
     /// 插件名称 (如不提供则默认为 id)
     name?: string;
     /// 插件作者
@@ -37,7 +37,7 @@ export default {
     id: 'text-processor',
     name: 'TextProcessor',
     version: '1.0.0',
-    min_app_version: '1.0.5',
+    min_app_version: '1.1.0',
     author: 'LincZero'
   },
 

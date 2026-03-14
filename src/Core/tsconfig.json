@@ -14,6 +14,8 @@
     "allowSyntheticDefaultImports": true, // 导入markdown-it/plantuml-encoder等cjs模块要加这个
     "isolatedModules": true,
     "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "lib": [
       "DOM",
       "ES5",
