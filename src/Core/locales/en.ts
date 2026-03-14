@@ -20,6 +20,9 @@ For more instructions and tutorials:
   'Toolbar': 'Toolbar',
   'Toolbar2': `Toolbar customization. You can customize icons, order, which files to enable, etc.
 \nIf not configured, the enabled script files will be used by default`,
+  'Menu': 'Menu',
+  'Menu2': `Menu customization. You can customize the order, which files to enable, etc.
+\nIf not configured, the enabled class JSON files will be used by default`,
 
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   // 暂无

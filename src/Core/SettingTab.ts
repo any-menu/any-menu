@@ -23,6 +23,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   void initSettingTab_localDict(tab_nav_container, tab_content_container)
   void initSettingTab_webDict(tab_nav_container, tab_content_container)
   void initSettingTab_toolbar(tab_nav_container, tab_content_container)
+  void initSettingTab_contextMenu(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
 }
@@ -320,7 +321,8 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
 /**
  * 自定义工具栏
  * 
- * 拖拽失败 - 由 Tauri 机制导致的问题:
+ * ## 拖拽失败 - 由 Tauri 机制导致的问题
+ * 
  * Tauri 的安全策略阻止了拖拽事件。默认情况下，前端事件被 Tauri 拦截，走它自己的事件
  * 比如说tauri://drag-drop, tauri://drag-leave, tauri://drag-enter等。
  * 那么方案就有两个:
@@ -341,82 +343,82 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
 
-  // 行容器
-  const toolbar_container = document.createElement('div'); tab_content.appendChild(toolbar_container); toolbar_container.classList.add('toolbar-setting')
+  // El_rows 容器
+  const el_rows = document.createElement('div'); tab_content.appendChild(el_rows); el_rows.classList.add('setting_row')
   // dataset.index ('data-index') 用于表示当前行所在元素是第几行。并且该值能在 delete/drag 操作后保持正确性
   // 重新给 DOM 行写回 index (保证 delete / drag 后 index 不会错)
   function __sync_dom_indexes() {
-    const rows: NodeListOf<HTMLDivElement> = toolbar_container.querySelectorAll(':scope > div');
+    const rows: NodeListOf<HTMLDivElement> = el_rows.querySelectorAll(':scope > div');
     rows.forEach((row, i) => {
       row.dataset.index = String(i);
     });
   }
   let __drag_from_index = -1; // 标记 - 从第几行开始拖拽
 
-  // 行容器的项，初次渲染
+  // El_row 行容器，初次渲染
   for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
-    create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
+    create_el_row(global_setting.config.toolbar_list[i], i)
   }
 
   // Add 按钮
-  const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('toolbar-setting-add-btn');
+  const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('setting_row-add-btn');
     add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = t('Add');
   add_btn.addEventListener('click', () => {
     const newName = '';
     const newIndex = global_setting.config.toolbar_list.length;
     global_setting.config.toolbar_list.push(newName); global_setting.api.saveConfig();
-    const { toolbar_item_name } = create_toolbarItem_row(newName, newIndex);
-    toolbar_item_name.focus();
+    const { el_row_name } = create_el_row(newName, newIndex);
+    el_row_name.focus();
   });
 
   // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
-  const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('toolbar-setting-refresh-btn');
+  const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('setting_row-refresh-btn');
     refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
   function fn_refresh() {
-    toolbar_container.innerHTML = ''
+    el_rows.innerHTML = ''
     for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
-      create_toolbarItem_row(global_setting.config.toolbar_list[i], i)
+      create_el_row(global_setting.config.toolbar_list[i], i)
     }
   };
   refresh_btn.addEventListener('click', fn_refresh)
 
-  /// 创建一行 toolbar item，并负责把事件绑定到 global_setting
-  function create_toolbarItem_row(name: string, index: number) {
-    const toolbar_item = document.createElement('div'); toolbar_container.appendChild(toolbar_item); toolbar_item.classList.add('toolbar-setting-item');
-      toolbar_item.dataset.index = String(index);
-      toolbar_item.draggable = true; // 让整行可拖拽（但我们只允许从 drag-btn 发起）
+  /// 创建一行 el_row，并负责与 global_setting 同步
+  function create_el_row(name: string, index: number) {
+    const el_row = document.createElement('div'); el_rows.appendChild(el_row); el_row.classList.add('item_row');
+      el_row.dataset.index = String(index);
+      el_row.draggable = true; // 让整行可拖拽（但我们只允许从 drag-btn 发起）
 
     // Drag, 需注意: 拖动后 index 需要重排
-    const toolbar_item_drag = document.createElement('span'); toolbar_item.appendChild(toolbar_item_drag); toolbar_item_drag.classList.add('drag-btn');
-      toolbar_item_drag.innerHTML = SVG_ICON_GRIP; toolbar_item_drag.title = t('Drag');
+    const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
+      el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
 
     // Name
-    const toolbar_item_name = document.createElement('input'); toolbar_item.appendChild(toolbar_item_name); toolbar_item_name.classList.add('name');
-      toolbar_item_name.value = name;
-    toolbar_item_name.addEventListener('change', () => {
-      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
-      global_setting.config.toolbar_list[idx] = toolbar_item_name.value; global_setting.api.saveConfig();
+    const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
+      el_row_name.value = name;
+    el_row_name.addEventListener('change', () => {
+      const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
+      global_setting.config.toolbar_list[idx] = el_row_name.value; global_setting.api.saveConfig();
     });
 
     // Icon
     // 该选项暂不支持
 
     // Delete
-    const toolbar_item_delete = document.createElement('button'); toolbar_item.appendChild(toolbar_item_delete); toolbar_item_delete.classList.add('delete-btn');
-      toolbar_item_delete.innerHTML = SVG_ICON_DELETE; toolbar_item_delete.title = t('Delete');
-    toolbar_item_delete.addEventListener('click', () => {
-      const idx = Number(toolbar_item.dataset.index); if (Number.isNaN(idx)) return;
+    const el_row_delete = document.createElement('button'); el_row.appendChild(el_row_delete); el_row_delete.classList.add('delete-btn');
+      el_row_delete.innerHTML = SVG_ICON_DELETE; el_row_delete.title = t('Delete');
+    el_row_delete.addEventListener('click', () => {
+      const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
       if (idx < 0 || idx >= global_setting.config.toolbar_list.length) return;
       global_setting.config.toolbar_list.splice(idx, 1); global_setting.api.saveConfig();
-      toolbar_item.remove()
+      el_row.remove()
       __sync_dom_indexes();
     });
 
-    // Toolbar_item 行为 + 排除非 Drag 发起
+    // El_row 行为 + 排除非 Drag 元素发起
     {
-      toolbar_item.addEventListener('dragstart', (e) => {
+      el_row.addEventListener('dragstart', (e) => {
         // TODO 只允许从 drag-btn 发起拖拽 (支持点击到 svg/path 等内部元素)
-        // 这里的 e.target 始终为 toolbar-setting-item，无法判断是否从 drag-btn 发起
+        // 这里的 e.target 始终为 item_row，无法判断是否从 drag-btn 发起
         // const target = e.target as HTMLElement;
         // if (!target || !target.classList || !target.classList.contains('drag-btn')) {
         //   console.log('dragstart sdfsada 1', e.target)
@@ -428,53 +430,53 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
         // }
 
         // 缓存开始行
-        const idx = Number(toolbar_item.dataset.index);
+        const idx = Number(el_row.dataset.index);
         if (Number.isNaN(idx)) {
           e.preventDefault();
           return;
         }
         __drag_from_index = idx;
 
-        toolbar_item.classList.add('dragging');
+        el_row.classList.add('dragging');
 
         // Firefox 需要 setData 才能拖。同时这里允许拖拽到软件外任意文本区域并输出 `idx`
         try { e.dataTransfer?.setData('text/plain', String(idx)); } catch {}
         if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
       });
-      toolbar_item.addEventListener('dragend', () => {
+      el_row.addEventListener('dragend', () => {
         __drag_from_index = -1;
 
-        toolbar_item.classList.remove('dragging');
+        el_row.classList.remove('dragging');
       });
-      toolbar_item.addEventListener('dragenter', (e) => {
+      el_row.addEventListener('dragenter', (e) => {
         e.preventDefault();  // 必须阻止默认才能触发 drop
       });
-      toolbar_item.addEventListener('dragover', (e) => {
+      el_row.addEventListener('dragover', (e) => {
         e.preventDefault(); // 必须阻止默认才能触发 drop
         if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
 
         // 高亮定位提醒
-        const toIndex = Number(toolbar_item.dataset.index);
+        const toIndex = Number(el_row.dataset.index);
         const fromIndex = __drag_from_index;
         if (fromIndex < 0 || Number.isNaN(toIndex) || fromIndex == toIndex) return
         if (fromIndex < toIndex) { // 往下拖
-          toolbar_item.classList.add('drag-over-bottom')
+          el_row.classList.add('drag-over-bottom')
         } else { // 往上拖
-          toolbar_item.classList.add('drag-over-top')
+          el_row.classList.add('drag-over-top')
         }
       });
-      toolbar_item.addEventListener('dragleave', (_) => {
+      el_row.addEventListener('dragleave', (_) => {
         // 高亮定位提醒
-        toolbar_item.classList.remove('drag-over-top', 'drag-over-bottom')
+        el_row.classList.remove('drag-over-top', 'drag-over-bottom')
       });
-      toolbar_item.addEventListener('drop', (e) => {
+      el_row.addEventListener('drop', (e) => {
         e.preventDefault();
 
         // 高亮定位提醒
-        toolbar_item.classList.remove('drag-over-top', 'drag-over-bottom')
+        el_row.classList.remove('drag-over-top', 'drag-over-bottom')
 
         // 1. 确认 from-to index
-        const toIndex = Number(toolbar_item.dataset.index)
+        const toIndex = Number(el_row.dataset.index)
         const fromIndex = __drag_from_index
         if (Number.isNaN(toIndex)) return
         if (fromIndex < 0) return
@@ -487,16 +489,190 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
         global_setting.api.saveConfig();
 
         // 3. 修改 DOM (移动行节点)
-        const fromRow = toolbar_container.querySelector(`:scope > div[data-index="${fromIndex}"]`)
+        const fromRow = el_rows.querySelector(`:scope > div[data-index="${fromIndex}"]`)
         if (fromRow) {
           // 注意：fromIndex splice 后，toIndex 语义保持“放到目标行位置”
-          toolbar_container.insertBefore(fromRow, (fromIndex < toIndex) ? toolbar_item.nextSibling : toolbar_item)
+          el_rows.insertBefore(fromRow, (fromIndex < toIndex) ? el_row.nextSibling : el_row)
         }
         __sync_dom_indexes() // 重写 index，避免后续 change/delete 用旧 index
       });
     }
 
-    return { toolbar_item, toolbar_item_name } // 返回 toolbar_item_name 方便聚焦
+    return { el_row, el_row_name } // 返回 el_row_name 方便聚焦
+  }
+  // #endregion
+}
+
+/** 自定义多级菜单 */
+function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Menu');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'context-menu-custom'); tab_content.setAttribute('index', 'context-menu-custom');
+
+  // 自动刷新。但注意这可能会覆盖未保存的状态
+  tab_nav.addEventListener('click', fn_refresh)
+
+  const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = t('Menu2');
+
+  // #region 修改 contextMenu 的 GUI。将修改同步回配置对象和文件
+
+  // El_rows 容器
+  const el_rows = document.createElement('div'); tab_content.appendChild(el_rows); el_rows.classList.add('setting_row')
+  // dataset.index ('data-index') 用于表示当前行所在元素是第几行。并且该值能在 delete/drag 操作后保持正确性
+  // 重新给 DOM 行写回 index (保证 delete / drag 后 index 不会错)
+  function __sync_dom_indexes() {
+    const rows: NodeListOf<HTMLDivElement> = el_rows.querySelectorAll(':scope > div');
+    rows.forEach((row, i) => {
+      row.dataset.index = String(i);
+    });
+  }
+  let __drag_from_index = -1; // 标记 - 从第几行开始拖拽
+
+  // El_row 行容器，初次渲染
+  for (let i = 0; i < global_setting.config.context_menu_list.length; i++) {
+    create_el_row(global_setting.config.context_menu_list[i], i)
+  }
+
+  // Add 按钮
+  const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('setting_row-add-btn');
+    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = t('Add');
+  add_btn.addEventListener('click', () => {
+    const newName = '';
+    const newIndex = global_setting.config.context_menu_list.length;
+    global_setting.config.context_menu_list.push(newName); global_setting.api.saveConfig();
+    const { el_row_name } = create_el_row(newName, newIndex);
+    el_row_name.focus();
+  });
+
+  // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
+  const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('setting_row-refresh-btn');
+    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
+  function fn_refresh() {
+    el_rows.innerHTML = ''
+    for (let i = 0; i < global_setting.config.context_menu_list.length; i++) {
+      create_el_row(global_setting.config.context_menu_list[i], i)
+    }
+  };
+  refresh_btn.addEventListener('click', fn_refresh)
+
+  /// 创建一行 el_row，并负责与 global_setting 同步
+  function create_el_row(name: string, index: number) {
+    const el_row = document.createElement('div'); el_rows.appendChild(el_row); el_row.classList.add('item_row');
+      el_row.dataset.index = String(index);
+      el_row.draggable = true; // 让整行可拖拽（但我们只允许从 drag-btn 发起）
+
+    // Drag, 需注意: 拖动后 index 需要重排
+    const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
+      el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
+
+    // Name
+    const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
+      el_row_name.value = name;
+    el_row_name.addEventListener('change', () => {
+      const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
+      global_setting.config.context_menu_list[idx] = el_row_name.value; global_setting.api.saveConfig();
+    });
+
+    // Icon
+    // 该选项暂不支持
+
+    // Delete
+    const el_row_delete = document.createElement('button'); el_row.appendChild(el_row_delete); el_row_delete.classList.add('delete-btn');
+      el_row_delete.innerHTML = SVG_ICON_DELETE; el_row_delete.title = t('Delete');
+    el_row_delete.addEventListener('click', () => {
+      const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
+      if (idx < 0 || idx >= global_setting.config.context_menu_list.length) return;
+      global_setting.config.context_menu_list.splice(idx, 1); global_setting.api.saveConfig();
+      el_row.remove()
+      __sync_dom_indexes();
+    });
+
+    // El_row 行为 + 排除非 Drag 元素发起
+    {
+      el_row.addEventListener('dragstart', (e) => {
+        // TODO 只允许从 drag-btn 发起拖拽 (支持点击到 svg/path 等内部元素)
+        // 这里的 e.target 始终为 item_row，无法判断是否从 drag-btn 发起
+        // const target = e.target as HTMLElement;
+        // if (!target || !target.classList || !target.classList.contains('drag-btn')) {
+        //   console.log('dragstart sdfsada 1', e.target)
+        //   e.preventDefault();
+        //   return;
+        // }
+        // if (!target || !(target.closest && target.closest('.drag-btn'))) {
+        //   console.log('dragstart sdfsada 2', e.target)
+        // }
+
+        // 缓存开始行
+        const idx = Number(el_row.dataset.index);
+        if (Number.isNaN(idx)) {
+          e.preventDefault();
+          return;
+        }
+        __drag_from_index = idx;
+
+        el_row.classList.add('dragging');
+
+        // Firefox 需要 setData 才能拖。同时这里允许拖拽到软件外任意文本区域并输出 `idx`
+        try { e.dataTransfer?.setData('text/plain', String(idx)); } catch {}
+        if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+      });
+      el_row.addEventListener('dragend', () => {
+        __drag_from_index = -1;
+
+        el_row.classList.remove('dragging');
+      });
+      el_row.addEventListener('dragenter', (e) => {
+        e.preventDefault();  // 必须阻止默认才能触发 drop
+      });
+      el_row.addEventListener('dragover', (e) => {
+        e.preventDefault(); // 必须阻止默认才能触发 drop
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+
+        // 高亮定位提醒
+        const toIndex = Number(el_row.dataset.index);
+        const fromIndex = __drag_from_index;
+        if (fromIndex < 0 || Number.isNaN(toIndex) || fromIndex == toIndex) return
+        if (fromIndex < toIndex) { // 往下拖
+          el_row.classList.add('drag-over-bottom')
+        } else { // 往上拖
+          el_row.classList.add('drag-over-top')
+        }
+      });
+      el_row.addEventListener('dragleave', (_) => {
+        // 高亮定位提醒
+        el_row.classList.remove('drag-over-top', 'drag-over-bottom')
+      });
+      el_row.addEventListener('drop', (e) => {
+        e.preventDefault();
+
+        // 高亮定位提醒
+        el_row.classList.remove('drag-over-top', 'drag-over-bottom')
+
+        // 1. 确认 from-to index
+        const toIndex = Number(el_row.dataset.index)
+        const fromIndex = __drag_from_index
+        if (Number.isNaN(toIndex)) return
+        if (fromIndex < 0) return
+        if (fromIndex === toIndex) return
+        if (fromIndex >= global_setting.config.context_menu_list.length) return
+
+        // 2. 修改配置对象和文件
+        const [moved] = global_setting.config.context_menu_list.splice(fromIndex, 1);
+        global_setting.config.context_menu_list.splice(toIndex, 0, moved);
+        global_setting.api.saveConfig();
+
+        // 3. 修改 DOM (移动行节点)
+        const fromRow = el_rows.querySelector(`:scope > div[data-index="${fromIndex}"]`)
+        if (fromRow) {
+          // 注意：fromIndex splice 后，toIndex 语义保持“放到目标行位置”
+          el_rows.insertBefore(fromRow, (fromIndex < toIndex) ? el_row.nextSibling : el_row)
+        }
+        __sync_dom_indexes() // 重写 index，避免后续 change/delete 用旧 index
+      });
+    }
+
+    return { el_row, el_row_name } // 返回 el_row_name 方便聚焦
   }
   // #endregion
 }
