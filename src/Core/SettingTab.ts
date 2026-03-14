@@ -392,7 +392,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
     const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
       el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
 
-    // Name
+    // Name，TODO 以后可以标记下是否是正确的项
     const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
       el_row_name.value = name;
     el_row_name.addEventListener('change', () => {
@@ -566,7 +566,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
     const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
       el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
 
-    // Name
+    // Name，TODO 以后可以标记下是否是正确的项
     const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
       el_row_name.value = name;
     el_row_name.addEventListener('change', () => {

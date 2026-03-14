@@ -217,7 +217,6 @@ export async function initMenuData() {
     try {
       // 脚本部分
       const plugin = PLUGIN_MANAGER.loadPlugin(file_content)
-      if (plugin.onLoad) plugin.onLoad();
 
       // 多级菜单部分
       myContextMenu.append_data([
