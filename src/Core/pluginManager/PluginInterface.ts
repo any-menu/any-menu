@@ -25,13 +25,14 @@ export interface PluginInterface {
   /// 传入ctx，必须实现
   run: (ctx: any) => Promise<void>;
 
-  /// 可选实现
+  /// 加载插件时调用
   onLoad?: () => void;
+  /// 卸载插件时调用
   onUnload?: () => void;
 }
 
 export const PluginInterfaceDemo: string = `\
-const plugin = {
+export default {
   metadata: {
     id: 'text-processor',
     name: 'TextProcessor',

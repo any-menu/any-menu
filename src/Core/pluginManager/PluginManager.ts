@@ -1,6 +1,24 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import { PluginInterface, PluginInterfaceDemo } from './PluginInterface';
+import { PluginInterfaceDemo } from './PluginInterface';
+import { z } from 'zod'; // 运行时验证库
+
+// Schema
+const PluginMetadataSchema = z.object({
+  id: z.string(),
+  version: z.string(),
+  app_min_version: z.string(),
+  name: z.string().optional(),
+  author: z.string().optional(),
+});
+const PluginSchema = z.object({
+  metadata: PluginMetadataSchema,
+  process: z.function().optional(), 
+  run: z.function(),
+  onLoad: z.function().optional(),
+  onUnload: z.function().optional(),
+});
+export type PluginInterface = z.infer<typeof PluginSchema>;
 
 /** 插件管理
  */
@@ -13,18 +31,77 @@ export class PluginManager {
     if (global_setting.isDebug) console.log('>>> PluginManager initialized'); // 验证单例
   }
 
-  /// 加载并验证插件
-  loadPlugin(scriptContent: string): PluginInterface {
+  async loadPlugin(scriptContent: string): Promise<PluginInterface> {
+    let blobUrl: string | null = null;
+    try {
+      // 1. Import 脚本
+      //   将字符串代码转换为 Blob，并指定类型为 JS 模块
+      const blob = new Blob([scriptContent], { type: 'application/javascript' });
+      blobUrl = URL.createObjectURL(blob);
+      //   使用原生动态 import 加载这个虚拟文件
+      //   使用 /* @vite-ignore */ 防止 Vite 在构建时试图解析这个动态路径
+      const module = await import(/* @vite-ignore */ blobUrl);
+      //   获取 export default 导出的对象
+      const rawPlugin = module.default;
+      if (!rawPlugin) {
+        console.error('Plugin script must export a default object');
+        throw new Error('Plugin script must export a default object');
+      }
+
+      // 2. 验证插件格式
+      const plugin = this.loadPlugin_validatePlugin(rawPlugin);
+      
+      // 3. 注册并执行加载事件
+      this.plugin_list[plugin.metadata.id] = plugin;
+      plugin.onLoad?.();
+
+      return plugin;
+    } catch (error) {
+      console.error('Plugin load error:', error);
+      throw error;
+    } finally {
+      // 6. 清理内存，防止内存泄漏
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+    }
+  }
+  /** 验证插件是否符合接口 - 新 */
+  private loadPlugin_validatePlugin(rawPlugin: any): PluginInterface {
+    const result = PluginSchema.safeParse(rawPlugin); // 使用 safeParse 进行验证，而不是直接 parse
+
+    if (!result.success) {
+      // 提取格式化后的错误信息
+      const errorMsg = result.error.issues
+        .map(e => `字段 '${e.path.join('.')}' ${e.message}`)
+        .join('; ');
+      throw new Error(`插件格式校验失败: ${errorMsg}`);
+    }
+
+    // 注意：我们直接返回 rawPlugin，而不是 result.data
+    // 原因是 Zod 默认会剔除(strip)未定义的字段，如果我们返回 result.data，
+    // 插件自身定义的内部变量或辅助函数就会丢失，会导致插件内部的 this.xxx 调用失败。
+    return rawPlugin as PluginInterface;
+  }
+
+  // #region 废弃，旧版的插件加载和验证方案
+
+  /** 加载并验证插件
+   * 
+   * @deprecated 旧方案，废弃
+   *   新版改进: 原字符串 + new Function 加载 -> Blob + dynamic import；类似 obsidian 插件体系的做法
+   */
+  loadPlugin2(scriptContent: string): PluginInterface {
     try {
       // 执行脚本，要求返回插件对象
       const fn = new Function(`
-        'use strict';
+        'use strict'
         ${scriptContent}
         return plugin; // 脚本必须定义并返回 plugin 对象
       `);
 
       const plugin = fn() as PluginInterface;
-      this.validatePlugin(plugin); // 验证接口，错误则抛出错误
+      this.loadPlugin_validatePlugin2(plugin); // 验证接口，错误则抛出错误
       this.plugin_list[plugin.metadata.id] = plugin;
 
       // 加载脚本
@@ -36,9 +113,17 @@ export class PluginManager {
       throw new Error(`插件加载失败: ${error}`);
     }
   }
-  
-  /// 验证插件是否符合接口 (纯字段验证)
-  private validatePlugin(plugin: any): asserts plugin is PluginInterface {
+  /** 验证插件是否符合接口 (纯字段验证)
+   * 
+   * @deprecated 旧方案，废弃
+   *   缺点:
+   *   - 手动验证太繁琐且易错：每次修改接口都要改 validatePlugin
+   *   - 为了验证而实际执行了。如为了验证返回值是 Promise，居然在验证阶段实际执行了 plugin.process('test')。
+   *     如果这个插件里包含副作用（比如删除文件、发起网络请求），在加载阶段就会被触发，这非常危险
+   *   - 安全性几乎为零：new Function 和 eval 类似，它会在当前的全局作用域下执行代码。这意味着恶意插件可以直接访问 window / global
+   */
+
+  private loadPlugin_validatePlugin2(plugin: any): asserts plugin is PluginInterface {
     if (!plugin || typeof plugin !== 'object') {
       throw new Error('插件必须返回一个对象');
     }
@@ -63,17 +148,23 @@ export class PluginManager {
     }
   }
 
+  // #endregion
+
   // 使用示例
   static async demo() {
     const loader = new PluginManager();
 
     try {
-      // 加载+验证插件
-      const plugin = loader.loadPlugin(PluginInterfaceDemo);
+      // 插件 - 加载 + 验证
+      const plugin = await loader.loadPlugin(PluginInterfaceDemo);
 
       // 插件 - 调用常规接口
-      const result = await plugin.process('hello world');
-      if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
+      if (plugin.process) {
+        const result = await plugin.process('hello world');
+        if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
+      }
+
+      // 插件 - 卸载
       if (plugin.onUnload) plugin.onUnload();
     } catch (error) {
       console.error('插件错误:', error);

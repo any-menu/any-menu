@@ -38,6 +38,9 @@ importers:
       smol-toml:
         specifier: ^1.4.2
         version: 1.4.2
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@types/js-yaml':
         specifier: ^4.0.9
@@ -75,7 +78,7 @@ importers:
         version: 0.14.54
       obsidian:
         specifier: latest
-        version: 1.12.2(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
+        version: 1.12.3(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1334,8 +1337,8 @@ packages:
   noms@0.0.0:
     resolution: {integrity: sha512-lNDU9VJaOPxUmXcLb+HQFeUgQQPtMI24Gt6hgfuMHRJgMRHMF/qZ4HJD3GDru4sSw9IQl2jPjAYnQrdIeLbwow==}
 
-  obsidian@1.12.2:
-    resolution: {integrity: sha512-DGAzpt6vo+sMDET/o8Zj26Bj2hbHrFsNUU8TtnzCyerO/OHksMFQnU9QEnPHVsOMstt/WnHXfC56j2r1syObWg==}
+  obsidian@1.12.3:
+    resolution: {integrity: sha512-HxWqe763dOqzXjnNiHmAJTRERN8KILBSqxDSEqbeSr7W8R8Jxezzbca+nz1LiiqXnMpM8lV2jzAezw3CZ4xNUw==}
     peerDependencies:
       '@codemirror/state': 6.5.0
       '@codemirror/view': 6.38.6
@@ -1676,6 +1679,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -2790,7 +2796,7 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 1.0.34
 
-  obsidian@1.12.2(@codemirror/state@6.5.2)(@codemirror/view@6.38.1):
+  obsidian@1.12.3(@codemirror/state@6.5.2)(@codemirror/view@6.38.1):
     dependencies:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.1
@@ -3059,3 +3065,5 @@ snapshots:
       yargs-parser: 20.2.9
 
   yocto-queue@0.1.0: {}
+
+  zod@4.3.6: {}
