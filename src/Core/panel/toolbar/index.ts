@@ -56,7 +56,7 @@ export class AMToolbar {
       // }
       // alt_key_index++
 
-      // 检查 order
+      // 工具栏项顺序检查 (order)
       if (global_setting.config.toolbar_list.length == 0) {} // 没限制则全部放行
       else if (global_setting.config.toolbar_list.includes(item.label)) { // 有则添加顺序
         const index = global_setting.config.toolbar_list.indexOf(item.label)
@@ -66,6 +66,7 @@ export class AMToolbar {
         return
       }
 
+      // 工具栏项元素
       const li = document.createElement('span'); li.classList.add('am-toolbar-item');
         // li.setAttribute('data-altkey', alt_key_key);
         // sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
@@ -88,10 +89,10 @@ export class AMToolbar {
         this.el.appendChild(li);
       }
 
-      // 菜单项图标 (~~非ob版~~ 暂不支持)
+      // 工具栏项图标 (~~非ob版~~ 暂不支持)
       if (item.icon) {}
 
-      // 菜单项功能
+      // 工具栏项功能
       {
         li.addEventListener('mousedown', (event) => {
           event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
@@ -122,7 +123,7 @@ export class AMToolbar {
         }
       }
 
-      // 菜单项说明
+      // 工具栏项说明
       let tooltip: HTMLElement|undefined = undefined
       if (item.detail) {
         li.onmouseenter = () => {

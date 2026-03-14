@@ -289,4 +289,9 @@ note_paths = "./notes/"
 app_black_list = ["- Obsidian v"]
 # app是否使用高级快捷键
 app_ad_shortcut = true
+
+# 工具栏列表。可控制显示是否显示与显示顺序，为空则默认全显示
+toolbar_list = []
+# 多级菜单列表。细节同上
+context_menu_list = []
 `

@@ -74,6 +74,7 @@ export const global_setting: {
       enabled: boolean,
     }[],
     toolbar_list: string[],
+    context_menu_list: string[],
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -157,7 +158,8 @@ export const global_setting: {
     app_ad_shortcut: true,
 
     plugins: [],
-    toolbar_list: ['t1', 'test2', 't3'],
+    toolbar_list: [],
+    context_menu_list: [],
   },
   config_: {
     is_auto_startup: false,

@@ -63,6 +63,8 @@ let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排
  * - 面对边缘显示时，也能更方便检测出组件组合的总尺寸 (哪怕css影响了子组件的大小) (该好处未完成)
  */
 export class AMPanel {
+  public el: HTMLElement
+
   /** 单例模式 */
   static factory(el: HTMLElement) {
     if (!global_el.amPanel) {
@@ -121,7 +123,8 @@ export class AMPanel {
     return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
   }
 
-  private constructor(public el: HTMLElement) {
+  private constructor(el: HTMLElement) {
+    this.el = el
     el.classList.add('am-panel');
   }
 
