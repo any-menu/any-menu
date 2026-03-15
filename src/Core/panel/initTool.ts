@@ -4,9 +4,10 @@ import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
 import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
+import { PanelItem } from "./PanelItem"
 import { SEARCH_DB } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
-import { type ContextMenuItems, toml_parse } from "./contextmenu/demo"
+import { toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
 
 /**
@@ -144,9 +145,9 @@ export async function initMenuData() {
 
   async function fill_by_toml(file_content: string, file_name_short: string) {
     // 解析
-    let menu_items: ContextMenuItems = []
+    let menu_items: PanelItem[] = []
     try {
-      menu_items = toml_parse(file_content)["categories"] as ContextMenuItems
+      menu_items = toml_parse(file_content)["categories"] as PanelItem[]
     } catch (error) {
       console.error("Parse error:", error)
       return
@@ -154,7 +155,7 @@ export async function initMenuData() {
 
     // 搜索建议部分
     const records: {key: string, value: string, name?: string}[] = []
-    function recursive(items: ContextMenuItems) {
+    function recursive(items: PanelItem[]) {
       for (const item of items) {
         if (item.callback && typeof item.callback === 'string') {
           records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })

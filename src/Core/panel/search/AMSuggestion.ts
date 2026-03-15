@@ -199,8 +199,7 @@ export class AMSuggestion {
 
       div.onclick = () => {
         // el_input.value = '' // 弃用，让 input hide 再 show 时清空内容
-        this.hide()
-        void global_setting.api.sendText(item.value)
+        void global_setting.api.sendText(item.value); this.hide();
       }
     }
 
