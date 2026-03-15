@@ -34,7 +34,8 @@ import { global_el } from "../index"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
-import type { ContextMenuItems, ContextMenuItem } from "./demo"
+
+import { init_item, type PanelItem } from "../PanelItem"
 
 // 多级菜单
 type MENU_NODE = {
@@ -78,7 +79,7 @@ export class AMContextMenu {
   /// 创建菜单实例，并自动处理容器和绑定事件
   static factory(
     el_parent?: HTMLElement,
-    menuItems?: ContextMenuItems,
+    menuItems?: PanelItem[],
     el_input?: HTMLInputElement,
   ): AMContextMenu {
     const abContextMenu = new AMContextMenu(el_parent, menuItems)
@@ -89,7 +90,7 @@ export class AMContextMenu {
   /// 创建一个菜单实例
   constructor(
     el_parent?: HTMLElement,
-    menuItems?: ContextMenuItems,
+    menuItems?: PanelItem[],
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
     // 或改成 "菜单位置" 功能性更强
   ) {
@@ -197,7 +198,7 @@ export class AMContextMenu {
    *     - .am-context-menu.sub-menu (ul/div, el_container)
    *       - li
    */
-  append_data(menuItems: ContextMenuItems) {
+  append_data(menuItems: PanelItem[]) {
     if (!this.el) return
 
     /** 递归生成菜单项
@@ -205,14 +206,14 @@ export class AMContextMenu {
      */
     const li_list = (
       ul: HTMLElement,
-      menuItems: ContextMenuItems,
+      menuItems: PanelItem[],
       current_node: MENU_NODE,
       is_root: boolean = false,
     ): void => { // HTMLUListElement
       let sub_node: MENU_NODE
       let alt_key_index = current_node.children.length // alt+key 快捷键起点，包括已经插入过的 (目前仅支持顺序的 [1-90a-z]，将0放9后面优化手感。超出不显示，不支持自定义)      
-      menuItems.forEach((item: ContextMenuItem) => {
-        // 菜单项顺序检查 (order, 仅检查第一层)
+      menuItems.forEach((item: PanelItem) => {
+        // 项顺序检查 (order, 仅检查第一层)
         // 但这里和 toolbar 不同的是: 这里要考虑 alt+key 和自定义顺序的冲突问题，特别是这还是动态插入而非全额插入情景
         // 当前方案是：如果是根插入，则插入会重置 attr-altkey 属性 (应该性能损耗不大)
         if (is_root) {
@@ -239,10 +240,10 @@ export class AMContextMenu {
         }
         alt_key_index++
 
-        // 菜单项元素
+        // 项元素
         const li = document.createElement('li'); li.classList.add('am-context-menu-item');
+          li.textContent = item.label // 标题
           sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
-        li.textContent = item.label // 标题
 
         // 根据 order 插入节点，并重置 alt_key_key (仅根节点)
         if (is_root) {
@@ -272,73 +273,10 @@ export class AMContextMenu {
           li.setAttribute('data-altkey', alt_key_key);
         }
 
-        // 菜单项图标 (非ob版暂不支持)
-        if (item.icon) {}
+        // 项的 图标 功能 说明 等
+        init_item(li, item)
 
-        // 菜单项功能
-        {
-          li.addEventListener('mousedown', (event) => {
-            event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
-          })
-          // b1. 无按钮事件
-          if (item.callback == undefined) {}
-          // b2. 输出 item.callback 文本到当前光标位置
-          else if (typeof item.callback === 'string') {
-            li.addEventListener('click', async () => {
-              if (item.detail == "command_ob") {
-                global_setting.other.run_command_ob?.(item.callback as string)
-                return
-              }
-
-              this.sendText(item.callback as string)
-            })
-          }
-          // b3. 自定义事件
-          else {
-            const callback = item.callback
-            li.addEventListener('click', async () => {
-              const result = await callback(global_setting.state.selectedText)
-              if (result && typeof result === 'string') {
-                this.sendText(result)
-              }
-              this.hide()
-            })
-          }
-        }
-
-        // 菜单项说明
-        let tooltip: HTMLElement|undefined = undefined
-        if (item.detail) {
-          li.onmouseenter = () => {
-            if (item.detail == "command_ob") return // 命令flag, 不显示
-            tooltip = document.createElement('div'); li.appendChild(tooltip);
-            tooltip.classList.add('ab-contextmenu-tooltip')
-            const domRect = li.getBoundingClientRect()
-            tooltip.setAttribute('style', `
-              top: ${domRect.top + 1}px;
-              left: ${domRect.right + 1}px;
-            `)
-            // top: ${evt.clientY + 10}px;
-            // left: ${evt.clientX + 10}px;
-
-            if (item.detail == "md") { // 一个flag
-              if (typeof item.callback == "string") {
-                void global_setting.other.renderMarkdown?.(item.callback, tooltip)
-              }
-            } else {
-              const img = document.createElement('img'); tooltip.appendChild(img);
-                img.setAttribute('src', item.detail as string);
-                img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
-            }
-          }
-          li.onmouseleave = () => {
-            if (!tooltip) return
-            li.removeChild(tooltip)
-            tooltip = undefined
-          }
-        }
-
-        // 菜单项的子菜单
+        // 项的子菜单
         if (item.children) {
           li.classList.add('has-children')
           const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
