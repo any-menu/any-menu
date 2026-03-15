@@ -274,7 +274,7 @@ export class AMContextMenu {
         }
 
         // 项的 图标 功能 说明 等
-        init_item(li, item)
+        init_item(this, li, item)
 
         // 项的子菜单
         if (item.children) {
@@ -518,32 +518,6 @@ export class AMContextMenu {
   }
 
   // #endregion
-
-  public async sendText(str: string) {
-    // app环境 / obsidian插件环境
-    if (global_setting.env === 'app' || global_setting.env === 'obsidian-plugin') {
-      await global_setting.api.sendText(str); this.hide(); return;
-    }
-    // 后面是通用 browser 环境
-    else {
-      // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
-      // 注意:
-      // - 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
-      // - 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-      const activeElement: Element|null = document.activeElement
-
-      // 检查该元素是否是可编辑的输入框或文本域
-      if (!activeElement) {
-        console.warn('没有活动的元素，将demo文本生成到剪贴板')
-        navigator.clipboard.writeText(str).catch(err => console.error("Could not copy text: ", err))
-      } else {
-        await global_setting.api.sendText(str)
-        // EditableBlock_Raw.insertTextAtCursor(activeElement as HTMLElement, str) // 旧，通用
-      }
-
-      this.hide(); return;
-    }
-  }
 
   // -------------------- 使用示例 --------------------
 

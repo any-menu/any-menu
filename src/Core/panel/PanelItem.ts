@@ -20,7 +20,8 @@ export type PanelItem = {
 }
 
 /// 项的通用逻辑 (工具栏、菜单栏等复用)
-export function init_item(li: HTMLElement, item: PanelItem) {
+/// @param p_this AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法
+export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
   // 项图标 (~~非ob版~~ 暂不支持)
   if (item.icon) {}
 
@@ -34,13 +35,13 @@ export function init_item(li: HTMLElement, item: PanelItem) {
     // b2. obsidian 专用命令
     else if (item.detail == "command_ob") {
       li.addEventListener('click', async () => {
-        global_setting.other.run_command_ob?.(item.callback as string)
+        global_setting.other.run_command_ob?.(item.callback as string); p_this.hide();
       })
     }
     // b3. 输出 item.callback 文本到当前光标位置
     else if (typeof item.callback === 'string') {
       li.addEventListener('click', async () => {
-        this.sendText(item.callback as string)
+        await global_setting.api.sendText(item.callback as string); p_this.hide();
       })
     }
     // b4. 自定义命令
@@ -49,9 +50,8 @@ export function init_item(li: HTMLElement, item: PanelItem) {
       li.addEventListener('click', async () => {
         const result = await callback(global_setting.state.selectedText)
         if (result && typeof result === 'string') {
-          this.sendText(result)
+          await global_setting.api.sendText(result); p_this.hide();
         }
-        this.hide()
       })
     }
   }

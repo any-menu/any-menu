@@ -185,7 +185,23 @@ export const global_setting: {
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     getInfo: async () => { console.error("需实现 api.getInfo 方法"); return null },
-    sendText: async () => { console.error("需实现 api.sendText 方法") },
+    sendText: async (text: string) => {
+      console.warn("未实现 api.sendText 方法，将使用通用浏览器行为")
+
+      // 通用 browser 环境
+      // 获取当前焦点元素（通常是输入框、文本区域或可编辑元素）
+      // 注意:
+      // - 非 Tauri 程序中，我们可能采用了非失焦的方式展开菜单
+      // - 但 Tauri 程序中，我们一般采用了失焦的方式展开菜单
+      const activeElement: Element|null = document.activeElement
+
+      if (activeElement) { // 检查该元素为可编辑的输入框或文本域，则直接输出
+        await global_setting.api.sendText(text)
+      } else { // 否则存到剪切版
+        console.warn('没有活动的元素，将demo文本生成到剪贴板')
+        navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err))
+      }
+    },
     urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null },
   },
   other: {
