@@ -49,11 +49,11 @@ export default {
   async run(ctx) {},
 
   onLoad() {
-    console.log('插件加载完成');
+    console.log('demo: 插件加载完成');
   },
   
   onUnload() {
-    console.log('插件卸载');
+    console.log('demo: 插件卸载');
   }
 };
 `

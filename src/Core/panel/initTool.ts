@@ -214,26 +214,22 @@ export async function initMenuData() {
   }
 
   async function fill_by_js(file_content: string, file_name_short: string) {
-    try {
-      // 脚本部分
-      const plugin = await PLUGIN_MANAGER.loadPlugin(file_content)
+    // 脚本部分
+    const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
 
-      // 多级菜单部分
-      myContextMenu.append_data([
-        {
-          label: file_name_short,
-          callback: plugin.process
-        }
-      ])
-
-      // toolbar 部分
-      myToolbar.append_data([{
+    // 多级菜单部分
+    myContextMenu.append_data([
+      {
         label: file_name_short,
         callback: plugin.process
-      }])
-    } catch (error) {
-      console.error("Parse script error:", error)
-    }
+      }
+    ])
+
+    // toolbar 部分
+    myToolbar.append_data([{
+      label: file_name_short,
+      callback: plugin.process
+    }])
   }
 
   // #endregion

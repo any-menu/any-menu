@@ -33,11 +33,15 @@ export class PluginManager {
   plugin_list: Record<string, PluginInterface> = {};
   dict_list: Record<string, PluginInterface> = {};
 
-  constructor() {
+  static factory() {
+    return new PluginManager();
+  }
+  private constructor() {
     if (global_setting.isDebug) console.log('>>> PluginManager initialized'); // 验证单例
   }
 
-  async loadPlugin(scriptContent: string): Promise<PluginInterface> {
+  // @param file_name_short 仅用于失败时打印，无其他作用
+  async loadPlugin(file_name_short: string, scriptContent: string): Promise<PluginInterface> {
     let blobUrl: string | null = null;
     try {
       // 1. Import 脚本
@@ -50,8 +54,7 @@ export class PluginManager {
       //   获取 export default 导出的对象
       const rawPlugin = module.default;
       if (!rawPlugin) {
-        console.error('Plugin script must export a default object');
-        throw new Error('Plugin script must export a default object');
+        throw new Error('Plugin script must export a default object, #' + file_name_short);
       }
 
       // 2. 验证插件格式
@@ -63,10 +66,9 @@ export class PluginManager {
 
       return plugin;
     } catch (error) {
-      console.error('Plugin load error:', error);
-      throw error;
+      throw new Error('Plugin load error, #' + file_name_short, { cause: error });
     } finally {
-      // 6. 清理内存，防止内存泄漏
+      // 清理内存，防止内存泄漏
       if (blobUrl) {
         URL.revokeObjectURL(blobUrl);
       }
@@ -87,7 +89,6 @@ export class PluginManager {
     // 检查版本号
     const isCompatible = PluginManager.isVersionCompatible(rawPlugin.metadata.min_app_version, currentAppVersion);
     if (!isCompatible) {
-      console.error(`Plugin "${rawPlugin.metadata.name || rawPlugin.metadata.id}" requires app version ${rawPlugin.metadata.min_app_version} or higher. Current version: ${currentAppVersion}`);
       throw new Error(`Plugin "${rawPlugin.metadata.name || rawPlugin.metadata.id}" requires app version ${rawPlugin.metadata.min_app_version} or higher. Current version: ${currentAppVersion}`);
     }
 
@@ -168,11 +169,11 @@ export class PluginManager {
     const loader = new PluginManager();
 
     // 插件 - 加载 + 验证
-    const plugin = await loader.loadPlugin(PluginInterfaceDemo);
+    const plugin = await loader.loadPlugin('PluginInterfaceDemo', PluginInterfaceDemo);
 
     // 插件 - 调用常规接口
     if (plugin.process) {
-      const result = await plugin.process('hello world' as never);
+      const result = await plugin.process('demo: hello world' as never);
       if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
     }
 
@@ -199,4 +200,4 @@ export class PluginManager {
 }
 
 // TODO 需要实现多进程单例 (Main 和 Config 面板是两个 WebView 进程)
-export const PLUGIN_MANAGER = new PluginManager();
+export const PLUGIN_MANAGER = PluginManager.factory();
