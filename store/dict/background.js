@@ -8,11 +8,11 @@ export default {
     },
 
     async run(ctx) {
-        const str = ctx.selectedText
+        const str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
         }
-        ctx.sendText(`<span style="background:#ff4d4f">${str}</span>`);
+        ctx.api.sendText(`<span style="background:#ff4d4f">${str}</span>`);
     }
 }

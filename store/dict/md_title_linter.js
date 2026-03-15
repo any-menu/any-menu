@@ -34,7 +34,7 @@ export default {
     },
 
     async run(ctx) {
-        const str = ctx.selectedText
+        const str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
@@ -54,6 +54,6 @@ export default {
         }
         str = lines.join('\n')
 
-        ctx.sendText(str)
+        ctx.api.sendText(str)
     }
 }

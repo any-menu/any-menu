@@ -8,9 +8,9 @@ export default {
     },
 
     async run(ctx) {
-        const str = ctx.selectedText
+        const str = ctx.env.selectedText
         if (!str) {
-            ctx.sendText(`\
+            ctx.api.sendText(`\
 |   |   |   |
 |---|---|---|
 |   |   |   |
@@ -52,6 +52,6 @@ export default {
 
         table_all += "\n";
 
-        ctx.sendText(table_all);
+        ctx.api.sendText(table_all);
     }
 }

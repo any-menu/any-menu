@@ -10,6 +10,6 @@ export default {
     async run(ctx) {
         const currentDate = new Date();
         const dateString = currentDate.toISOString(); 
-        ctx.sendText(dateString);
+        ctx.api.sendText(dateString);
     }
 }
