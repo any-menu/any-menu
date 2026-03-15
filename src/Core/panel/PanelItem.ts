@@ -4,7 +4,7 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
-import { type PluginInterfaceCtx } from "pluginManager/PluginInterface";
+import { PluginInterfaceCtxDemo, type PluginInterfaceCtx } from "../pluginManager/PluginInterface";
 import { global_setting } from "../../Core/setting";
 
 export type PanelItem = {
@@ -50,8 +50,8 @@ export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
       const callback = item.callback
       li.addEventListener('click', async () => {
         void callback({
-          selectedText: global_setting.state.selectedText,
-          sendText: (str: string) => { global_setting.api.sendText(str); p_this.hide(); }
+          ...PluginInterfaceCtxDemo,
+          ...{ selectedText: global_setting.state.selectedText },
         })
         // old
         // const result = await callback(global_setting.state.selectedText)

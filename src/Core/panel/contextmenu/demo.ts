@@ -1,4 +1,4 @@
-import { PanelItem } from "panel/PanelItem"
+import { PanelItem } from "../PanelItem"
 
 export { parse as toml_parse, stringify as toml_stringify } from "smol-toml"
 
@@ -219,7 +219,7 @@ text3
   },
 ]
 
-export const root_menu: ContextMenuItems = [
+export const root_menu: PanelItem[] = [
   // TODO 转换菜单需要选中文本且文本满足一定规则才会显示，并根据内容进行推荐
   { label: 'AnyBlock', icon: 'list-plus', children: root_menu_demo },
   // { label: '转化为AnyBlock', icon: 'list-plus', children: root_menu_convert }

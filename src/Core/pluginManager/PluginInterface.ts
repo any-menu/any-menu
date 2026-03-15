@@ -2,6 +2,9 @@
  * 如果你是脚本开发者，那么你需要要阅读这个文件即可
  */
 
+import { AMPanel } from "../panel";
+import { global_setting } from "../setting";
+
 // 定义插件必须实现的接口
 export interface PluginInterface {
   /// 元数据
@@ -32,8 +35,18 @@ export interface PluginInterface {
 }
 
 export interface PluginInterfaceCtx {
+  /// 当前选中文本
   selectedText?: string;
+  /// 输出文本到当前位置，输出结束后自动隐藏
   sendText: (str: string) => void;
+  /// 隐藏面板
+  hide: () => void;
+}
+
+export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
+  selectedText: undefined,
+  sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
+  hide: () => { AMPanel.hide(); }
 }
 
 export const PluginInterfaceDemo: string = `\

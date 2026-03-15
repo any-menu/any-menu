@@ -5,9 +5,11 @@ import {
   TFile,
 } from 'obsidian'
 
+import { PanelItem } from '@/Core/panel/PanelItem'
 import { AMContextMenu } from "@/Core/panel/contextmenu"
-import { root_menu, type ContextMenuItems } from "@/Core/panel/contextmenu/demo"
+import { root_menu } from "@/Core/panel/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
+import { PluginInterfaceCtxDemo } from '@/Core/pluginManager/PluginInterface'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -34,7 +36,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
   constructor(
     public plugin: Plugin,
     public target: string, // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
-    menuItems?: ContextMenuItems,
+    menuItems?: PanelItem[],
   ) {
     super(undefined, menuItems)
   }
@@ -49,7 +51,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
   /// 支持obsidian原生菜单
   /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
   /// 并支持 command_ob 类型
-  override append_data(menuItems: ContextMenuItems) {
+  override append_data(menuItems: PanelItem[]) {
     // 预创建菜单版本
     if (this.el) return super.append_data(menuItems)
 
@@ -65,7 +67,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
     }
 
     // 递归添加菜单项
-    function addMenuItems(menu: Menu, menuItems: ContextMenuItems, editor: Editor) {
+    function addMenuItems(menu: Menu, menuItems: PanelItem[], editor: Editor) {
       for (const item of menuItems) {
         menu.addItem((menuItem: MenuItem) => {
           // 菜单项标题
@@ -75,16 +77,17 @@ export class ABContextMenu_Ob extends AMContextMenu {
           if (item.icon) menuItem.setIcon(item.icon)
 
           // 菜单项功能
-          if (item.callback == undefined) {}
-          else if (typeof item.callback === 'string') menuItem.onClick(() => {
-            if (item.detail == "command_ob") {
-              global_setting.other.run_command_ob?.(item.callback as string)
-              return
-            } else {
-              editor.replaceSelection(item.callback as string)
-            }
-          })
-          else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as ((str?: string) => void))() })
+          if (item.callback != undefined) {
+            if (typeof item.callback === 'string') menuItem.onClick(() => {
+              if (item.detail == "command_ob") {
+                global_setting.other.run_command_ob?.(item.callback as string)
+                return
+              } else {
+                editor.replaceSelection(item.callback as string)
+              }
+            })
+            else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as any)(PluginInterfaceCtxDemo) })
+          }
 
           // 菜单项说明
           let tooltip: HTMLElement|undefined = undefined
