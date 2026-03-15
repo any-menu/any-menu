@@ -19,32 +19,31 @@ export type PanelItem = {
   children?: PanelItem[] // (目前仅菜单栏支持多级菜单，工具栏不支持)
 }
 
-/// 项的通用逻辑 (工具栏、菜单栏等复用)
-/// @param p_this AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法
+/** 项的通用逻辑 (工具栏、菜单栏等复用)
+ * @param p_this AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法
+ */
 export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
   // 项图标 (~~非ob版~~ 暂不支持)
   if (item.icon) {}
 
   // 项功能
-  {
+  if (item.callback != undefined) {
     li.addEventListener('mousedown', (event) => {
       event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
     })
-    // b1. 无按钮事件
-    if (item.callback == undefined) {}
-    // b2. obsidian 专用命令
-    else if (item.detail == "command_ob") {
+    // b1. obsidian 专用命令
+    if (item.detail == "command_ob") {
       li.addEventListener('click', async () => {
         global_setting.other.run_command_ob?.(item.callback as string); p_this.hide();
       })
     }
-    // b3. 输出 item.callback 文本到当前光标位置
+    // b2. 输出 item.callback 文本到当前光标位置
     else if (typeof item.callback === 'string') {
       li.addEventListener('click', async () => {
         await global_setting.api.sendText(item.callback as string); p_this.hide();
       })
     }
-    // b4. 自定义命令
+    // b3. 自定义命令
     else {
       const callback = item.callback
       li.addEventListener('click', async () => {
@@ -57,8 +56,8 @@ export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
   }
 
   // 项说明
-  let tooltip: HTMLElement|undefined = undefined
   if (item.detail) {
+    let tooltip: HTMLElement|undefined = undefined
     li.onmouseenter = () => {
       if (item.detail == "command_ob") return // 命令flag, 不显示
       tooltip = document.createElement('div'); li.appendChild(tooltip);
