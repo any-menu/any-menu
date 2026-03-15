@@ -219,17 +219,15 @@ export async function initMenuData() {
     const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
 
     // 多级菜单部分
-    myContextMenu.append_data([
-      {
-        label: file_name_short,
-        callback: plugin.process
-      }
-    ])
+    myContextMenu.append_data([{
+      label: file_name_short,
+      callback: plugin.run
+    }])
 
     // toolbar 部分
     myToolbar.append_data([{
       label: file_name_short,
-      callback: plugin.process
+      callback: plugin.run
     }])
   }
 

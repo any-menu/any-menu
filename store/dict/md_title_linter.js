@@ -24,15 +24,17 @@
  * > 这对于复制结果的 md 而言，这种链接是多余的，是语法冗余的
  */
 
-const plugin = {
+export default {
     metadata: {
         id: 'anymenu-md-title-linter',
         name: '清除md标题样式冗余',
-        version: '1.0.0',
+        version: '1.0.1',
+        min_app_version: '1.1.0',
         author: 'LincZero'
     },
 
-    async process(str) {
+    async run(ctx) {
+        const str = ctx.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
@@ -52,6 +54,6 @@ const plugin = {
         }
         str = lines.join('\n')
 
-        return str
+        ctx.sendText(str)
     }
 }

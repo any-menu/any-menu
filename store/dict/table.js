@@ -1,45 +1,57 @@
-const plugin = {
+export default {
     metadata: {
         id: 'anymenu-table',
         name: '用cNrN生成表格',
-        version: '1.0.0',
-        author: '槑头脑'
+        version: '1.0.1',
+        min_app_version: '1.1.0',
+        author: 'LincZero'
     },
 
-    async process(str) {
-		if (!str) {
-            console.warn('需要选中文本后再执行');
+    async run(ctx) {
+        const str = ctx.selectedText
+        if (!str) {
+            ctx.sendText(`\
+|   |   |   |
+|---|---|---|
+|   |   |   |
+`);
             return;
         }
-		const match = str.match(/c(\d+)r(\d+)/)
-		if (!match) {
-			console.warn('格式错误，请输入 c列数r行数', str);
-			return;
-		}
 
-		const col = match[1];
-		const row = match[2];
+        let col, row;
+        const match1 = str.match(/^c(\d+)r(\d+)$/);
+        const match2 = str.match(/^r(\d+)c(\d+)$/);
+        if (match1) {
+            col = match1[1];
+            row = match1[2];
+        } else if (match2) {
+            row = match2[1];
+            col = match2[2];
+        } else {
+            console.warn('格式错误，请输入 c列数r行数', str);
+            return;
+        }
 
-		let table_row = "|";
-		let table_row_first = "| $0";
-		let table_row_ = "|";
+        let table_row = "|";
+        let table_row_first = "|";
+        let table_row_ = "|";
 
-		for (let i = 0; i < col; ++i)
-		{
-			table_row += "   |";
-			table_row_first += "   |";
-			table_row_ += " - |";
-		}
+        for (let i = 0; i < col; ++i)
+        {
+            table_row += "   |";
+            table_row_first += "   |";
+            table_row_ += " - |";
+        }
 
-		let table_all = `${table_row_first}\n${table_row_}`;
+        let table_all = `${table_row_first}\n${table_row_}`;
 
-		for (let i = 1; i < row; ++i)
-		{
-			table_all += `\n${table_row}`;
-		}
+        for (let i = 1; i < row; ++i)
+        {
+            table_all += `\n${table_row}`;
+        }
 
-		table_all += "\n";
+        table_all += "\n";
 
-		return table_all;
+        ctx.sendText(table_all);
     }
 }

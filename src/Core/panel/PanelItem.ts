@@ -4,12 +4,14 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
+import { type PluginInterfaceCtx } from "pluginManager/PluginInterface";
 import { global_setting } from "../../Core/setting";
 
 export type PanelItem = {
   label: string // 显示名，众多别名中的主名称
-  // 如果是字符串则表示黏贴该字符串，方便声明demo模板 (TODO demo模板可能需要配图和help url?)
-  callback?: string | ((str?: string) => Promise<void|string>)
+  // 执行该项。如果是字符串则表示黏贴该字符串，方便声明demo模板 (TODO demo模板可能需要配图和help url?)
+  callback?: string | ((ctx: PluginInterfaceCtx) => Promise<void>)
+  // callback_old?: string | ((str?: string) => Promise<void|string>)
   icon?: string // 目前仅obsidian环境有效，使用lucide图标
   key?: string // 匹配名，显示名的多个别名、匹配增强名、拼音等
   // 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)。
@@ -47,10 +49,15 @@ export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
     else {
       const callback = item.callback
       li.addEventListener('click', async () => {
-        const result = await callback(global_setting.state.selectedText)
-        if (result && typeof result === 'string') {
-          await global_setting.api.sendText(result); p_this.hide();
-        }
+        void callback({
+          selectedText: global_setting.state.selectedText,
+          sendText: (str: string) => { global_setting.api.sendText(str); p_this.hide(); }
+        })
+        // old
+        // const result = await callback(global_setting.state.selectedText)
+        // if (result && typeof result === 'string') {
+        //   await global_setting.api.sendText(result); p_this.hide();
+        // }
       })
     }
   }

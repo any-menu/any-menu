@@ -1,12 +1,14 @@
-const plugin = {
+export default {
     metadata: {
         id: 'anymenu-md-delete-link-all',
         name: 'md_去除链接文本',
-        version: '1.0.0',
+        version: '1.0.1',
+        min_app_version: '1.1.0',
         author: 'LincZero'
     },
 
-    async process(str) {
+    async run(ctx) {
+        const str = ctx.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
@@ -24,6 +26,6 @@ const plugin = {
         }
         str = lines.join('\n')
 
-        return str
+        ctx.sendText(str)
     }
 }

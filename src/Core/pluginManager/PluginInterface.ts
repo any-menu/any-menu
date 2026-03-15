@@ -20,15 +20,20 @@ export interface PluginInterface {
 
   /// 旧接口
   /// @deprecated 没有ctx环境，未来将废弃
-  process: (str?: string) => Promise<void|string>;
+  process?: (str?: string) => Promise<void|string>;
   /// 新接口
   /// 传入ctx，必须实现
-  run: (ctx: any) => Promise<void>;
+  run: (ctx: PluginInterfaceCtx) => Promise<void>;
 
   /// 加载插件时调用
   onLoad?: () => void;
   /// 卸载插件时调用
   onUnload?: () => void;
+}
+
+export interface PluginInterfaceCtx {
+  selectedText?: string;
+  sendText: (str: string) => void;
 }
 
 export const PluginInterfaceDemo: string = `\
