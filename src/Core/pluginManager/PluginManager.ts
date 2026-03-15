@@ -1,6 +1,6 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import { PluginInterfaceDemo } from './PluginInterface';
+import { PluginInterface, PluginInterfaceDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
 // 需要开启 tsconfig.json 中的
@@ -24,7 +24,7 @@ const PluginSchema = z.object({
   onLoad: z.function().optional(),
   onUnload: z.function().optional(),
 });
-export type PluginInterface = z.infer<typeof PluginSchema>;
+// export type PluginInterface2 = z.infer<typeof PluginSchema>;
 
 /** 插件管理
  */

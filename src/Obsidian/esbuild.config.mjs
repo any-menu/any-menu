@@ -30,7 +30,7 @@ const prod = (process.argv[2] === 'production');
 			...builtins
 		],
 		format: 'cjs',
-		watch: !prod,
+		// watch: !prod, // 不再支持
 		target: 'es2020',
 		logLevel: "info",
 		sourcemap: prod ? false : 'inline',

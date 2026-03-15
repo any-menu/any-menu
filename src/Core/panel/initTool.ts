@@ -216,7 +216,7 @@ export async function initMenuData() {
   async function fill_by_js(file_content: string, file_name_short: string) {
     try {
       // 脚本部分
-      const plugin = PLUGIN_MANAGER.loadPlugin(file_content)
+      const plugin = await PLUGIN_MANAGER.loadPlugin(file_content)
 
       // 多级菜单部分
       myContextMenu.append_data([

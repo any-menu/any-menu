@@ -200,17 +200,15 @@ export class AMContextMenu {
   append_data(menuItems: ContextMenuItems) {
     if (!this.el) return
 
-    li_list(this.el, menuItems, this.menu_el_data_root, true)
-
     /** 递归生成菜单项
      * @param current_node 当前节点
      */
-    function li_list (
+    const li_list = (
       ul: HTMLElement,
       menuItems: ContextMenuItems,
       current_node: MENU_NODE,
       is_root: boolean = false,
-    ): void { // HTMLUListElement
+    ): void => { // HTMLUListElement
       let sub_node: MENU_NODE
       let alt_key_index = current_node.children.length // alt+key 快捷键起点，包括已经插入过的 (目前仅支持顺序的 [1-90a-z]，将0放9后面优化手感。超出不显示，不支持自定义)      
       menuItems.forEach((item: ContextMenuItem) => {
@@ -354,6 +352,8 @@ export class AMContextMenu {
         }
       })
     }
+
+    li_list(this.el, menuItems, this.menu_el_data_root, true)
   }
 
   /** 添加菜单项 - 给菜单添加一个自定义元素
