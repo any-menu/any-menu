@@ -135,6 +135,7 @@ export class PluginManager {
    *   - 为了验证而实际执行了。如为了验证返回值是 Promise，居然在验证阶段实际执行了 plugin.process('test')。
    *     如果这个插件里包含副作用（比如删除文件、发起网络请求），在加载阶段就会被触发，这非常危险
    *   - 安全性几乎为零：new Function 和 eval 类似，它会在当前的全局作用域下执行代码。这意味着恶意插件可以直接访问 window / global
+   *   - 插件的打印日志会混在主程序日志里，难以区分和调试。而 import 方案的 console 则可以很方便地看出来是插件所在的文件中打印出来的
    */
 
   private loadPlugin_validatePlugin2(plugin: any): asserts plugin is PluginInterface {

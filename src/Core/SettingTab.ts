@@ -131,7 +131,8 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
 
     const ret = await api.repoGetDirectory()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg})`
+      console.error('Failed to load dict list from repo', ret)
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg}`
       return
     }
     table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
@@ -214,7 +215,8 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       })
       // global_setting.api.saveConfig() // 假设有变动
     } catch (error) {
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
+      console.error('Failed to load dict list from repo2', error)
+      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，数据错误`
     }
   }
 }

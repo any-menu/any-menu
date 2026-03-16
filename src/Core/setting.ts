@@ -121,7 +121,15 @@ export const global_setting: {
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
     sendText: (text: string) => Promise<void>
-    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null> // 统一的网络请求接口，并简化try/catch
+    // 统一的网络请求接口，并简化try/catch
+    // 需要注意的是: 有前端版本和后端版本
+    // 在 Obsidian 和 App 版本中，都是后端版本，即可以无视浏览器的同源策略 (CORS 限制)
+    // 而这需要注意风险。如果要限制: 记得白名单要保留几个该项目需要用到的 url:
+    // { "url": "https://github.com/*" },
+    // { "url": "https://*.github.com/*" },
+    // { "url": "https://gitee.com/*" },
+    // { "url": "https://api.gitee.com/*" },
+    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>
   },
   /** 通常是 any|null 类型，特有环境临时存的东西，部分环境使用而部分环境用不着 */
   other: {

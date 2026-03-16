@@ -22,8 +22,17 @@
     "notification:default",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://gitee.com/*" }, { "url": "https://api.github.com/*" }],
-      "deny": [{ "url": "https://private.tauri.app" }]
+      "allow": [
+        { "url": "https://**" },
+        { "url": "http://**" },
+        { "url": "https://gitee.com/*" },
+        { "url": "https://*.gitee.com/*" },
+        { "url": "https://httpbin.org/*" },
+        { "url": "https://api.example.com/*" }
+      ],
+      "deny": [
+        { "url": "https://private.tauri.app" }
+      ]
     }
   ]
 }

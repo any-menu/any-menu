@@ -3,7 +3,11 @@
  */
 
 import { AMPanel } from "../panel";
-import { global_setting } from "../setting";
+import {
+  global_setting,
+  type UrlRequestConfig,
+  type UrlResponse
+} from "../setting";
 
 // 定义插件必须实现的接口
 export interface PluginInterface {
@@ -56,10 +60,10 @@ export interface PluginInterfaceCtx {
     showPanel: (list?: string[]) => void;
     /// 通知用户 (低风险)
     notify: (message: string) => void;
+    /// 网络请求 (中风险，信息泄露风险)
+    urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>;
 
     // TODO: 话说这里要弄权限管理不，如:
-    // - NOTION 全局通知权限 - 带插件名 (低风险)
-    // - 显示新面板、自定义渲染元素 (低风险)
     // - 特定文件访问权限 (低风险)
     // - HTTP 请求权限 (中风险，信息泄露风险)
     // - 全局文件读写权限 (高风险)
@@ -77,8 +81,10 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
     hidePanel: () => { AMPanel.hide(); },
+    // TODO 未完成，以后要支持自定义 el 和 css
     showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
-    notify: (message: string) => { global_setting.api.notify(message); },
+    notify: (message: string) => global_setting.api.notify(message),
+    urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
   }
 }
 
