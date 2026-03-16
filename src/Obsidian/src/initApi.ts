@@ -2,7 +2,8 @@ import {
   MarkdownRenderChild, MarkdownRenderer, MarkdownView,
   type MarkdownPostProcessorContext,
   type Plugin,
-  type App
+  type App,
+  Notice,
 } from 'obsidian'
 import { RequestUrlParam, requestUrl } from 'obsidian'
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
@@ -44,6 +45,10 @@ export function initApi(plugin: Plugin) {
     // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
     // @ts-expect-error 类型“App”上不存在属性“commands”
     app.commands.executeCommandById(commandId)
+  }
+
+  global_setting.api.notify = async (message: string): Promise<void> => {
+    new Notice(message); // 参数二可选持续时间
   }
 
   global_setting.api.sendText = async (text: string) => {

@@ -119,6 +119,7 @@ export const global_setting: {
     getCursorXY: () => Promise<{ x: number, y: number }>
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
+    notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
     sendText: (text: string) => Promise<void>
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null> // 统一的网络请求接口，并简化try/catch
   },
@@ -185,6 +186,10 @@ export const global_setting: {
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     getInfo: async () => { console.error("需实现 api.getInfo 方法"); return null },
+    notify: async (message: string) => {
+      console.warn("未实现 api.notify 方法，将使用 console.warn 替代");
+      console.warn(message)
+    },
     sendText: async (text: string) => {
       console.warn("未实现 api.sendText 方法，将使用通用浏览器行为")
 

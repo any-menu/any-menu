@@ -41,6 +41,7 @@ export interface PluginInterfaceCtx {
     selectedText?: string;
 
     // TODO: 更多环境
+    // - miniEditorText?: string;
     // - 当前选中类型 (文件/图片/文字等...)
     // - 当前所在软件/平台
   },
@@ -51,9 +52,11 @@ export interface PluginInterfaceCtx {
     hidePanel: () => void;
     /// 显示面板 (低风险)
     showPanel: (list?: string[]) => void;
+    /// 通知用户 (低风险)
+    notify: (message: string) => void;
 
     // TODO: 话说这里要弄权限管理不，如:
-    // - NOTION 全局通知权限 (低风险)
+    // - NOTION 全局通知权限 - 带插件名 (低风险)
     // - 显示新面板、自定义渲染元素 (低风险)
     // - 特定文件访问权限 (低风险)
     // - HTTP 请求权限 (中风险，信息泄露风险)
@@ -73,6 +76,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
     hidePanel: () => { AMPanel.hide(); },
     showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
+    notify: (message: string) => { global_setting.api.notify(message); },
   }
 }
 

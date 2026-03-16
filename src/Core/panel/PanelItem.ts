@@ -50,11 +50,16 @@ export function init_item(p_this: any, li: HTMLElement, item: PanelItem) {
       const callback = item.callback
       li.addEventListener('click', async () => {
         void callback({
-          ...PluginInterfaceCtxDemo,
           env: {
             ...PluginInterfaceCtxDemo.env,
-            selectedText: global_setting.state.selectedText
+            selectedText: global_setting.state.selectedText,
           },
+          api: {
+            ...PluginInterfaceCtxDemo.api,
+            notify: async (message: string) => {
+              await global_setting.api.notify(item.label + ': ' + message)
+            },
+          }
         })
         // old
         // const result = await callback(global_setting.state.selectedText)

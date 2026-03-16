@@ -7,6 +7,7 @@
   "scripts": {
     "tr:dev": "pnpm tauri dev",
     "tr:build": "pnpm tauri build",
+    "tr:debug": "set RUST_BACKTRACE=1&& pnpm tauri dev",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -17,6 +18,7 @@
     "@tauri-apps/plugin-global-shortcut": "~2",
     "@tauri-apps/plugin-http": "~2.5.2",
     "@tauri-apps/plugin-log": "~2.7.0",
+    "@tauri-apps/plugin-notification": "^2.3.3",
     "@tauri-apps/plugin-opener": "^2.5.3",
     "turndown": "^7.2.2"
   },

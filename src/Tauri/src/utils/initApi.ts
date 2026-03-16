@@ -1,8 +1,10 @@
 import { global_setting, UrlRequestConfig, UrlResponse } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
+import { toml_parse } from '../../../Core/panel/contextmenu/demo'
+
 import { invoke } from "@tauri-apps/api/core"
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
-import { toml_parse } from '../../../Core/panel/contextmenu/demo'
+import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
@@ -51,6 +53,31 @@ export function initApi() {
     const info: any = await invoke("get_info");
     if (typeof info !== 'string') return null
     return info
+  }
+
+  global_setting.api.notify = async (message: string) => {
+    try {
+      // 处理系统通知权限
+      let permissionGranted = await isPermissionGranted();
+      if (!permissionGranted) { // 如果没有授予权限，则向用户请求权限
+        const permission = await requestPermission();
+        permissionGranted = permission === 'granted';
+      }
+      if (!permissionGranted) { // 请求权限失败
+        console.warn('用户拒绝了系统通知权限');
+      }
+
+      // 发送通知
+      // 这个是系统级的通知，缺点: 无法控制显示时长、堆叠/排序
+      // 如果想要解决该缺点，可以应用内通知 (不过目前该软件并非常规窗口使用逻辑，要做这点可能得维护一个专用于通知的窗口)
+      sendNotification({
+        title: 'AnyMenu',
+        body: message,
+        // icon: '可选：图标路径'
+      });
+    } catch (error) {
+      console.error('发送通知失败:', error);
+    }
   }
 
   global_setting.api.sendText = async (str: string) => {

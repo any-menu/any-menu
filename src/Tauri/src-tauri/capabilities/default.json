@@ -19,6 +19,7 @@
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
+    "notification:default",
     {
       "identifier": "http:default",
       "allow": [{ "url": "https://gitee.com/*" }, { "url": "https://api.github.com/*" }],
