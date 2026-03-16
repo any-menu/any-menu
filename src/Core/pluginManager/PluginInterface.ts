@@ -19,6 +19,8 @@ export interface PluginInterface {
     name?: string;
     /// 插件作者
     author?: string;
+    /// 插件描述
+    description?: string;
   };
 
   /// 旧接口
@@ -87,7 +89,8 @@ export default {
     name: 'TextProcessor',
     version: '1.0.0',
     min_app_version: '1.1.0',
-    author: 'LincZero'
+    author: 'LincZero',
+    description: '一个示例插件，将文本转为大写文本',
   },
 
   async process(str) {

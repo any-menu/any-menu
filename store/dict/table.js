@@ -4,7 +4,8 @@ export default {
         name: '用cNrN生成表格',
         version: '1.0.1',
         min_app_version: '1.1.0',
-        author: 'LincZero'
+        author: 'LincZero',
+        description: '输出 markdown 表格。若选中文本格式为 "c列数r行数"，则生成对应行列的 markdown 表格'
     },
 
     async run(ctx) {
