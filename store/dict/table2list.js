@@ -4,7 +4,7 @@ export default {
         name: 'table2list',
         version: '1.0.0',
         min_app_version: '1.1.0',
-        author: 'LincZero',
+        author: 'Copilot',
         description: '将 markdown 表格转换为 markdown 列表。每行第一个单元格为顶层列表项，其余单元格为二级列表项',
         icon: 'lucide-list'
     },
@@ -28,6 +28,7 @@ export default {
         }
 
         // Parse a table row into an array of cell strings
+        // 暂时不考虑表格内包含 `\|` 转义的情况
         const parseRow = (line) => {
             return line
                 .replace(/^\s*\|/, '')   // remove leading |
@@ -43,7 +44,7 @@ export default {
 
             result += `- ${cells[0]}\n`;
             for (let i = 1; i < cells.length; i++) {
-                result += `  - ${cells[i]}\n`;
+                result += `  - ${cells[i]}\n`; // 这里可以修改 table2list 后列表的缩进风格
             }
         }
 
