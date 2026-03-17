@@ -21,9 +21,10 @@
 
   // 单行 or 多行
   .am-toolbar-item {
-    display: inline-flex;
+    display: inline-block;
+    vertical-align: top; // 关键：强制顶部对齐，忽略基线干扰
     align-items: center;
-    justify-content: center;
+    // justify-content: center;
     height: 100%;
     padding: 0;
     margin: 0 4px;

@@ -5,7 +5,7 @@ export default {
         version: '1.0.1',
         min_app_version: '1.1.0',
         author: 'LincZero',
-        icon: 'lucide-highlight'
+        icon: 'lucide-highlighter'
     },
 
     async run(ctx) {

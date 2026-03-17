@@ -762,9 +762,9 @@ div.editable-textarea-textarea {
   display: none;
 }
 .am-toolbar .am-toolbar-item {
-  display: inline-flex;
+  display: inline-block;
+  vertical-align: top;
   align-items: center;
-  justify-content: center;
   height: 100%;
   padding: 0;
   margin: 0 4px;

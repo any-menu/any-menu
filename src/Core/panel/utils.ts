@@ -222,7 +222,7 @@ export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIc
       `font-size:${fontSize}px`,
     ].join(";") + ";";
 
-  const html = `<span class="am-icon am-icon-auto" aria-label="${escapeHtml(trimmed || text)}" title="${escapeHtml(trimmed || text)}" style="${escapeHtml(style)}">${escapeHtml(char)}</span>`;
+  const html = `<span class="am-icon am-icon-auto" aria-label="${escapeHtml(trimmed || text)}" style="${escapeHtml(style)}">${escapeHtml(char)}</span>`;
 
   return { text, trimmed, char, hash, bgColor, fgColor, html, style };
 }

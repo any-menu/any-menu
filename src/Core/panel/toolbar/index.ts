@@ -55,7 +55,7 @@ export class AMToolbar {
         }
 
         // 项元素
-        const li = document.createElement('span'); li.classList.add('am-toolbar-item');
+        const li = document.createElement('div'); li.classList.add('am-toolbar-item');
 
         // 根据 order 插入节点
         const order = item.order ?? 1000; li.dataset.order = order.toString();

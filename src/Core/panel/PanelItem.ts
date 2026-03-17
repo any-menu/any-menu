@@ -51,6 +51,7 @@ export function init_item(
   }
   // 仅图标
   else if (mode === 'icon') {
+    li.title = item.label
     if (!item.icon) { // 没有图标则用名字构造一个简易图标
       li.innerHTML = textToIcon(item.label, { twoLettersForEnglish: true }).html
     } else if (item.icon.startsWith("lucide-")) {
