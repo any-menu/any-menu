@@ -6,7 +6,7 @@ export default {
         min_app_version: '1.1.0',
         author: 'Copilot',
         description: '将选中的 markdown 表格进行转置（行列互换）',
-        icon: 'lucide-table'
+        icon: 'lucide-table-2'
     },
 
     async run(ctx) {
@@ -30,6 +30,7 @@ export default {
         // Parse each row into cells
         const rows = dataLines.map(line => {
             // Split by '|', trim each cell, and filter out empty strings at start/end
+            // 暂时不支持表格内带转义的 `\|`
             return line.split('|').map(cell => cell.trim()).filter((cell, idx, arr) => {
                 // Keep non-empty cells; also handle leading/trailing empty strings from '|...|' format
                 return idx > 0 && idx < arr.length - 1;
