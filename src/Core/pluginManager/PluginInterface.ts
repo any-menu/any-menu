@@ -31,6 +31,12 @@ export interface PluginInterface {
     /// - 支持 SVG string (应用前采取安全措施 dompurify)
     /// - 支持 不填，会使用名字来默认构造图标
     icon?: string;
+
+    // 弃用，应该把平台给 ctx 变量。
+    // 一来一个插件可能会对多个平台做不同的事，如果不支持，让插件自己去检查平台就好了
+    // 二来 App 版本和 Obsidian 版本可能会使用同一个插件文件夹
+    // 仅适用于某个平台，不填则不限制
+    // platform?: ("app"|"obsidian")[];
   };
 
   /// 旧接口
@@ -51,11 +57,12 @@ export interface PluginInterfaceCtx {
   env: {
     /// 当前选中文本
     selectedText?: string;
+    /// 当前平台
+    platform: typeof global_setting.platform;
 
     // TODO: 更多环境
     // - miniEditorText?: string;
     // - 当前选中类型 (文件/图片/文字等...)
-    // - 当前所在软件/平台
   },
   api: {
     /// 输出文本到当前位置，输出结束后自动隐藏 (低风险)
@@ -71,7 +78,6 @@ export interface PluginInterfaceCtx {
 
     // TODO: 话说这里要弄权限管理不，如:
     // - 特定文件访问权限 (低风险)
-    // - HTTP 请求权限 (中风险，信息泄露风险)
     // - 全局文件读写权限 (高风险)
     // - cmd 运行权限 (高风险)
     // 然后没有权限的插件调用这些接口时，就会 NOTION 方式提示用户某插件需要，并引导用户自行开启
@@ -83,6 +89,7 @@ export interface PluginInterfaceCtx {
 export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   env: {
     selectedText: undefined,
+    platform: global_setting.platform,
   },
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },

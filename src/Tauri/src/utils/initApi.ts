@@ -8,7 +8,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
-  global_setting.env = 'app'
+  global_setting.platform = 'app'
 
   // 语言环境
   // 使用浏览器原生 API

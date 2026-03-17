@@ -1,5 +1,5 @@
 export const global_setting: {
-  env: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
+  platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
   isDebug: boolean,
   /**
    * 是否启用自动聚焦到输入框 (目前仅app环境有效)。分两种模式: 不聚焦使用和聚焦使用
@@ -139,7 +139,7 @@ export const global_setting: {
     run_command_ob: null|((commandId: string) => Promise<void>),
   }
 } = {
-  env: 'app',
+  platform: 'app',
   isDebug: true,
   focusStrategy: true,
   key_panel: {

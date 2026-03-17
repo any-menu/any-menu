@@ -119,6 +119,7 @@ export function init_item(
         void callback({
           env: {
             ...PluginInterfaceCtxDemo.env,
+            platform: global_setting.platform,
             selectedText: global_setting.state.selectedText,
           },
           api: {

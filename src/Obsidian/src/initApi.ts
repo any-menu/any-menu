@@ -15,7 +15,7 @@ export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用
   global_setting.other.obsidian_plugin = plugin
   
-  global_setting.env = 'obsidian-plugin'
+  global_setting.platform = 'obsidian-plugin'
 
   // 语言环境
   // obsidian 强制为 'auto' 类型，不允许在设置中手动指定语言类型

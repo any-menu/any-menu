@@ -73,7 +73,7 @@ export class AMSearch {
     window.addEventListener('mouseup', this.visual_listener_mouseup)
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
-    // if (global_setting.env == 'app') return
+    // if (global_setting.platform == 'app') return
   }
 
   hide() {
@@ -102,7 +102,7 @@ export class AMSearch {
     window.removeEventListener('mouseup', this.visual_listener_mouseup)
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
-    // if (global_setting.env == 'app') return
+    // if (global_setting.platform == 'app') return
   }
 
   // 动态事件组
