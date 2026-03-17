@@ -5,7 +5,8 @@ export default {
         version: '1.0.1',
         min_app_version: '1.1.0',
         author: 'LincZero',
-        description: '输出 markdown 表格。若选中文本格式为 "c列数r行数"，则生成对应行列的 markdown 表格'
+        description: '输出 markdown 表格。若选中文本格式为 "c列数r行数"，则生成对应行列的 markdown 表格',
+        icon: 'lucide-table'
     },
 
     async run(ctx) {

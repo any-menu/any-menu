@@ -4,7 +4,8 @@ export default {
         name: '示例-网络请求',
         version: '1.0.1',
         min_app_version: '1.1.0',
-        author: 'LincZero'
+        author: 'LincZero',
+        icon: 'lucide-cloud-rain'
     },
 
     async run(ctx) {

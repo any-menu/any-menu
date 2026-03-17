@@ -221,13 +221,15 @@ export async function initMenuData() {
     // 多级菜单部分
     myContextMenu.append_data([{
       label: file_name_short,
-      callback: plugin.run
+      callback: plugin.run,
+      icon: plugin.metadata.icon
     }])
 
     // toolbar 部分
     myToolbar.append_data([{
       label: file_name_short,
-      callback: plugin.run
+      callback: plugin.run,
+      icon: plugin.metadata.icon
     }])
   }
 

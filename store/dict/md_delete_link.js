@@ -4,7 +4,8 @@ export default {
         name: 'md_去除链接样式',
         version: '1.0.1',
         min_app_version: '1.1.0',
-        author: 'LincZero'
+        author: 'LincZero',
+        icon: 'lucide-link-2-off'
     },
 
     async run(ctx) {

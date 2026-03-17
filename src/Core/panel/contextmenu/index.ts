@@ -242,7 +242,6 @@ export class AMContextMenu {
 
         // 项元素
         const li = document.createElement('li'); li.classList.add('am-context-menu-item');
-          li.textContent = item.label // 标题
           sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
 
         // 根据 order 插入节点，并重置 alt_key_key (仅根节点)
@@ -273,8 +272,8 @@ export class AMContextMenu {
           li.setAttribute('data-altkey', alt_key_key);
         }
 
-        // 项的 图标 功能 说明 等
-        init_item(this, li, item)
+        // 项的 图标 名字 功能 说明 等
+        init_item(this, li, item, 'label')
 
         // 项的子菜单
         if (item.children) {

@@ -25,6 +25,12 @@ export interface PluginInterface {
     author?: string;
     /// 插件描述
     description?: string;
+    /// icon
+    /// - 支持 lucide 图标名用法 (需要联网)，用法: "lucide-图标名"，如 "lucide-table"。图标名可于 https://lucide.dev/ 查询
+    ///   TODO 可以支持 `.` 写法来添加 class，从而实现带颜色的 lucide 图标这种需求
+    /// - 支持 SVG string (应用前采取安全措施 dompurify)
+    /// - 支持 不填，会使用名字来默认构造图标
+    icon?: string;
   };
 
   /// 旧接口

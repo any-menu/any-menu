@@ -20,6 +20,7 @@
     "@editableblock/cm": "1.0.1-beta40",
     "@editableblock/code": "1.0.1-beta40",
     "@editableblock/core": "1.0.1-beta40",
+    "dompurify": "^3.3.3",
     "js-yaml": "^4.1.0",
     "pinyin": "^4.0.0",
     "smol-toml": "^1.4.2",

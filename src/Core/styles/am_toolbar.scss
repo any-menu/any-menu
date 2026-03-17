@@ -162,3 +162,11 @@
     }
   }
 }
+
+// ----------------- lucide 来源图标统一大小 -----------------
+
+// 同 .am-icon，保持不同方式获取的 icon 图标大小一致
+.am-panel .am-toolbar svg.lucide {
+  width: 16px;
+  height: 16px;
+}

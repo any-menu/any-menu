@@ -16,6 +16,8 @@ const PluginMetadataSchema = z.object({
   min_app_version: z.string(),
   name: z.string().optional(),
   author: z.string().optional(),
+  description: z.string().optional(),
+  icon: z.string().optional(),
 });
 const PluginSchema = z.object({
   metadata: PluginMetadataSchema,

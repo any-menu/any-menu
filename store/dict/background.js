@@ -4,7 +4,8 @@ export default {
         name: 'md背景色',
         version: '1.0.1',
         min_app_version: '1.1.0',
-        author: 'LincZero'
+        author: 'LincZero',
+        icon: 'lucide-highlight'
     },
 
     async run(ctx) {

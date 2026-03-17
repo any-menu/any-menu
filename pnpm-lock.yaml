@@ -29,6 +29,9 @@ importers:
       '@editableblock/core':
         specifier: 1.0.1-beta40
         version: 1.0.1-beta40
+      dompurify:
+        specifier: ^3.3.3
+        version: 3.3.3
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -1067,8 +1070,8 @@ packages:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
 
-  dompurify@3.3.0:
-    resolution: {integrity: sha512-r+f6MYR1gGN1eJv0TVQbhA7if/U7P87cdPl3HN5rikqaBSBxLiCb/b9O+2eG0cxz0ghyU+mU1QkbsOwERMYlWQ==}
+  dompurify@3.3.3:
+    resolution: {integrity: sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2128,7 +2131,7 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@lezer/markdown': 1.5.1
       codemirror: 6.0.2
-      dompurify: 3.3.0
+      dompurify: 3.3.3
 
   '@rolldown/binding-android-arm64@1.0.0-rc.9':
     optional: true
@@ -2536,7 +2539,7 @@ snapshots:
     dependencies:
       esutils: 2.0.3
 
-  dompurify@3.3.0:
+  dompurify@3.3.3:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 

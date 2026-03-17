@@ -879,6 +879,11 @@ div.editable-textarea-textarea {
   border-bottom: 1px solid #007bff;
 }
 
+.am-panel .am-toolbar svg.lucide {
+  width: 16px;
+  height: 16px;
+}
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;

@@ -5,7 +5,8 @@ export default {
         version: '1.0.1',
         min_app_version: '1.1.0',
         author: 'LincZero',
-        description: '输出当前日期 (ISO 8601 格式 + 当前时区)'
+        description: '输出当前日期 (ISO 8601 格式 + 当前时区)',
+        icon: 'lucide-calendar'
     },
 
     async run(ctx) {

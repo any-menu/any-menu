@@ -1,6 +1,4 @@
 import { global_setting } from "../../../Core/setting"
-import { textToIcon } from "../utils"
-
 import { init_item, type PanelItem } from "../PanelItem"
 
 export class AMToolbar {
@@ -58,7 +56,6 @@ export class AMToolbar {
 
         // 项元素
         const li = document.createElement('span'); li.classList.add('am-toolbar-item');
-          li.innerHTML = textToIcon(item.label, { twoLettersForEnglish: true }).html
 
         // 根据 order 插入节点
         const order = item.order ?? 1000; li.dataset.order = order.toString();
@@ -76,8 +73,8 @@ export class AMToolbar {
           this.el.appendChild(li);
         }
 
-        // 项的 图标 功能 说明 等
-        init_item(this, li, item)
+        // 项的 图标 名字 功能 说明 等
+        init_item(this, li, item, 'icon')
       })
     }
 
