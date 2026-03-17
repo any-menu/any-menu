@@ -29,7 +29,9 @@
         { "url": "https://gitee.com/*" },
         { "url": "https://*.gitee.com/*" },
         { "url": "https://httpbin.org/*" },
-        { "url": "https://api.example.com/*" }
+        { "url": "https://api.example.com/*" },
+        { "url": "https://**" },
+        { "url": "http://**" }
       ],
       "deny": [
         { "url": "https://private.tauri.app" }
