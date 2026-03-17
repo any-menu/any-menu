@@ -23,8 +23,9 @@
     {
       "identifier": "http:default",
       "allow": [
-        { "url": "https://**" },
-        { "url": "http://**" },
+        { "url": "https://github.com/*" },
+        { "url": "https://*.github.com/*" },
+        { "url": "https://*.githubusercontent.com/*" },
         { "url": "https://gitee.com/*" },
         { "url": "https://*.gitee.com/*" },
         { "url": "https://httpbin.org/*" },
