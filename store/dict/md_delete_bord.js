@@ -9,7 +9,7 @@ export default {
     },
 
     async run(ctx) {
-        const str = ctx.env.selectedText
+        let str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
@@ -23,8 +23,8 @@ export default {
             // const headingMatch = lines[i].match(/^(#{1,6})\s*(.*)$/)
             // if (!headingMatch) continue
 
-            lines[i] = lines[i].replace(/ (\*\*|__)(.*?)\2/g, '$2')      // 先去除加粗
-            lines[i] = lines[i].replace(/(\*|_)(.*?)\2/g, '$2')           // 再去除斜体
+            lines[i] = lines[i].replace(/(\*\*|__)(.*?)\1/g, '$2')        // 先去除加粗
+            lines[i] = lines[i].replace(/(\*|_)(.*?)\1/g, '$2')           // 再去除斜体
         }
         str = lines.join('\n')
 

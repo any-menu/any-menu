@@ -34,7 +34,7 @@ export default {
     },
 
     async run(ctx) {
-        const str = ctx.env.selectedText
+        let str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;

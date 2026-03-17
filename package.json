@@ -6,8 +6,9 @@
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",
   "scripts": {
-    "tr:dev": "cd ./src/Tauri && pnpm tauri dev",
-    "tr:build": "cd ./src/Tauri && pnpm tauri build",
+    "tr:dev": "cd ./src/Tauri && pnpm tr:dev",
+    "tr:build": "cd ./src/Tauri && pnpm tr:build",
+    "tr:debug": "cd ./src/Tauri && pnpm tr:debug",
     "ob:build": "cd ./src/Obsidian && pnpm build",
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "test": "echo \"Error: no test specified\" && exit 1"
