@@ -122,7 +122,7 @@ export function init_item(
             platform: global_setting.platform,
             selectedText: global_setting.state.selectedText,
             activeAppName: global_setting.state.activeAppName || undefined,
-            activeDocTitle: global_setting.state.activeDocTitle || global_setting.state.activeAppName || undefined,
+            activeDocTitle: global_setting.state.activeDocTitle,
             activeDocUrl: global_setting.state.activeDocUrl,
           },
           api: {

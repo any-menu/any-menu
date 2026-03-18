@@ -32,6 +32,18 @@ pub fn init_focus_check(app_handle: tauri::AppHandle) {
                 }
                 last_hwnd = hwnd;
 
+                // 获取窗口标题
+                // 获取结果示例:
+                // - Creating pull request for browser script · GitHub Copilot — Mozilla Firefox
+                // - 032-做题策略：链列的找法_哔哩哔哩_bilibili — Mozilla Firefox
+                // - 0 - Google 搜索 - Google Chrome
+                // - 032-做题策略：链列的找法_哔哩哔哩_bilibili - Google Chrome
+                // - ● focus.rs - any-menu (工作区) - Visual Studio Code
+                // - AI联动架构，Skill RAG MCP Agent NLU - MdNote_Public - Obsidian v1.11.5
+                // 
+                // 注意:
+                // 这里的主要目的是为了设置快捷键的黑白名单，
+                // 你在同一窗口下执行操作 (如浏览器中切换不同的标签页) 导致的窗口名变化，这里并不会检索到
                 let mut title_flag: [u16; 256] = [0; 256];
                 let len = GetWindowTextW(hwnd, &mut title_flag);
                 let window_title = OsString::from_wide(&title_flag[..len as usize])
