@@ -92,6 +92,13 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   const selectedText = editor.getSelection()
   global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
 
+  // activeDoc
+  const activeFile = plugin.app.workspace.getActiveFile()
+  if (activeFile) {
+    global_setting.state.activeAppName = activeFile.basename
+    global_setting.state.activeDocUrl = activeFile.path
+  }
+
   // xyPosition - 方法1, CodeMirror 的 coordsAtPos
   // @ts-ignore
   const cm = editor.cm;

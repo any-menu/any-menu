@@ -121,6 +121,8 @@ export function init_item(
             ...PluginInterfaceCtxDemo.env,
             platform: global_setting.platform,
             selectedText: global_setting.state.selectedText,
+            activeDocTitle: global_setting.state.activeAppName || undefined,
+            activeDocUrl: global_setting.state.activeDocUrl,
           },
           api: {
             ...PluginInterfaceCtxDemo.api,

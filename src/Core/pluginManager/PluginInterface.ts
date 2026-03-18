@@ -59,6 +59,10 @@ export interface PluginInterfaceCtx {
     selectedText?: string;
     /// 当前平台
     platform: typeof global_setting.platform;
+    /// 当前文档/页面标题 (如浏览器页面标题、Obsidian笔记名等)
+    activeDocTitle?: string;
+    /// 当前文档/页面链接 (如浏览器页面URL、Obsidian笔记路径等)
+    activeDocUrl?: string;
 
     // TODO: 更多环境
     // - miniEditorText?: string;
@@ -90,6 +94,8 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   env: {
     selectedText: undefined,
     platform: global_setting.platform,
+    activeDocTitle: undefined,
+    activeDocUrl: undefined,
   },
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
