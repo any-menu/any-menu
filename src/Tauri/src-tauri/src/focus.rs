@@ -41,9 +41,10 @@ pub fn init_focus_check(app_handle: tauri::AppHandle) {
                 // - ● focus.rs - any-menu (工作区) - Visual Studio Code
                 // - AI联动架构，Skill RAG MCP Agent NLU - MdNote_Public - Obsidian v1.11.5
                 // 
-                // 注意:
+                // 时机点注意:
                 // 这里的主要目的是为了设置快捷键的黑白名单，
                 // 你在同一窗口下执行操作 (如浏览器中切换不同的标签页) 导致的窗口名变化，这里并不会检索到
+                // 想要更准确地应用召唤前获取，则见 `get_caret/get_message` 时机
                 let mut title_flag: [u16; 256] = [0; 256];
                 let len = GetWindowTextW(hwnd, &mut title_flag);
                 let window_title = OsString::from_wide(&title_flag[..len as usize])

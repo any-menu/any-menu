@@ -62,10 +62,11 @@ export interface PluginInterfaceCtx {
     /// 当前激活的应用/窗口名称
     activeAppName?: string;
     /// 当前文档/页面标题 (如浏览器页面标题、Obsidian笔记名等)
-    /// 当前只支持 Obsidian 环境，App (Tauri) 环境未支持
     activeDocTitle?: string;
     /// 当前文档/页面链接 (如浏览器页面URL、Obsidian笔记路径等)
+    /// 
     /// 当前只支持 Obsidian 环境，App (Tauri) 环境未支持
+    /// App 端很难获取，UIA 有可能可以但也很麻烦，不一定能拿到
     activeDocUrl?: string;
 
     // TODO: 更多环境
