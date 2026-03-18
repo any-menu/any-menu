@@ -93,6 +93,7 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
 
   // activeDoc
+  global_setting.state.activeAppName = 'obsidian'
   const activeFile = plugin.app.workspace.getActiveFile()
   if (activeFile) {
     global_setting.state.activeDocTitle = activeFile.basename
