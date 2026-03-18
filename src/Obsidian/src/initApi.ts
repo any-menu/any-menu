@@ -60,6 +60,20 @@ export function initApi(plugin: Plugin) {
     cursorInfo.editor.replaceSelection(text)
   }
 
+  global_setting.api.saveToClipboard = async (text: string): Promise<void> => {
+    try { // 先尝试默认的剪切板 navigator API (可能存在权限问题)
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+      try { // 再尝试 electron api (Obsidian 基于 Electron)
+        const { clipboard } = require('electron')
+        clipboard.writeText(text)
+      }
+      catch (err2) {
+        console.error("Failed to save to clipboard: ", err2, "Original error: ", err)
+      }
+    }
+  }
+
   // 快速调试: 
   // app.vault.adapter.exists("Template").then((a) => {console.log("---exists", a)})
   // app.vault.adapter.list("Template").then(a => console.log("---list", a)) // 输出 {files:[], folders:[]} 相对库根的路径

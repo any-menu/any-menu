@@ -123,6 +123,7 @@ export const global_setting: {
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
     sendText: (text: string) => Promise<void>
+    saveToClipboard: (text: string) => Promise<void>
     // 统一的网络请求接口，并简化try/catch
     // 需要注意的是: 有前端版本和后端版本
     // 在 Obsidian 和 App 版本中，都是后端版本，即可以无视浏览器的同源策略 (CORS 限制)
@@ -217,6 +218,14 @@ export const global_setting: {
       } else { // 否则存到剪切版
         console.warn('没有活动的元素，将demo文本生成到剪贴板')
         navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err))
+      }
+    },
+    saveToClipboard: async (text: string) => {
+      // 默认降级处理、通用浏览器环境
+      try {
+        await navigator.clipboard.writeText(text)
+      } catch (err) {
+        console.error("Failed to save to clipboard: ", err)
       }
     },
     urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null },

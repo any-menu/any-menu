@@ -245,7 +245,7 @@ pub fn run() {
             greet,
             get_caret, get_caret_debug, get_screen_size, // caret size 类
             get_info, // 其他类 // get_selected, 
-            text::send,
+            text::send, text::clipboard::clipboard_set_text,
             read_file, read_folder, create_file, write_file, delete_file, // 文件类
             toml::config_read_to_json, toml::config_write_from_json, // 文件类 - 配置文件版
         ])

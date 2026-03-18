@@ -10,6 +10,7 @@
 /// 剪切板 - 仅关注最近项
 pub mod clipboard {
     /// 将文本写入剪贴板
+    #[tauri::command]
     pub fn clipboard_set_text(text: &str) -> Result<(), String> {
         #[cfg(not(target_os = "windows"))]
         return Err("Clipboard operations not implemented for this platform".to_string());

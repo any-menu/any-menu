@@ -76,6 +76,8 @@ export interface PluginInterfaceCtx {
   api: {
     /// 输出文本到当前位置，输出结束后自动隐藏 (低风险)
     sendText: (str: string) => void;
+    /// 保存到剪切板 (低风险)
+    saveToClipboard: (str: string) => void;
     /// 隐藏面板 (低风险)
     hidePanel: () => void;
     /// 显示面板 (低风险)
@@ -105,6 +107,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   },
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
+    saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
     hidePanel: () => { AMPanel.hide(); },
     // TODO 未完成，以后要支持自定义 el 和 css
     showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },

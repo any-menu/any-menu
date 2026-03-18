@@ -91,6 +91,19 @@ export function initApi() {
     await invoke("send", { text: str, method: global_setting.config.send_text_method })
   }
 
+  global_setting.api.saveToClipboard = async (text: string): Promise<void> => {
+    try { // 先尝试默认的剪切板 navigator API (可能存在权限问题)
+      await navigator.clipboard.writeText(text)
+    } catch (err) {
+      try { // 再尝试 tauri 方式 (基于 Windows/其他平台 API)
+        await invoke("clipboard_set_text", { text })
+      }
+      catch (err2) {
+        console.error("Failed to save to clipboard: ", err2, "Original error: ", err)
+      }
+    }
+  }
+
   global_setting.api.readFolder = async (relPath: string) => {
     const files: string[]|null = await invoke("read_folder", { path: relPath })
     if (typeof files !== 'object' || !Array.isArray(files)) {
