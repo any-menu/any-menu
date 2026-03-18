@@ -91,6 +91,7 @@ export const global_setting: {
     selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
     infoText: string, // 当前信息文本 (仅debug模式会注册info面板，从而才会使用这里)
     activeAppName: string, // 当前激活的应用名称 (每次窗口聚焦改变时更新)
+    activeDocTitle?: string, // 当前文档/页面标题 (每次展开菜单时更新)
     activeDocUrl?: string, // 当前文档/页面链接 (每次展开菜单时更新)
   },
   /**
@@ -184,6 +185,7 @@ export const global_setting: {
     selectedText: undefined,
     infoText: '',
     activeAppName: '',
+    activeDocTitle: undefined,
     activeDocUrl: undefined,
   },
   api: {

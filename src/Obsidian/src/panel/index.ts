@@ -95,7 +95,7 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   // activeDoc
   const activeFile = plugin.app.workspace.getActiveFile()
   if (activeFile) {
-    global_setting.state.activeAppName = activeFile.basename
+    global_setting.state.activeDocTitle = activeFile.basename
     global_setting.state.activeDocUrl = activeFile.path
   }
 
