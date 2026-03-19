@@ -31,6 +31,9 @@ export interface PluginInterface {
     /// - 支持 SVG string (应用前采取安全措施 dompurify)
     /// - 支持 不填，会使用名字来默认构造图标
     icon?: string;
+    /// CSS 字符串，插件加载时自动注入到 <head>，卸载时自动移除
+    /// 若使用 TypeScript 模板仓库开发，build 工具会自动将 .css 文件内容填入此字段
+    css?: string;
   };
 
   /// 旧接口

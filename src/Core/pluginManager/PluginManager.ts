@@ -18,6 +18,7 @@ const PluginMetadataSchema = z.object({
   author: z.string().optional(),
   description: z.string().optional(),
   icon: z.string().optional(),
+  css: z.string().optional(),
 });
 const PluginSchema = z.object({
   metadata: PluginMetadataSchema,
@@ -54,15 +55,25 @@ export class PluginManager {
       //   使用 /* @vite-ignore */ 防止 Vite 在构建时试图解析这个动态路径
       const module = await import(/* @vite-ignore */ blobUrl);
       //   获取 export default 导出的对象
-      const rawPlugin = module.default;
+      let rawPlugin = module.default;
       if (!rawPlugin) {
         throw new Error('Plugin script must export a default object, #' + file_name_short);
       }
 
       // 2. 验证插件格式
+      // 导出类型修正
+      // 以前版本有一个是直接导出实例 (结构体)，现在改为了导出类 (更方便用ts开发插件)
+      // 两种方式都支持，后者先转实例
+      if (typeof rawPlugin === 'function') {
+        rawPlugin = new rawPlugin();
+      }
+      // 再验证
       const plugin = this.loadPlugin_validatePlugin(rawPlugin);
       
-      // 3. 注册并执行加载事件
+      // 3. 注入插件 CSS
+      PluginManager.injectPluginCss(plugin);
+
+      // 4. 注册并执行加载事件
       this.plugin_list[plugin.metadata.id] = plugin;
       plugin.onLoad?.();
 
@@ -98,6 +109,34 @@ export class PluginManager {
     // 原因是 Zod 默认会剔除(strip)未定义的字段，如果我们返回 result.data，
     // 插件自身定义的内部变量或辅助函数就会丢失，会导致插件内部的 this.xxx 调用失败。
     return rawPlugin as PluginInterface;
+  }
+
+  /// 将插件的 CSS 注入到 <head>
+  /// 使用 data-plugin-id 属性标记，便于卸载时精准查找并移除
+  private static injectPluginCss(plugin: PluginInterface): void {
+    const css = plugin.metadata.css;
+    if (!css) return;
+
+    const pluginId = plugin.metadata.id;
+
+    // 若已存在则先移除旧的（防止重复加载同一插件）
+    PluginManager.removePluginCss(pluginId);
+
+    const styleEl = document.createElement('style');
+      styleEl.setAttribute('data-plugin-id', pluginId);
+      styleEl.textContent = css;
+      document.head.appendChild(styleEl);
+
+    if (global_setting.isDebug) console.log(`Plugin CSS injected: ${pluginId}`);
+  }
+
+  /// 移除插件注入的 CSS <style> 标签
+  private static removePluginCss(pluginId: string): void {
+    const existing = document.head.querySelector(`style[data-plugin-id="${pluginId}"]`);
+    if (existing) {
+      existing.remove();
+      if (global_setting.isDebug) console.log(`Plugin CSS removed: ${pluginId}`);
+    }
   }
 
   // #region 废弃，旧版的插件加载和验证方案
