@@ -1,22 +1,22 @@
 /**
  * 管理面板中可能出现的东西
  * 
- * 内容上，可能包括:
+ * 内容上，可能包括许多子面板:
  * 
- * - 搜索框
- * - 建议/提示/候选栏，可能后续会将建议栏与搜索框分离，好处是:
- *   - 复用
- *   - 单独控制显示隐藏
- *   - 单独控制位置 (搜索框靠屏幕下方时，建议栏应在搜索框的上方)
- * - 多级菜单
- * - 工具栏
- * - MiniEditor
+ * - Search 搜索框
+ *   - 建议/提示/候选栏，可能后续会将建议栏与搜索框分离，好处是:
+ *     - 复用
+ *     - 单独控制显示隐藏
+ *     - 单独控制位置 (搜索框靠屏幕下方时，建议栏应在搜索框的上方)
+ * - Toolbar 工具栏
+ * - ContextMenu 多级菜单
+ * - MiniEditor 迷你编辑器
  * - 其他有可能出现的自定义脚本的自定义面板
  * 
  * 功能上:
  * 
- * - 主要管理他们的共同显示、隐藏、位置
- * - 提供一个父层，让各个子组件可以相互通信
+ * - 主要管理他们的共同显示、隐藏、位置，封装和复用子面板的共同行为
+ * - 提供一个父层，让各个子组件可以相互通信使用使用共用变量 (如触发 alt_v_state 时是否有建议栏会有不同行为)
  */
 
 export * from './contextmenu/index'
@@ -34,9 +34,10 @@ import { global_setting } from '../setting'
 export const global_el: {
   amPanel: AMPanel | null,
   amSearch: AMSearch | null,
+  amToolbar: AMToolbar | null,
   amContextMenu: AMContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
-  amToolbar: AMToolbar | null,
+  amCustom: HTMLElement | null, // 供自定义脚本使用的面板元素
   alt_v_state: boolean,  // 虚拟alt状态
 } = {
   amPanel: null,
@@ -44,6 +45,7 @@ export const global_el: {
   amContextMenu: null,
   amMiniEditor: null,
   amToolbar: null,
+  amCustom: null,
   alt_v_state: false
 }
 let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况
@@ -61,6 +63,14 @@ let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排
  *   - 更好地处理多个组件脱离焦点隐藏的逻辑。子组件无需再考虑脱离聚焦问题
  *   - ... (抽离更多子组件的共同行为到面板中，进一步简化子组件)
  * - 面对边缘显示时，也能更方便检测出组件组合的总尺寸 (哪怕css影响了子组件的大小) (该好处未完成)
+ * 
+ * ## 脚本自定义面板设计
+ * 
+ * 这里需要考虑的几个设计:
+ * 
+ * - 脚本面板是静态创建 or 动态创建，静态动态复用方便，适合调色盘和大部分场景。
+ *   动态创建更灵活，支持任意数量，但需要考虑如何用完后销毁。
+ *   (采用) 当然还有一个思路: 静态容器元素，其子元素是否动态由插件控制
  */
 export class AMPanel {
   public el: HTMLElement
@@ -81,6 +91,9 @@ export class AMPanel {
     }
     if (!global_el.amMiniEditor) {
       global_el.amMiniEditor = AMMiniEditor.factory(el)
+    }
+    if (!global_el.amCustom) {
+      global_el.amCustom = document.createElement('div'); el.appendChild(global_el.amCustom); global_el.amCustom.classList.add('am-custom-panel')
     }
 
     // alt切换快捷提示
@@ -151,10 +164,13 @@ export class AMPanel {
     }
 
     let is_focued = false // 只聚焦到第一个可聚焦的子面板
-    for (const item of list) { // TODO 除显示所有 list 中的元素，还需要排序
+    for (const item of list) {
       if (item == 'search') {
         global_el.amSearch?.show()
         is_focued = true
+      }
+      else if (item == 'toolbar') {
+        global_el.amToolbar?.show()
       }
       else if (item == 'menu') {
         global_el.amContextMenu?.show()
@@ -175,11 +191,14 @@ export class AMPanel {
           global_el.amMiniEditor?.show(global_setting.state.infoText, false)
         })
       }
-      else if (item == 'toolbar') {
-        global_el.amToolbar?.show()
-      }
       else {
-        continue
+        for (const key in global_el.amPanel?.SubPanel) {
+          if (key == item) {
+            global_el.amPanel?.SubPanel[key].classList.remove('am-hide')
+            break
+          }
+        }
+        // 找不找得到这里也结束这轮循环了
       }
     }
 
@@ -188,13 +207,63 @@ export class AMPanel {
   }
 
   /** 隐藏面板 */
-  static hide() {
+  static hide(list?: string[]) {
     if (global_setting.state.isPin) return
-    global_el.amSearch?.hide()
-    global_el.amContextMenu?.hide()
-    global_el.amMiniEditor?.hide()
-    global_el.amToolbar?.hide()
+
+    // 全部隐藏
+    if (!list) {
+      global_el.amSearch?.hide()
+      global_el.amToolbar?.hide()
+      global_el.amContextMenu?.hide()
+      global_el.amMiniEditor?.hide()
+      for (const key in global_el.amPanel?.SubPanel) {
+        global_el.amPanel?.SubPanel[key].classList.add('am-hide')
+      }
+    }
+    // 仅隐藏列表中的
+    else {
+      for (const item of list) {
+        if (item == 'search')  global_el.amSearch?.hide()
+        else if (item == 'toolbar') global_el.amToolbar?.hide()
+        else if (item == 'menu') global_el.amContextMenu?.hide()
+        else if (item == 'miniEditor') global_el.amMiniEditor?.hide()
+        else if (item == 'info') global_el.amMiniEditor?.hide()
+        else {
+          for (const key in global_el.amPanel?.SubPanel) {
+            if (key == item) {
+              global_el.amPanel?.SubPanel[key].classList.add('am-hide')
+              break
+            }
+          }
+        }
+      }
+      return
+    }
   }
+
+  // #region 自定义子面板管理
+
+  private SubPanel: { [key: string]: HTMLElement } = {}
+
+  register_sub_panel(id: string, el: HTMLElement) {
+    if (this.SubPanel[id]) {
+      console.warn(`SubPanel with id ${id} already exists. It will be replaced.`)
+      this.SubPanel[id].remove()
+    }
+    this.SubPanel[id] = el
+    global_el.amCustom?.appendChild(el)
+  }
+
+  unregister_sub_panel(id: string) {
+    if (!this.SubPanel[id]) {
+      console.warn(`SubPanel with id ${id} does not exist.`)
+      return
+    }
+    this.SubPanel[id].remove()
+    delete this.SubPanel[id]
+  }
+
+  // #endregion
 
   /// 失焦隐藏
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)

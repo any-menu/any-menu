@@ -182,7 +182,6 @@ export class AMMiniEditor {
   }
 
   hide() {
-    if (global_setting.state.isPin) return
     this.el.classList.add('am-hide'); this.isShow = false;
 
     window.removeEventListener('keydown', this.visual_listener_keydown)

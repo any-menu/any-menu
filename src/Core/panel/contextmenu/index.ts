@@ -132,7 +132,6 @@ export class AMContextMenu {
   }
   /// 隐藏该菜单
   public hide() {
-    if (global_setting.state.isPin) return
     if (!this.el) return
     this.el.classList.add('am-hide')
     this.el.classList.remove('visible')

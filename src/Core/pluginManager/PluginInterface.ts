@@ -2,7 +2,7 @@
  * 如果你是脚本开发者，那么你需要要阅读这个文件即可
  */
 
-import { AMPanel } from "../panel";
+import { AMPanel, global_el } from "../panel";
 import {
   global_setting,
   type UrlRequestConfig,
@@ -31,12 +31,6 @@ export interface PluginInterface {
     /// - 支持 SVG string (应用前采取安全措施 dompurify)
     /// - 支持 不填，会使用名字来默认构造图标
     icon?: string;
-
-    // 弃用，应该把平台给 ctx 变量。
-    // 一来一个插件可能会对多个平台做不同的事，如果不支持，让插件自己去检查平台就好了
-    // 二来 App 版本和 Obsidian 版本可能会使用同一个插件文件夹
-    // 仅适用于某个平台，不填则不限制
-    // platform?: ("app"|"obsidian")[];
   };
 
   /// 旧接口
@@ -48,6 +42,8 @@ export interface PluginInterface {
   run: (ctx: PluginInterfaceCtx) => Promise<void>;
 
   /// 加载插件时调用
+  /// TODO 目前没什么用，应该给他一个 ctx，这样可以加载时就进行注册面板等操作
+  ///   不过目前还是提倡在 run 内判断首次运行时注册，避免软件启用时就做一大堆操作
   onLoad?: () => void;
   /// 卸载插件时调用
   onUnload?: () => void;
@@ -78,20 +74,28 @@ export interface PluginInterfaceCtx {
     sendText: (str: string) => void;
     /// 保存到剪切板 (低风险)
     saveToClipboard: (str: string) => void;
-    /// 隐藏面板 (低风险)
-    hidePanel: () => void;
-    /// 显示面板 (低风险)
-    showPanel: (list?: string[]) => void;
     /// 通知用户 (低风险)
     notify: (message: string) => void;
     /// 网络请求 (中风险，信息泄露风险)
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>;
 
-    // TODO: 话说这里要弄权限管理不，如:
+    /// 隐藏面板 (低风险)
+    hidePanel: (list?: string[]) => void;
+    /// 显示面板 (低风险)
+    showPanel: (list?: string[]) => void;
+    /// 注册面板 (中风险、会被注入 HTML 元素)，注册后通过 showPanel 来控制显示/隐藏
+    registerSubPanel?: (options: { id: string, el: HTMLElement }) => void;
+    /// 注销面板
+    unregisterSubPanel?: (id: string) => void;
+
+    // TODO: 
     // - 特定文件访问权限 (低风险)
     // - 全局文件读写权限 (高风险)
     // - cmd 运行权限 (高风险)
-    // 然后没有权限的插件调用这些接口时，就会 NOTION 方式提示用户某插件需要，并引导用户自行开启
+    // - 注册多个其他插件，插件组使用。前置: metadata 需要支持插件组类别声明，不会注册到工具栏/多级菜单中
+    // 
+    // 话说这里要弄权限管理不，如上面那些带风险的接口
+    // 然后没有权限的插件调用这些接口时，就会 NOTICE方式提示用户某插件需要，并引导用户自行开启
   }
 }
 
@@ -108,11 +112,17 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
-    hidePanel: () => { AMPanel.hide(); },
-    // TODO 未完成，以后要支持自定义 el 和 css
-    showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
     notify: (message: string) => global_setting.api.notify(message),
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
+
+    hidePanel: (list?: string[]) => { AMPanel.hide(list); },
+    showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
+    registerSubPanel: (options: { id: string, el: HTMLElement }) => {
+      global_el.amPanel?.register_sub_panel(options.id, options.el);
+    },
+    unregisterSubPanel: (id: string) => {
+      global_el.amPanel?.unregister_sub_panel(id);
+    }
   }
 }
 

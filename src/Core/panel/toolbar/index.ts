@@ -91,7 +91,6 @@ export class AMToolbar {
   }
 
   hide() {
-    if (global_setting.state.isPin) return
     this.el.classList.add('am-hide'); this.isShow = false;
   }
 
