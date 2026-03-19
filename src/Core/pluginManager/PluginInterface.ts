@@ -34,9 +34,8 @@ export interface PluginInterface {
   };
 
   /// 旧接口
-  /// @deprecated 没有ctx环境，未来将废弃
+  /// @deprecated 没有ctx环境，未来将废弃，请使用 run 接口来代替
   process?: (str?: string) => Promise<void|string>;
-  /// 新接口
   /// 传入ctx，必须实现
   /// 点击或选择触发
   run: (ctx: PluginInterfaceCtx) => Promise<void>;
