@@ -1,6 +1,5 @@
 let cache_ctx = null
 let panelEl = null
-let cssInjected = false
 
 /**
  * 翻译源配置
@@ -30,9 +29,6 @@ const AZURE_API_KEY = ''      // Azure Translator API Key
 const AZURE_REGION = ''       // Azure 区域, 例如 'eastasia'
 const BAIDU_APP_ID = ''       // 百度翻译 APP ID
 const BAIDU_SECRET_KEY = ''   // 百度翻译密钥
-
-// 百度翻译语言代码映射 (与通用代码不同)
-const BAIDU_LANG_MAP = { 'zh': 'zh', 'en': 'en', 'ja': 'jp', 'ko': 'kor', 'fr': 'fra', 'de': 'de', 'es': 'spa', 'ru': 'ru' }
 
 const ENGINES = {
     google: {
@@ -177,6 +173,17 @@ const LANGUAGES = [
     { code: 'es', label: 'Español' },
     { code: 'ru', label: 'Русский' },
 ]
+// 百度翻译语言代码映射 (与通用代码不同)
+const BAIDU_LANG_MAP = {
+    'zh': 'zh',
+    'en': 'en',
+    'ja': 'jp',
+    'ko': 'kor',
+    'fr': 'fra',
+    'de': 'de',
+    'es': 'spa',
+    'ru': 'ru' 
+}
 
 let currentEngine = 'google'
 let currentFrom = 'auto'
@@ -196,6 +203,7 @@ const TRANSLATE_CSS = `
 .translate-dst { background:var(--background-secondary, #f5f5f5); color:black; padding:6px; border-radius:4px; white-space:pre-wrap; max-height:120px; overflow-y:auto; user-select:text; }
 .translate-btnbar { display:flex; gap:6px; }
 `
+let cssInjected = false
 function injectCSS() {
     if (cssInjected) return
     const style = document.createElement('style')

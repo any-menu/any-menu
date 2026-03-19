@@ -147,7 +147,7 @@ export const global_setting: {
   focusStrategy: true,
   key_panel: {
     panel1: ['search', 'toolbar', 'menu'],
-    panel2: ['miniEditor'],
+    panel2: ['search', 'toolbar'], // ['miniEditor']
     panel3: ['info'],
     key1: 'Alt+A',
     key2: 'Alt+S',
