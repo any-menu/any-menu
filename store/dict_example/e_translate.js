@@ -182,6 +182,9 @@ let currentEngine = 'google'
 let currentFrom = 'auto'
 let currentTo = 'zh'
 
+// 临时强制注入，后期会修改插件 api 来专门应用插件的 css。到时候会重新修改此处代码
+// 当前直接写入 document
+// 缺点: 脚本实现冗余麻烦: 要手动注入、关闭/卸载插件时去除、避免重复输入、封装较少、直接调用 document 不妥等
 const TRANSLATE_CSS = `
 .translate-root { padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px; }
 .translate-toolbar { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
@@ -189,11 +192,10 @@ const TRANSLATE_CSS = `
 .translate-toolbar .translate-arrow { flex-shrink:0; }
 .translate-label { font-weight:bold; }
 .translate-label-src { margin-top:4px; }
-.translate-src { background:var(--background-secondary, #f5f5f5); padding:6px; border-radius:4px; white-space:pre-wrap; min-height:40px; max-height:120px; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--background-modifier-border, #ddd); font-family:inherit; font-size:inherit; }
-.translate-dst { background:var(--background-secondary, #f5f5f5); padding:6px; border-radius:4px; white-space:pre-wrap; max-height:120px; overflow-y:auto; user-select:text; }
+.translate-src { background:var(--background-secondary, #f5f5f5); color:black; padding:6px; border-radius:4px; white-space:pre-wrap; min-height:40px; max-height:120px; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--background-modifier-border, #ddd); font-family:inherit; font-size:inherit; }
+.translate-dst { background:var(--background-secondary, #f5f5f5); color:black; padding:6px; border-radius:4px; white-space:pre-wrap; max-height:120px; overflow-y:auto; user-select:text; }
 .translate-btnbar { display:flex; gap:6px; }
 `
-
 function injectCSS() {
     if (cssInjected) return
     const style = document.createElement('style')
