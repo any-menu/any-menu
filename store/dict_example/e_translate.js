@@ -238,16 +238,16 @@ function buildPanel() {
     srcLabel.className = 'translate-label translate-label-src'
     root.appendChild(srcLabel)
     const srcBox = document.createElement('textarea'); srcBox.id = '__translate_src'
-    srcBox.className = 'translate-src'
+    srcBox.className = 'translate-content translate-content-src'
     srcBox.placeholder = '请输入要翻译的文本...'
     root.appendChild(srcBox)
 
     // 译文区域
     const dstLabel = document.createElement('div'); dstLabel.textContent = '译文:'
-    dstLabel.className = 'translate-label'
+    dstLabel.className = 'translate-label translate-label-dst'
     root.appendChild(dstLabel)
-    const dstBox = document.createElement('div'); dstBox.id = '__translate_dst'
-    dstBox.className = 'translate-dst'
+    const dstBox = document.createElement('textarea'); dstBox.id = '__translate_dst'
+    dstBox.className = 'translate-content translate-content-dst'
     root.appendChild(dstBox)
 
     // 操作按钮
@@ -262,14 +262,14 @@ function buildPanel() {
     const btnCopy = document.createElement('button'); btnCopy.textContent = '复制译文'
     btnCopy.className = 'btn'
     btnCopy.onclick = () => {
-        if (cache_ctx && dstBox.textContent) cache_ctx.api.saveToClipboard(dstBox.textContent)
+        if (cache_ctx && dstBox.value) cache_ctx.api.saveToClipboard(dstBox.value)
     }
     btnBar.appendChild(btnCopy)
 
     const btnInsert = document.createElement('button'); btnInsert.textContent = '插入译文'
     btnInsert.className = 'btn'
     btnInsert.onclick = () => {
-        if (cache_ctx && dstBox.textContent) cache_ctx.api.sendText(dstBox.textContent)
+        if (cache_ctx && dstBox.value) cache_ctx.api.sendText(dstBox.value)
     }
     btnBar.appendChild(btnInsert)
 
@@ -279,15 +279,15 @@ function buildPanel() {
 
 async function doTranslate(srcBox, dstBox) {
     const text = srcBox.value
-    if (!text) { dstBox.textContent = '(无原文)'; return }
-    dstBox.textContent = '翻译中...'
+    if (!text) { dstBox.value = '(无原文)'; return }
+    dstBox.value = '翻译中...'
     try {
         const engine = ENGINES[currentEngine]
         const result = await engine.translate(cache_ctx, text, currentFrom, currentTo)
-        dstBox.textContent = result ?? '翻译失败'
+        dstBox.value = result ?? '翻译失败'
     } catch (e) {
         console.error('Translate error:', e)
-        dstBox.textContent = '翻译出错: ' + (e.message || e)
+        dstBox.value = '翻译出错: ' + (e.message || e)
     }
 }
 
@@ -301,15 +301,23 @@ export default {
         description: '选中文本后翻译，支持多种免费翻译源',
         icon: 'lucide-languages',
         css: `
-.translate-root { padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px; }
-.translate-toolbar { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
-.translate-toolbar select { flex:1; min-width:0; padding:2px 4px; }
-.translate-toolbar .translate-arrow { flex-shrink:0; }
-.translate-label { font-weight:bold; }
-.translate-label-src { margin-top:4px; }
-.translate-src { background:var(--background-secondary, #f5f5f5); color:black; padding:6px; border-radius:4px; white-space:pre-wrap; min-height:40px; max-height:120px; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--background-modifier-border, #ddd); font-family:inherit; font-size:inherit; }
-.translate-dst { background:var(--background-secondary, #f5f5f5); color:black; padding:6px; border-radius:4px; white-space:pre-wrap; max-height:120px; overflow-y:auto; user-select:text; }
-.translate-btnbar { display:flex; gap:6px; }
+.translate-root {
+  padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px;
+  background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
+  .translate-toolbar {
+    display:flex; gap:6px; align-items:center; flex-wrap:wrap;
+    select { flex:1; min-width:0; padding:2px 4px; }
+    .translate-arrow { flex-shrink:0; }
+  }
+  .translate-label-src { margin-top:4px; }
+  .translate-content { background:var(--am-background-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-family:inherit; font-size:inherit; }
+  .translate-content-src { min-height:40px; max-height:120px; }
+  .translate-content-dst { max-height:120px; user-select:text; }
+  .translate-btnbar {
+    display:flex; gap:6px;
+    button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
+  }
+}
 `
     },
 
