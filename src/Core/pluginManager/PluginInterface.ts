@@ -94,7 +94,7 @@ export interface PluginInterfaceCtx {
     /// 读文件 (低 - 高风险) // TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
     readFile: (basePath: 'CONFIG'|'PUBLIC', relPath: string) => Promise<string | null>;
     /// 写文件 (低 - 高风险) // TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
-    writeFile: (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => Promise<boolean>;
+    writeFile: (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => Promise<boolean>;
 
     /// 隐藏面板 (低风险)
     hidePanel: (list?: string[]) => void;
@@ -141,8 +141,8 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     readFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string) => { // be override
       return await global_setting.api.readFile(relPath);
     },
-    writeFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => { // be override
-      return await global_setting.api.writeFile(relPath, content);
+    writeFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => { // be override
+      return await global_setting.api.writeFile(relPath, content, is_append);
     },
 
     hidePanel: (list?: string[]) => { AMPanel.hide(list); },

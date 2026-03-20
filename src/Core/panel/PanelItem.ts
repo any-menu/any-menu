@@ -148,7 +148,7 @@ export function init_item(
               }
               return await global_setting.api.readFile(filePath);
             },
-            writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => {
+            writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => {
               // relPath 禁止包含 ../ 等路径穿越
               if (relPath.includes('../')) {
                 console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
@@ -161,7 +161,7 @@ export function init_item(
               } else { // if (basePath === 'PUBLIC')
                 filePath = global_setting.config.note_paths + relPath
               }
-              return await global_setting.api.writeFile(filePath, content);
+              return await global_setting.api.writeFile(filePath, content, is_append);
             }
           }
         })
