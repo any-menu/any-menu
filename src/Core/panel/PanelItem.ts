@@ -118,12 +118,15 @@ export function init_item(
       li.addEventListener('click', async () => {
         void callback({
           env: {
-            ...PluginInterfaceCtxDemo.env,
             platform: global_setting.platform,
             selectedText: global_setting.state.selectedText,
             activeAppName: global_setting.state.activeAppName || undefined,
             activeDocTitle: global_setting.state.activeDocTitle,
             activeDocUrl: global_setting.state.activeDocUrl,
+            obsidian:  global_setting.platform === 'obsidian-plugin' ? {
+              plugin: global_setting.other.obsidian_plugin,
+              ctx: global_setting.other.obsidian_ctx
+            } : undefined,
           },
           api: {
             ...PluginInterfaceCtxDemo.api,

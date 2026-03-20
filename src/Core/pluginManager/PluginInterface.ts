@@ -69,6 +69,12 @@ export interface PluginInterfaceCtx {
     /// App 端很难获取，UIA 有可能可以但也很麻烦，不一定能拿到
     activeDocUrl?: string;
 
+    /// 特殊 - 仅 Obsidian 环境拥有
+    obsidian?: {
+      plugin: any;
+      ctx: any;
+    }
+
     // TODO: 更多环境
     // - miniEditorText?: string;
     // - 当前选中类型 (文件/图片/文字等...)
@@ -104,7 +110,7 @@ export interface PluginInterfaceCtx {
 }
 
 /// 默认的 ctx 模板
-/// 除了 env 的具体内容外，其他借口一般不用变动
+/// 除了 env 的具体内容外，其他借口一般不用变动。env 内容基本上每次传入前都要更新一遍
 export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   env: {
     selectedText: undefined,
@@ -112,6 +118,11 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     activeAppName: undefined,
     activeDocTitle: undefined,
     activeDocUrl: undefined,
+
+    obsidian: global_setting.platform === 'obsidian-plugin' ? {
+      plugin: global_setting.other.obsidian_plugin,
+      ctx: global_setting.other.obsidian_ctx
+    } : undefined,
   },
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
