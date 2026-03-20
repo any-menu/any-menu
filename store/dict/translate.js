@@ -306,7 +306,7 @@ export default {
   background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
   .translate-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
-    select { flex:1; min-width:0; padding:2px 4px; }
+    select { flex:1; min-width:0; padding:2px 4px; background:var(--ab-menu-bg-color); color:CurrentColor; border-radius:4px; }
     .translate-arrow { flex-shrink:0; }
   }
   .translate-label-src { margin-top:4px; }
