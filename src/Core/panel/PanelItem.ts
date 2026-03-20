@@ -65,7 +65,7 @@ export function init_item(
         });
       } else {
         // 2. [可选] 在加载完成前，先放置一个骨架屏或 Loading SVG
-        // li.innerHTML = `<svg class="animate-spin ...">...</svg>`; 
+        // li.innerHTML = `<svg class="animate-spin ...">...</svg>`;
 
         // 3. 异步获取图标
         fetch(iconUrl)
@@ -133,6 +133,36 @@ export function init_item(
             notify: async (message: string) => {
               await global_setting.api.notify(item.label + ': ' + message)
             },
+            readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => {
+              // relPath 禁止包含 ../ 等路径穿越
+              if (relPath.includes('../')) {
+                console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+                return null
+              }
+
+              let filePath: string
+              if (basePath === 'CONFIG') {
+                filePath = './dict_config/' + relPath
+              } else { // if (basePath === 'PUBLIC')
+                filePath = global_setting.config.note_paths + relPath
+              }
+              return await global_setting.api.readFile(filePath);
+            },
+            writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => {
+              // relPath 禁止包含 ../ 等路径穿越
+              if (relPath.includes('../')) {
+                console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+                return false
+              }
+
+              let filePath: string
+              if (basePath === 'CONFIG') {
+                filePath = './dict_config/' + relPath
+              } else { // if (basePath === 'PUBLIC')
+                filePath = global_setting.config.note_paths + relPath
+              }
+              return await global_setting.api.writeFile(filePath, content);
+            }
           }
         })
         // old

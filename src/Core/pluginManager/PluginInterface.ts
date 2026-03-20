@@ -36,6 +36,8 @@ export interface PluginInterface {
      * 若使用 TypeScript 模板仓库开发，build 工具会自动将 .css 文件内容填入此字段
      */
     css?: string;
+
+    // TODO: 加入所需权限声明
   };
 
   /// 旧接口
@@ -86,17 +88,22 @@ export interface PluginInterfaceCtx {
     saveToClipboard: (str: string) => void;
     /// 通知用户 (低风险)
     notify: (message: string) => void;
+
     /// 网络请求 (中风险，信息泄露风险)
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>;
+    /// 读文件 (低 - 高风险) // TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
+    readFile: (basePath: 'CONFIG'|'PUBLIC', relPath: string) => Promise<string | null>;
+    /// 写文件 (低 - 高风险) // TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
+    writeFile: (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => Promise<boolean>;
 
     /// 隐藏面板 (低风险)
     hidePanel: (list?: string[]) => void;
     /// 显示面板 (低风险)
     showPanel: (list?: string[]) => void;
     /// 注册面板 (中风险、会被注入 HTML 元素)，注册后通过 showPanel 来控制显示/隐藏
-    registerSubPanel?: (options: { id: string, el: HTMLElement }) => void;
+    registerSubPanel: (options: { id: string, el: HTMLElement }) => void;
     /// 注销面板
-    unregisterSubPanel?: (id: string) => void;
+    unregisterSubPanel: (id: string) => void;
 
     // TODO: 
     // - 特定文件访问权限 (低风险)
@@ -110,7 +117,8 @@ export interface PluginInterfaceCtx {
 }
 
 /// 默认的 ctx 模板
-/// 除了 env 的具体内容外，其他借口一般不用变动。env 内容基本上每次传入前都要更新一遍
+/// 除了 env 的具体内容外，其他借口一般不用变动 (除非要做插件的环境分离/标注)。
+/// env 内容则基本上每次传入前都要更新一遍
 export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   env: {
     selectedText: undefined,
@@ -128,7 +136,14 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
     notify: (message: string) => global_setting.api.notify(message),
+
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
+    readFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string) => { // be override
+      return await global_setting.api.readFile(relPath);
+    },
+    writeFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string) => { // be override
+      return await global_setting.api.writeFile(relPath, content);
+    },
 
     hidePanel: (list?: string[]) => { AMPanel.hide(list); },
     showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
