@@ -2,6 +2,8 @@ let cache_ctx = null
 let cache_el = null
 let cache_el_content = null
 
+let alt_v_state = false  // 虚拟alt状态
+
 function buildPanel() {
     const root = document.createElement('div')
         root.className = 'note-root'
@@ -33,18 +35,18 @@ function buildPanel() {
         fileName.value = `${year}-${month}-${day}.md`
 
     // 标题
-    const titleInput = document.createElement('input'); toolbar.appendChild(titleInput);
-        titleInput.type = 'text'
-        titleInput.title = '标题名'
-        titleInput.placeholder = '请输入标题，可为空，默认自动生成当前时间戳'
-        titleInput.value = `${hours}:${minutes}:${seconds}.${milliseconds}`
+    const titleName = document.createElement('input'); toolbar.appendChild(titleName);
+        titleName.type = 'text'
+        titleName.title = '标题名'
+        titleName.placeholder = '请输入标题，可为空，默认自动生成当前时间戳'
+        titleName.value = `${hours}:${minutes}:${seconds}.${milliseconds}`
         
 
     // 原文区域
-    const srcBox = document.createElement('textarea'); root.appendChild(srcBox); srcBox.id = '__translate_src'
-        srcBox.className = 'note-content'
-        srcBox.placeholder = '请输入...'
-        cache_el_content = srcBox
+    const contentEl = document.createElement('textarea'); root.appendChild(contentEl); contentEl.id = '__translate_src'
+        contentEl.className = 'note-content'
+        contentEl.placeholder = '请输入...'
+        cache_el_content = contentEl
 
     // 操作按钮
     const btnBar = document.createElement('div'); root.appendChild(btnBar);
@@ -52,8 +54,9 @@ function buildPanel() {
 
     const btnSave = document.createElement('button'); btnBar.appendChild(btnSave); btnSave.textContent = '保存'
         btnSave.className = 'btn'
+        btnSave.dataset.altKey = '1'
         btnSave.onclick = async () => {
-            const ret = await cache_ctx.api.writeFile('PUBLIC', folderPath.value + fileName.value, `## ${titleInput.value}\n\n${srcBox.value}\n\n`)
+            const ret = await cache_ctx.api.writeFile('PUBLIC', folderPath.value + fileName.value, `## ${titleName.value}\n\n${contentEl.value}\n\n`, true)
             if (ret) {
                 cache_ctx.api.notify('保存成功')
             } else {
@@ -64,27 +67,43 @@ function buildPanel() {
 
     const cleanBtn = document.createElement('button'); btnBar.appendChild(cleanBtn); cleanBtn.textContent = '清空'
         cleanBtn.className = 'btn'
+        cleanBtn.dataset.altKey = '2'
         cleanBtn.onclick = () => {
-            srcBox.value = ''
+            contentEl.value = ''
         }
 
     const btnCopy = document.createElement('button'); btnBar.appendChild(btnCopy); btnCopy.textContent = '复制'
         btnCopy.className = 'btn'
+        btnCopy.dataset.altKey = '3'
         btnCopy.onclick = () => {
-            if (cache_ctx && srcBox.value) cache_ctx.api.saveToClipboard(srcBox.value)
+            if (cache_ctx && contentEl.value) cache_ctx.api.saveToClipboard(contentEl.value)
         }
 
     const btnInsert = document.createElement('button'); btnBar.appendChild(btnInsert); btnInsert.textContent = '插入'
         btnInsert.className = 'btn'
+        btnInsert.dataset.altKey = '4'
         btnInsert.onclick = () => {
-            if (cache_ctx && srcBox.value) cache_ctx.api.sendText(srcBox.value)
+            if (cache_ctx && contentEl.value) cache_ctx.api.sendText(contentEl.value)
         }
 
     const btnHistory = document.createElement('button'); btnBar.appendChild(btnHistory); btnHistory.textContent = '历史记录'
         btnHistory.className = 'btn'
+        btnHistory.dataset.altKey = '5'
         btnHistory.onclick = () => {
             cache_ctx.api.notify('功能开发中...')
         }
+
+    const init_alt_mode = () => { // 复用 panel 提供的 alt 键管理
+        contentEl.addEventListener('keydown', (ev) => {
+            if (!contentEl.matches('.show-altkey *')) return
+            if (ev.key === '1') { btnSave.click(); ev.preventDefault() }
+            else if (ev.key === '2') { cleanBtn.click(); ev.preventDefault() }
+            else if (ev.key === '3') { btnCopy.click(); ev.preventDefault() }
+            else if (ev.key === '4') { btnInsert.click(); ev.preventDefault() }
+            else if (ev.key === '5') { btnHistory.click(); ev.preventDefault() }
+        })
+    }
+    init_alt_mode()
 
     return root
 }
@@ -117,6 +136,9 @@ export default {
     button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
   }
 }
+.show-altkey .note-root .note-btnbar button.btn::after {
+    content:attr(data-alt-key); position:absolute; color:var(--ab-bright-color);
+}
 `
     },
 
@@ -140,6 +162,8 @@ export default {
                 cache_el_content.value = ctx.env.selectedText
             }
         }
+
+        alt_v_state = false
 
         // 切换到当前面板
         ctx.api.hidePanel(['menu'])
