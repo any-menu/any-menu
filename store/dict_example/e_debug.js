@@ -28,7 +28,7 @@ export default {
                 id: 'example-debug',
                 el: cache_el
             })
-        }
+        } else cache_ctx = ctx
 
         // 输出调试信息
         if (cache_el) {

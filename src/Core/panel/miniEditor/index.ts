@@ -71,6 +71,7 @@ export class AMMiniEditor {
         global_setting.api.sendText(this.cache_text)
         // 会自动隐藏窗口
       }
+    // @deprecate 不再推荐使用，后续会使用独立的笔记保存插件
     const btn_save = document.createElement('button'); buttons.appendChild(btn_save); btn_save.textContent = 'Save';
       btn_send.title = 'Ctrl+S';
       btn_save.onclick = () => {

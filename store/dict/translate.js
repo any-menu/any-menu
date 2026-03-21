@@ -310,7 +310,9 @@ export default {
     .translate-arrow { flex-shrink:0; }
   }
   .translate-label-src { margin-top:4px; }
-  .translate-content { background:var(--am-background-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-family:inherit; font-size:inherit; }
+  .translate-content { background:var(--am-background-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
+    font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
+  }
   .translate-content-src { min-height:40px; max-height:120px; }
   .translate-content-dst { max-height:120px; user-select:text; }
   .translate-btnbar {
@@ -333,7 +335,7 @@ export default {
             cache_ctx = ctx
             panelEl = buildPanel()
             ctx.api.registerSubPanel({ id: 'translate-panel', el: panelEl })
-        }
+        } else cache_ctx = ctx
 
         // 填充原文
         const srcBox = panelEl.querySelector('#__translate_src')

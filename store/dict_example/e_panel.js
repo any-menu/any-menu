@@ -25,7 +25,7 @@ export default {
                 id: 'example-panel',
                 el: newPanel
             })
-        }
+        } else cache_ctx = ctx
 
         ctx.api.hidePanel(['menu'])
         ctx.api.showPanel(['example-panel'])
