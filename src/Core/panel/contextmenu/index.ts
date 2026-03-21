@@ -451,7 +451,7 @@ export class AMContextMenu {
             this.vFocus_update(0) // 右键弹出时，让子菜单自动选中第一个
           }
         } else { // 无子菜单则点击
-          global_el.alt_v_state = false;
+          global_el.alt_v_state = false; global_el.amPanel?.el?.classList.remove('show-altkey');
           this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el?.click()
         }
       }

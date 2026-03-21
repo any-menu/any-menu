@@ -120,7 +120,6 @@ export class AMPanel {
             alt_key_flag = false
             global_el.alt_v_state = false
             ev.preventDefault() // 不要触发窗口的alt键功能
-            el.classList.remove('show-altkey')
           } else {
             global_el.alt_v_state = !global_el.alt_v_state
           }
