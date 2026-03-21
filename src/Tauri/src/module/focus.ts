@@ -103,7 +103,8 @@ export function setupAppChangeListener() {
       const clipboard_selectedText_html = payload['selected_html_by_clipboard']
       let is_update_selectedText = false
       if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0
-        && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住
+        && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住，不走 html 分支，纯文本
+        && !global_setting.state.activeAppName.endsWith(" - Visual Studio Code") // 同上，话说取剪切板的纯文本内容应该也行
       ) { // 特殊 - html 拥有更高的优先级
         console.log(`selectedText is html`)
         global_setting.state.selectedText = turndownService.turndown(clipboard_selectedText_html)
@@ -111,11 +112,11 @@ export function setupAppChangeListener() {
       } else if (uia_selectedText == clipboard_selectedText) { // 相同，则不变
         console.log(`selectedText same: ${uia_selectedText} == ${clipboard_selectedText}`)
         is_update_selectedText = false
-      } else if (!uia_selectedText) { // 只有一个成功
+      } else if (!uia_selectedText) { // 只有一个成功 (uia)
         console.log(`selectedText replace: ${uia_selectedText} -> ${clipboard_selectedText}`)
         global_setting.state.selectedText = clipboard_selectedText
         is_update_selectedText = true
-      } else if (!clipboard_selectedText) { // 只有一个成功
+      } else if (!clipboard_selectedText) { // 只有一个成功 (剪切板)
         console.log(`selectedText keep: ${uia_selectedText} <- ${clipboard_selectedText}`)
         is_update_selectedText = false
       } else { // 都成功，优先 clipboard (换行符、html2md等，更优)
