@@ -501,12 +501,12 @@ fn layer_left(
     // TODO 点击后 "程序聚焦" 层改变，导致事件监听失效
     match event_type {
         EventType::ButtonPress(Button::Right) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
             return HandlerResult::Block
         },
         EventType::ButtonRelease(Button::Right) => {
-            app_handle.emit("active-window-toggle", 2).unwrap();
             state.left_active.set(false); // 在解决这个bug之前，这里会强制松开左键层
-            return HandlerResult::Block
+            return HandlerResult::Block // 避免触发原软件的右键菜单上下文
         },
         _ => { return HandlerResult::Pass }
     }
