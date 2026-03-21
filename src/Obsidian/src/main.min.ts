@@ -13,7 +13,7 @@ import {
 } from 'obsidian'
 import { global_setting } from '@/Core/setting'
 import { registerABContextMenu, registerAMContextMenu } from './panel'
-import { type AMSettingInterface, AMSettingTab } from "./SettingTab"
+import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
 // [!code hl]
@@ -21,7 +21,7 @@ global_setting.config.pinyin_index = false
 global_setting.config.pinyin_first_index = false
 
 export default class AnyMenuPlugin extends Plugin {
-  settings: AMSettingInterface
+  // settings: AMSettingInterface
 
   async onload() {
     if (global_setting.isDebug) console.log('>>> Loading plugin AnyMenu')

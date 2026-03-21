@@ -13,7 +13,7 @@ import {
 } from 'obsidian'
 import { global_setting } from '@/Core/setting'
 import { registerABContextMenu, registerAMContextMenu } from './panel'
-import { type AMSettingInterface, AMSettingTab } from "./SettingTab"
+import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
 export default class AnyMenuPlugin extends Plugin {

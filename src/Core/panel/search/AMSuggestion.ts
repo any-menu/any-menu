@@ -111,7 +111,9 @@ export class AMSuggestion {
 
         // step3. 然后再操作
         ev.preventDefault()
-        target_el.click()
+        ev.stopPropagation() // 阻止事件冒泡，但似乎失败了。还是依赖下面 alt_v_state 让 contextmenu 不继续触发
+        global_el.alt_v_state = false;
+        target_el.click();
       }
     })
   }

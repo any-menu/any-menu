@@ -48,7 +48,10 @@ export const global_el: {
   amCustom: null,
   alt_v_state: false
 }
-let alt_key_flag = false        // 按下过 alt+key 组合键。注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况
+// 按下过 alt+key 组合键。
+// 仅用于辅助得到 alt_v_state 的值，无其他用处，请勿直接使用于其他用途。
+// 注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况。
+let alt_key_flag = false
 
 /** AMPanel 使用单例模式管理
  * 
@@ -114,7 +117,7 @@ export class AMPanel {
         if (ev.key === 'Alt') {
           // alt+key
           if (alt_key_flag) {
-            alt_key_flag = false,
+            alt_key_flag = false
             global_el.alt_v_state = false
             ev.preventDefault() // 不要触发窗口的alt键功能
             el.classList.remove('show-altkey')
