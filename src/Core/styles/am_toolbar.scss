@@ -6,7 +6,7 @@
   width: fit-content;
   // min-width: 200px;
   margin: 0;
-  height: 32px;
+  min-height: 32px; // 单行时32px，多行时不一定
 
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);

@@ -143,7 +143,9 @@ export class AMPanel {
     el.classList.add('am-panel');
   }
 
-  /** 显示面板 */
+  /** 显示面板
+   * TODO 支持显示在屏幕中间偏上 (类似于 utools，并支持由插件如此使用)
+   */
   static show(x?: number, y?: number, list?: string[]) {
     // 设置初始的 alt 状态
     // 

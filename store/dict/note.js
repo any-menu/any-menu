@@ -86,9 +86,20 @@ function buildPanel() {
             if (cache_ctx && contentEl.value) cache_ctx.api.sendText(contentEl.value)
         }
 
+    const btnCodeblock = document.createElement('button'); btnBar.appendChild(btnCodeblock); btnCodeblock.textContent = '嵌入代码块'
+        btnCodeblock.className = 'btn'
+        btnCodeblock.dataset.altKey = '5'
+        btnCodeblock.onclick = () => {
+            let number_flag = // 包含在内的最大连续反引号数量 + 1 (最少为3)，确保不会和内容中的反引号冲突
+                contentEl.value.match(/`+/g)?.reduce((max, cur) => Math.max(max, cur.length), 0) ?? 0
+            number_flag = Math.max(number_flag + 1, 3)
+            const codeblock_flag = '`'.repeat(number_flag)
+            contentEl.value = `${codeblock_flag}\n${contentEl.value}\n${codeblock_flag}\n`
+        }
+
     const btnHistory = document.createElement('button'); btnBar.appendChild(btnHistory); btnHistory.textContent = '历史记录'
         btnHistory.className = 'btn'
-        btnHistory.dataset.altKey = '5'
+        btnHistory.dataset.altKey = '6'
         btnHistory.onclick = () => {
             cache_ctx.api.notify('功能开发中...')
         }
@@ -100,7 +111,8 @@ function buildPanel() {
             else if (ev.key === '2') { cleanBtn.click(); ev.preventDefault() }
             else if (ev.key === '3') { btnCopy.click(); ev.preventDefault() }
             else if (ev.key === '4') { btnInsert.click(); ev.preventDefault() }
-            else if (ev.key === '5') { btnHistory.click(); ev.preventDefault() }
+            else if (ev.key === '5') { btnCodeblock.click(); ev.preventDefault() }
+            else if (ev.key === '6') { btnHistory.click(); ev.preventDefault() }
         })
     }
     init_alt_mode()
@@ -124,7 +136,6 @@ export default {
   .note-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
     > * { flex:1; min-width:0; padding:4px 8px; background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:CurrentColor; border-radius:4px; }
-    .note-arrow { flex-shrink:0; }
   }
   .note-content {
     background:var(--am-background-color); color:currentColor; outline:none; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
