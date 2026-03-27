@@ -249,13 +249,21 @@ export class AMPanel {
 
   private SubPanel: { [key: string]: HTMLElement } = {}
 
-  register_sub_panel(id: string, el: HTMLElement) {
+  register_sub_panel(id: string, el: HTMLElement|((el: HTMLElement) => void)) {
     if (this.SubPanel[id]) {
       console.warn(`SubPanel with id ${id} already exists. It will be replaced.`)
       this.SubPanel[id].remove()
     }
-    this.SubPanel[id] = el
-    global_el.amCustom?.appendChild(el)
+
+    if (typeof el === 'function') {
+      const container = document.createElement('div'); container.classList.add(`am-sub-panel-${id}`)
+      this.SubPanel[id] = container
+      global_el.amCustom?.appendChild(container)
+      el(container)
+    } else {
+      this.SubPanel[id] = el
+      global_el.amCustom?.appendChild(el)
+    }
   }
 
   unregister_sub_panel(id: string) {

@@ -101,7 +101,10 @@ export interface PluginInterfaceCtx {
     /// 显示面板 (低风险)
     showPanel: (list?: string[]) => void;
     /// 注册面板 (中风险、会被注入 HTML 元素)，注册后通过 showPanel 来控制显示/隐藏
-    registerSubPanel: (options: { id: string, el: HTMLElement }) => void;
+    /// @param el
+    ///   HTMLElement: 插件直接返回 el
+    ///   (推荐) 回调函数: 让插件提供一个函数，AMPanel 在合适的时候调用并传入 el，插件拿到 el 后进行填充
+    registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => void;
     /// 注销面板
     unregisterSubPanel: (id: string) => void;
 
@@ -147,7 +150,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
 
     hidePanel: (list?: string[]) => { AMPanel.hide(list); },
     showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
-    registerSubPanel: (options: { id: string, el: HTMLElement }) => {
+    registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);
     },
     unregisterSubPanel: (id: string) => {
