@@ -11,7 +11,7 @@ export default {
 
     async run(ctx) {
         const str = ctx.env.selectedText
-        if (!str) {
+        if (!str || str.trim() === '') {
             ctx.api.sendText(`\
 |   |   |   |
 |---|---|---|

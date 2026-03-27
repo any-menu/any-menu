@@ -48,7 +48,7 @@ export default {
             const headingMatch = lines[i].match(/^(#{1,6})\s*(.*)$/)
             if (!headingMatch) continue
             
-            lines[i] = lines[i].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // 去除链接
+            lines[i] = lines[i].replace(/\[([^\]]*)\]\([^)]+\)/g, '$1') // 去除链接
             lines[i] = lines[i].replace(/(\*\*|__)(.*?)\1/g, '$2')      // 先去除加粗
             lines[i] = lines[i].replace(/(\*|_)(.*?)\1/g, '$2')           // 再去除斜体
         }
