@@ -751,7 +751,8 @@ div.editable-textarea-textarea {
   width: -moz-fit-content;
   width: fit-content;
   margin: 0;
-  height: 32px;
+  min-height: 32px;
+  max-width: 506px;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
@@ -1096,7 +1097,7 @@ html, body, #main {
   display: block;
   width: 100%;
   height: 100%;
-  font-family: monospace;
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", "Courier New", monospace; /* 跨平台强制mono字体 */
   font-size: 14px;
   line-height: 20px;
   padding: 8px;
