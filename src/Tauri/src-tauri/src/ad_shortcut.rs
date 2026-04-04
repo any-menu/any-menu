@@ -79,9 +79,18 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
     // 注意: 这是一个 Fn (非FnMut/FnOnce) 闭包，可以多次且并发调用。不过目前这里并不需要并发
     // 所以这里的 caps_active 要改成 Cell 类型以确保并发安全
     let callback = move |event: Event| -> Option<Event> {
-        // 不处理非按键事件 (鼠标 滚动 按钮等)
+        // (虚拟层)
+        // 不处理自己发出的虚拟事件。避免捕获自身模拟的虚拟按键，导致无限递归
+        if state.virtual_event_flag.get() {
+            return Some(event)
+        }
+
+        // 先拦截非键盘按键 (鼠标 滚动 按钮等)
+        // 如果到达该段落的后面，则全是键盘按键事件
         match event.event_type {
-            EventType::KeyPress(_) | EventType::KeyRelease(_) => {} // println!("KeyDown {:?}", key);
+            // 键盘事件
+            EventType::KeyPress(_) | EventType::KeyRelease(_) => {}
+            // 鼠标按钮事件
             EventType::ButtonPress(_) | EventType::ButtonRelease(_) => {
                 let mut enigo = enigo_instance.lock().unwrap();
 
@@ -102,12 +111,6 @@ pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
                 return Some(event)
             }
             _ => { return Some(event) }
-        }
-
-        // (虚拟层)
-        // 避免捕获自身模拟的虚拟按键
-        if state.virtual_event_flag.get() {
-            return Some(event)
         }
 
         let mut enigo = enigo_instance.lock().unwrap();
@@ -503,6 +506,11 @@ fn layer_left(
     match event_type {
         EventType::ButtonPress(Button::Right) => {
             app_handle.emit("active-window-toggle", 2).unwrap();
+            // 这里也许可以顺便松开左+右键 (实测有些问题，太快有问题？可能要调整)
+            // state.virtual_event_flag.set(true);
+            //   let _ = enigo.button(enigo::Button::Right, Release);
+            //   let _ = enigo.button(enigo::Button::Left, Release);
+            // state.virtual_event_flag.set(false);
             return HandlerResult::Block
         },
         EventType::ButtonRelease(Button::Right) => {
