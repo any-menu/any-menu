@@ -541,16 +541,10 @@ fn layer_caps_curosr(
     // TODO 点击不应该用I/O，因为可能存在拖拽操作
     match event_type {
         EventType::KeyPress(Key::KeyI) => {
-            simu_button(enigo, state, enigo::Button::Left, Click);
-            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-            state.caps_cursor_active.set(false);
-            return HandlerResult::Block
+            simu_button(enigo, state, enigo::Button::Left, Click); return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyO) => {
-            simu_button(enigo, state, enigo::Button::Right, Click);
-            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
-            state.caps_cursor_active.set(false);
-            return HandlerResult::Block
+            simu_button(enigo, state, enigo::Button::Right, Click); return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyU) => {
             let _ = enigo.move_mouse(0, -MOUSE_STEP, enigo::Coordinate::Rel); return HandlerResult::Block
