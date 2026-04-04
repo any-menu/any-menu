@@ -266,10 +266,11 @@ impl LayerState {
     pub fn caps_cursor_quit(
         &self,
         enigo: &mut Enigo,
+        state: &LayerState,
     ) {
         if !self.caps_cursor_active.get() { return }
         if !self.caps_cursor_active_used.get() { // 没用过，则单击
-            let _ = enigo.button(enigo::Button::Left, Click);
+            simu_button(enigo, state, enigo::Button::Left, Click);
         }
         self.caps_cursor_active_used.set(false);
         self.caps_cursor_active.set(false);
@@ -364,7 +365,7 @@ fn layer_default_caps(
                 let _ = simulate(&EventType::KeyPress(Key::CapsLock));
                 state.virtual_event_flag.set(false);
             }
-            state.caps_cursor_quit(enigo); // 退出所有子层
+            state.caps_cursor_quit(enigo, state); // 退出所有子层
             state.caps_line_quit(enigo, state);
             state.caps_word_quit(enigo, state);
             state.caps_page_quit(enigo, state);
@@ -532,13 +533,13 @@ fn layer_caps_curosr(
     // TODO 点击不应该用I/O，因为可能存在拖拽操作
     match event_type {
         EventType::KeyPress(Key::KeyI) => {
-            let _ = enigo.button(enigo::Button::Left, Click);
+            simu_button(enigo, state, enigo::Button::Left, Click);
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             state.caps_cursor_active.set(false);
             return HandlerResult::Block
         },
         EventType::KeyPress(Key::KeyO) => {
-            let _ = enigo.button(enigo::Button::Right, Click);
+            simu_button(enigo, state, enigo::Button::Right, Click);
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
             state.caps_cursor_active.set(false);
             return HandlerResult::Block
@@ -659,6 +660,7 @@ fn layer_caps_page(
     }
 }
 
+/// Caps+E+* 数字层 内部
 fn layer_caps_num(
     event_type: &EventType,
     state: &LayerState,
@@ -712,14 +714,12 @@ fn layer_caps(
             return HandlerResult::Block
         },
         EventType::KeyRelease(Key::KeyC) => {
-            state.caps_cursor_quit(enigo);
+            state.caps_cursor_quit(enigo, state);
             return HandlerResult::Allow
         },
         EventType::KeyPress(Key::KeyB) => {
             // 临时连续点击
-            state.virtual_event_flag.set(true);
-            let _ = enigo.button(enigo::Button::Left, Click);
-            state.virtual_event_flag.set(false);
+            simu_button(enigo, state, enigo::Button::Left, Click);
             let delay = time::Duration::from_millis(100);
             thread::sleep(delay);
             return HandlerResult::Block
@@ -1021,6 +1021,18 @@ fn layer_shift_r(
 }
 
 // #region 辅助函数
+
+/// 模拟按键操作 (不会被重复捕获版)
+fn simu_button(
+    enigo: &mut Enigo,
+    state: &LayerState,
+    key: enigo::Button,
+    direction: enigo::Direction,
+) {
+    state.virtual_event_flag.set(true);
+    let _ = enigo.button(key, direction);
+    state.virtual_event_flag.set(false);
+}
 
 /// 模拟按键操作 (不会被重复捕获版)
 fn simu_key(
