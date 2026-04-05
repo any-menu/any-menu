@@ -60,7 +60,9 @@ export function init_item(
       // 如果缓存中有，直接命中缓存
       if (lucideIconCache.has(iconName)) {
         console.log('命中图标缓存', iconName)
-        li.innerHTML = DOMPurify.sanitize(lucideIconCache.get(iconName), {
+        // 这个容器为了让多种方式生成的图标样式统一
+        const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
+        span.innerHTML = DOMPurify.sanitize(lucideIconCache.get(iconName), {
           USE_PROFILES: { svg: true }
         });
       } else {
