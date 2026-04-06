@@ -247,6 +247,10 @@ export interface UrlRequestConfig {
   headers?: Record<string, string>;
   body?: BodyInit | null;
   isParseJson?: boolean; // 是否尝试将响应解析为 JSON
+  // SSE / 流式支持
+  isStream?: boolean;                 // 是否启用流式模式
+  onChunk?: (chunk: string) => void;  // 每个 SSE chunk 的回调
+  onDone?: () => void;                // 流结束回调
 }
 
 /**

@@ -228,8 +228,8 @@ export function initApi(plugin: Plugin) {
     return true
   }
 
-  // 后端为 obsidian 时使用
-  global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+  // 后端为 obsidian 时使用 —— obsidian api 版本 (支持跨域; 不支持SSE，已废弃)
+  /*global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
     try {
       // 参数适配
       const requestParams: RequestUrlParam = {
@@ -269,7 +269,81 @@ export function initApi(plugin: Plugin) {
         }
       };
     }
-  }
+  }*/
+
+  // 后端为 obsidian 时使用 —— 原生 fetch (应该支持跨域; 支持SSE)
+  global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+    // SSE / 流式模式：Obsidian requestUrl 不支持流，改用原生 fetch（Electron 环境可用）
+    if (conf.isStream && conf.onChunk) {
+      try {
+        const response = await fetch(conf.url, {
+          method: conf.method || 'GET',
+          headers: conf.headers,
+          body: conf.body as string,
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          conf.onChunk(chunk);
+        }
+
+        conf.onDone?.();
+        return { code: 0, data: { text: '', json: null, originalResponse: null } };
+      } catch (error: any) {
+        console.error('Obsidian stream request failed:', error, conf);
+        return {
+          code: -1,
+          msg: error?.message || 'An unknown error occurred in Obsidian stream request.',
+          data: { text: '', originalResponse: error },
+        };
+      }
+    }
+
+    // 普通模式：保持原有 requestUrl 逻辑
+    try {
+      const requestParams: RequestUrlParam = {
+        url: conf.url,
+        method: conf.method || 'GET',
+        headers: conf.headers,
+        body: conf.body as string | ArrayBuffer,
+      };
+
+      const response = await requestUrl(requestParams);
+
+      let json = null;
+      if (conf.isParseJson) {
+        try {
+          json = response.json;
+        } catch (e) {
+          json = null;
+        }
+      }
+      return {
+        code: 0,
+        data: {
+          text: response.text,
+          json: json,
+          originalResponse: response,
+        },
+      };
+    } catch (error: any) {
+      console.error('Obsidian request failed:', error, conf);
+      return {
+        code: -1,
+        msg: error?.message || 'An unknown error occurred in Obsidian request.',
+        data: { text: '', originalResponse: error },
+      };
+    }
+  };
 
   global_setting.api.getCursorXY = async (): Promise<{ x: number, y: number }> => {
     console.warn("obsidian 版需要 plugin 和 editor 上下文，应使用 getCursorInfo() 代替")

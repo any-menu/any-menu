@@ -209,6 +209,28 @@ export function initApi() {
         // 处理 HTTP 错误状态 (例如 404, 500)
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      // SSE / 流式模式
+      if (conf.isStream && conf.onChunk) {
+        if (!response.body) {
+          throw new Error('Response body is null, streaming not supported.');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          conf.onChunk(chunk);
+        }
+
+        conf.onDone?.();
+        return { code: 0, data: { text: '', json: null, originalResponse: null } };
+      }
+
+      // 普通模式
       const text = await response.text(); // .data?
       
       // 尝试解析 JSON，如果失败则回退
@@ -233,10 +255,7 @@ export function initApi() {
       return {
         code: -1,
         msg: error?.message || 'An unknown error occurred in fetch request.',
-        data: {
-          text: '',
-          originalResponse: error
-        }
+        data: { text: '', originalResponse: error },
       };
     }
   }
