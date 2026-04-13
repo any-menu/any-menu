@@ -98,8 +98,8 @@ export interface PluginInterfaceCtx {
 
     /// 隐藏面板 (低风险)
     hidePanel: (list?: string[]) => void;
-    /// 显示面板 (低风险)
-    showPanel: (list?: string[]) => void;
+    /// 显示面板 (低风险)。position 不填表示沿用之前的位置 (推荐)
+    showPanel: (list?: string[], position?: 'center'|'cursor') => void;
     /// 注册面板 (中风险、会被注入 HTML 元素)，注册后通过 showPanel 来控制显示/隐藏
     /// @param el
     ///   HTMLElement: 插件直接返回 el
@@ -149,9 +149,13 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     },
 
     hidePanel: (list?: string[]) => { AMPanel.hide(list); },
-    showPanel: (list?: string[]) => {
-      if (global_setting.platform === 'app') { AMPanel.show(undefined, list) }
-      else AMPanel.show(undefined, list)
+    showPanel: (list?: string[], position?: 'center'|'cursor') => {
+      if (global_setting.platform === 'app') {
+        global_setting.other.app_show(position, list)
+      } else {
+        if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
+        AMPanel.show(undefined, list)
+      }
     },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);

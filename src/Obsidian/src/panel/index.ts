@@ -43,7 +43,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     // ]
   })
 
-  const show_panel = async (editor: Editor, view: MarkdownView | unknown, panel_list?: string[]) => {
+  const show_panel = async (editor: Editor, _view: MarkdownView | unknown, panel_list?: string[]) => {
     // 1. 光标位置
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return

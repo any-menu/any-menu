@@ -151,11 +151,10 @@ export class AMPanel {
    *   (面板的左上角坐标，一般是使用的光标或鼠标的位置)
    * - undefined 表示延续上一次的位置
    *   (一般用于确定位置和显示后，插件因需要显示更多 list 而再次调用 show 的插件 api)
-   * - 'center' 直接显示在页面的正中心
+   * - 'center' 直接显示在页面的正中心 TODO 未支持
    *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
-   *   (暂时无效)
    */
-  static show(pos: {x: number, y: number}|'center'|undefined, list?: string[]) {
+  static show(pos: {x: number, y: number}|undefined, list?: string[]) {
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
@@ -170,7 +169,7 @@ export class AMPanel {
     const el_panel = global_el.amPanel?.el
     if (!el_panel) return
     if (pos === undefined) {
-    } else if (pos === 'center') {
+    // } else if (pos === 'center') {
     } else {
       el_panel.style.left = `${pos.x}px`
       el_panel.style.top = `${pos.y}px`

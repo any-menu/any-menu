@@ -194,8 +194,11 @@ import { global_setting } from '../../../Core/setting'
 //   // console.log('菜单尺寸:', menuSize);
 // }
 
+if (global_setting.platform === 'app') {
+  global_setting.other.app_show = showWindow
+}
 /** 显示窗口，并自动定位到光标/鼠标位置 */
-async function showWindow(pos: 'cursor'|'center', panel_list?: string[]) {
+async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
   if (global_setting.isDebug) global_setting.state.infoText = ""
 
   // 获取当前选择的文本
@@ -212,6 +215,7 @@ async function showWindow(pos: 'cursor'|'center', panel_list?: string[]) {
   let appWindow = await TauriWindow.getByLabel('main')
   if (!appWindow) appWindow = getCurrentWindow() // 弱化版，可能会对应应用的多个窗口
 
+  // 计算并应用坐标
   let cursor: PhysicalPosition
   // TODO 设置 class 告知 Panel 目前的外部窗口是居中还是鼠标显示
   if (pos === 'cursor') {
@@ -259,7 +263,11 @@ async function showWindow(pos: 'cursor'|'center', panel_list?: string[]) {
     const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
     cursor.x = cursor3.x; cursor.y = cursor3.y;
     if (global_setting.isDebug) global_setting.state.infoText += `[finialPosition]\nover_mode:${over_mode}, x:${cursor.x}, y:${cursor.y}\n\n`
-  } else {
+
+    await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
+    const el = document.querySelector('#main') as HTMLElement|null
+    if (el) el.dataset.positionMode = 'cursor'
+  } else if (pos === 'center') {
     cursor = await cursorPosition() // 仅用于提供类型 (含 x,y 以外的信息)
 
     // 屏幕尺寸
@@ -272,16 +280,20 @@ async function showWindow(pos: 'cursor'|'center', panel_list?: string[]) {
 
     // 窗口大小
     const windowsSize = {
-      width: 600,
-      height: 1000
+      width: 1000,
+      height: 600
     }
 
     cursor.x = (screenSize.width - windowsSize.width)/2
-    cursor.y = (screenSize.height - windowsSize.height)/2
+    cursor.y = (screenSize.height - windowsSize.height)/2 - 50 // 中上会比正中好
+
+    await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
+    const el = document.querySelector('#main') as HTMLElement|null
+    if (el) el.dataset.positionMode = 'center'
+  } else { // 即 undefined，沿用之前的位置
   }
 
-  // 应用坐标并显示窗口
-  await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
+  // 显示窗口
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
 

@@ -1,1 +1,8 @@
 @import url("../../Core/styles/styles.css");
+#main[data-position-mode=center] .am-panel {
+  height: 600px;
+}
+#main[data-position-mode=center] .am-panel > div {
+  width: 1000px;
+  max-width: 1000px;
+}
