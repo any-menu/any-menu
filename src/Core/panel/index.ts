@@ -145,8 +145,17 @@ export class AMPanel {
 
   /** 显示面板
    * TODO 支持显示在屏幕中间偏上 (类似于 utools，并支持由插件如此使用)
+   * 
+   * @param pos
+   * - {x, y} 具体坐标
+   *   (面板的左上角坐标，一般是使用的光标或鼠标的位置)
+   * - undefined 表示延续上一次的位置
+   *   (一般用于确定位置和显示后，插件因需要显示更多 list 而再次调用 show 的插件 api)
+   * - 'center' 直接显示在页面的正中心
+   *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
+   *   (暂时无效)
    */
-  static show(x?: number, y?: number, list?: string[]) {
+  static show(pos: {x: number, y: number}|'center'|undefined, list?: string[]) {
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
@@ -160,8 +169,12 @@ export class AMPanel {
     // 定位
     const el_panel = global_el.amPanel?.el
     if (!el_panel) return
-    if (x !== undefined) el_panel.style.left = `${x}px`
-    if (y !== undefined) el_panel.style.top = `${y}px`
+    if (pos === undefined) {
+    } else if (pos === 'center') {
+    } else {
+      el_panel.style.left = `${pos.x}px`
+      el_panel.style.top = `${pos.y}px`
+    }
 
     if (!list) {
       list = global_setting.key_panel.panel1

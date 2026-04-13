@@ -271,7 +271,11 @@ export function initApi(plugin: Plugin) {
     }
   }*/
 
-  // 后端为 obsidian 时使用 —— 原生 fetch (应该支持跨域; 支持SSE)
+  // 后端为 obsidian 时使用 —— 原生 fetch (支持部分跨域; 支持SSE)
+  // 跨域说明:
+  //   Obsidian 没有像普通网页那样的"页面 origin"，所以理论上 CORS 限制比浏览器宽松
+  //   但 Electron renderer 进程里的 fetch 仍然可能受 CORS 响应头约束，如果目标服务器返回了严格的 CORS 头（或根本没有 CORS 头），部分版本/配置下会被拒绝
+  //   社区经验表明：Obsidian 里直接用 fetch 访问外部 API 大多数情况下没问题
   global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
     // SSE / 流式模式：Obsidian requestUrl 不支持流，改用原生 fetch（Electron 环境可用）
     if (conf.isStream && conf.onChunk) {

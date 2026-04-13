@@ -57,7 +57,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
     // 3. 显示面板
-    AMPanel.show(cursor3.x + 2, cursor3.y + 2, panel_list)
+    AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list)
   }
 
   // 注册工具带

@@ -149,7 +149,10 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     },
 
     hidePanel: (list?: string[]) => { AMPanel.hide(list); },
-    showPanel: (list?: string[]) => { AMPanel.show(undefined, undefined, list); },
+    showPanel: (list?: string[]) => {
+      if (global_setting.platform === 'app') { AMPanel.show(undefined, list) }
+      else AMPanel.show(undefined, list)
+    },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);
     },
