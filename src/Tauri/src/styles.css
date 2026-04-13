@@ -4,5 +4,5 @@
 }
 #main[data-position-mode=center] .am-panel > div {
   width: 1000px;
-  max-width: 1000px;
+  max-width: unset;
 }
