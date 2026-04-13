@@ -48,7 +48,7 @@ export class ABContextMenu_App extends ABContextMenu {
           else if (typeof item.callback === 'string') {
             li.addEventListener('click', () => {
               if (item.detail == "command_ob") {
-                global_setting.other.run_command_ob?.(item.callback as string)
+                global_setting.other.obsidian_run_command?.(item.callback as string)
                 return
               }
 

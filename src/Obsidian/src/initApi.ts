@@ -36,7 +36,7 @@ export function initApi(plugin: Plugin) {
     MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
   }
 
-  global_setting.other.run_command_ob = async (commandId: string): Promise<void> => {
+  global_setting.other.obsidian_run_command = async (commandId: string): Promise<void> => {
     if (!global_setting.other.obsidian_plugin) return
     // 用户如果不知道id，可以在控制台使用 app.commands.commands 查询
     // 另一个方式是一些插件会提供相关的命令，如 Meta Bind 插件提供 Select and copy command id 功能 (TODO 此插件也应该要提供)  

@@ -105,7 +105,7 @@ export function init_item(
     // b1. obsidian 专用命令
     if (item.detail == "command_ob") {
       li.addEventListener('click', async () => {
-        global_setting.other.run_command_ob?.(item.callback as string); p_this.hide();
+        global_setting.other.obsidian_run_command?.(item.callback as string); p_this.hide();
       })
     }
     // b2. 输出 item.callback 文本到当前光标位置

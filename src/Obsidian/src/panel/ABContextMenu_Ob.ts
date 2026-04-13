@@ -80,7 +80,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
           if (item.callback != undefined) {
             if (typeof item.callback === 'string') menuItem.onClick(() => {
               if (item.detail == "command_ob") {
-                global_setting.other.run_command_ob?.(item.callback as string)
+                global_setting.other.obsidian_run_command?.(item.callback as string)
                 return
               } else {
                 editor.replaceSelection(item.callback as string)
