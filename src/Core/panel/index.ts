@@ -218,7 +218,8 @@ export class AMPanel {
       }
     }
 
-    window.addEventListener('click', this.visual_listener_click)
+    // 不要用click，获取的是松开时鼠标下的元素，会很容易误触。因为拖拽时鼠标很容易会出现在元素外部
+    window.addEventListener('mousedown', this.visual_listener_mousedown)
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
@@ -291,7 +292,7 @@ export class AMPanel {
 
   /// 失焦隐藏
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
-  static visual_listener_click = (ev: MouseEvent) => {
+  static visual_listener_mousedown = (ev: MouseEvent) => {
     if (!global_el.amPanel?.el) return
     if (ev.target instanceof Element && ev.target.matches('.am-panel *')) return
     this.hide()
