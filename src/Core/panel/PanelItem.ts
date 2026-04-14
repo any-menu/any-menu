@@ -90,7 +90,9 @@ export function init_item(
           });
       }
     } else {
-      li.innerHTML = DOMPurify.sanitize(item.icon, { // 安全插入到 DOM 中，严格 SVG 模式
+      // 这个容器为了让多种方式生成的图标样式统一
+      const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-svg');
+      span.innerHTML = DOMPurify.sanitize(item.icon, { // 安全插入到 DOM 中，严格 SVG 模式
         USE_PROFILES: { svg: true }
       })
     }
