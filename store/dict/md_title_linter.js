@@ -30,7 +30,26 @@ export default {
         name: '清除md标题样式冗余',
         version: '1.0.1',
         min_app_version: '1.1.0',
-        author: 'LincZero'
+        author: 'LincZero',
+        icon: `\
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heading-icon lucide-heading">
+    <defs>
+        <mask id="eraseMask">
+            <rect width="24" height="24" fill="white"/>
+            <line x1="2" y1="2" x2="22" y2="22"
+                stroke="black" stroke-width="3" stroke-linecap="round"/>
+        </mask>
+    </defs>
+  
+    <g mask="url(#eraseMask)">
+        <path d="M6 12h12"/>
+        <path d="M6 20V4"/>
+        <path d="M18 20V4"/>
+    </g>
+    
+    <line x1="2" y1="2" x2="22" y2="22"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>`
     },
 
     async run(ctx) {
