@@ -1,0 +1,24 @@
+{
+  "name": "any-menu",
+  "version": "1.0.0",
+  "description": "Type definitions for AnyMenu plugin development API",
+  "keywords": ["anymenu", "plugin", "types"],
+  "author": "LincZero",
+  "license": "MIT",
+  "main": "",
+  "types": "index.d.ts",
+  "files": [
+    "index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "publish": "npm run publish:npm",
+    "publish:npm": "npm publish --access public",
+    "publish:dry": "npm publish --dry-run --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/any-menu/any-menu.git",
+    "directory": "src/Type"
+  }
+}

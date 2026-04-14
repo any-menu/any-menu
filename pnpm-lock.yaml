@@ -129,6 +129,8 @@ importers:
         specifier: ^6.0.3
         version: 6.4.1(@types/node@25.5.0)(lightningcss@1.32.0)
 
+  src/Type: {}
+
 packages:
 
   '@codemirror/autocomplete@6.19.1':

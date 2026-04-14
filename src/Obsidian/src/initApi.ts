@@ -7,7 +7,8 @@ import {
 } from 'obsidian'
 import { RequestUrlParam, requestUrl } from 'obsidian'
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
-import { global_setting, UrlRequestConfig, UrlResponse } from '@/Core/setting'
+import type { UrlRequestConfig, UrlResponse } from '@/Type'
+import { global_setting } from '@/Core/setting'
 import { getCursorInfo } from './panel'
 import { AM_SETTINGS_DEFAULT } from "./SettingTab"
 

@@ -4,7 +4,8 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
-import { PluginInterfaceCtxDemo, type PluginInterfaceCtx } from "../pluginManager/PluginInterface";
+import type { PluginInterfaceCtx } from "../../Type"
+import { PluginInterfaceCtxDemo } from "../pluginManager/PluginInterface";
 import { global_setting } from "../../Core/setting";
 
 import { textToIcon } from "./utils"

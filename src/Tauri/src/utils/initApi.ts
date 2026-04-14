@@ -1,4 +1,5 @@
-import { global_setting, UrlRequestConfig, UrlResponse } from '../../../Core/setting'
+import type { UrlRequestConfig, UrlResponse } from '../../../Type'
+import { global_setting } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
 import { toml_parse } from '../../../Core/panel/contextmenu/demo'
 

@@ -1,6 +1,7 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import { PluginInterface, PluginInterfaceDemo } from './PluginInterface';
+import type { PluginInterface } from '../../Type'
+import { PluginInterfaceDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
 // 需要开启 tsconfig.json 中的

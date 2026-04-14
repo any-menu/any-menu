@@ -1,3 +1,5 @@
+import type { UrlRequestConfig, UrlResponse } from '../Type'
+
 export const global_setting: {
   platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
   isDebug: boolean,
@@ -239,38 +241,4 @@ export const global_setting: {
     renderMarkdown: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
     app_show: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
   }
-}
-
-/**
- * 请求配置接口
- */
-export interface UrlRequestConfig {
-  url: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  headers?: Record<string, string>;
-  body?: BodyInit | null;
-  isParseJson?: boolean; // 是否尝试将响应解析为 JSON
-  // SSE / 流式支持
-  isStream?: boolean;                 // 是否启用流式模式
-  onChunk?: (chunk: string) => void;  // 每个 SSE chunk 的回调
-  onDone?: () => void;                // 流结束回调
-}
-
-/**
- * 响应数据接口
- */
-export interface UrlResponseData {
-  text: string;
-  json?: any;
-  originalResponse: any; // 原始响应对象，用于调试
-  // 可能还有 arrayBuffer headers json status text
-}
-
-/**
- * 统一响应接口
- */
-export interface UrlResponse {
-  code: number; // 0 表示成功, -1 表示失败
-  data?: UrlResponseData;
-  msg?: string;
 }
