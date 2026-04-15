@@ -168,6 +168,14 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-md-delete-line",
+		"path": "md_delete_line.js",
+		"name": "md_去除分割线",
+		"detail": "",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "anymenu-md-delete-link-all",
 		"path": "md_delete_link_all.js",
 		"name": "md_去除链接文本",

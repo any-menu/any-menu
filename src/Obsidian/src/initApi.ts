@@ -313,7 +313,7 @@ export function initApi(plugin: Plugin) {
       }
     }
 
-    // 普通模式：保持原有 requestUrl 逻辑
+    // 普通模式：保持原有的 obsidian requestUrl 逻辑
     try {
       const requestParams: RequestUrlParam = {
         url: conf.url,
