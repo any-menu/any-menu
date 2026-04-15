@@ -974,7 +974,7 @@ html, body, #main {
 #main > button.active > svg {
   stroke: var(--am-bright-color);
 }
-#main > .btn-1 {
+#main > .windows-pin {
   bottom: 5px;
   width: 34px;
 }
