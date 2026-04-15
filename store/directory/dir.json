@@ -140,7 +140,39 @@
 		"path": "table.js",
 		"name": "cNrN生成表格",
 		"detail": "",
-		"author": "槑头脑",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-table-transpose",
+		"path": "table_transpose.js",
+		"name": "表格转置",
+		"detail": "将选中的 markdown 表格进行转置（行列互换）",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-table2list",
+		"path": "table2list.js",
+		"name": "table2list",
+		"detail": "将 markdown 表格转换为 markdown 列表。每行第一个单元格为顶层列表项，其余单元格为二级列表项",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-translate",
+		"path": "translate.js",
+		"name": "翻译",
+		"detail": "选中文本后翻译，支持多种免费翻译源",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-note",
+		"path": "note.js",
+		"name": "笔记",
+		"detail": "快速保存笔记、查看笔记",
+		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
@@ -168,17 +200,17 @@
 		"version": "1.0.0"
 	},
 	{
-		"id": "anymenu-md-delete-line",
-		"path": "md_delete_line.js",
-		"name": "md_去除分割线",
+		"id": "anymenu-md-delete-link-all",
+		"path": "md_delete_link_all.js",
+		"name": "md_去除链接文本",
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
-		"id": "anymenu-md-delete-link-all",
-		"path": "md_delete_link_all.js",
-		"name": "md_去除链接文本",
+		"id": "anymenu-md-delete-line",
+		"path": "md_delete_line.js",
+		"name": "md_去除分割线",
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
