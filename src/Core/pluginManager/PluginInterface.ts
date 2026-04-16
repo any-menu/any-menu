@@ -35,7 +35,12 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
       return await global_setting.api.writeFile(relPath, content, is_append);
     },
 
-    hidePanel: (list?: string[]) => { AMPanel.hide(list); },
+    hidePanel: (list?: string[]) => {
+      AMPanel.hide(list)
+      if (list == undefined && global_setting.platform === 'app') {
+        global_setting.other.app_hide(list)
+      }
+    },
     showPanel: (list?: string[], position?: 'center'|'cursor') => {
       if (global_setting.platform === 'app') {
         global_setting.other.app_show(position, list)

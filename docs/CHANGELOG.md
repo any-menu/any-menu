@@ -2,6 +2,16 @@
 
 更新日志
 
+## 1.1.2-beta
+
+- refactor
+  - obsidian 版本默认使用 min 版，并使用 pinyin 版作为补充
+    (原来是pinyin默认，min补充)
+- enhance
+  - 增强了 App 版本失焦隐藏检测区域
+- fix
+  - 右键导致搜索框隐藏
+
 ## 1.1.1
 
 - feat

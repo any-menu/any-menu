@@ -21,12 +21,6 @@ export const global_state: {
   hideTimeout:  null
 }
 
-/** 事件组、全局快捷键 */
-window.addEventListener("DOMContentLoaded", () => {
-  initAutoHide()
-  initClickThroughBehavior()
-})
-
 /** 窗口切换是否显示 */
 export async function toggleWindow(panel_list?: string[]) {  
   try {
@@ -44,8 +38,21 @@ export async function toggleWindow(panel_list?: string[]) {
   }
 }
 
-/** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透 */
-function initClickThroughBehavior() {
+// #region 窗口隐藏相关
+
+/** 事件组、全局快捷键 */
+window.addEventListener("DOMContentLoaded", () => {
+  initAutoHide()
+  // initClickThroughBehavior()
+})
+
+///** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透
+// * @deprecated 废弃
+// *   替代方案: 为 Core 模块实现 app_hide，由 Panel 模块控制，Paenl 穿透事件时进行窗口隐藏
+// *   废弃原因: 这里只能检测一个 "矩形减矩形" (#main 减 .am-panel) 的区域
+// *     而交于 Panel 检测区域更灵活: "矩形减矩形" 加上 .am-panel 中没有并子面板填充的地方，可检测更复杂的区域
+// */
+/*function initClickThroughBehavior() {
   const appWindow = getCurrentWindow()
   const mainElement = document.querySelector('#main')
 
@@ -126,7 +133,7 @@ function initClickThroughBehavior() {
   // 策略五：局限于自带的菜单系统
 
   // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
-}
+}*/
 
 /** 自动隐藏功能、鼠标穿透功能 */
 function initAutoHide() {
@@ -177,6 +184,8 @@ function initAutoHide() {
   })
 }
 
+// #endregion
+
 import { global_setting } from '../../../Core/setting'
 
 // /** 缓存菜单尺寸 (仅一级菜单)
@@ -196,6 +205,7 @@ import { global_setting } from '../../../Core/setting'
 
 if (global_setting.platform === 'app') {
   global_setting.other.app_show = showWindow
+  global_setting.other.app_hide = hideWindow
 }
 /** 显示窗口，并自动定位到光标/鼠标位置 */
 async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
@@ -313,9 +323,9 @@ async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
 }
 
 /** 隐藏窗口 */
-export async function hideWindow() {
+export async function hideWindow(list?: string[]) {
   if (global_setting.state.isPin) return // 置顶状态
-  AMPanel.hide() // 隐藏面板&失焦面板
+  AMPanel.hide(list) // 隐藏面板&失焦面板
 
   if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉
 

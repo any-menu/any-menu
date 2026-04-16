@@ -290,7 +290,7 @@ export class AMPanel {
 
   // #endregion
 
-  /// 失焦隐藏
+  /// 失焦隐藏 & 点击穿透
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
   static visual_listener_mousedown = (ev: MouseEvent) => {
     if (!global_el.amPanel?.el) return
@@ -298,7 +298,12 @@ export class AMPanel {
       // 前者不包括 .am-panel，后者包括 .widnows-pin，后者也可以写成 `matches('.windows-pin, .windows-pin *')`
       if (ev.target.matches('.am-panel *') || ev.target.closest('.windows-pin')) return
     }
-    this.hide()
+
+    if (global_setting.platform == 'app') {
+      global_setting.other.app_hide()
+    } else {
+      this.hide()
+    }
   }
   /// ESC隐藏
   static visual_listener_keydown = (ev: KeyboardEvent) => {
