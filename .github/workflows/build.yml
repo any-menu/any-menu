@@ -117,6 +117,8 @@ jobs:
     if: github.event_name == 'push' # 跳过PR
     needs: [build-obsidian, build-tauri] # 需要等待相关 build job 都成功
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # 允许无需 PAT 创建 Release
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -136,7 +138,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') # 有tag
         uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.ANYMENU }}
+          token: ${{ secrets.ANYMENU }} # PAT GitHub Token。可选一，填写设置的PAT
+          # token: ${{ secrets.GITHUB_TOKEN }} # 内置 Github Token。可选二
           # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
           name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
           body: |
@@ -231,5 +234,5 @@ jobs:
           # generateReleaseNotes: true # 自动根据 commits 生成 release notes
           allowUpdates: true # 允许更新已存在的 release
           replacesArtifacts: true # 替换掉旧的产物文件
-          prerelease: true  # 是否预发布
-          makeLatest: false # 是否最后一个版本
+          prerelease: ${{ endsWith(github.ref_name, 'beta') }} # 是否预发布
+          makeLatest: ${{ !endsWith(github.ref_name, 'beta') }} # 是否最后一个版本
