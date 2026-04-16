@@ -180,15 +180,16 @@ jobs:
             ./dist/any-menu-windows-msi/*
             ./dist/any-menu-windows-nsis/*
           generateReleaseNotes: true # 自动根据 commits 生成 release notes
-          prerelease: false # 是否预发布
-          makeLatest: true  # 是否最后一个版本
+          prerelease: ${{ endsWith(github.ref_name, 'beta') }} # 是否预发布
+          makeLatest: ${{ !endsWith(github.ref_name, 'beta') }} # 是否最后一个版本
 
       # 场景二：release 到固定的 beta tag
       - name: Create or Update Beta Release
         if: github.ref == 'refs/heads/main' # 没有tag
         uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.ANYMENU }}
+          token: ${{ secrets.ANYMENU }} # PAT GitHub Token。可选一，填写设置的PAT
+          # token: ${{ secrets.GITHUB_TOKEN }} # 内置 Github Token。可选二
           tag: 'Beta' # 固定的 tag 名
           name: 'Beta Release (risk)' # 固定的 Release 标题
           body: | # 固定的 Release 描述
@@ -234,5 +235,5 @@ jobs:
           # generateReleaseNotes: true # 自动根据 commits 生成 release notes
           allowUpdates: true # 允许更新已存在的 release
           replacesArtifacts: true # 替换掉旧的产物文件
-          prerelease: ${{ endsWith(github.ref_name, 'beta') }} # 是否预发布
-          makeLatest: ${{ !endsWith(github.ref_name, 'beta') }} # 是否最后一个版本
+          prerelease: true # 是否预发布
+          makeLatest: false # 是否最后一个版本
