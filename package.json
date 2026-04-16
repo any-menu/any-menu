@@ -10,6 +10,7 @@
     "tr:build": "cd ./src/Tauri && pnpm tr:build",
     "tr:debug": "cd ./src/Tauri && pnpm tr:debug",
     "ob:build": "cd ./src/Obsidian && pnpm build",
+    "ob:build-pinyin": "cd ./src/Obsidian && pnpm build-pinyin",
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

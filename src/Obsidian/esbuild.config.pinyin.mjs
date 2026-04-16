@@ -27,6 +27,7 @@ const prod = (process.argv[2] === 'production');
 		bundle: true,
 		external: [
 			'obsidian',
+			// 'pinyin', // [!code hl] 这个依赖极大，pinyin版保留，而min版去除这个
 			...builtins
 		],
 		format: 'cjs',
@@ -35,8 +36,8 @@ const prod = (process.argv[2] === 'production');
 		logLevel: "info",
 		sourcemap: prod ? false : 'inline',
 		treeShaking: true,
-		outfile: '../../main.js',
-		minify: false, // 9.4MB -> 8.1MB
+		outfile: '../../dist-pinyin/main.js',
+		// minify: false, // 9.4MB -> 8.1MB
 		metafile: true, // 依赖大小分析
 	}).catch(() => process.exit(1));
 
