@@ -8,7 +8,7 @@
 
 - `/src/*/package.json` 所有子项目的 package.json
   其中 Core 子项目的版本决定插件的 min_app_version 字段限制
-  这里可以用 pnpm 脚本快速修改，见后文的 "常用命令"
+  这里可以用 pnpm 脚本 **快速修改**，见后文的 "常用命令"
 - `/manifest.json` 用于 obsidian 插件
 - `/src/Tauri/src-tauri/` 下的 `tauri.conf.json` 和 `Cargo.toml` 用于 App 版本
 

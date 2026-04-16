@@ -1,7 +1,7 @@
 {
   "name": "any-menu-tauri",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "type": "module",
   "scripts": {
