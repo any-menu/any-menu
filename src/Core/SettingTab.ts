@@ -99,9 +99,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
     refresh_btn.textContent = t('Refresh dict list')
-    refresh_btn.onclick = async () => {
-      void getDictData_and_showData()
-    }
+    refresh_btn.onclick = async () => void getDictData_and_showData()
 
   // 首次刷新
   void getDictData_and_showData()
@@ -184,6 +182,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       return
     }
     dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
+
     const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
       id: item.id,
       relPath: item.path,
@@ -204,68 +203,62 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   tab_nav.setAttribute('index', 'local-dict'); tab_content.setAttribute('index', 'local-dict');
 
   // 自动刷新
-  tab_nav.addEventListener('click', () => void getDict())
+  tab_nav.addEventListener('click', () => void getDictData_and_showData())
 
+  // 基础容器
   const container = document.createElement('div'); tab_content.appendChild(container);
-  const span = document.createElement('span'); container.appendChild(span); // 可能包含文字提醒状态 / 表格
-
-  // 内容表格
-  const table = document.createElement('table'); container.appendChild(table);
-    table.classList.add('dict-table');
-  const table_thead = document.createElement('thead'); table.appendChild(table_thead);
-    const tr = document.createElement('tr'); table_thead.appendChild(tr);
-    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Name');
-    // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Path');
-    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Uninstall'); td4.classList.add('btn');
-    const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
-  const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
+  const span = document.createElement('span'); container.appendChild(span); span.textContent = `未加载，请手动点击刷新按钮重试`; // 文字提醒状态
+  const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
     refresh_btn.textContent = t('Refresh dict list')
-    refresh_btn.onclick = async () => void getDict()
-  table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
+    refresh_btn.onclick = async () => void getDictData_and_showData()
 
-  // 动态加载内容
-  await getDict()
-  async function getDict() {
-    table_tbody.innerHTML = '';
-    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading');
+  // 首次刷新
+  void getDictData_and_showData()
 
-    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
-    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
-    try {
-      local_dict_list.length = 0 // clear array
-      ret.forEach((item: string) => {
-        const relPath = item.replace(global_setting.config.dict_paths, '')
-        local_dict_list.push({path: item, relPath: relPath, isDownloaded: false, isEnabled: false})
-        const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item);
-        // TODO 如果是 app 版本，这里可以打开配置所在文件夹的
-        // obsidian 版本似乎没办法 (如果在库内倒能高亮定位，库外应该不行？)
-        const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = item.split('/').pop() || item;
-        // const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = relPath;
-        const td4 = document.createElement('td'); tr.appendChild(td4);
-          const td4_btn = document.createElement('button'); td4.appendChild(td4_btn); td4_btn.classList.add('btn');
+  /** 获取要展示的数据 + 展示已获取的数据 */
+  async function getDictData_and_showData() {
+    const api = new API()
+    const data = await getDictData()
+    if (data) json2table(dataview, data, [
+      {
+        name: t('Name'),
+        callback: (el: HTMLElement, item: any) => el.innerText = item.path.split('/').pop() || item.path,
+      },
+      // {
+      //   name: t('Path'),
+      // },
+      {
+        name: t('Uninstall'),
+        callback: (el: HTMLElement, item: any) => {
+          const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
           td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           td4_btn.onclick = async () => {
             const color = td4_btn.getAttribute('color')
             if (color !== 'green') { console.error('Unreachable'); return }
-            global_setting.api.deleteFile(`${global_setting.config.dict_paths}${relPath}`).then(success => {
+            global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.relPath}`).then(success => {
               if (!success) {
                 td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                 return
               }
-              tr.remove()
-              const index = local_dict_list.findIndex(d => d.relPath === relPath)
+              const index = local_dict_list.findIndex(d => d.relPath === item.relPath)
               if (index >= 0) {
                 local_dict_list.splice(index, 1)
                 local_dict_list_onChange()
               }
+              const tr = el.parentElement
+              if (tr && tr.matches('tr')) tr.remove()
             })
           }
-        const td5 = document.createElement('td'); tr.appendChild(td5);
-          const td5_btn = document.createElement('button'); td5.appendChild(td5_btn); td5_btn.classList.add('btn');
-          const ret_ = global_setting.config.plugins.find(p => p.name === relPath)
+        }
+      },
+      {
+        name: t('Is enabled'),
+        callback: (el: HTMLElement, item: any) => {
+          const td5_btn = document.createElement('button'); el.appendChild(td5_btn); td5_btn.classList.add('btn');
+          const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
           const ret = ret_ ?? {
-            name: relPath,
+            name: item.relPath,
             enabled: false
           }
           if (!ret_) {
@@ -284,12 +277,28 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
               td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
             }
           }
-      })
-      // global_setting.api.saveConfig() // 假设有变动
-      local_dict_list_onChange()
-    } catch (error) {
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `加载失败，数据错误`
-    }
+        },
+      }
+    ])
+  }
+
+  /** 获取要展示的数据 */
+  async function getDictData() {
+    dataview.innerHTML = ''; dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading');
+    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+    dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
+
+    local_dict_list.length = 0
+    const dir = ret.map(item => {
+      const relPath = item.replace(global_setting.config.dict_paths, '')
+      local_dict_list.push({path: item, relPath: relPath, isDownloaded: false, isEnabled: false})
+      return {
+        path: item,
+        relPath: relPath
+      }
+    })
+    local_dict_list_onChange()
+    return dir
   }
 }
 
