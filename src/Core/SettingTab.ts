@@ -93,8 +93,6 @@ function local_dict_list_onChange() {
  * id (debug) | 路径 | 名字 | 是否下载 | 是否启用
  */
 async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  const api = new API()
-
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Online dict');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -103,9 +101,10 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   // 自动刷新
   tab_nav.addEventListener('click', () => void getDict())
 
-  // 可能包含文字提醒状态 / 表格
   const container = document.createElement('div'); tab_content.appendChild(container);
-  const span = document.createElement('span'); container.appendChild(span);
+  const span = document.createElement('span'); container.appendChild(span); // 可能包含文字提醒状态 / 表格
+
+  // 内容表格
   const table = document.createElement('table'); container.appendChild(table);
     table.classList.add('dict-table');
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
@@ -124,6 +123,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
 
   // 动态加载内容
+  const api = new API()
   await getDict()
   async function getDict() {
     table_tbody.innerHTML = ''
@@ -234,9 +234,10 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   // 自动刷新
   tab_nav.addEventListener('click', () => void getDict())
 
-  // 可能包含文字提醒状态 / 表格
   const container = document.createElement('div'); tab_content.appendChild(container);
-  const span = document.createElement('span'); container.appendChild(span);
+  const span = document.createElement('span'); container.appendChild(span); // 可能包含文字提醒状态 / 表格
+
+  // 内容表格
   const table = document.createElement('table'); container.appendChild(table);
     table.classList.add('dict-table');
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
