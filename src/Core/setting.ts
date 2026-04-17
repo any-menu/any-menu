@@ -148,7 +148,7 @@ export const global_setting: {
   }
 } = {
   platform: 'app',
-  isDebug: true,
+  isDebug: false,
   focusStrategy: true,
   key_panel: {
     panel1: ['search', 'toolbar', 'menu'],

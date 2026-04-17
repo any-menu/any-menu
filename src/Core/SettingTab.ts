@@ -120,17 +120,24 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     const data = await getDictData()
     if (!data) return
     const data_header = [
-      {
-        name: t('Id'), // if (global_setting.isDebug)
+      ...(global_setting.isDebug ? [{
+        name: t('Id'),
         callback: (el: HTMLElement, item: any) => el.innerText = item.id,
-      },
+      }] : []),
       {
         name: t('Path'),
         callback: (el: HTMLElement, item: any) => {
           const a = document.createElement('a'); el.appendChild(a);
-            a.href = `${api.blobUrl()}store/dict/${item.relPath}`
-            a.textContent = item.relPath
             a.target = '_blank'
+            a.textContent = item.path
+          // github repo 路径
+          if ((item.path as string).includes('/')) {
+            a.href = `https://github.com/${item.path}`
+          }
+          // dict 路径
+          else {
+            a.href = `${api.blobUrl()}store/dict/${item.path}`
+          }
         }
       },
       {
@@ -141,7 +148,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         name: t('Is downloaded'),
         callback: (el: HTMLElement, item: any) => {
           const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
-          if (local_dict_list.find(d => d.relPath === item.relPath)) {
+          if (local_dict_list.find(d => d.relPath === item.path)) {
             td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
             td4_btn.textContent = t('Download'); td4_btn.setAttribute('color', 'gray');
@@ -149,26 +156,32 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           td4_btn.onclick = async () => {
             const color = td4_btn.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
-              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.relPath}`).then(success => {
+              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.path}`).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                   return
                 }
                 td4_btn.textContent = t('Uninstalled'); td4_btn.setAttribute('color', 'gray');
-                const index = local_dict_list.findIndex(d => d.relPath === item.relPath)
+                const index = local_dict_list.findIndex(d => d.path === item.path)
                 if (index >= 0) {
                   local_dict_list.splice(index, 1)
                   local_dict_list_onChange()
                 }
               })
             } else { // 未下载/下载失败
-              api.repoDownloadDict(item.relPath).then(success => {
+              // github repo 路径
+              if ((item.path as string).includes('/')) {
+                console.warn('未支持 repo 路径2', item.path)
+                return
+              }
+              // dict 路径
+              api.repoDownloadDict(item.path).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
                   return
                 }
                 td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
-                local_dict_list.push({path: `${global_setting.config.dict_paths}${item.relPath}`, relPath: item.relPath, isDownloaded: true, isEnabled: true})
+                local_dict_list.push({path: `${global_setting.config.dict_paths}${item.path}`, relPath: item.path, isDownloaded: true, isEnabled: true})
                 local_dict_list_onChange()
               })
             }
@@ -198,7 +211,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
 
     const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
       id: item.id,
-      relPath: item.path,
+      path: item.path,
       name: item.name
     }))
     return dir

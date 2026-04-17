@@ -160,6 +160,36 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${relPath}`, ret.data.text);
   }
 
+  public async repoGetGithubPlugin(repoPath: string): Promise<string | null> {
+    // latest release 的 main.js 下载地址
+    const [owner, repo] = repoPath.split('/');
+    const url = `https://github.com/${owner}/${repo}/releases/latest/download/main.js`;
+
+    const ret = await global_setting.api.urlRequest({
+      url,
+      method: 'GET',
+      ...(!this.token() ? {} : { headers: {
+        "Authorization": `Bearer ${this.token()}`
+      }}),
+      isParseJson: false,
+    });
+
+    if (ret === null || ret.code !== 0 || !ret.data) {
+      console.error(`Failed to fetch plugin from GitHub repo: ${repoPath}`, ret);
+      return null;
+    }
+
+    return ret.data.text ?? null;
+  }
+
+  public async repoDownloadDict_fromRelease(repoPath: string): Promise<boolean> {
+    const text = await this.repoGetGithubPlugin(repoPath);
+    if (text === null) return false;
+
+    const fileName = `${repoPath.replace('/', '-')}.js`; // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
+    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${fileName}`, text);
+  }
+
   /// 获取本地目录 (已经下载了哪些词典)
   public async localGetDirectory() {
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)

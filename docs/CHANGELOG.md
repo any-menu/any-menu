@@ -4,9 +4,12 @@
 
 ## 1.1.2-beta
 
+- feat
+  - 支持卡片布局的在线/本地词典浏览
 - refactor
   - obsidian 版本默认使用 min 版，并使用 pinyin 版作为补充
     (原来是pinyin默认，min补充)
+  - 重构了在线/本地字典显示页
 - enhance
   - 增强了 App 版本失焦隐藏检测区域
 - fix
@@ -57,6 +60,7 @@
   - MiniEditor 支持快速保存到自定义路径
 - enhance
   - 优化了 miniEditor
-  - obsidian 版本支持多语言
+  - obsidian 版本支持多语言  - obsidian 版本支持多语言
+
   - 更多的字典
   - 优化对当前选中文本的识别
