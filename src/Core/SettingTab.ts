@@ -99,13 +99,12 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   {
     const buttons = document.createElement('div'); container.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
-    let current_mode: 'card'|'table'|undefined
     const dataview_mode_btn = document.createElement('button'); buttons.appendChild(dataview_mode_btn);
       dataview_mode_btn.textContent = t('Change dataview mode')
       dataview_mode_btn.onclick = async () => {
-        if (current_mode === 'table') current_mode = 'card'
-        else current_mode = 'table'
-        void getDictData_and_showData(current_mode)
+        let viewmode_ = dataview.dataset.viewmode;
+        let viewmode: 'card'|'table' = (viewmode_ !== 'card') ? 'card' : 'table'
+        void getDictData_and_showData(viewmode)
       }
     const refresh_btn = document.createElement('button'); buttons.appendChild(refresh_btn);
       refresh_btn.textContent = t('Refresh dict list')
@@ -116,7 +115,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   void getDictData_and_showData()
 
   /** 获取要展示的数据 + 展示已获取的数据 */
-  async function getDictData_and_showData(mode: 'table'|'card' = 'table') {
+  async function getDictData_and_showData(mode: 'table'|'card' = 'card') {
     const api = new API()
     const data = await getDictData()
     if (!data) return
@@ -225,13 +224,12 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   {
     const buttons = document.createElement('div'); container.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
-    let current_mode: 'card'|'table'|undefined
     const dataview_mode_btn = document.createElement('button'); buttons.appendChild(dataview_mode_btn);
       dataview_mode_btn.textContent = t('Change dataview mode')
       dataview_mode_btn.onclick = async () => {
-        if (current_mode === 'table') current_mode = 'card'
-        else current_mode = 'table'
-        void getDictData_and_showData(current_mode)
+        let viewmode_ = dataview.dataset.viewmode;
+        let viewmode: 'card'|'table' = (viewmode_ !== 'card') ? 'card' : 'table'
+        void getDictData_and_showData(viewmode)
       }
     const refresh_btn = document.createElement('button'); buttons.appendChild(refresh_btn);
       refresh_btn.textContent = t('Refresh dict list')
@@ -242,7 +240,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   void getDictData_and_showData()
 
   /** 获取要展示的数据 + 展示已获取的数据 */
-  async function getDictData_and_showData(mode: 'table'|'card' = 'table') {
+  async function getDictData_and_showData(mode: 'table'|'card' = 'card') {
     const data = await getDictData()
     if (!data) return
     const data_header = [
@@ -271,8 +269,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
                 local_dict_list.splice(index, 1)
                 local_dict_list_onChange()
               }
-              const tr = el.parentElement
-              if (tr && tr.matches('tr')) tr.remove()
+              void getDictData_and_showData()
             })
           }
         }
@@ -735,6 +732,7 @@ function json2table(
     callback: (el: HTMLElement, item:any) => void
   }[]
 ) {
+  container.dataset.viewmode = 'table'
   const table = document.createElement('table'); container.appendChild(table);
     table.classList.add('dataview-table');
 
@@ -763,6 +761,7 @@ function json2card(
     callback: (el: HTMLElement, item:any) => void
   }[]
 ) {
+  container.dataset.viewmode = 'card'
   const div = document.createElement('div'); container.appendChild(div);
     div.classList.add('dataview-card');
 
