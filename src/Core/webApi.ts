@@ -10,7 +10,7 @@
 import { global_setting } from './setting'
 
 /**
- * gitee/github api (二次封装 base api (网络与本地文件读写))
+ * any-menu/any-menu 的 gitee/github 仓库 api (二次封装 base api (网络与本地文件读写))
  * 
  * 与后端交互的 API，此处使用了较为节约成本的 gitee 作为存储和交互的服务器
  * 暂时用不上的放后面，并进行了一些分类
@@ -18,7 +18,7 @@ import { global_setting } from './setting'
  * 注意: apiUrl 或加 token，通常有更高的速度 (1000次/h) 和访问次数，普通 url 则很容易出现 403
  */
 export class API {
-  // #region 仓库配置
+  // #region 仓库配置 (any-menu/any-menu 仓库)
 
   // 当前使用的源：'gitee' | 'github'
   source: 'gitee' | 'github' = global_setting.config.dict_online_source;
@@ -54,8 +54,10 @@ export class API {
 
   constructor() {}
 
-  /// 获取网络目录 (有那些词典可以下载)
-  public async repoGetDirectory() {
+  /**
+   * 获取网络目录 (有那些词典可以下载)
+   */
+  public async getDir_fromStorePath() {
     return await global_setting.api.urlRequest({
       url: `${this.baseUrl()}store/directory/dir.json`,
       method: 'GET',
@@ -65,13 +67,12 @@ export class API {
       isParseJson: true
     });
   }
-
   /**
    * 获取网络目录 (有那些词典可以下载)
    *
-   * @deprecated 使用 repoGetDirectory 代替
+   * @deprecated 使用 getDir_fromStorePath 代替
    */
-  public async repoGetDirectory_byApi() {
+  public async getDir_fromStorePath_byApi() {
     const res = await global_setting.api.urlRequest({
       url: `${this.apiUrl()}contents/store/directory/dir.json?ref=${this.repoBranch}`,
       method: 'GET',
@@ -101,9 +102,8 @@ export class API {
 
   /**
    * 获取网络文件内容
-   * @description 使用 repoDownloadDict 代替
    */
-  public async repoGetDict(relPath: string) {
+  public async getFile_fromStorePath(relPath: string) {
     return await global_setting.api.urlRequest({
       url: `${this.baseUrl()}store/dict/${relPath}`,
       method: 'GET',
@@ -113,12 +113,11 @@ export class API {
       isParseJson: false,
     });
   }
-
   /**
    * 获取网络文件内容
    * @deprecated 使用 repoDownloadDict 代替
    */
-  public async repoGetDict_byApi(relPath: string) {
+  public async getFile_fromStorePath_byApi(relPath: string) {
     const res = await global_setting.api.urlRequest({
       url: `${this.apiUrl()}contents/store/dict/${relPath}?ref=${this.repoBranch}`,
       method: 'GET',
@@ -146,12 +145,13 @@ export class API {
   }
 
   /**
+   * 获取网络文件内容并写入本地
    * 从 Gitee/Github repo 下载词典文件到本地
    * @param relPath 词典文件的相对路径，例如 'example.json'
    * @returns {Promise<boolean>} 下载并写入成功返回 true，否则返回 false
    */
-  public async repoDownloadDict(relPath: string): Promise<boolean> {
-    const ret = await this.repoGetDict(relPath);
+  public async getFile_fromStorePath_and_writeFile(relPath: string): Promise<boolean> {
+    const ret = await this.getFile_fromStorePath(relPath);
     if (ret === null || ret.code !== 0 || !ret.data) {
       console.error(`Failed to download dict from repo: ${relPath}`, ret);
       return false;
@@ -160,7 +160,11 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${relPath}`, ret.data.text);
   }
 
-  public async repoGetGithubPlugin(repoPath: string): Promise<string | null> {
+  /**
+   * 获取 GitHub repo latest release 中的 main.js 内容
+   * @param repoPath 格式: "owner/repo"
+   */
+  static async getFile_fromRelease(repoPath: string): Promise<string | null> {
     // latest release 的 main.js 下载地址
     const [owner, repo] = repoPath.split('/');
     const url = `https://github.com/${owner}/${repo}/releases/latest/download/main.js`;
@@ -168,9 +172,6 @@ export class API {
     const ret = await global_setting.api.urlRequest({
       url,
       method: 'GET',
-      ...(!this.token() ? {} : { headers: {
-        "Authorization": `Bearer ${this.token()}`
-      }}),
       isParseJson: false,
     });
 
@@ -181,9 +182,12 @@ export class API {
 
     return ret.data.text ?? null;
   }
-
-  public async repoDownloadDict_fromRelease(repoPath: string): Promise<boolean> {
-    const text = await this.repoGetGithubPlugin(repoPath);
+  /**
+   * 下载 GitHub repo latest release 的 main.js 并写入本地
+   * @param repoPath 格式: "owner/repo"，写入文件名为 "owner-repo.js"
+   */
+  static async getFile_fromRelease_and_writeFile(repoPath: string): Promise<boolean> {
+    const text = await this.getFile_fromRelease(repoPath);
     if (text === null) return false;
 
     const fileName = `${repoPath.replace('/', '-')}.js`; // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
@@ -191,7 +195,7 @@ export class API {
   }
 
   /// 获取本地目录 (已经下载了哪些词典)
-  public async localGetDirectory() {
+  public async getDir_fromLocal() {
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
     return ret
   }

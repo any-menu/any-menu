@@ -175,7 +175,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                 return
               }
               // dict 路径
-              api.repoDownloadDict(item.path).then(success => {
+              api.getFile_fromStorePath_and_writeFile(item.path).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
                   return
@@ -201,7 +201,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     dataview.innerHTML = ''; dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
 
     const api = new API()
-    const ret = await api.repoGetDirectory()
+    const ret = await api.getDir_fromStorePath()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
       console.error('Failed to load dict list from repo', ret)
       dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg}`
