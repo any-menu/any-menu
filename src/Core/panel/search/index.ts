@@ -52,14 +52,11 @@ export class AMSearch {
   }
 
   // #region 显示/隐藏
-
-  private isShow: boolean = false
   
   show() {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
-    this.isShow = true
     if (this.el) {
       this.el.classList.remove('am-hide')
     }
@@ -78,7 +75,6 @@ export class AMSearch {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
-    this.isShow = false
     if (this.el) this.el.classList.add('am-hide')
     this.el_input?.blur()
 
