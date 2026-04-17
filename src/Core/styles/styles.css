@@ -1116,33 +1116,60 @@ html, body, #main {
 .tab-root div:has(> textarea) textarea.error-save {
   border-left: 1px solid red;
 }
-.tab-root button.absolute {
+.tab-root .setting-buttons {
   position: absolute;
   height: 28px;
   right: 16px;
   bottom: 16px;
-  padding: 0 18px;
   opacity: 0.85;
+}
+.tab-root .setting-buttons button {
+  border-radius: 8px;
+  padding: 2px 18px;
+  margin-left: 10px;
 }
 .tab-root details {
   white-space: normal;
 }
 
-.dict-table {
+.dataview-table {
   overflow-x: auto;
   width: 100%;
 }
-.dict-table tbody {
+.dataview-table tbody {
   overflow-y: auto;
 }
-.dict-table tbody tr:hover {
+.dataview-table tbody tr:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.dict-table tbody tr > td {
+.dataview-table tbody tr > td {
   white-space: pre;
 }
-.dict-table tbody tr > td .btn {
+.dataview-table .btn {
   width: 100%;
+}
+
+.dataview-card {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  width: 100%;
+  overflow-y: auto;
+  gap: 9px;
+}
+.dataview-card .card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: solid 1px var(--ab-tab-root-bd-color);
+  padding: 10px;
+  border-radius: 10px;
+}
+.dataview-card .btn {
+  float: right;
+}
+
+.dataview-table .btn, .dataview-card .btn {
   height: 26px;
   padding: 0 10px;
   line-height: 26px;
@@ -1156,15 +1183,15 @@ html, body, #main {
   background-color: gray;
   color: white;
 }
-.dict-table tbody tr > td .btn[color=green] {
+.dataview-table .btn[color=green], .dataview-card .btn[color=green] {
   background-color: #67C23A;
   color: white;
 }
-.dict-table tbody tr > td .btn[color=red] {
+.dataview-table .btn[color=red], .dataview-card .btn[color=red] {
   background-color: #F56C6C;
   color: white;
 }
-.dict-table tbody tr > td .btn[color=blue] {
+.dataview-table .btn[color=blue], .dataview-card .btn[color=blue] {
   background-color: #409EFF;
   color: white;
 }

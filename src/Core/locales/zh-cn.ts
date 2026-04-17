@@ -65,6 +65,7 @@ export default {
   'Load failed': '加载失败',
   'Load successed': '加载成功',
   'Refresh dict list': '刷新字典列表',
+  'Change dataview mode': '切换显示模式',
 
   // General
   'Submit': '提交',

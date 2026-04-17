@@ -292,13 +292,17 @@ html, body, #main {
     }
   }
 
-  button.absolute {
+  .setting-buttons {
     position: absolute;
     height: 28px;
     right: 16px;
     bottom: 16px;
-    padding: 0 18px;
     opacity: 0.85;
+    button {
+      border-radius: 8px;
+      padding: 2px 18px;
+      margin-left: 10px;
+    }
   }
 
   details {
@@ -306,7 +310,7 @@ html, body, #main {
   }
 }
 
-.dict-table {
+.dataview-table {
   overflow-x: auto;
   width: 100%;
   tbody {
@@ -317,35 +321,63 @@ html, body, #main {
     tr>td {
       white-space: pre;
     }
-    tr>td .btn {
-      width: 100%;
-      // height: 100%;
-      height: 26px;
-      padding: 0 10px;
+  }
+  .btn {
+    width: 100%;
+  }
+}
 
-      line-height: 26px;
-      font-size: 0.95em;
-      border: none;
-      outline: none;
-      box-shadow: none;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
+.dataview-card {
+  display: grid;
+  grid-auto-flow: row; // 先行后列
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 
-      background-color: gray;
+  width: 100%;
+  // overflow-x: hidden;
+  overflow-y: auto;
+  gap: 9px;
+  .card {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+    border: solid 1px var(--ab-tab-root-bd-color);
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .btn {
+    float: right;
+  }
+}
+
+.dataview-table, .dataview-card {
+  .btn {
+    // height: 100%;
+    height: 26px;
+    padding: 0 10px;
+
+    line-height: 26px;
+    font-size: 0.95em;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+
+    background-color: gray;
+    color: white;
+    &[color="green"] {
+      background-color: #67C23A;
       color: white;
-      &[color="green"] {
-        background-color: #67C23A;
-        color: white;
-      }
-      &[color="red"] {
-        background-color: #F56C6C;
-        color: white;
-      }
-      &[color="blue"] {
-        background-color: #409EFF;
-        color: white;
-      }
+    }
+    &[color="red"] {
+      background-color: #F56C6C;
+      color: white;
+    }
+    &[color="blue"] {
+      background-color: #409EFF;
+      color: white;
     }
   }
 }

@@ -97,18 +97,30 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const container = document.createElement('div'); tab_content.appendChild(container);
   const span = document.createElement('span'); container.appendChild(span); span.textContent = `未加载，请手动点击刷新按钮重试`; // 文字提醒状态
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
-  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
-    refresh_btn.textContent = t('Refresh dict list')
-    refresh_btn.onclick = async () => void getDictData_and_showData()
+  {
+    const buttons = document.createElement('div'); container.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    let current_mode: 'card'|'table'|undefined
+    const dataview_mode_btn = document.createElement('button'); buttons.appendChild(dataview_mode_btn);
+      dataview_mode_btn.textContent = t('Change dataview mode')
+      dataview_mode_btn.onclick = async () => {
+        if (current_mode === 'table') current_mode = 'card'
+        else current_mode = 'table'
+        void getDictData_and_showData(current_mode)
+      }
+    const refresh_btn = document.createElement('button'); buttons.appendChild(refresh_btn);
+      refresh_btn.textContent = t('Refresh dict list')
+      refresh_btn.onclick = async () => void getDictData_and_showData()
+  }
 
   // 首次刷新
   void getDictData_and_showData()
 
   /** 获取要展示的数据 + 展示已获取的数据 */
-  async function getDictData_and_showData() {
+  async function getDictData_and_showData(mode: 'table'|'card' = 'table') {
     const api = new API()
     const data = await getDictData()
-    if (data) json2table(dataview, data, [
+    if (!data) return
+    const data_header = [
       {
         name: t('Id'), // if (global_setting.isDebug)
         callback: (el: HTMLElement, item: any) => el.innerText = item.id,
@@ -167,7 +179,9 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       // {
       //   name: t('Is enabled')
       // },
-    ])
+    ]
+    if (mode === 'card') json2card(dataview, data, data_header)
+    else json2table(dataview, data, data_header)
   }
 
   /** 获取要展示的数据 */
@@ -209,18 +223,29 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   const container = document.createElement('div'); tab_content.appendChild(container);
   const span = document.createElement('span'); container.appendChild(span); span.textContent = `未加载，请手动点击刷新按钮重试`; // 文字提醒状态
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
-  const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
-    refresh_btn.textContent = t('Refresh dict list')
-    refresh_btn.onclick = async () => void getDictData_and_showData()
+  {
+    const buttons = document.createElement('div'); container.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    let current_mode: 'card'|'table'|undefined
+    const dataview_mode_btn = document.createElement('button'); buttons.appendChild(dataview_mode_btn);
+      dataview_mode_btn.textContent = t('Change dataview mode')
+      dataview_mode_btn.onclick = async () => {
+        if (current_mode === 'table') current_mode = 'card'
+        else current_mode = 'table'
+        void getDictData_and_showData(current_mode)
+      }
+    const refresh_btn = document.createElement('button'); buttons.appendChild(refresh_btn);
+      refresh_btn.textContent = t('Refresh dict list')
+      refresh_btn.onclick = async () => void getDictData_and_showData()
+  }
 
   // 首次刷新
   void getDictData_and_showData()
 
   /** 获取要展示的数据 + 展示已获取的数据 */
-  async function getDictData_and_showData() {
-    const api = new API()
+  async function getDictData_and_showData(mode: 'table'|'card' = 'table') {
     const data = await getDictData()
-    if (data) json2table(dataview, data, [
+    if (!data) return
+    const data_header = [
       {
         name: t('Name'),
         callback: (el: HTMLElement, item: any) => el.innerText = item.path.split('/').pop() || item.path,
@@ -279,7 +304,9 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
           }
         },
       }
-    ])
+    ]
+    if (mode === 'card') json2card(dataview, data, data_header)
+    else json2table(dataview, data, data_header)
   }
 
   /** 获取要展示的数据 */
@@ -709,7 +736,7 @@ function json2table(
   }[]
 ) {
   const table = document.createElement('table'); container.appendChild(table);
-    table.classList.add('dict-table');
+    table.classList.add('dataview-table');
 
   // 表头
   const table_thead = document.createElement('thead'); table.appendChild(table_thead);
@@ -729,6 +756,25 @@ function json2table(
   })
 }
 
-function json2card() {
+function json2card(
+  container: HTMLElement, data: any[],
+  data_header: {
+    name: string,
+    callback: (el: HTMLElement, item:any) => void
+  }[]
+) {
+  const div = document.createElement('div'); container.appendChild(div);
+    div.classList.add('dataview-card');
 
+  // 卡片
+  data.forEach(item => {
+    const card = document.createElement('div'); div.appendChild(card); card.classList.add('card');
+    for(const header_item of data_header) {
+      const card_item = document.createElement('div'); card.appendChild(card_item);
+      const card_item1 = document.createElement('span'); card_item.appendChild(card_item1);
+        card_item.innerText = header_item.name + ': '
+      const card_item2 = document.createElement('span'); card_item.appendChild(card_item2);
+        header_item.callback(card_item2, item);
+    }
+  })
 }

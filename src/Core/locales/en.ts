@@ -65,6 +65,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Load failed': 'Load failed',
   'Load successed': 'Load successed',
   'Refresh dict list': 'Refresh dict list',
+  'Change dataview mode': 'Change dataview mode',
 
   // General
   'Submit': 'Submit',
