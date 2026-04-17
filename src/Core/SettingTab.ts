@@ -11,7 +11,6 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   // // 避免重复触发，导致重复添加标签项
   // el.innerHTML = ''
   // local_dict_list.length = 0
-  // web_dict_list.length = 0
 
   el.classList.add('tab-root')
   const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
@@ -74,15 +73,8 @@ const local_dict_list: { // 本地/已下载的词典
   relPath: string, // 相对于本地词典文件夹的相对文件路径
   isDownloaded: boolean, isEnabled: boolean
 }[] = []
-const web_dict_list: { // 可下载/已下载的网络字典
-  id: string,   // 注册id
-  relPath: string, // 相对于网络词典文件夹的文件路径
-  name: string, // 注册名
-  isDownloaded: boolean, isEnabled: boolean
-}[] = []
 // TODO 封装成一个插件管理容器类就最好的，然后封装下面三个:
 function local_dict_list_onChange() {
-  // 去修改 web_dict_list 的 isDownloaded isEnabled
   // 并运行 initMenuData
 }
 // function local_dict_list_add() {}
@@ -99,64 +91,47 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   tab_nav.setAttribute('index', 'web-dict'); tab_content.setAttribute('index', 'web-dict');
 
   // 自动刷新
-  tab_nav.addEventListener('click', () => void getDict())
+  tab_nav.addEventListener('click', () => void getDictData_and_showData())
 
+  // 基础容器
   const container = document.createElement('div'); tab_content.appendChild(container);
-  const span = document.createElement('span'); container.appendChild(span); // 可能包含文字提醒状态 / 表格
-
-  // 内容表格
-  const table = document.createElement('table'); container.appendChild(table);
-    table.classList.add('dict-table');
-  const table_thead = document.createElement('thead'); table.appendChild(table_thead);
-    const tr = document.createElement('tr'); table_thead.appendChild(tr);
-    if (global_setting.isDebug) {
-      const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = t('Id');
-    }
-    const td2 = document.createElement('td'); tr.appendChild(td2); td2.textContent = t('Path');
-    const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = t('Name');
-    const td4 = document.createElement('td'); tr.appendChild(td4); td4.textContent = t('Is downloaded'); td4.classList.add('btn');
-    // const td5 = document.createElement('td'); tr.appendChild(td5); td5.textContent = t('Is enabled'); td5.classList.add('btn');
-  const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
+  const span = document.createElement('span'); container.appendChild(span); span.textContent = `未加载，请手动点击刷新按钮重试`; // 文字提醒状态
+  const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   const refresh_btn = document.createElement('button'); container.appendChild(refresh_btn); refresh_btn.classList.add('absolute');
     refresh_btn.textContent = t('Refresh dict list')
-    refresh_btn.onclick = async () => void getDict()
-  table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `未加载，请手动点击刷新按钮重试`;
-
-  // 动态加载内容
-  const api = new API()
-  await getDict()
-  async function getDict() {
-    table_tbody.innerHTML = ''
-    table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
-
-    const ret = await api.repoGetDirectory()
-    if (!(ret && ret.code == 0 && ret.data?.json)) {
-      console.error('Failed to load dict list from repo', ret)
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg}`
-      return
+    refresh_btn.onclick = async () => {
+      void getDictData_and_showData()
     }
-    table.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
-    try {
-      const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
-        id: item.id,
-        relPath: item.path,
-        name: item.name
-      }))
-      web_dict_list.length = 0 // clear array
-      dir.forEach(item => {
-        web_dict_list.push({...item, isDownloaded: false, isEnabled: false})
-        const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item.id);
-        if (global_setting.isDebug) {
-          const td1 = document.createElement('td'); tr.appendChild(td1); td1.textContent = item.id;
+
+  // 首次刷新
+  void getDictData_and_showData()
+
+  /** 获取要展示的数据 + 展示已获取的数据 */
+  async function getDictData_and_showData() {
+    const api = new API()
+    const data = await getDictData()
+    if (data) json2table(dataview, data, [
+      {
+        name: t('Id'), // if (global_setting.isDebug)
+        callback: (el: HTMLElement, item: any) => el.innerText = item.id,
+      },
+      {
+        name: t('Path'),
+        callback: (el: HTMLElement, item: any) => {
+          const a = document.createElement('a'); el.appendChild(a);
+            a.href = `${api.blobUrl()}store/dict/${item.relPath}`
+            a.textContent = item.relPath
+            a.target = '_blank'
         }
-        const td2 = document.createElement('td'); tr.appendChild(td2);
-          const a = document.createElement('a'); td2.appendChild(a);
-          a.href = `${api.blobUrl()}store/dict/${item.relPath}`
-          a.textContent = item.relPath
-          a.target = '_blank'
-        const td3 = document.createElement('td'); tr.appendChild(td3); td3.textContent = item.name;
-        const td4 = document.createElement('td'); tr.appendChild(td4);
-          const td4_btn = document.createElement('button'); td4.appendChild(td4_btn); td4_btn.classList.add('btn');
+      },
+      {
+        name: t('Name'),
+        callback: (el: HTMLElement, item: any) => el.innerText = item.name
+      },
+      {
+        name: t('Is downloaded'),
+        callback: (el: HTMLElement, item: any) => {
+          const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
           if (local_dict_list.find(d => d.relPath === item.relPath)) {
             td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
@@ -189,35 +164,32 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
               })
             }
           }
-        // const td5 = document.createElement('td'); tr.appendChild(td5);
-        //   const td5_btn = document.createElement('button'); td5.appendChild(td5_btn); td5_btn.classList.add('btn');
-        //   const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
-        //   const ret = ret_ ?? {
-        //     name: item.relPath,
-        //     enabled: false
-        //   }
-        //   if (!ret_) {
-        //     global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
-        //   }
-        //   if (ret.enabled) {
-        //     td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
-        //   } else {
-        //     td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
-        //   }
-        //   td5_btn.onclick = async () => {
-        //     ret.enabled = !ret.enabled; global_setting.api.saveConfig();
-        //     if (ret.enabled) {
-        //       td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
-        //     } else {
-        //       td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
-        //     }
-        //   }
-      })
-      // global_setting.api.saveConfig() // 假设有变动
-    } catch (error) {
-      console.error('Failed to load dict list from repo2', error)
-      table.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，数据错误`
+        }
+      },
+      // {
+      //   name: t('Is enabled')
+      // },
+    ])
+  }
+
+  /** 获取要展示的数据 */
+  async function getDictData() {
+    dataview.innerHTML = ''; dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
+
+    const api = new API()
+    const ret = await api.repoGetDirectory()
+    if (!(ret && ret.code == 0 && ret.data?.json)) {
+      console.error('Failed to load dict list from repo', ret)
+      dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg}`
+      return
     }
+    dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
+    const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
+      id: item.id,
+      relPath: item.path,
+      name: item.name
+    }))
+    return dir
   }
 }
 
@@ -706,3 +678,48 @@ const SVG_ICON_REFRESH = `<svg xmlns="http://www.w3.org/2000/svg"
   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
   <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
 </svg>`
+
+/**
+ * 数据生成表格
+ * 
+ * 类似于 anyblock 的 listdata2table，但这里的 data 源于对象而非纯文本，
+ * 因为还支持: 图标、链接、按钮 等
+ * 同时支持更好的操控：分页加载、搜索、筛选 等
+ * 
+ * @param container 元素容器
+ * @param data 要显示的数据
+ * @param data_header 与函数一同决定要如何渲染要显示的数据
+ *   函数决定如何排列数据渲染出来的函数
+ *   而 data_header 决定: 表头、按钮，等
+ */
+function json2table(
+  container: HTMLElement, data: any[],
+  data_header: {
+    name: string,
+    callback: (el: HTMLElement, item:any) => void
+  }[]
+) {
+  const table = document.createElement('table'); container.appendChild(table);
+    table.classList.add('dict-table');
+
+  // 表头
+  const table_thead = document.createElement('thead'); table.appendChild(table_thead);
+  const tr = document.createElement('tr'); table_thead.appendChild(tr);
+  for(const header_item of data_header) {
+    const td = document.createElement('td'); tr.appendChild(td); td.textContent = header_item.name
+  }
+
+  // 表体
+  const table_tbody = document.createElement('tbody'); table.appendChild(table_tbody);
+  data.forEach(item => {
+    const tr = document.createElement('tr'); table_tbody.appendChild(tr); tr.setAttribute('target-id', item.id);
+    for(const header_item of data_header) {
+      const td = document.createElement('td'); tr.appendChild(td);
+      header_item.callback(td, item)
+    }
+  })
+}
+
+function json2card() {
+
+}
