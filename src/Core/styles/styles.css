@@ -984,6 +984,8 @@ html, body, #main {
 
 /* -------------------------------- 总菜单面板 (组合基) ------------------ */
 .am-panel {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   margin: 0;
   padding: 0;
@@ -1026,6 +1028,12 @@ html, body, #main {
   padding: 0 12px;
   opacity: 0.85;
   border-radius: 10px;
+}
+
+/* -------------------------------- 自定义面板 --------------------------- */
+.am-custom-panel {
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */

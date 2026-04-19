@@ -127,6 +127,8 @@ html, body, #main {
 /* -------------------------------- 总菜单面板 (组合基) ------------------ */
 
 .am-panel {
+  display: flex; // 让 .am-custom-panel 最大高度为填满余下
+  flex-direction: column;
   position: fixed;
   // left: 0; // override by js
   // top: 32px; // override by js
@@ -186,6 +188,12 @@ html, body, #main {
       border-radius: 10px;
     }
   }
+}
+
+/* -------------------------------- 自定义面板 --------------------------- */
+.am-custom-panel {
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
