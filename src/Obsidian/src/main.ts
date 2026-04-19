@@ -12,7 +12,7 @@ import {
   Plugin
 } from 'obsidian'
 import { global_setting } from '@/Core/setting'
-import { registerABContextMenu, registerAMContextMenu, registerSelectionToolbar } from './panel'
+import { registerABContextMenu, registerAMContextMenu } from './panel'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
