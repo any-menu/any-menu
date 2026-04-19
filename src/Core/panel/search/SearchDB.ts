@@ -208,4 +208,5 @@ class SearchDB {
   }
 }
 
-export const SEARCH_DB: SearchDB = SearchDB.factory()
+export let SEARCH_DB: SearchDB
+SEARCH_DB = SearchDB.factory()
