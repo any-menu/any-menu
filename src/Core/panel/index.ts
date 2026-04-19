@@ -153,6 +153,8 @@ export class AMPanel {
    *   (一般用于确定位置和显示后，插件因需要显示更多 list 而再次调用 show 的插件 api)
    * - 'center' 直接显示在页面的正中心 TODO 未支持
    *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
+   * 
+   * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
    */
   static show(pos: {x: number, y: number}|undefined, list?: string[]) {
     // 设置初始的 alt 状态
@@ -165,9 +167,10 @@ export class AMPanel {
     // 可惜前端无法实现，又不想弄后端，搞太复杂
     alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
 
-    // 定位
+    // 主面板, 定位
     const el_panel = global_el.amPanel?.el
     if (!el_panel) return
+    el_panel.classList.remove('am-hide')
     if (pos === undefined) {
     // } else if (pos === 'center') {
     } else {
@@ -179,6 +182,7 @@ export class AMPanel {
       list = global_setting.key_panel.panel1
     }
 
+    // 子面板
     let is_focued = false // 只聚焦到第一个可聚焦的子面板
     for (const item of list) {
       if (item == 'search') {
@@ -223,12 +227,22 @@ export class AMPanel {
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
-  /** 隐藏面板 */
+  /** 隐藏面板
+   * 
+   * - 无参数则表示隐藏全部
+   * - 空列表则表示不隐藏子面板，子隐藏容器
+   */
   static hide(list?: string[]) {
     if (global_setting.state.isPin) return
 
+    // 主面板
+    const el_panel = global_el.amPanel?.el
+    if (!el_panel) return
+    if (list != undefined && list.length == 0) el_panel.classList.add('am-hide')
+
+    // 子面板
     // 全部隐藏
-    if (!list) {
+    if (list == undefined) {
       global_el.amSearch?.hide()
       global_el.amToolbar?.hide()
       global_el.amContextMenu?.hide()
@@ -259,6 +273,8 @@ export class AMPanel {
   }
 
   // #region 自定义子面板管理
+  
+  // 这里的自定义子面板针对的是插件的自定义子面板，固定的那几个子面板不属于
 
   private SubPanel: { [key: string]: HTMLElement } = {}
 

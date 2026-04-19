@@ -140,13 +140,13 @@ export interface PluginInterfaceCtx {
 
     /**
      * 隐藏面板（低风险）
-     * @param list 不传则隐藏全部
+     * @param list 不传表示隐藏全部，空列表表示不隐藏子面板只隐藏容器
      */
     hidePanel: (list?: string[]) => void;
 
     /**
      * 显示面板（低风险）
-     * @param list     不传则显示全部
+     * @param list     不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
      * @param position 不填表示沿用之前的位置（推荐）
      */
     showPanel: (list?: string[], position?: 'center' | 'cursor') => void;

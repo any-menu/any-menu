@@ -4,7 +4,7 @@
 
 import { global_setting } from "@/Core/setting"
 import { getCursorInfo } from "."
-import { AMPanel } from "@/Core/panel"
+import { AMPanel, global_el } from "@/Core/panel"
 import { type Editor, type Plugin, MarkdownView, Platform } from "obsidian"
 
 const enum PositionType {
@@ -67,11 +67,12 @@ export default class DocumentListeners {
     this.isKeyboardSelection = true;
     this.isMouseSelecting = false;
     this.isMouseDown = false;
-    if (event.key === 'Escape' && this.ntb.render.hasFloatingToolbar()) {
-      this.ntb.render.removeFloatingToolbar();
+    if (event.key === 'Escape') {
+      AMPanel.hide([])
     }
   }
   
+  /** 鼠标按下事件 */
   onMouseDown = (event: MouseEvent) => {
     // // 在底部工具栏中，当点击项目时防止手机导航栏出现
     // if (Platform.isPhone && this.ntb.render.phoneTbarPosition === PositionType.Bottom) {
@@ -82,11 +83,9 @@ export default class DocumentListeners {
 
     this.isKeyboardSelection = false;
     this.isMouseDown = true;
-    // TODO? 如果点击位置不在浮动工具栏内（或其菜单等区域），则是否应关闭浮动工具栏？
-    // const clickTarget = event.target as Node;
-    // const toolbarEl = this.ntb.render.floatingToolbarEl;
-    if (this.ntb.render.floatingToolbarEl && !this.ntb.render.floatingToolbarEl.contains(event.target as Node)) {
-      this.ntb.render.removeFloatingToolbar();
+
+    if (global_el.amPanel?.el.contains(event.target as Node)) {
+      AMPanel.hide([])
     }
   }
 
@@ -101,6 +100,7 @@ export default class DocumentListeners {
   }
 
   /**
+   * 鼠标松开事件
    * 我们还监听文档以捕获编辑器之外的鼠标释放
    */
   onMouseUp = async (_event: MouseEvent) => {
@@ -114,6 +114,7 @@ export default class DocumentListeners {
   }
 
   /**
+   * 选择文本改变事件
    * 跟踪任何文档选择，但仅限于预览模式
    */
   onSelectionChange = (_event: any) => {
