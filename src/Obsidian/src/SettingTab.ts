@@ -61,7 +61,7 @@ export class AMSettingTab extends PluginSettingTab {
       }
     )
 
-    // const api = new API()
+    // const api = new RepoAPI()
     // const plugin = this.plugin
     // plugin.addCommand({
     //   id: 'any-menu-api-test',

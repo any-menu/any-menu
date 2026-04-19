@@ -1,6 +1,6 @@
 import { t } from './locales/helper';
 import { global_setting } from './setting';
-import { API } from './webApi'
+import { RepoAPI } from './webApi'
 
 /**
  * 初始化设置标签页 (!!! 需要依次调用 initSettingTab_1 和 initSettingTab_2)
@@ -116,7 +116,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
 
   /** 获取要展示的数据 + 展示已获取的数据 */
   async function getDictData_and_showData(mode: 'table'|'card' = 'card') {
-    const api = new API()
+    const api = new RepoAPI()
     const data = await getDictData()
     if (!data) return
     const data_header = [
@@ -171,7 +171,20 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
             } else { // 未下载/下载失败
               // github repo 路径
               if ((item.path as string).includes('/')) {
-                console.warn('未支持 repo 路径2', item.path)
+                RepoAPI.getFile_fromRelease_and_writeFile(item.path).then(success => {
+                  if (!success) {
+                    td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
+                    return;
+                  }
+                  td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
+                  const fileName = `${(item.path as string).replace('/', '-')}.js`; // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
+                  local_dict_list.push({
+                    path: `${global_setting.config.dict_paths}${fileName}`,
+                    relPath: fileName,
+                    isDownloaded: true, isEnabled: true,
+                  });
+                  local_dict_list_onChange();
+                })
                 return
               }
               // dict 路径
@@ -181,7 +194,11 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                   return
                 }
                 td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
-                local_dict_list.push({path: `${global_setting.config.dict_paths}${item.path}`, relPath: item.path, isDownloaded: true, isEnabled: true})
+                local_dict_list.push({
+                  path: `${global_setting.config.dict_paths}${item.path}`,
+                  relPath: item.path,
+                  isDownloaded: true, isEnabled: true
+                })
                 local_dict_list_onChange()
               })
             }
@@ -200,7 +217,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   async function getDictData() {
     dataview.innerHTML = ''; dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading')
 
-    const api = new API()
+    const api = new RepoAPI()
     const ret = await api.getDir_fromStorePath()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
       console.error('Failed to load dict list from repo', ret)

@@ -214,5 +214,33 @@
 		"detail": "",
 		"author": "LincZero",
 		"version": "1.0.0"
+	},
+	{
+		"id": "example-plugin-simple",
+		"path": "any-menu/example-plugin-simple",
+		"name": "Example Plugin Simple",
+		"detail": "A minimal AnyMenu plugin template that prints Hello World.",
+		"author": "LincZero"
+	},
+	{
+		"id": "example-plugin-vue",
+		"path": "any-menu/example-plugin-vue",
+		"name": "Example Plugin Vue",
+		"detail": "A minimal AnyMenu plugin template based on Vue.",
+		"author": "LincZero"
+	},
+	{
+		"id": "any-menu-emoji",
+		"path": "any-menu/any-menu-plugin-emoji",
+		"name": "EmojiTools",
+		"detail": "An AnyMenu plugin about pick emoji.",
+		"author": "LincZero"
+	},
+	{
+		"id": "anymenu-aide",
+		"path": "any-menu/any-menu-plugin-aide",
+		"name": "AI Assistant",
+		"detail": "An AI assistant plugin for AnyMenu.",
+		"author": "LincZero"
 	}
 ]

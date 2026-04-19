@@ -17,7 +17,7 @@ import { global_setting } from './setting'
  * 
  * 注意: apiUrl 或加 token，通常有更高的速度 (1000次/h) 和访问次数，普通 url 则很容易出现 403
  */
-export class API {
+export class RepoAPI {
   // #region 仓库配置 (any-menu/any-menu 仓库)
 
   // 当前使用的源：'gitee' | 'github'
@@ -53,6 +53,8 @@ export class API {
   // language = 'zh-cn';
 
   constructor() {}
+
+  // #region store path part
 
   /**
    * 获取网络目录 (有那些词典可以下载)
@@ -160,6 +162,34 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${relPath}`, ret.data.text);
   }
 
+  // #endregion
+
+  // #region file path part
+
+  /** 获取 Github repo 中某个文件的内容
+   * @param relPath
+   *   一般是获取元数据文件，或者 README 文件进行展示。如 'README.md'
+   */
+  static async getFile_fromFile(repoPath: string, relPath: string): Promise<string | null> {
+    const [owner, repo] = repoPath.split('/');
+    const url = `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${relPath}`; // raw是原文本，blob是网页。HEAD 指向默认分支，就不用填了
+    const ret = await global_setting.api.urlRequest({
+      url,
+      method: 'GET',
+      isParseJson: false,
+    });
+
+    if (ret === null || ret.code !== 0 || !ret.data) {
+      console.error(`Failed to fetch file content from GitHub repo: ${repoPath}, path: ${relPath}`, ret);
+      return null;
+    }
+    return ret.data.text ?? null;
+  }
+
+  // #endregion
+
+  // #region release path part
+
   /**
    * 获取 GitHub repo latest release 中的 main.js 内容
    * @param repoPath 格式: "owner/repo"
@@ -182,6 +212,7 @@ export class API {
 
     return ret.data.text ?? null;
   }
+
   /**
    * 下载 GitHub repo latest release 的 main.js 并写入本地
    * @param repoPath 格式: "owner/repo"，写入文件名为 "owner-repo.js"
@@ -194,7 +225,9 @@ export class API {
     return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${fileName}`, text);
   }
 
-  /// 获取本地目录 (已经下载了哪些词典)
+  // #endregion
+
+  /** 获取本地目录 (已经下载了哪些词典) */
   public async getDir_fromLocal() {
     const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
     return ret
