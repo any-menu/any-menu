@@ -155,6 +155,7 @@ export function registerSelectionToolbar(plugin: Plugin) {
 
     if (debounceTimer) clearTimeout(debounceTimer)
     debounceTimer = setTimeout(() => {
+      debounceTimer = null
       const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView)
       if (!activeView) return
 
@@ -173,6 +174,14 @@ export function registerSelectionToolbar(plugin: Plugin) {
         AMPanel.hide(['toolbar'])
       }
     }, DEBOUNCE_DELAY)
+  })
+
+  // 插件卸载时清理未执行的防抖定时器
+  plugin.register(() => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+      debounceTimer = null
+    }
   })
 }
 
