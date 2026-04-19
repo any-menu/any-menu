@@ -160,6 +160,17 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
       await global_setting.api.saveConfig()
     })
   )
+
+  new Setting(tab_content)
+  .setName(t('Auto show toolbar on select'))
+  .setDesc(t('Auto show toolbar on select2'))
+  .addToggle(toggle => toggle
+    .setValue(global_setting.config.auto_show_toolbar_on_select)
+    .onChange(async (value) => {
+      global_setting.config.auto_show_toolbar_on_select = value
+      await global_setting.api.saveConfig()
+    })
+  )
 }
 
 /** Obsidian 纯文本编辑 data.json

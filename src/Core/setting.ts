@@ -78,6 +78,7 @@ export const global_setting: {
     }[],
     toolbar_list: string[],
     context_menu_list: string[],
+    auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -178,6 +179,7 @@ export const global_setting: {
     plugins: [],
     toolbar_list: [],
     context_menu_list: [],
+    auto_show_toolbar_on_select: false,
   },
   config_: {
     is_auto_startup: false,
