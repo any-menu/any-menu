@@ -69,8 +69,8 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
 }
 
 const local_dict_list: { // 本地/已下载的词典
-  path: string, // 相对于obsidian根目录的文件路径
-  relPath: string, // 相对于本地词典文件夹的相对文件路径
+  path: string,     // 相对于程序目录 (或obsidian根目录) 的文件路径，= 词典路径 + 文件相对词典文件夹的路径
+  relPath: string,  // 相对于词典文件夹的相对文件路径
   isDownloaded: boolean, isEnabled: boolean
 }[] = []
 // TODO 封装成一个插件管理容器类就最好的，然后封装下面三个:
@@ -148,21 +148,23 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         name: t('Is downloaded'),
         callback: (el: HTMLElement, item: any) => {
           const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
-          if (local_dict_list.find(d => d.relPath === item.path)) {
+          const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
+          if (local_dict_list.find(d => d.relPath === newFileName)) {
             td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
             td4_btn.textContent = t('Download'); td4_btn.setAttribute('color', 'gray');
           }
           td4_btn.onclick = async () => {
+            td4_btn.textContent = t('Downloading');
             const color = td4_btn.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
-              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${item.path}`).then(success => {
+              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${newFileName}`).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                   return
                 }
                 td4_btn.textContent = t('Uninstalled'); td4_btn.setAttribute('color', 'gray');
-                const index = local_dict_list.findIndex(d => d.path === item.path)
+                const index = local_dict_list.findIndex(d => d.relPath === newFileName)
                 if (index >= 0) {
                   local_dict_list.splice(index, 1)
                   local_dict_list_onChange()
@@ -177,10 +179,9 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                     return;
                   }
                   td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
-                  const fileName = `${(item.path as string).replace('/', '-')}.js`; // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
                   local_dict_list.push({
-                    path: `${global_setting.config.dict_paths}${fileName}`,
-                    relPath: fileName,
+                    path: `${global_setting.config.dict_paths}${newFileName}`,
+                    relPath: newFileName,
                     isDownloaded: true, isEnabled: true,
                   });
                   local_dict_list_onChange();
@@ -188,15 +189,15 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                 return
               }
               // dict 路径
-              api.getFile_fromStorePath_and_writeFile(item.path).then(success => {
+              api.getFile_fromStorePath_and_writeFile(newFileName).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
                   return
                 }
                 td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
                 local_dict_list.push({
-                  path: `${global_setting.config.dict_paths}${item.path}`,
-                  relPath: item.path,
+                  path: `${global_setting.config.dict_paths}${newFileName}`,
+                  relPath: newFileName,
                   isDownloaded: true, isEnabled: true
                 })
                 local_dict_list_onChange()

@@ -55,6 +55,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Disabled': 'Disabled',
   'Download': 'Download',
   'Downloaded': 'Downloaded',
+  'Downloading': 'Downloading',
   'Download failed': 'Download failed',
   'Uninstall': 'Uninstall',
   'Uninstalled': 'Uninstalled',

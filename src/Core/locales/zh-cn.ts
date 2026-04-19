@@ -55,6 +55,7 @@ export default {
   'Disabled': '已禁用',
   'Download': '下载',
   'Downloaded': '已下载',
+  'Downloading': '下载中',
   'Download failed': '下载失败',
   'Uninstall': '卸载',
   'Uninstalled': '已卸载',
