@@ -49,6 +49,8 @@ export default {
   'Id': 'Id',
   'Path': '路径',
   'Name': '名字',
+  'Author': '作者',
+  'Description': '描述',
   'Is enabled': '是否已启用',
   'Is downloaded': '是否已下载',
   'Enabled': '已启用',

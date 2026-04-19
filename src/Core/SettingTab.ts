@@ -145,6 +145,14 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         callback: (el: HTMLElement, item: any) => el.innerText = item.name
       },
       {
+        name: t('Author'),
+        callback: (el: HTMLElement, item: any) => el.innerText = item.author ?? ''
+      },
+      {
+        name: t('Description'),
+        callback: (el: HTMLElement, item: any) => el.innerText = item.description ?? ''
+      },
+      {
         name: t('Is downloaded'),
         callback: (el: HTMLElement, item: any) => {
           const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
@@ -227,11 +235,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     }
     dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed')
 
-    const dir = (ret.data.json as {id: string, path: string, name: string}[]).map(item => ({
-      id: item.id,
-      path: item.path,
-      name: item.name
-    }))
+    const dir = ret.data.json
     return dir
   }
 }

@@ -49,6 +49,8 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Id': 'Id',
   'Path': 'Path',
   'Name': 'Name',
+  'Author': 'Author',
+  'Description': 'Description',
   'Is enabled': 'Enabled',
   'Is downloaded': 'Downloaded',
   'Enabled': 'Enabled',

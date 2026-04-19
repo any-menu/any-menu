@@ -3,7 +3,7 @@
 		"id": "anymenu-markdown",
 		"path": "Markdown.toml",
 		"name": "Markdown",
-		"detail": "输入常用 markdown 片段",
+		"description": "输入常用 markdown 片段",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -11,7 +11,7 @@
 		"id": "anymenu-emojis_general",
 		"path": "emojis_general.json",
 		"name": "emojis_通用",
-		"detail": "",
+		"description": "搜索/挑选/输出 emoji.",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -19,7 +19,7 @@
 		"id": "anymenu-diezi",
 		"path": "HanZiDieZi.txt",
 		"name": "汉字叠字",
-		"detail": "",
+		"description": "汉字叠字",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -27,7 +27,7 @@
 		"id": "anymenu-hanzipianpan",
 		"path": "HanZiPianPan.txt",
 		"name": "汉字偏旁",
-		"detail": "",
+		"description": "汉字偏旁",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -35,7 +35,7 @@
 		"id": "anymenu-jpName",
 		"path": "jpName.txt",
 		"name": "著名表演艺术家",
-		"detail": "",
+		"description": "著名表演艺术家",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -43,7 +43,7 @@
 		"id": "anymenu-chemistry",
 		"path": "Chemistry.txt",
 		"name": "化学式",
-		"detail": "",
+		"description": "化学式",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -51,7 +51,7 @@
 		"id": "anymenu-others",
 		"path": "others.txt",
 		"name": "其他杂项",
-		"detail": "",
+		"description": "一些特殊符号和短语",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -59,7 +59,7 @@
 		"id": "anymenu-ybq",
 		"path": "ybq.json",
 		"name": "颜表情",
-		"detail": "颜表情",
+		"description": "颜表情",
 		"author": "",
 		"version": "1.0.0"
 	},
@@ -67,7 +67,7 @@
 		"id": "anymenu-mermaid_md",
 		"path": "Mermaid_md.toml",
 		"name": "Mermaid_md",
-		"detail": "markdown mermaid",
+		"description": "输入 markdown 的 mermaid 图表",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -75,7 +75,7 @@
 		"id": "anymenu-AdQuote",
 		"path": "AdQuote.toml",
 		"name": "Alert块/Callout块",
-		"detail": "GFM Alert / Obsidian Callout / MarkdownIt GFM",
+		"description": "GFM Alert / Obsidian Callout / MarkdownIt GFM",
 		"author": "LincZero",
 		"version": "1.0.0 话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
 	},
@@ -83,7 +83,7 @@
 		"id": "anymenu-AnyBlock",
 		"path": "AnyBlock.toml",
 		"name": "AnyBlock",
-		"detail": "(需要先安装 AnyBlock)",
+		"description": "输入 AnyBlock 常用模板 (需要先安装 AnyBlock)",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -91,7 +91,7 @@
 		"id": "anymenu-ECharts",
 		"path": "ECharts.toml",
 		"name": "ECharts",
-		"detail": "(需要先安装 Charts, AnyBlock 类别需安装 AnyBlock)",
+		"description": "输入 EChart 常用模板 (需要先安装 Charts, AnyBlock 类别需安装 AnyBlock)",
 		"author": "LincZero",
 		"version": "1.0.1"
 	},
@@ -99,7 +99,7 @@
 		"id": "anymenu-ObMetaBind",
 		"path": "ObMetaBind.toml",
 		"name": "MetaBind",
-		"detail": "(需要在 obsidian 环境且安装 MetaBind)",
+		"description": "输入 MetaBind 常用模板 (需要在 obsidian 环境且安装 MetaBind)",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -107,15 +107,15 @@
 		"id": "anymenu-LaTeX",
 		"path": "LaTeX.yaml",
 		"name": "LaTeX",
-		"detail": "取自 Obsidian 插件 Latex Suite 的片段，临时去除了正则和函数功能",
-		"author": "",
+		"description": "取自 Obsidian 插件 Latex Suite 的片段，临时去除了正则和函数功能",
+		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-LaTeX_md",
 		"path": "LaTeX_md.toml",
 		"name": "LaTeX_md",
-		"detail": "适用于 Markdown 的 LaTeX 片段",
+		"description": "适用于 Markdown 的 LaTeX 片段",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -123,7 +123,7 @@
 		"id": "anymenu-background",
 		"path": "background.js",
 		"name": "文字背景",
-		"detail": "",
+		"description": "文字背景 (测试)",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -131,7 +131,7 @@
 		"id": "anymenu-date",
 		"path": "date.js",
 		"name": "日期",
-		"detail": "",
+		"description": "输出当前日期 (ISO 8601 格式 + 当前时区)",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -139,7 +139,7 @@
 		"id": "anymenu-table",
 		"path": "table.js",
 		"name": "cNrN生成表格",
-		"detail": "",
+		"description": "输出 markdown 表格。若选中文本格式为 \"c列数r行数\"，则生成对应行列的 markdown 表格",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -147,7 +147,7 @@
 		"id": "anymenu-table-transpose",
 		"path": "table_transpose.js",
 		"name": "表格转置",
-		"detail": "将选中的 markdown 表格进行转置（行列互换）",
+		"description": "将选中的 markdown 表格进行转置（行列互换）",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -155,7 +155,7 @@
 		"id": "anymenu-table2list",
 		"path": "table2list.js",
 		"name": "table2list",
-		"detail": "将 markdown 表格转换为 markdown 列表。每行第一个单元格为顶层列表项，其余单元格为二级列表项",
+		"description": "将 markdown 表格转换为 markdown 列表。每行第一个单元格为顶层列表项，其余单元格为二级列表项",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -163,7 +163,7 @@
 		"id": "anymenu-translate",
 		"path": "translate.js",
 		"name": "翻译",
-		"detail": "选中文本后翻译，支持多种免费翻译源",
+		"description": "选中文本后翻译，支持多种免费翻译源",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -171,7 +171,7 @@
 		"id": "anymenu-note",
 		"path": "note.js",
 		"name": "笔记",
-		"detail": "快速保存笔记、查看笔记",
+		"description": "快速保存笔记、查看笔记",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
@@ -179,68 +179,82 @@
 		"id": "anymenu-md-title-linter",
 		"path": "md_title_linter.js",
 		"name": "清除md标题样式冗余",
-		"detail": "",
+		"description": "",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-md-delete-bord",
 		"path": "md_delete_bord.js",
-		"name": "md_去除加粗样式",
-		"detail": "",
+		"name": "去除md加粗样式",
+		"description": "",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-md-delete-link",
 		"path": "md_delete_link.js",
-		"name": "md_去除链接样式",
-		"detail": "",
+		"name": "去除md链接样式",
+		"description": "",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-md-delete-link-all",
 		"path": "md_delete_link_all.js",
-		"name": "md_去除链接文本",
-		"detail": "",
+		"name": "去除md链接文本",
+		"description": "",
 		"author": "LincZero",
 		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-md-delete-line",
 		"path": "md_delete_line.js",
-		"name": "md_去除分割线",
-		"detail": "",
+		"name": "去除md分割线",
+		"description": "",
 		"author": "LincZero",
 		"version": "1.0.0"
-	},
-	{
-		"id": "example-plugin-simple",
-		"path": "any-menu/example-plugin-simple",
-		"name": "Example Plugin Simple",
-		"detail": "A minimal AnyMenu plugin template that prints Hello World.",
-		"author": "LincZero"
-	},
-	{
-		"id": "example-plugin-vue",
-		"path": "any-menu/example-plugin-vue",
-		"name": "Example Plugin Vue",
-		"detail": "A minimal AnyMenu plugin template based on Vue.",
-		"author": "LincZero"
 	},
 	{
 		"id": "any-menu-emoji",
 		"path": "any-menu/any-menu-plugin-emoji",
 		"name": "EmojiTools",
-		"detail": "An AnyMenu plugin about pick emoji.",
+		"description": "可视化搜索/挑选/输出 emoji.",
 		"author": "LincZero"
 	},
 	{
 		"id": "anymenu-aide",
 		"path": "any-menu/any-menu-plugin-aide",
 		"name": "AI Assistant",
-		"detail": "An AI assistant plugin for AnyMenu.",
+		"description": "一个 AI 助手.",
+		"author": "LincZero"
+	},
+	{
+		"id": "example-plugin-simple",
+		"path": "any-menu/example-plugin-simple",
+		"name": "Example Plugin Simple",
+		"description": "一个 AnyMenu 插件开发模板",
+		"author": "LincZero"
+	},
+	{
+		"id": "example-plugin-vue",
+		"path": "any-menu/example-plugin-vue",
+		"name": "Example Plugin Vue",
+		"description": "一个 AnyMenu 插件开发模板 (Vue)",
+		"author": "LincZero"
+	},
+	{
+		"id": "example-plugin-react",
+		"path": "any-menu/example-plugin-react",
+		"name": "Example Plugin React",
+		"description": "一个 AnyMenu 插件开发模板 (React)",
+		"author": "LincZero"
+	},
+	{
+		"id": "example-plugin-svelte",
+		"path": "any-menu/example-plugin-svelte",
+		"name": "Example Plugin Svelte",
+		"description": "一个 AnyMenu 插件开发模板 (Svelte)",
 		"author": "LincZero"
 	}
 ]
