@@ -150,6 +150,23 @@ export function registerSelectionToolbar(plugin: Plugin) {
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
   const DEBOUNCE_DELAY = 200 // 防抖延迟(毫秒)
 
+  const show_panel = async (editor: Editor, _view: MarkdownView | unknown, panel_list?: string[]) => {
+    // 1. 光标位置
+    const cursorInfo = getCursorInfo(plugin, editor)
+    if (!cursorInfo) return
+    const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
+
+    // 2. 光标修正 - 屏幕尺寸
+    const screen_size = { width: window.innerWidth, height: window.innerHeight }
+
+    // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
+    const panel_size = AMPanel.get_size(panel_list)
+    const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
+
+    // 3. 显示面板
+    AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list)
+  }
+
   plugin.registerDomEvent(document, 'selectionchange', () => {
     if (!global_setting.config.auto_show_toolbar_on_select) return
 
@@ -163,15 +180,7 @@ export function registerSelectionToolbar(plugin: Plugin) {
       const selectedText = editor.getSelection()
 
       if (selectedText && selectedText.length > 0) {
-        const cursorInfo = getCursorInfo(plugin, editor)
-        if (!cursorInfo) return
-        const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
-        const screen_size = { width: window.innerWidth, height: window.innerHeight }
-        const panel_size = AMPanel.get_size(['toolbar'])
-        const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
-        AMPanel.show({ x: cursor3.x + 2, y: cursor3.y + 2 }, ['toolbar'])
-      } else {
-        AMPanel.hide(['toolbar'])
+        show_panel(editor, activeView)
       }
     }, DEBOUNCE_DELAY)
   })
