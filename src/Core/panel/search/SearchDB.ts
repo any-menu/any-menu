@@ -3,7 +3,6 @@
 import { global_setting } from '../../setting'
 import { TrieDB, type TrieNode } from './TrieDB'
 import { ReverseIndexDB } from './ReverseIndexDB'
-import pinyin from 'pinyin'
 
 /** 核心数据库
  * 
@@ -28,7 +27,14 @@ class SearchDB {
   reverse: ReverseIndexDB // FuzzySearchEngine
   hash: undefined
 
-  constructor() {
+  pinyin: any|undefined
+
+  static factory() {
+    if (SEARCH_DB) return SEARCH_DB
+    return new SearchDB()
+  }
+  
+  private constructor() {
     // if (global_setting.config.search_engine == 'trie') {
     //   this.trie = new TrieDB()
     // } else if (global_setting.config.search_engine == 'reverse') {
@@ -38,6 +44,12 @@ class SearchDB {
     // }
     this.trie = new TrieDB()
     this.reverse = new ReverseIndexDB()
+
+    try {
+      import('pinyin').then(({ default: pinyin }) => {
+        this.pinyin = pinyin
+      })
+    } catch {}
 
     // debug时，用demo判断引擎是否正常
     if (global_setting.isDebug) {
@@ -100,12 +112,13 @@ class SearchDB {
 
       // 3. 拼音key
       // 有中文不一定就有拼音。其范围不一定和拼音库的范围相符合（他两可能采用了不同的汉字字标范围，如是否包含某些扩展区）
+      if (!this.pinyin) continue
       const has_chinese = /[\u4e00-\u9fa5]/.test(key)
 
       // 3.1. 全拼音key
       if (has_chinese && global_setting.config.pinyin_index) {
-        const key_pinyin: string = pinyin(key, {
-          style: pinyin.STYLE_NORMAL, // 普通风格，不带声调
+        const key_pinyin: string = this.pinyin(key, {
+          style: this.pinyin.STYLE_NORMAL, // 普通风格，不带声调
           heteronym: false, // 不返回多音字的所有读音
           segment: false // 不使用分词
         }).join('')
@@ -114,8 +127,8 @@ class SearchDB {
 
       // 3.2. 拼音首字母key
       if (has_chinese && global_setting.config.pinyin_first_index) {
-        const key_first_pinyin: string = pinyin(key, {
-          style: pinyin.STYLE_FIRST_LETTER, // 首字母风格
+        const key_first_pinyin: string = this.pinyin(key, {
+          style: this.pinyin.STYLE_FIRST_LETTER, // 首字母风格
           heteronym: false,
           segment: false
         }).join('')
@@ -195,4 +208,4 @@ class SearchDB {
   }
 }
 
-export const SEARCH_DB: SearchDB = new SearchDB()
+export const SEARCH_DB: SearchDB = SearchDB.factory()
