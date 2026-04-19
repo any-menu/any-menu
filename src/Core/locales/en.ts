@@ -43,6 +43,8 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Dict online source2': 'Source of online dictionary: gitee or github',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use',
+  'Auto show toolbar on select': 'Auto show toolbar on select',
+  'Auto show toolbar on select2': 'Automatically show the toolbar when text is selected in the editor',
   'Reload plugin': 'Reload plugin',
 
   // Online dict / Local dict
