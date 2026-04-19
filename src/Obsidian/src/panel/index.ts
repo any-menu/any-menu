@@ -135,3 +135,45 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
 }
 
 // #endregion
+
+// #region 选中文本自动显示工具栏
+
+/** 注册选中文本时自动显示工具栏的监听器
+ *
+ * 实现原理：监听 document 的 selectionchange 事件，当编辑器中有文本被选中时，
+ * 自动在光标位置弹出工具栏；当选中文本被清除时，自动隐藏工具栏。
+ * 使用防抖机制避免频繁触发。
+ *
+ * 参考: obsidian-note-toolbar 项目的选中文本触发方案
+ */
+export function registerSelectionToolbar(plugin: Plugin) {
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  const DEBOUNCE_DELAY = 200 // 防抖延迟(毫秒)
+
+  plugin.registerDomEvent(document, 'selectionchange', () => {
+    if (!global_setting.config.auto_show_toolbar_on_select) return
+
+    if (debounceTimer) clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => {
+      const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView)
+      if (!activeView) return
+
+      const editor = activeView.editor
+      const selectedText = editor.getSelection()
+
+      if (selectedText && selectedText.length > 0) {
+        const cursorInfo = getCursorInfo(plugin, editor)
+        if (!cursorInfo) return
+        const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
+        const screen_size = { width: window.innerWidth, height: window.innerHeight }
+        const panel_size = AMPanel.get_size(['toolbar'])
+        const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
+        AMPanel.show({ x: cursor3.x + 2, y: cursor3.y + 2 }, ['toolbar'])
+      } else {
+        AMPanel.hide(['toolbar'])
+      }
+    }, DEBOUNCE_DELAY)
+  })
+}
+
+// #endregion

@@ -43,6 +43,8 @@ export default {
   'Dict online source2': '在线词库来源: gitee 或 github (无法访问 github 则推荐用 gitee)',
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用',
+  'Auto show toolbar on select': '选中文本时自动显示工具栏',
+  'Auto show toolbar on select2': '在编辑器中选中文本时，自动弹出工具栏',
   'Reload plugin': '重启插件',
 
   // Online dict / Local dict
