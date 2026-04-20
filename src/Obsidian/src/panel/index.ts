@@ -8,6 +8,7 @@ import { initMenuData } from "@/Core/panel/initTool"
 import { global_setting } from '@/Core/setting'
 // import { root_menu } from "@/Core/panel/contextmenu/demo"
 
+export * from './DocumentListeners'
 export * from './ABContextMenu_Ob'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)

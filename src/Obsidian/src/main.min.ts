@@ -12,7 +12,7 @@ import {
   Plugin,
 } from 'obsidian'
 import { global_setting } from '@/Core/setting'
-import { registerABContextMenu, registerAMContextMenu } from './panel'
+import { registerABContextMenu, registerAMContextMenu, DocumentListeners } from './panel'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
@@ -34,7 +34,7 @@ export default class AnyMenuPlugin extends Plugin {
     // 菜单面板 - 元素
     registerABContextMenu(this) // 初始化菜单 - 默认菜单系统
     registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
-    // registerSelectionToolbar(this) // 选中文本时自动显示工具栏
+    ;(new DocumentListeners(this)).register()  // 选中文本时自动显示工具栏
 
     // 通过后处理器获取ctx对象
     this.registerMarkdownPostProcessor((
@@ -46,9 +46,7 @@ export default class AnyMenuPlugin extends Plugin {
   }
 
   onunload() {
-    document.body.querySelectorAll('body>.am-context-menu').forEach(el => el.remove())
-    document.body.querySelectorAll('body>.am-search').forEach(el => el.remove())
-    document.body.querySelectorAll('body>.am-mini-editor').forEach(el => el.remove())
+    document.body.querySelectorAll('body>.am-panel').forEach(el => el.remove())
     if (global_setting.isDebug) console.log('<<< Unloading plugin AnyMenu')
   }
 }

@@ -7,7 +7,7 @@ import { getCursorInfo } from "."
 import { AMPanel, global_el } from "@/Core/panel"
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 
-export default class DocumentListeners {
+export class DocumentListeners {
 
   public isContextOpening: boolean = false;
   public isKeyboardSelection: boolean = false;  // 键盘选择状态 (互斥a)
@@ -90,13 +90,14 @@ export default class DocumentListeners {
    * 我们还监听文档以捕获编辑器之外的鼠标释放
    */
   onMouseUp = async (_event: MouseEvent) => {
-    // this.ntb.debug('onMouseUp');
     this.isMouseDown = false;
-    this.isMouseSelecting = false;
+
     if (!global_setting.config.auto_show_toolbar_on_select) return
     if (!this.previewSelection) return
     // 超时是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
     if (this.isMouseSelecting) setTimeout(() => this.renderPreviewTextToolbar(), 10);
+
+    this.isMouseSelecting = false;
   }
 
   /**
@@ -106,7 +107,7 @@ export default class DocumentListeners {
    * 使用在预览模式或 Markdown 嵌入中选择的任何文本更新局部变量
    */
   onSelectionChange = (_event: any) => {
-    const selectedText = getSelection(this.plugin, true); // only get text for preview mode/embeds
+    const selectedText = getSelection(this.plugin);
     const selection = activeDocument.getSelection();
     const hasSelection = selectedText && selection && !selection.isCollapsed;
     this.previewSelection = hasSelection ? selection : null;
