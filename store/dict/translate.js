@@ -254,6 +254,13 @@ function buildPanel() {
     const btnBar = document.createElement('div')
     btnBar.className = 'translate-btnbar'
 
+    const btnInsert = document.createElement('button'); btnInsert.textContent = '插入译文'
+    btnInsert.className = 'btn'
+    btnInsert.onclick = () => {
+        if (cache_ctx && dstBox.value) cache_ctx.api.sendText(dstBox.value)
+    }
+    btnBar.appendChild(btnInsert)
+
     const btnTranslate = document.createElement('button'); btnTranslate.textContent = '翻译'
     btnTranslate.className = 'btn'
     btnTranslate.onclick = () => doTranslate(srcBox, dstBox)
@@ -265,13 +272,6 @@ function buildPanel() {
         if (cache_ctx && dstBox.value) cache_ctx.api.saveToClipboard(dstBox.value)
     }
     btnBar.appendChild(btnCopy)
-
-    const btnInsert = document.createElement('button'); btnInsert.textContent = '插入译文'
-    btnInsert.className = 'btn'
-    btnInsert.onclick = () => {
-        if (cache_ctx && dstBox.value) cache_ctx.api.sendText(dstBox.value)
-    }
-    btnBar.appendChild(btnInsert)
 
     root.appendChild(btnBar)
     return root
