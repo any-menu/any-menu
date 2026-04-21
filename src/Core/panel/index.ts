@@ -310,14 +310,18 @@ export class AMPanel {
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
   static visual_listener_mousedown = (ev: MouseEvent) => {
     if (!global_el.amPanel?.el) return
-    if (ev.target instanceof Element) {
-      // 前者不包括 .am-panel，后者包括 .widnows-pin，后者也可以写成 `matches('.windows-pin, .windows-pin *')`
-      if (ev.target.matches('.am-panel *') || ev.target.closest('.windows-pin')) return
-    }
+    if (!(ev.target instanceof Element)) return
 
+    // app 版本
     if (global_setting.platform == 'app') {
+      // 前者不包括 .am-panel (允许不规则区域)，后者包括 .widnows-pin，后者也可以写成 `matches('.windows-pin, .windows-pin *')`
+      if (ev.target.matches('.am-panel *') || ev.target.closest('.windows-pin')) return
       global_setting.other.app_hide()
-    } else {
+    }
+    // obsidian 插件版本
+    else {
+      // 前者不包括 .am-panel (允许不规则区域)
+      if (ev.target.matches('.am-panel *')) return
       this.hide()
     }
   }

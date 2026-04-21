@@ -49,17 +49,17 @@ export class DocumentListeners {
     setTimeout(() => this.renderPreviewTextToolbar(), 10);
   }
 
-  onKeyDown = (event: KeyboardEvent) => {
+  onKeyDown = (ev: KeyboardEvent) => {
     this.isKeyboardSelection = true;
     this.isMouseSelecting = false;
     this.isMouseDown = false;
-    if (event.key === 'Escape') {
+    if (ev.key === 'Escape') {
       AMPanel.hide([])
     }
   }
-  
+
   /** 鼠标按下事件 */
-  onMouseDown = (event: MouseEvent) => {
+  onMouseDown = (ev: MouseEvent) => {
     // // 在底部工具栏中，当点击项目时防止手机导航栏出现
     // if (Platform.isPhone && this.ntb.render.phoneTbarPosition === PositionType.Bottom) {
     //   const target = event.target as HTMLElement;
@@ -70,9 +70,9 @@ export class DocumentListeners {
     this.isKeyboardSelection = false;
     this.isMouseDown = true;
 
-    if (global_el.amPanel?.el.contains(event.target as Node)) {
-      AMPanel.hide([])
-    }
+    if (!(ev.target instanceof Element)) return
+    if (ev.target.matches('.am-panel *')) return
+    AMPanel.hide([])
   }
 
   /** 追踪鼠标位置 */
