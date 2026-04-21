@@ -156,7 +156,7 @@ export class AMPanel {
    * 
    * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
    */
-  static show(pos: {x: number, y: number}|undefined, list?: string[]) {
+  static show(pos: {x: number, y: number}|undefined, list?: string[], is_focus: boolean = true) {
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
@@ -183,10 +183,10 @@ export class AMPanel {
     }
 
     // 子面板
-    let is_focued = false // 只聚焦到第一个可聚焦的子面板
+    let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
     for (const item of list) {
       if (item == 'search') {
-        global_el.amSearch?.show()
+        global_el.amSearch?.show(!is_focued)
         is_focued = true
       }
       else if (item == 'toolbar') {

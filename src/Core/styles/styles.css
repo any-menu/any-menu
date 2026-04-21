@@ -666,6 +666,9 @@ div.editable-textarea-textarea {
 .am-context-menu.sub-menu:not(.visible) {
   display: none;
 }
+.am-context-menu:empty {
+  display: none;
+}
 .am-context-menu {
   position: relative;
   box-sizing: border-box;

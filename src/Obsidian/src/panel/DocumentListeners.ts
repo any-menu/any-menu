@@ -123,7 +123,7 @@ export class DocumentListeners {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    show_panel(this.plugin, editor, [])
+    show_panel(this.plugin, editor)
 
     async function show_panel (plugin: Plugin, editor: Editor, panel_list?: string[]) {
       // 1. 光标位置
@@ -139,7 +139,7 @@ export class DocumentListeners {
       const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
       // 3. 显示面板 // TODO 和手动显示不同，这里最好默认在字符的上方显示，并且必须是非聚焦显示
-      AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list)
+      AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list, false)
     }
   }
 }

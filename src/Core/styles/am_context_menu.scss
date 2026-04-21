@@ -16,6 +16,10 @@
     display: none;
   }
 
+  &:empty {
+    display: none;
+  }
+
   position: relative;
   // left: 0; // override by js
   // top: 32px; // override by js

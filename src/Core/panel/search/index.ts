@@ -53,7 +53,7 @@ export class AMSearch {
 
   // #region 显示/隐藏
   
-  show() {
+  show(is_focus: boolean = false) {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
@@ -63,6 +63,7 @@ export class AMSearch {
 
     // 显示后聚焦，否则 focus 无效
     ;(() => {
+      if (!is_focus) return
       if (!global_setting.focusStrategy) return
       this.el_input?.focus()
     })();
