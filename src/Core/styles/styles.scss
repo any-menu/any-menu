@@ -418,6 +418,8 @@ html, body, #main {
 /* -------------------------------- Obsidian 专用 ----------------------- */
 
 .am-ob-setting-btn { // 也会受到 .tab-root button 影响
+  position: absolute;
+  bottom: 12px;
   z-index: 4;
   left: 16px !important;
   right: auto !important;

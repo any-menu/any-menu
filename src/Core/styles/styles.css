@@ -1229,6 +1229,8 @@ html, body, #main {
 }
 /* -------------------------------- Obsidian 专用 ----------------------- */
 .am-ob-setting-btn {
+  position: absolute;
+  bottom: 12px;
   z-index: 4;
   left: 16px !important;
   right: auto !important;
