@@ -9,6 +9,7 @@ import { RequestUrlParam, requestUrl } from 'obsidian'
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/setting'
+import { AMPanel } from '@/Core/panel';
 import { getCursorInfo } from './panel'
 import { AM_SETTINGS_DEFAULT } from "./SettingTab"
 
@@ -53,6 +54,7 @@ export function initApi(plugin: Plugin) {
   }
 
   global_setting.api.sendText = async (text: string) => {
+    AMPanel.hide()
     const plugin = global_setting.other.obsidian_plugin
     if (!plugin) return
     const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
