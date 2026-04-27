@@ -139,7 +139,7 @@ export class DocumentListeners {
       const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
       // 3. 显示面板 // TODO 和手动显示不同，这里最好默认在字符的上方显示，并且必须是非聚焦显示
-      AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list, false)
+      AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list, false, true)
     }
   }
 }

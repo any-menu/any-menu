@@ -989,6 +989,13 @@ html, body, #main {
 .am-panel {
   display: flex;
   flex-direction: column;
+  bottom: unset;
+}
+.am-panel.reverse {
+  flex-direction: column-reverse;
+  top: unset;
+}
+.am-panel {
   position: fixed;
   margin: 0;
   padding: 0;

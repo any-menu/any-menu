@@ -154,9 +154,26 @@ export class AMPanel {
    * - 'center' 直接显示在页面的正中心 TODO 未支持
    *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
    * 
+   * 注意项
+   * - 如果是 app 环境，则一般 pos 将会是 `{x: 0, y: 0}`。位置由 app 的窗口位置决定
+   * - 不包含偏移，请自行相当于光标位置进行偏移再传进来
+   * 
    * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
+   * @param is_focus 是否聚焦到第一个可聚焦的子面板，默认 true。
+   *   如果是选中文本自动弹出面板的场景，则一般 false
+   * @param is_reverse 是否反向显示，默认 false。
+   *   如果是选中文本自动弹出面板的场景，则一般 true，避免遮挡后面的文本内容。
+   *   反向显示时，面板内容将显示在 pos 的上方 (而不是下方)，且根据 list 顺序从下往上显示。
+   *   注意: 如果是 app 环境，需要 app 配合
    */
-  static show(pos: {x: number, y: number}|undefined, list?: string[], is_focus: boolean = true) {
+  static show(
+    pos: {x: number, y: number}|undefined,
+    list?: string[],
+    is_focus: boolean = true,
+    is_reverse: boolean = false,
+  ) {
+    if (global_setting.platform == 'app') is_reverse = false // 临时，App 版本暂不支持该功能
+
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
@@ -174,8 +191,17 @@ export class AMPanel {
     if (pos === undefined) {
     // } else if (pos === 'center') {
     } else {
-      el_panel.style.left = `${pos.x}px`
-      el_panel.style.top = `${pos.y}px`
+      if (!is_reverse) {
+        el_panel.style.left = `${pos.x}px`
+        el_panel.style.top = `${pos.y}px`
+        el_panel.style.bottom = 'unset'
+        el_panel.classList.remove('reverse') // 对应: flex-direction: column;
+      } else {
+        el_panel.style.left = `${pos.x}px`
+        el_panel.style.top = `unset`
+        el_panel.style.bottom = `${pos.y}px`
+        el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+      }
     }
 
     if (!list) {

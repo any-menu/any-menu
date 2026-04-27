@@ -129,6 +129,11 @@ html, body, #main {
 .am-panel {
   display: flex; // 让 .am-custom-panel 最大高度为填满余下
   flex-direction: column;
+  bottom: unset;
+  &.reverse {
+    flex-direction: column-reverse;
+    top: unset;
+  }
   position: fixed;
   // left: 0; // override by js
   // top: 32px; // override by js
