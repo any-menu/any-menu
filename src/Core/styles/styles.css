@@ -991,6 +991,11 @@ html, body, #main {
   bottom: 50px;
 }
 
+#main.reverse > .windows-pin {
+  bottom: unset;
+  top: 5px;
+}
+
 /* -------------------------------- 总菜单面板 (组合基) ------------------ */
 .am-panel {
   display: flex;

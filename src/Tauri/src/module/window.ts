@@ -249,7 +249,7 @@ async function showWindow(
     cursor = await cursorPosition()
     if (global_setting.isDebug) global_setting.state.infoText += `[mousePosition]\nx:${cursor.x}, y:${cursor.y}\n\n`
     cursor.x += 0
-    cursor.y += 2
+    is_reverse ? cursor.y -= 2 : cursor.y += 2 // 避免与光标重叠
 
     // step2. 光标位置 (类似于windows自带的 `win+.` 面板)
     // 注意: 这里会同时自动更新 selectedText
@@ -282,8 +282,13 @@ async function showWindow(
     if (global_setting.isDebug) global_setting.state.infoText += `[screenSize]\nwidth:${screenSize.width}, height:${screenSize.height}\n\n`
     screenSize.height -= 48 // 默认预留windows状态栏高度48px
 
-    // step4. 最终坐标。触底对齐/反向显示 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
+    // step4. 最终坐标。触顶/底对齐/反向显示 (优先用光标，其次用鼠标坐标，然后坐标纠正避免溢出屏幕)
     // TODO 纠正x轴坐标，目前仅纠正y轴坐标
+    // TODO 触顶纠正逻辑未完善
+    if (is_reverse) {
+      const winSize = await appWindow.outerSize()
+      cursor = new PhysicalPosition(cursor.x, cursor.y - winSize.height)
+    }
     const panel_size = AMPanel.get_size(panel_list)
     const over_mode = cursor2_flag ? "revert" : "side"
     const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
@@ -292,7 +297,11 @@ async function showWindow(
 
     await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
     const el = document.querySelector('#main') as HTMLElement|null
-    if (el) el.dataset.positionMode = 'cursor'
+    if (el) {
+      el.dataset.positionMode = 'cursor'
+      if (is_reverse) el.classList.add('reverse')
+      else el.classList.remove('reverse')
+    }
   } else if (pos === 'center') {
     cursor = await cursorPosition() // 仅用于提供类型 (含 x,y 以外的信息)
 
@@ -315,17 +324,34 @@ async function showWindow(
 
     await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
     const el = document.querySelector('#main') as HTMLElement|null
-    if (el) el.dataset.positionMode = 'center'
+    if (el) {
+      el.dataset.positionMode = 'center'
+      if (is_reverse) el.classList.add('reverse')
+      else el.classList.remove('reverse')
+    }
   } else if (pos === undefined) { // 沿用之前的位置
   } else { // 使用给定的坐标
-    cursor = new PhysicalPosition(pos.x, pos.y)
+    if (is_reverse) {
+      const winSize = await appWindow.outerSize()
+      cursor = new PhysicalPosition(pos.x, pos.y - winSize.height)
+    } else {
+      cursor = new PhysicalPosition(pos.x, pos.y)
+    }
+
+    await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
+    const el = document.querySelector('#main') as HTMLElement|null
+    if (el) {
+      el.dataset.positionMode = 'xy'
+      if (is_reverse) el.classList.add('reverse')
+      else el.classList.remove('reverse')
+    }
   }
 
   // 显示窗口
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
   await appWindow.show(); global_state.isWindowVisible = true;
 
-  // 焦点模式/不抢焦点模式，需要 show() 完后运行 TODO 完善
+  // 焦点模式/不抢焦点模式，需要 show() 完后运行
   const applyFocusMode = async () => {
     if (is_focus) {
       await appWindow.setFocus()
@@ -334,6 +360,7 @@ async function showWindow(
       // Workaround: Tauri 暂无 "显示但不抢焦点且置于最前" 的原生 API
       // 通过瞬间置顶再取消的方式，借助系统的 z-order 变更将窗口浮到最前
       // 加一帧等待，确保系统处理完置顶状态再取消，避免异步竞争
+      // TODO fix bug 完善，目前有比较高的概率无法取消置顶
       await appWindow.setAlwaysOnTop(true)
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
       await appWindow.setAlwaysOnTop(false)
