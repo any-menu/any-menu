@@ -6,7 +6,7 @@
 
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import {
-  getCurrentWindow, cursorPosition, Window as TauriWindow, type PhysicalPosition
+  getCurrentWindow, cursorPosition, PhysicalPosition, Window as TauriWindow
 } from '@tauri-apps/api/window'
 import { AMPanel } from '../../../Core/panel/'
 
@@ -207,8 +207,24 @@ if (global_setting.platform === 'app') {
   global_setting.other.app_show = showWindow
   global_setting.other.app_hide = hideWindow
 }
-/** 显示窗口，并自动定位到光标/鼠标位置 */
-async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
+/**
+ * 显示窗口 (对标 Panel 的 show 方法)
+ * 
+ * @param pos 显示位置
+ * - 'cursor': 使用光标坐标，失败时使用鼠标坐标
+ * - 'center': 屏幕中心
+ * - undefined: 沿用上次的位置
+ * - {x, y}: 使用给定的坐标
+ * @param panel_list 同 Panel::show 的参数
+ * @param is_focus 同 Panel::show 的参数
+ * @param is_reverse 同 Panel::show 的参数
+ */
+async function showWindow(
+  pos?: 'cursor'|'center'|{x: number, y: number},
+  panel_list?: string[],
+  is_focus: boolean = true,
+  is_reverse: boolean = false,
+) {
   if (global_setting.isDebug) global_setting.state.infoText = ""
 
   // 获取当前选择的文本
@@ -300,7 +316,9 @@ async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
     await appWindow.setPosition(cursor) // 先移动再显示，await应该不用删
     const el = document.querySelector('#main') as HTMLElement|null
     if (el) el.dataset.positionMode = 'center'
-  } else { // 即 undefined，沿用之前的位置
+  } else if (pos === undefined) { // 沿用之前的位置
+  } else { // 使用给定的坐标
+    cursor = new PhysicalPosition(pos.x, pos.y)
   }
 
   // 显示窗口
@@ -308,18 +326,23 @@ async function showWindow(pos?: 'cursor'|'center', panel_list?: string[]) {
   await appWindow.show(); global_state.isWindowVisible = true;
 
   // 焦点模式/不抢焦点模式，需要 show() 完后运行 TODO 完善
-  if (global_setting.config.panel_focus_mode) {
-    await appWindow.setFocus() // 聚焦窗口
-    // 注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
-  } else {}
-  if (global_setting.config.panel_default_always_top) {
-    await appWindow.setAlwaysOnTop(true)
-  } else {
-    await appWindow.setAlwaysOnTop(false)
+  const applyFocusMode = async () => {
+    if (is_focus) {
+      await appWindow.setFocus()
+      // 注意作为菜单窗口而言，窗口消失时要恢复聚焦与光标
+    } else {
+      // Workaround: Tauri 暂无 "显示但不抢焦点且置于最前" 的原生 API
+      // 通过瞬间置顶再取消的方式，借助系统的 z-order 变更将窗口浮到最前
+      // 加一帧等待，确保系统处理完置顶状态再取消，避免异步竞争
+      await appWindow.setAlwaysOnTop(true)
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      await appWindow.setAlwaysOnTop(false)
+    }
   }
+  void applyFocusMode()
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.show({x: 0, y: 0}, panel_list)
+  AMPanel.show({x: 0, y: 0}, panel_list, is_focus, is_reverse)
 }
 
 /** 隐藏窗口 */

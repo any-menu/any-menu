@@ -620,8 +620,14 @@ div.editable-textarea-textarea {
 
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 建议列表 */
+.am-panel.reverse .am-search .am-search-suggestion {
+  top: unset;
+  bottom: 100%;
+}
+
 .am-search .am-search-suggestion {
   top: 100%;
+  bottom: unset;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);

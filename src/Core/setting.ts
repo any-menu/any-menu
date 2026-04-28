@@ -30,10 +30,11 @@ export const global_setting: {
    */
   config: {
     language: 'auto'|'English'|'中文'|string // 语言
+    // 弃用: 根据召唤面板的方式自动选择。例如选中文本自动弹出菜单时通常不抢焦点，主动召唤通常需要抢焦点
     // 抢焦点模式 = 默认聚焦+默认置顶。隐藏条件: 失焦、直接点击窗口的#main/body、点击菜单项
     // 不抢焦点模式 = 不聚焦+默认置顶。隐藏条件: 失焦[-]、直接点击窗口的#main/body、点击菜单项、窗口外点击[+]
-    panel_focus_mode: boolean, // 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
-    panel_default_always_top: boolean, // 默认置顶窗口/不置顶窗口 (pin键是临时切换)
+    // panel_focus_mode: boolean, // 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
+    // panel_default_always_top: boolean, // 默认置顶窗口/不置顶窗口 (pin键是临时切换)
 
     pinyin_index: boolean, // 是否为中文key自动构建拼音索引
     pinyin_first_index: boolean, // 是否为中文key自动构建拼音首字母索引
@@ -161,8 +162,6 @@ export const global_setting: {
   },
   config: {
     language: 'auto',
-    panel_focus_mode: true,  // false为不抢焦点模式，true为抢焦点模式
-    panel_default_always_top: true,
 
     pinyin_index: true,
     pinyin_first_index: true,

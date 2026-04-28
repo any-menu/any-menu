@@ -313,8 +313,6 @@ export function initApi() {
 const DEFAULT_TOML = `\
 [config]
 language = "English"        # 语言 'auto'|'English'|'中文'|string
-panel_focus_mode = true     # 新窗口的聚焦模式: 聚焦到新窗口/不聚焦到新窗口
-panel_default_always_top = false # 默认置顶窗口/不置顶窗口 (pin键是临时切换)
 
 pinyin_index = true         # 是否为中文key自动构建拼音索引
 pinyin_first_index = true   # 是否为中文key自动构建拼音首字母索引

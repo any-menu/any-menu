@@ -172,8 +172,6 @@ export class AMPanel {
     is_focus: boolean = true,
     is_reverse: boolean = false,
   ) {
-    if (global_setting.platform == 'app') is_reverse = false // 临时，App 版本暂不支持该功能
-
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
