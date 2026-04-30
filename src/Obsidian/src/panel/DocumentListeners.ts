@@ -1,10 +1,35 @@
 /**
  * modi from https://github.com/chrisgurney/obsidian-note-toolbar/blob/ae125b8380639a998b253979fad7bbae6baf2ff4/src/Listeners/DocumentListeners.ts
+ * 
+ * ## 设计要点 (插件版和 app 版通用)
+ * 
+ * 这里设计一套 "选中文本自动弹出面板" 的通用交互逻辑，
+ * 插件版 (document版) 和 app 版都使用这套逻辑，避免分别实现两套逻辑导致的差异和维护成本
+ * 
+ * (1) 监听事件 - 面板未出现时
+ * 
+ * - 键盘按下 (无需监听抬起)
+ * - 鼠标按下和抬起鼠标
+ *   - 右键按下事件/上下文菜单事件
+ * - 鼠标移动
+ * - 鼠标双击 (双击选中)
+ * - ~~选择改变~~ (这个仅在浏览器版本可以被监听，在 app 版本难以直接监听到)
+ * 
+ * (2) 监听事件 - 面板出现后
+ * 
+ * - 截取全局的 Esc 事件，用于关闭面板 (可选)
+ * 
+ * (3) 面板属性
+ * 
+ * - 不自动聚焦 (非焦点式的)
+ *   (只有主动唤出面板才应该抢焦点，否则不应该抢焦点)
+ * - 倒置翻转显示 (不要遮挡当前选中文本的下面的内容，优先在上方显示，避免影响用户原来的进一步操作)
+ *   (只有主动唤出才可在下面显示)
  */
 
 import { global_setting } from "@/Core/setting"
 import { getCursorInfo } from "."
-import { AMPanel, global_el } from "@/Core/panel"
+import { AMPanel } from "@/Core/panel"
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 
 export class DocumentListeners {
