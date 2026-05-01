@@ -11,7 +11,6 @@ export default {
 
     async run(ctx) {
         // `<alt> http...` 格式的情况
-        // TODO fix bug: 在 obsidian 环境中复制裸url链接时，selectedText 的结果是 [http...](http...)，哪怕在源码模式中也是一样
         const match = ctx.env.selectedText.match(/^(.+)\s(https?.*)$/)
         if (match) {
             const title = match[1].trim(); // TODO 自动转义标题中的 `[]()` 等符号

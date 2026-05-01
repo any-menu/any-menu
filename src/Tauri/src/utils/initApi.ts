@@ -33,9 +33,10 @@ export function initApi() {
     // 通过窗口名，处理软件版本与插件版本的冲突问题
     // 如果不开启 app_no_use_in_ob，则会是全局快捷键的 app 版本优先，快捷键冲突时召唤的是 app 的菜单
     // 反之则 ob 的插件版本优先
-    // ret 示例: AnyMenu简单的上下文 - MdNote_Public - Obsidian v1.9.10
+    // ret 示例: `AnyMenu简单的上下文 - MdNote_Public - Obsidian v1.9.10`
+    //   补丁: 这个 `v` 字母在 1.11 -> 1.12 版本就没有了。现在变成了: `README - MdNote_Public - Obsidian 1.12.7`
     // if (global_setting.config.app_no_use_in_ob && ret[3] && ret[3].length > 0) {
-    //   if (ret[3].includes('- Obsidian v')) {
+    //   if (ret[3].includes(' - Obsidian ')) {
     //     return { x: -2, y: -2 }
     //   }
     // }
@@ -346,7 +347,7 @@ note_paths = "./notes/"
 
 # app版选项 (插件版不支持)
 # app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
-app_black_list = ["- Obsidian v"]
+app_black_list = [" - Obsidian "]
 # app是否使用高级快捷键
 app_ad_shortcut = true
 

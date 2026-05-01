@@ -99,13 +99,15 @@ export function setupAppChangeListener() {
       // 这里硬编码，默认策略是先uia，异步clipboard
       const uia_selectedText = global_setting.state.selectedText // 上次uia失败则一般这个值是 undefined
       // const uia_selectedText2 = payload['selected_text_by_uia']
-      const clipboard_selectedText = payload['selected_text_by_clipboard']
-      const clipboard_selectedText_html = payload['selected_html_by_clipboard']
+      const clipboard_selectedText = payload['selected_text_by_clipboard'] // 剪切板中的纯文本
+      const clipboard_selectedText_html = payload['selected_html_by_clipboard'] // 剪切板中的html文本
       let is_update_selectedText = false
       if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0
-        && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住，不走 html 分支，纯文本
-        && !global_setting.state.activeAppName.endsWith(" - Visual Studio Code") // 同上，话说取剪切板的纯文本内容应该也行
-      ) { // 特殊 - html 拥有更高的优先级
+        // 一些应用的显示是前端，但不需要html/md格式，需以纯文本方式获取选中文本
+        && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住
+        && !global_setting.state.activeAppName.endsWith(" - Visual Studio Code")
+        && !global_setting.state.activeAppName.includes(" - Obsidian ") // 裸url链接会变成 a 标签
+      ) { // 特殊 - html 拥有更高的优先级，将 html2md
         console.log(`selectedText is html`)
         global_setting.state.selectedText = turndownService.turndown(clipboard_selectedText_html)
         is_update_selectedText = true

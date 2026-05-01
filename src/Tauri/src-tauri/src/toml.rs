@@ -292,7 +292,7 @@ note_paths = "./notes/"
 
 # app版选项 (插件版不支持)
 # app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
-app_black_list = ["- Obsidian v"]
+app_black_list = [" - Obsidian "]
 # app是否使用高级快捷键
 app_ad_shortcut = true
 

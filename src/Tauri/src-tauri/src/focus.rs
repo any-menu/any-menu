@@ -39,7 +39,7 @@ pub fn init_focus_check(app_handle: tauri::AppHandle) {
                 // - 0 - Google 搜索 - Google Chrome
                 // - 032-做题策略：链列的找法_哔哩哔哩_bilibili - Google Chrome
                 // - ● focus.rs - any-menu (工作区) - Visual Studio Code
-                // - AI联动架构，Skill RAG MCP Agent NLU - MdNote_Public - Obsidian v1.11.5
+                // - AI联动架构，Skill RAG MCP Agent NLU - MdNote_Public - Obsidian 1.12.5
                 // 
                 // 时机点注意:
                 // 这里的主要目的是为了设置快捷键的黑白名单，
