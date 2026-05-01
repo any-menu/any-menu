@@ -5,11 +5,21 @@ export default {
         version: '1.0.0',
         min_app_version: '1.1.0',
         author: 'LincZero, Copilot Cluade Opus 4.6',
-        description: '获取浏览器/文档环境下当前标签页标题和链接，生成 Markdown 链接',
+        description: '获取浏览器/文档环境下当前标签页标题和链接，生成 Markdown 链接。使用: 选中浏览器中的url，或选中 "<alt> http..." 格式的文本',
         icon: 'lucide-link'
     },
 
     async run(ctx) {
+        // `<alt> http...` 格式的情况
+        // TODO fix bug: 在 obsidian 环境中复制裸url链接时，selectedText 的结果是 [http...](http...)，哪怕在源码模式中也是一样
+        const match = ctx.env.selectedText.match(/^(.+)\s(https?.*)$/)
+        if (match) {
+            const title = match[1].trim(); // TODO 自动转义标题中的 `[]()` 等符号
+            const url = match[2].trim();
+            ctx.api.sendText(`[${title}](${url})`)
+            return
+        }
+
         // 获取 url
         let url = ''
         if (ctx.env.platform === 'obsidian-plugin') {
