@@ -25,7 +25,7 @@ import zhCN from './zh-cn'
  * localeMap['en'] = { ...localeMap['en'], ...extraDict };
  * localeMap['zh'] = { ...localeMap['zh'], ...extraDict };
  */
-export const localeMap: { [key: string]: Partial<typeof en> } = {
+const localeMap: { [key: string]: Partial<typeof en> } = {
   en,
   'zh': zhCN,
   'zh-TW': zhCN,
