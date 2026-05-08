@@ -1,5 +1,4 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -9,59 +8,27 @@ use tauri::{
 use std::{
     thread,
     sync::{
-        mpsc::{self, Sender, Receiver},
-        // Arc,
+        mpsc::{self},
         Mutex,
     }
 };
-use tauri::State;
-use uiautomation::{
-    UIAutomation,
-};
 
 // 自定义包
-mod uia;
-use uia::{
-    get_uia_focused,
-    get_uia_by_windows,
-    get_screen_size,
-    get_selected,
-    get_info,
+mod uia_sender;
+use uia_sender::{
+    UiaSender, UiaMsg, start_uia_worker,
 };
-mod text;
-mod text_c;
-mod file;
-mod toml;
 mod focus;
 mod ad_shortcut;
 mod utils;
 
-// #region uia thread
-
-// 定义全局 Sender 类型
-struct UiaSender(pub Mutex<Sender<UiaMsg>>);
-
-// 消息枚举，根据需求可扩展
-enum UiaMsg {
-    PrintElement,
-}
-
-fn start_uia_worker(rx: Receiver<UiaMsg>) {
-    // 初始化 uiautomation
-    let automation = UIAutomation::new().unwrap();
-    let walker = automation.get_control_view_walker().unwrap();
-
-    loop {
-        match rx.recv() {
-            Ok(UiaMsg::PrintElement) => {
-                let _ = get_uia_focused(&walker, &automation, 0);
-            }
-            Err(_) => break,
-        }
-    }
-}
-
-// #endregion
+// 自定义包 - 仅命令
+mod uia;
+mod text;
+mod text_c;
+mod file;
+mod toml;
+mod other;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -236,9 +203,10 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            greet,
-            get_caret, get_caret_debug, get_screen_size, // caret size 类
-            get_info, // 其他类
+            other::greet,
+            uia_sender::get_caret, uia_sender::get_caret_debug, // caret 类
+            uia::get_screen_size, // size 类
+            uia::get_info, // 其他
             text::send, text::clipboard::clipboard_set_text,
             file::read_file, file::read_folder, file::create_file, file::write_file, file::delete_file, // 文件类
             toml::config_read_to_json, toml::config_write_from_json, // 文件类 - 配置文件版
@@ -246,54 +214,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-/// 项目模板 默认的表单功能
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-// ----------------------------------------------------------------------------
-
-// #region getCursorXY
-
-// 此处可能汇总多处信息来源 & 此处管理 uid sender
-
-// #[tauri::command]
-// fn get_cursor_xy() -> Result<Point, String> {}
-
-// #[derive(serde::Serialize)]
-// struct Point {
-//     x: i32,
-//     y: i32,
-// }
-
-#[tauri::command]
-fn get_caret(_app_handle: tauri::AppHandle, _uia_sender: State<UiaSender>) -> (i32, i32, String, String) {
-    let (x, y, str, win_name) = get_message();
-    return (x, y, str, win_name);
-}
-
-#[tauri::command]
-fn get_caret_debug(_app_handle: tauri::AppHandle, uia_sender: State<UiaSender>) -> (i32, i32, String, String) {
-    // uia
-    // 向worker线程发消息
-    let tx = uia_sender.0.lock().unwrap();
-    let _ = tx.send(UiaMsg::PrintElement);
-    
-    let _ = get_uia_by_windows(); 
-
-    let (x, y, str, win_name) = get_message();
-    return (x, y, str, win_name);
-}
-
-/// 汇总一些信息
-/// 包括: 坐标、选择文本、窗口名等
-fn get_message() -> (i32, i32, String, String) {
-    let (x, y) = uia::get_win_message();
-    let selected_mode: &str = "uia";
-    let selected_text: Option<String> = get_selected(selected_mode, Some(true)).ok();
-    (x, y, selected_text.unwrap_or("".to_string()), uia::get_uia_by_windows_winname())
-}
-
-// #endregion
