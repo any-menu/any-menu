@@ -27,13 +27,13 @@ mod uia;
 mod text;
 mod text_c;
 mod file;
-mod toml;
+mod file_toml;
 mod other;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // 配置文件模块
-    let _ = toml::init_config();
+    let _ = file_toml::init_config();
 
     // 日志插件
     let log_plugin = {
@@ -227,7 +227,7 @@ pub fn run() {
             uia::get_info, // 其他
             text::send, text::clipboard::clipboard_set_text,
             file::read_file, file::read_folder, file::create_file, file::write_file, file::delete_file, // 文件类
-            toml::toml_read_to_json, toml::toml_write_from_json, // 文件类 - toml文件版 & 配置文件版
+            file_toml::toml_read_to_json, file_toml::toml_write_from_json, // 文件类 - toml文件版 & 配置文件版
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
