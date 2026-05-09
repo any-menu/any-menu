@@ -50,7 +50,7 @@ export const global_setting: {
     // HTTP 服务端口。
     // 用于实现同设备上不同环境的通信。
     // 需要保证本地应用、Obsidian 插件、浏览器扩展等不同环境的端口一致，且不被占用。
-    server_port: 41667,
+    server_port: number,
     /** 发送文本的方式。
      * 'keyboard'|'clipboard'|'auto'
      * enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
@@ -172,7 +172,7 @@ export const global_setting: {
     search_engine: 'reverse',
     search_limit: 500,
 
-    server_port: 14876,
+    server_port: 41667,
     send_text_method: 'clipboard',
     dict_online_source: 'gitee',
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
