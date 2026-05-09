@@ -1,5 +1,5 @@
 /**
- * 文件读取 - 配置文件版
+ * 文件读取 - toml文件版 & 配置文件版
  * 
  * 类似于 file.rs，但针对于配置文件再做了层封装
  * (当然，为了应对配置文件路径的修改，path 是参数)
@@ -18,15 +18,69 @@ use std::{fs, path::PathBuf};
 use serde_json::Value as Json;
 use toml_edit::{Array, ArrayOfTables, DocumentMut, Item, Table, Value};
 
+// #region 配置文件
+
+use std::env;
+const CONFIG_PATH: &str = "./am-user.toml"; // TODO 放C盘会更利于软件版本更新时复用
+
 #[tauri::command]
-fn config_read_raw(path: &str) -> Result<String, String> {
+fn config_read_to_json() -> Result<Json, String> {
+    toml_read_to_json(CONFIG_PATH)
+}
+
+// 全局配置管理 (支持多线程读取)
+
+static CONFIG: OnceLock<RwLock<Json>> = OnceLock::new();
+
+use std::sync::{OnceLock, RwLock};
+
+/// 初始化全局配置
+pub fn init_config() -> Result<(), String> {
+    // 打印 CWD
+    #[cfg(debug_assertions)]
+    if let Ok(cwd) = env::current_dir() {
+        println!("CWD: {:?}", cwd);
+    }
+
+    let json = config_read_to_json()?;
+
+    CONFIG
+        .set(RwLock::new(json))
+        .map_err(|_| "Config already initialized".to_string())
+}
+
+/// 读取全局配置的某个字段（任意线程均可调用）
+///
+/// 示例：`config_get(|c| c["server"]["port"].clone())`
+pub fn _config_get<F, T>(f: F) -> Result<T, String>
+where
+    F: FnOnce(&Json) -> T,
+{
+    let lock = CONFIG.get().ok_or("Config not initialized")?;
+    let guard = lock.read().map_err(|e| e.to_string())?;
+    Ok(f(&guard))
+}
+
+/// 热重载：重新从文件读取并替换全局配置
+pub fn _config_reload() -> Result<(), String> {
+    let json = config_read_to_json()?;
+    let lock = CONFIG.get().ok_or("Config not initialized")?;
+    let mut guard = lock.write().map_err(|e| e.to_string())?;
+    *guard = json;
+    Ok(())
+}
+
+// #endregion
+
+#[tauri::command]
+fn toml_read_raw(path: &str) -> Result<String, String> {
     config_ensure_file(&path)?;
     fs::read_to_string(&path).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn config_read_to_json(path: &str) -> Result<Json, String> {
-    let raw = config_read_raw(path)?;
+pub fn toml_read_to_json(path: &str) -> Result<Json, String> {
+    let raw = toml_read_raw(path)?;
     // 先用 toml_edit::DocumentMut 解析
     let doc = raw.parse::<DocumentMut>().map_err(|e| e.to_string())?;
     // 然后转 JSON 返回
@@ -35,7 +89,7 @@ pub fn config_read_to_json(path: &str) -> Result<Json, String> {
 
 /// 前端传入“最终 object”（任意增删改字段），后端合并到原 TOML，并写回（保留注释）
 #[tauri::command]
-pub fn config_write_from_json(path: &str, new_json: Json) -> Result<(), String> {
+pub fn toml_write_from_json(path: &str, new_json: Json) -> Result<(), String> {
     config_ensure_file(&path)?;
     let raw = fs::read_to_string(&path).map_err(|e| e.to_string())?;
     let mut doc = raw.parse::<DocumentMut>().map_err(|e| e.to_string())?;

@@ -138,7 +138,7 @@ export function initApi() {
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
     // 后续内容也可以用 
     // ```
-    // invoke("config_read_to_json", {...})`
+    // invoke("toml_read_to_json", {...})`
     // global_setting.config = ...
     // ```
     // 来代替
