@@ -20,6 +20,7 @@ use uia_sender::{
 mod focus;
 mod ad_shortcut;
 mod utils;
+mod http_server;
 
 // 自定义包 - 仅命令
 mod uia;
@@ -92,16 +93,21 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .setup(|app| {
-            // 状态缓存模块 (带app_handle克隆)
+            let app_handle = app.app_handle();
+
+            // 状态缓存模块
             if let Ok(mut state) = utils::AM_STATE.lock() {
-                state.app_handle = Some(app.app_handle().clone());
+                state.app_handle = Some(app_handle.clone());
             }
 
-            // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程 (恒运行, 带app_handle克隆)
-            focus::init_focus_check(app.app_handle().clone());
+            // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程 (恒运行)
+            focus::start_focus_check(app_handle.clone());
 
-            // 高级快捷键模块 - 独立线程 (恒运行, 带app_handle克隆)
-            ad_shortcut::init_ad_shortcut(app.app_handle().clone());
+            // 高级快捷键模块 - 独立线程 (恒运行)
+            ad_shortcut::start_ad_shortcut(app_handle.clone());
+
+            // HTTP 服务器模块 - 独立线程 (恒运行)
+            http_server::start_local_server(app_handle.clone());
 
             // 菜单项数组
             let menu = {

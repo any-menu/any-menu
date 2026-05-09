@@ -32,12 +32,15 @@ chrono = "0.4.42" # 日期时间
 tauri-plugin-http = "2" # HTTP 请求插件 (用于在线词典/脚本)
 rdev = { version = "0.5.3", features = ["unstable_grab"] } # 监听和发送跨平台鼠键 (用于高级快捷键)
 tauri-plugin-notification = "2" # 本地通知插件
+axum = "0.8.9" # HTTP服务器框架
+tower-http = { version = "0.6.10", features = ["cors"] } # HTTP服务器实用工具 (如解决跨域问题)
+tokio = "1.52.3" # 异步运行时 (HTTP服务器依赖)
 
-# PC端
+# PC 端
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-global-shortcut = "2" # 全局快捷键插件
 
-# winapi (windows) 端
+# windows 端 (如winapi)
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser", "winbase", "winnt"] } # (用于剪切板等)
 uiautomation = { version = "0.24.0", features = ["input", "process", "clipboard"] }

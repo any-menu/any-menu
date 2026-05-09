@@ -71,12 +71,12 @@ pub fn _init_ad_shortcut() {
  * 一些机制: 
  * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
  */
-pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
+pub fn start_ad_shortcut(app_handle: tauri::AppHandle) {
     std::thread::spawn(move || {
-        init_ad_shortcut2(app_handle);
+        start_ad_shortcut2(app_handle);
     });
 }
-fn init_ad_shortcut2(app_handle: tauri::AppHandle) {
+fn start_ad_shortcut2(app_handle: tauri::AppHandle) {
     // 变量 - 线程安全
     let state = Arc::new(LayerState::new());
     let enigo_instance = Arc::new(Mutex::new(
