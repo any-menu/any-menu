@@ -32,45 +32,52 @@ mod other;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // 日志插件。release 模式无需高亮 (一般也会禁用掉控制台输出)
-    #[cfg(debug_assertions)]
-    let colors = fern::colors::ColoredLevelConfig {
-        error: fern::colors::Color::Red,
-        warn: fern::colors::Color::Yellow,
-        info: fern::colors::Color::Green,
-        debug: fern::colors::Color::Blue,
-        trace: fern::colors::Color::Cyan,
+    // 日志插件
+    let log_plugin = {
+        // 其中 release 模式无需高亮、美化等 (一般也会禁用掉控制台输出)
+        #[cfg(debug_assertions)]
+        {
+            
+            let colors = fern::colors::ColoredLevelConfig {
+                error: fern::colors::Color::Red,
+                warn: fern::colors::Color::Yellow,
+                info: fern::colors::Color::Green,
+                debug: fern::colors::Color::Blue,
+                trace: fern::colors::Color::Cyan,
+            };
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Debug) // 日志级别
+                .with_colors(colors) // 日志高亮
+                .format(move |out, message, record| { // 日志格式。主要修改点: 对齐日志级别、对齐日志内容、后移不定长的输出位置
+                    let time_str = chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]");
+                    out.finish(format_args!(
+                        "{time} [{level:<5}] {message} [{target}]",
+                        time = time_str,
+                        level = colors.color(record.level()),
+                        message = message,
+                        target = record.target(),
+                    ));
+                })
+                // .clear_targets() // 日志目标 (下面分别是: 终端、前端、文件，可按需使用)
+                // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
+                // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
+                // .target(tauri_plugin_log::Target::new(
+                //     tauri_plugin_log::TargetKind::Folder {
+                //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
+                //         file_name: None,
+                //     },
+                // ))
+                .build()
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Debug)
+                .build()
+        }
     };
-    #[cfg(debug_assertions)]
-    let log_plugin = tauri_plugin_log::Builder::new()
-        .level(log::LevelFilter::Debug) // 日志级别
-        .with_colors(colors) // 日志高亮
-        .format(move |out, message, record| { // 日志格式。主要修改点: 对齐日志级别、对齐日志内容、后移不定长的输出位置
-            let time_str = chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]");
-            out.finish(format_args!(
-                "{time} [{level:<5}] {message} [{target}]",
-                time = time_str,
-                level = colors.color(record.level()),
-                message = message,
-                target = record.target(),
-            ));
-        })
-        // .clear_targets() // 日志目标 (下面分别是: 终端、前端、文件，可按需使用)
-        // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
-        // .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
-        // .target(tauri_plugin_log::Target::new(
-        //     tauri_plugin_log::TargetKind::Folder {
-        //         path: std::path::PathBuf::from("/path/to/logs"), // 会相对于根盘符的绝对路径
-        //         file_name: None,
-        //     },
-        // ))*/
-        .build();
-    #[cfg(not(debug_assertions))]
-    let log_plugin = tauri_plugin_log::Builder::new()
-        .level(log::LevelFilter::Debug)
-        .build();
 
-    // uia 模块 - 独立线程
+    // uia 模块 - 独立线程 (恒运行)
     let (tx, rx) = mpsc::channel::<UiaMsg>();
     let uia_sender = UiaSender(Mutex::new(tx));
     thread::spawn(move || { // 传递receiver
@@ -79,9 +86,9 @@ pub fn run() {
 
     // Tauri 主程序
     tauri::Builder::default()
-        .plugin(tauri_plugin_http::init()) // HTTP 请求插件
         .manage(uia_sender) // 依赖注入，注入到Tauri State管理
         .plugin(log_plugin) // 日志插件
+        .plugin(tauri_plugin_http::init()) // HTTP 请求插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
@@ -93,25 +100,28 @@ pub fn run() {
             // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程
             focus::init_focus_check(app.app_handle().clone());
 
-            // 高级快捷键模块 - 独立线程
+            // 高级快捷键模块 - 独立线程 (恒运行)
             let app_handle2 = app.app_handle().clone();
             std::thread::spawn(|| {
                 ad_shortcut::init_ad_shortcut(app_handle2);
             });
 
-            let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
-            let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
-            let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 配置菜单项
             // 菜单项数组
-            #[cfg(debug_assertions)]
             let menu = {
-                // 只在 debug 模式下创建 "Main (Debug)" 菜单项
-                let main_debug_item = MenuItem::with_id(app, "main", "Main (Debug)", true, None::<&str>)?;
-                let open_user_dir_item = MenuItem::with_id(app, "open_user_dir", "Open User Dir (Debug)", true, None::<&str>)?; // 打开用户文件夹菜单项
-                Menu::with_items(app, &[&main_debug_item, &open_user_dir_item, &config_item, &restart_item, &quit_item])?
+                let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?; // 退出菜单项
+                let restart_item = MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?; // 重启菜单项
+                let config_item = MenuItem::with_id(app, "config", "Config", true, None::<&str>)?; // 配置菜单项
+
+                #[cfg(debug_assertions)]
+                {
+                    // 只在 debug 模式下创建 "Main (Debug)" 菜单项
+                    let main_debug_item = MenuItem::with_id(app, "main", "Main (Debug)", true, None::<&str>)?;
+                    let open_user_dir_item = MenuItem::with_id(app, "open_user_dir", "Open User Dir (Debug)", true, None::<&str>)?; // 打开用户文件夹菜单项
+                    Menu::with_items(app, &[&main_debug_item, &open_user_dir_item, &config_item, &restart_item, &quit_item])?
+                }
+                #[cfg(not(debug_assertions))]
+                Menu::with_items(app, &[&config_item, &restart_item, &quit_item])?
             };
-            #[cfg(not(debug_assertions))]
-            let menu = Menu::with_items(app, &[&config_item, &restart_item, &quit_item])?;
 
             let _tray = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
