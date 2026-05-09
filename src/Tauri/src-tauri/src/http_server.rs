@@ -32,7 +32,7 @@ async fn start_local_server2(app_handle: AppHandle) {
         .with_state(app_handle);
 
     // 绑定本地端口 (需要与 bridge.js 中一致)
-    let addr = SocketAddr::from(([127, 0, 0, 1], 14876));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 41667)); // TODO 使用配置文件中的端口号
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     
     println!("Listening on {}", addr);

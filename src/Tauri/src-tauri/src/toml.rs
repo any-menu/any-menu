@@ -270,6 +270,10 @@ search_engine = "reverse"
 # 暂时以滚动形式显示，不支持类似输入法的通过 '方括号' 翻页，否则这个数量可以限制更多
 search_limit = 500
 
+# HTTP 服务端口。
+# 用于实现同设备上不同环境的通信。
+# 需要保证本地应用、Obsidian 插件、浏览器扩展等不同环境的端口一致，且不被占用。
+server_port = 41667
 #  发送文本的方式。
 # 'keyboard'|'clipboard'|'auto'
 # enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
