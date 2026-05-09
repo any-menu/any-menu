@@ -64,12 +64,19 @@ pub fn _init_ad_shortcut() {
     }).unwrap();
 }
 
-/** 可以拦截原行为，会阻塞。该函数会在一个独立的线程中被执行sdfs
+/** 高级快捷键系统启动 
+ * 
+ * 可以拦截原行为，该函数会在一个独立的线程中被执行
  * 
  * 一些机制: 
  * - KeyPress 会在长按时一直触发, 直到按下下一个键, 上一个键就不再一直触发 (哪怕还按着)
  */
 pub fn init_ad_shortcut(app_handle: tauri::AppHandle) {
+    std::thread::spawn(move || {
+        init_ad_shortcut2(app_handle);
+    });
+}
+fn init_ad_shortcut2(app_handle: tauri::AppHandle) {
     // 变量 - 线程安全
     let state = Arc::new(LayerState::new());
     let enigo_instance = Arc::new(Mutex::new(

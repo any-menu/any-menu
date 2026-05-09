@@ -2,7 +2,7 @@
  * 一个用于监控焦点变化的模块，当聚焦到黑名单/非黑名单窗口时，动态地注册或注销全局快捷键
  */
 
-use tauri::Emitter;
+use tauri::Emitter; // app_handle.emit()
 
 /**
  * 初始化焦点监控线程

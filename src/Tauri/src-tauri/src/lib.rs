@@ -4,7 +4,6 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-
 use std::{
     thread,
     sync::{
@@ -93,18 +92,16 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .setup(|app| {
+            // 状态缓存模块 (带app_handle克隆)
             if let Ok(mut state) = utils::AM_STATE.lock() {
                 state.app_handle = Some(app.app_handle().clone());
             }
 
-            // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程
+            // focus 模块 (被全局快捷键黑白名单依赖) - 独立线程 (恒运行, 带app_handle克隆)
             focus::init_focus_check(app.app_handle().clone());
 
-            // 高级快捷键模块 - 独立线程 (恒运行)
-            let app_handle2 = app.app_handle().clone();
-            std::thread::spawn(|| {
-                ad_shortcut::init_ad_shortcut(app_handle2);
-            });
+            // 高级快捷键模块 - 独立线程 (恒运行, 带app_handle克隆)
+            ad_shortcut::init_ad_shortcut(app.app_handle().clone());
 
             // 菜单项数组
             let menu = {
@@ -123,7 +120,8 @@ pub fn run() {
                 Menu::with_items(app, &[&config_item, &restart_item, &quit_item])?
             };
 
-            let _tray = TrayIconBuilder::new()
+            // 系统托盘
+            TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone()) // 托盘图标
                 .tooltip("any-menu")
                 .menu(&menu) // 加载菜单项数组
@@ -210,6 +208,7 @@ pub fn run() {
                 //     }
                 // })
                 .build(app)?;
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
