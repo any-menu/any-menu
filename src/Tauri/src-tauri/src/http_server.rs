@@ -12,6 +12,8 @@ use std::net::SocketAddr;
 use tauri::{AppHandle, Emitter};
 use tower_http::cors::{Any, CorsLayer};
 
+use crate::file_config;
+
 // 启动本地 HTTP 服务器
 pub fn start_local_server(app_handle: AppHandle) {
     // 在后台单独的线程/任务中启动 HTTP 服务器，避免阻塞 Tauri 主线程
@@ -31,8 +33,11 @@ async fn start_local_server2(app_handle: AppHandle) {
         .layer(cors)
         .with_state(app_handle);
 
-    // 绑定本地端口 (需要与 bridge.js 中一致)
-    let addr = SocketAddr::from(([127, 0, 0, 1], 41667)); // TODO 使用配置文件中的端口号
+    // 绑定本地端口
+    let port: u16 = file_config::config_get(|c| c["config"]["server_port"].as_u64().map(|v| v as u16))
+        .unwrap_or(None)
+        .unwrap_or(41667);
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     
     println!("Listening on {}", addr);

@@ -23,17 +23,18 @@ mod utils;
 mod http_server;
 
 // 自定义包 - 仅命令
+mod file;
+mod file_toml;
+mod file_config;
 mod uia;
 mod text;
 mod text_c;
-mod file;
-mod file_toml;
 mod other;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // 配置文件模块
-    let _ = file_toml::init_config();
+    let _ = file_config::init_config();
 
     // 日志插件
     let log_plugin = {
