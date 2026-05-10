@@ -315,7 +315,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export async function demo() {
   // 1) 读成 object
-  const obj = (await invoke("config_read_to_json")) as any;
+  const obj = (await invoke("toml_read_to_json")) as any;
 
   // 2) 像改普通 JS object 一样随便改（增删查改）
   obj.title = "Changed Title";
@@ -331,7 +331,7 @@ export async function demo() {
   obj.version = null;
 
   // 3) 写回（保留注释）
-  await invoke("config_write_from_json", { newJson: obj });
+  await invoke("toml_write_from_json", { newJson: obj });
 
   // 你也可以再读 raw 看注释是否还在
   const raw = (await invoke("read_toml_raw")) as string;

@@ -188,7 +188,7 @@ export function initApi() {
   }
 
   global_setting.api.saveConfig = async (): Promise<boolean> => {
-    await invoke("config_write_from_json", {
+    await invoke("toml_write_from_json", {
       path: CONFIG_PATH,
       newJson: { config: global_setting.config }
     })
