@@ -25,7 +25,8 @@ const MARKER_SPACES = 1
 /** 每级缩进单位，可选: '  '（2空格）| '    '（4空格）| '\t'（tab） */
 const INDENT_UNIT = '  '
 
-/** Tab 展开宽度（空格数），用于计算原始缩进的层级，可选: 2 | 4 | 8 */
+/** Tab 展开宽度（空格数），用于计算原始缩进的层级，可选: 2 | 4 | 8。
+ * 仅当列表中多种缩进风格混用时使用，用于比较层级关系 */
 const TAB_WIDTH = 4
 
 // === 内部工具函数 ===
@@ -47,23 +48,9 @@ export default {
         name: 'md_规范化列表风格',
         version: '1.0.0',
         min_app_version: '1.1.0',
-        author: 'LincZero',
+        author: 'LincZero', // co-author: Claude Sonnet 4.6
         description: '规范化 Markdown 无序列表的标记符号、间距和缩进风格',
-        // 取自 lucide-list，并在右上角叠加一个对勾，表示"规范化/整理"
-        icon: `\
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- 列表线条 (lucide-list) -->
-  <line x1="8" y1="6"  x2="21" y2="6"/>
-  <line x1="8" y1="12" x2="21" y2="12"/>
-  <line x1="8" y1="18" x2="21" y2="18"/>
-  <!-- 列表圆点 -->
-  <circle cx="3" cy="6"  r="1.2" fill="currentColor" stroke="none"/>
-  <circle cx="3" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-  <circle cx="3" cy="18" r="1.2" fill="currentColor" stroke="none"/>
-  <!-- 右上角小对勾，表示"规范化" -->
-  <polyline points="15,2 17,4 21,0" stroke-width="2.2"/>
-</svg>`
+        icon: `lucide-list-check`
     },
 
     async run(ctx) {
