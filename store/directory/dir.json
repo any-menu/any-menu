@@ -176,6 +176,14 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-md-lint-list",
+		"path": "md_lint_list.js",
+		"name": "md_规范化列表风格",
+		"description": "规范化 Markdown 无序列表的标记符号、间距和缩进风格",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "anymenu-md-title-linter",
 		"path": "md_title_linter.js",
 		"name": "清除md标题样式冗余",
