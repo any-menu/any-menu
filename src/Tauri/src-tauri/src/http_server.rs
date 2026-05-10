@@ -39,28 +39,31 @@ async fn start_local_server2(app_handle: AppHandle) {
         .unwrap_or(41667);
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    
-    println!("Listening on {}", addr);
+    log::info!("Listening on {}", addr);
     axum::serve(listener, app).await.unwrap();
 }
 
-// #region 与浏览器扩展的通信
+// #region 路由分发
+
+// -------- 与浏览器扩展的通信 ---------
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct SelectionPayload {
+    source: Option<String>,
     text: String,
     html: String,
 }
-
 // Axum 的 handler，接收来自浏览器扩展的 POST 请求
 async fn handle_selection(
     axum::extract::State(app_handle): axum::extract::State<AppHandle>,
     Json(payload): Json<SelectionPayload>,
 ) -> &'static str {
+    log::info!("Received selection from browser extension: {:?}", payload.clone());
+
     // 接收到数据后，通过 Tauri 事件系统将其转发给 Tauri 的前端网页
     // 前端可以通过 listen("browser-selection-changed", ...) 来获取
     let _ = app_handle.emit("browser-selection-changed", payload);
-    
+
     "OK"
 }
 
