@@ -190,14 +190,14 @@ export class AMPanel {
     // } else if (pos === 'center') {
     } else {
       if (!is_reverse) {
-        el_panel.style.left = `${pos.x}px`
-        el_panel.style.top = `${pos.y}px`
-        el_panel.style.bottom = 'unset'
+        el_panel.style.setProperty('--am-left', `${pos.x}px`)
+        el_panel.style.setProperty('--am-top', `${pos.y}px`)
+        el_panel.style.setProperty('--am-bottom', 'unset')
         el_panel.classList.remove('reverse') // 对应: flex-direction: column;
       } else {
-        el_panel.style.left = `${pos.x}px`
-        el_panel.style.top = `unset`
-        el_panel.style.bottom = `${pos.y}px`
+        el_panel.style.setProperty('--am-left', `${pos.x}px`)
+        el_panel.style.setProperty('--am-top', 'unset')
+        el_panel.style.setProperty('--am-bottom', `${pos.y}px`)
         el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
       }
     }
