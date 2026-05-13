@@ -1,0 +1,1346 @@
+@charset "UTF-8";
+/**
+ * 使用 vscode 插件自动将 scss 转换为 css，请勿直接编辑 css 文件
+ */
+/*
+ * shiki transformers style
+ * https://shiki.style/packages/transformers#unstyled
+ */
+/* ----------------------------- adapt without obsidian ------------ */
+/*
+[!code hl]
+var(--code-size)
+*/
+:root {
+  --font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --text-selection: #0078D788;
+  --indent-size: 4;
+}
+
+/* ----------------------------- adapt without vuepress ------------- */
+/* color perset */
+:root {
+  --vp-c-gray-1: #dddde3;
+  --vp-c-gray-2: #e4e4e9;
+  --vp-c-gray-3: #ebebef;
+  --vp-c-gray-soft: rgba(142, 150, 170, .14);
+  --vp-c-indigo-1: #3451b2;
+  --vp-c-indigo-2: #3a5ccc;
+  --vp-c-indigo-3: #5672cd;
+  --vp-c-indigo-soft: rgba(100, 108, 255, .14);
+  --vp-c-purple-1: #6f42c1;
+  --vp-c-purple-2: #7e4cc9;
+  --vp-c-purple-3: #8e5cd9;
+  --vp-c-purple-soft: rgba(159, 122, 234, .14);
+  --vp-c-green-1: #18794e;
+  --vp-c-green-2: #299764;
+  --vp-c-green-3: #30a46c;
+  --vp-c-green-soft: rgba(16, 185, 129, .14);
+  --vp-c-yellow-1: #915930;
+  --vp-c-yellow-2: #946300;
+  --vp-c-yellow-3: #9f6a00;
+  --vp-c-yellow-soft: rgba(234, 179, 8, .14);
+  --vp-c-red-1: #b8272c;
+  --vp-c-red-2: #d5393e;
+  --vp-c-red-3: #e0575b;
+  --vp-c-red-soft: rgba(244, 63, 94, .14);
+}
+
+.dark {
+  --vp-c-gray-1: #515c67;
+  --vp-c-gray-2: #414853;
+  --vp-c-gray-3: #32363f;
+  --vp-c-gray-soft: rgba(101, 117, 133, .16);
+  --vp-c-indigo-1: #a8b1ff;
+  --vp-c-indigo-2: #5c73e7;
+  --vp-c-indigo-3: #3e63dd;
+  --vp-c-indigo-soft: rgba(100, 108, 255, .16);
+  --vp-c-purple-1: #c8abfa;
+  --vp-c-purple-2: #a879e6;
+  --vp-c-purple-3: #8e5cd9;
+  --vp-c-purple-soft: rgba(159, 122, 234, .16);
+  --vp-c-green-1: #3dd68c;
+  --vp-c-green-2: #30a46c;
+  --vp-c-green-3: #298459;
+  --vp-c-green-soft: rgba(16, 185, 129, .16);
+  --vp-c-yellow-1: #f9b44e;
+  --vp-c-yellow-2: #da8b17;
+  --vp-c-yellow-3: #a46a0a;
+  --vp-c-yellow-soft: rgba(234, 179, 8, .16);
+  --vp-c-red-1: #f66f81;
+  --vp-c-red-2: #f14158;
+  --vp-c-red-3: #b62a3c;
+  --vp-c-red-soft: rgba(244, 63, 94, .16);
+}
+
+/* Adapt to color preset */
+:root {
+  --vp-c-default-1: var(--vp-c-gray-1);
+  --vp-c-default-2: var(--vp-c-gray-2);
+  --vp-c-default-3: var(--vp-c-gray-3);
+  --vp-c-default-soft: var(--vp-c-gray-soft);
+  --vp-c-brand-1: var(--vp-c-indigo-1);
+  --vp-c-brand-2: var(--vp-c-indigo-2);
+  --vp-c-brand-3: var(--vp-c-indigo-3);
+  --vp-c-brand-soft: var(--vp-c-indigo-soft);
+  --vp-c-brand: var(--vp-c-brand-1);
+  --vp-c-tip-1: var(--vp-c-brand-1);
+  --vp-c-tip-2: var(--vp-c-brand-2);
+  --vp-c-tip-3: var(--vp-c-brand-3);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
+  --vp-c-note-1: var(--vp-c-brand-1);
+  --vp-c-note-2: var(--vp-c-brand-2);
+  --vp-c-note-3: var(--vp-c-brand-3);
+  --vp-c-note-soft: var(--vp-c-brand-soft);
+  --vp-c-success-1: var(--vp-c-green-1);
+  --vp-c-success-2: var(--vp-c-green-2);
+  --vp-c-success-3: var(--vp-c-green-3);
+  --vp-c-success-soft: var(--vp-c-green-soft);
+  --vp-c-important-1: var(--vp-c-purple-1);
+  --vp-c-important-2: var(--vp-c-purple-2);
+  --vp-c-important-3: var(--vp-c-purple-3);
+  --vp-c-important-soft: var(--vp-c-purple-soft);
+  --vp-c-warning-1: var(--vp-c-yellow-1);
+  --vp-c-warning-2: var(--vp-c-yellow-2);
+  --vp-c-warning-3: var(--vp-c-yellow-3);
+  --vp-c-warning-soft: var(--vp-c-yellow-soft);
+  --vp-c-danger-1: var(--vp-c-red-1);
+  --vp-c-danger-2: var(--vp-c-red-2);
+  --vp-c-danger-3: var(--vp-c-red-3);
+  --vp-c-danger-soft: var(--vp-c-red-soft);
+  --vp-c-caution-1: var(--vp-c-red-1);
+  --vp-c-caution-2: var(--vp-c-red-2);
+  --vp-c-caution-3: var(--vp-c-red-3);
+  --vp-c-caution-soft: var(--vp-c-red-soft) ;
+}
+
+/* Adapt to vuepress */
+:root {
+  --vp-code-line-height: 1.7;
+  --vp-code-font-size: .875em;
+  --vp-code-color: var(--vp-c-brand-1);
+  --vp-code-link-color: var(--vp-c-brand-1);
+  --vp-code-link-hover-color: var(--vp-c-brand-2);
+  --vp-code-bg: var(--vp-c-default-soft);
+  --vp-code-block-color: var(--vp-c-text-2);
+  --vp-code-block-bg: var(--vp-c-bg-alt);
+  --vp-code-block-divider-color: var(--vp-c-gutter);
+  --vp-code-lang-color: var(--vp-c-text-2);
+  --vp-code-line-highlight-color: var(--vp-c-default-soft);
+  --vp-code-line-number-color: var(--vp-c-text-2);
+  --vp-code-line-diff-add-color: var(--vp-c-success-soft);
+  --vp-code-line-diff-add-symbol-color: var(--vp-c-success-1);
+  --vp-code-line-diff-remove-color: var(--vp-c-danger-soft);
+  --vp-code-line-diff-remove-symbol-color: var(--vp-c-danger-1);
+  --vp-code-line-warning-color: var(--vp-c-warning-soft);
+  --vp-code-line-error-color: var(--vp-c-danger-soft);
+  --vp-code-copy-code-border-color: var(--vp-c-divider);
+  --vp-code-copy-code-bg: var(--vp-c-bg-soft);
+  --vp-code-copy-code-hover-border-color: var(--vp-c-divider);
+  --vp-code-copy-code-hover-bg: var(--vp-c-bg);
+  --vp-code-copy-code-active-text: var(--vp-c-text-2);
+  --vp-code-copy-copied-text-content: "Copied";
+  --vp-code-tab-divider: var(--vp-code-block-divider-color);
+  --vp-code-tab-text-color: var(--vp-c-text-2);
+  --vp-code-tab-bg: var(--vp-code-block-bg);
+  --vp-code-tab-hover-text-color: var(--vp-c-text-1);
+  --vp-code-tab-active-text-color: var(--vp-c-text-1);
+  --vp-code-tab-active-bar-color: var(--vp-c-brand-1) ;
+}
+
+/* ----------------------------- line flag -------------------------- */
+code > span.line.diff {
+  transition: background-color 0.5s;
+  margin: 0 calc(-1 * var(--shiki-x-padding));
+  padding: 0 var(--shiki-x-padding);
+  width: calc(100% + 2 * var(--shiki-x-padding));
+  display: inline-block;
+}
+
+code > span.line.diff:before {
+  position: absolute;
+  left: 5px; /*old 10*/
+}
+
+code > span.line.diff.add {
+  background-color: var(--vp-code-line-diff-add-color);
+}
+
+code > span.line.diff.add:before {
+  content: "+";
+  color: var(--vp-code-line-diff-add-symbol-color);
+}
+
+code > span.line.diff.remove {
+  background-color: var(--vp-code-line-diff-remove-color);
+}
+
+code > span.line.diff.remove:before {
+  content: "-";
+  color: var(--vp-code-line-diff-remove-symbol-color);
+}
+
+code > span.line.highlighted {
+  background-color: var(--vp-code-line-highlight-color);
+  transition: background-color 0.5s;
+  margin: 0 calc(-1 * var(--shiki-x-padding));
+  padding: 0 var(--shiki-x-padding);
+  width: calc(100% + 2 * var(--shiki-x-padding));
+  display: inline-block;
+}
+
+code > span.line.highlighted.error {
+  background-color: var(--vp-code-line-error-color);
+}
+
+code > span.line.highlighted.warning {
+  background-color: var(--vp-code-line-warning-color);
+}
+
+.has-focused code > span.line:not(.focused),
+.has-focused-lines code > span.line:not(.has-focus) {
+  filter: blur(0.095rem);
+  opacity: 0.4;
+  transition: filter 0.35s, opacity 0.35s;
+}
+
+.has-focused code > span.line:not(.focused),
+.has-focused-lines code > span.line:not(.has-focus) {
+  opacity: 0.7;
+  transition: filter 0.35s, opacity 0.35s;
+}
+
+.has-focused:hover code > span.line:not(.focused),
+.has-focused-lines:hover code > span.line:not(.has-focus) {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* ----------------------------- keep same in textarePre ------------ */
+/*
+ * keep same: pre & textarea
+ * 
+ * It is necessary to ensure that the style of this part is not overwritten,
+ * Otherwise, `textarea` and `code` won't align
+ */
+:root {
+  --shiki-x-padding: 16px;
+  --shiki-line-height: 24px;
+}
+
+.editable-codeblock code, .editable-codeblock textarea {
+  line-height: var(--shiki-line-height) !important;
+  -moz-tab-size: var(--indent-size) !important;
+    -o-tab-size: var(--indent-size) !important;
+       tab-size: var(--indent-size) !important;
+  font-size: var(--code-size) !important;
+  font-family: var(--font-monospace) !important;
+  white-space: pre !important;
+}
+
+.editable-codeblock code::-moz-selection, .editable-codeblock textarea::-moz-selection {
+  background-color: var(--text-selection) !important;
+  color: currentColor !important;
+}
+
+.editable-codeblock code::selection, .editable-codeblock textarea::selection {
+  background-color: var(--text-selection) !important;
+  color: currentColor !important;
+}
+
+.editable-codeblock code {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+.editable-codeblock pre, .editable-codeblock textarea {
+  min-width: 100%;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 12px var(--shiki-x-padding) !important;
+  border: 0 !important;
+  white-space: pre !important;
+  cursor: text;
+}
+
+/* edit-block-button > textarea > pre */
+.editable-codeblock pre {
+  z-index: 0;
+}
+
+.editable-codeblock textarea {
+  z-index: 0;
+}
+
+/* fix black line zero height */
+.editable-codeblock code > span {
+  vertical-align: top !important;
+  min-height: var(--shiki-line-height) !important;
+}
+
+/* scroll-x
+ * need .editable-codeblock parent set `overflow-x: auto`
+ */
+.editable-codeblock {
+  display: inline-block !important;
+  overflow-x: visible !important;
+}
+
+.editable-codeblock code {
+  display: inline-block !important;
+  overflow: visible !important;
+}
+
+.editable-codeblock pre, .editable-codeblock textarea {
+  display: inline-block !important;
+  overflow: visible !important;
+}
+
+/* ----------------------------- other ------------------------------ */
+/* language-type-btn */
+.editable-codeblock .language-edit {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  line-height: var(--shiki-line-height);
+  min-height: var(--shiki-line-height);
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+.editable-codeblock .language-edit > input {
+  margin: 0;
+  padding: 0 14px;
+  border: none;
+  outline: none;
+  background: none;
+  box-shadow: none;
+  text-align: right;
+  color: currentColor;
+}
+
+.editable-codeblock .language-edit > input:focus {
+  border-bottom: 1px solid currentColor;
+  outline: none;
+}
+
+/* chore fix: keep color magin zero */
+code > span.line {
+  line-height: var(--shiki-line-height);
+}
+
+.editable-codeblock {
+  position: relative;
+  min-width: 100%;
+}
+
+/* shiki attr style */
+.editable-codeblock textarea {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  background-color: transparent;
+  /* color: transparent; */
+  color: rgba(255, 255, 255, 0.1333333333);
+  caret-color: rgba(255, 255, 255, 0.8666666667); /* TODO Conflicts with the cm style */
+}
+
+/* .editable-codeblock:has(textarea:focus) {
+  outline: 1px solid #0060DF;
+  border-radius: 4px;
+} */
+.editable-codeblock:has(textarea:focus),
+.editable-codeblock:has(pre:focus),
+.editable-codeblock:has(pre > code:focus) {
+  outline: 1px solid #0060DF;
+}
+
+.editable-codeblock textarea:focus,
+.editable-codeblock pre:focus,
+.editable-codeblock pre:has(> code:focus),
+.editable-codeblock code:focus {
+  outline: none;
+}
+
+.is-no-saved {
+  position: relative;
+}
+
+.is-no-saved::before {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: #0060DF;
+  opacity: 0.5;
+  z-index: 201;
+  /* currentColor;
+  border-left: solid 2px yellow !important; */
+}
+
+/* ----------------------------- app version use --------------------- */
+/* 
+- .nf-textarea-p lock标志层
+  - .editable-codeblock-p.scroll-able 滚动容器
+    - .editable-codeblock 可溢出部分
+ */
+.cm-content {
+  max-width: 100%;
+}
+
+.editable-codeblock-p {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* ----------------------------- obsidian use ----------------------- */
+.editable-codeblock-p .cm-sizer {
+  margin: 0 !important;
+  padding-left: 20px;
+}
+
+/* ----------------------------- EditableBlock_Cm ------------------- */
+.cm-editor .cm-scroller .editable-codeblock-p[has-prefix=true] {
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 0.5em !important;
+}
+.cm-editor .cm-scroller {
+  /* cm 的 img.cm-widgetBuffer
+   * 
+   * block模式下光标上下会跳过区域。
+   * 在非block模式，会进入，但会有1em的占位 img.cm-widgetBuffer，可减少之。
+   * 在非block+inclusive模式，img.cm-widgetBuffer 时有时无, 非常奇怪
+   * 但注意底部如果太小，则光标进入会定位到开头而非尾部 (cm是会通过屏幕位置去定位的)
+   *
+   * - 如果没有则不用管，这是最好的
+   * - 如果有则可以用负margin优化
+   * - 时有时无则只能用display去掉，但这会导致一个缺点：尾部向上移动时，光标会跳到开头
+   *   - 一个优化是只去掉开头 (不一定有)，保留结尾
+   * 
+   * HyperMd-xxx 是使用了 HyperMd 插件的版本 (Obsidian中属于这种情况)
+   * cm-xxx 是普通 codemirror 的版本 (App版本中属于这种情况)
+   */
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > .editable-codeblock-p,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > .editable-codeblock-p {
+  margin: 0 0 -0.85em 0;
+}
+.cm-editor .cm-scroller .cm-codeblock.cm-line > .editable-codeblock-p,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > .editable-codeblock-p {
+  margin: 0 0 -0.95em 0;
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > img.cm-widgetBuffer,
+.cm-editor .cm-scroller .cm-codeblock.cm-line > img.cm-widgetBuffer {
+  display: none !important;
+}
+.cm-editor .cm-scroller .HyperMD-quote.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .HyperMD-codeblock.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .cm-blockquote.cm-line > img.cm-widgetBuffer:last-child,
+.cm-editor .cm-scroller .cm-codeblock.cm-line > img.cm-widgetBuffer:last-child {
+  display: inline !important;
+}
+
+/* ----------------------------- EditableBlock_Textarea ------------- */
+.editable-textarea-textarea {
+  display: inline-block;
+  box-sizing: content-box !important;
+  width: 100%;
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding: 0px;
+  resize: none;
+  white-space: pre-wrap;
+  border: none;
+  outline: none;
+  color: currentColor;
+  background: none;
+}
+
+div.editable-textarea-textarea {
+  padding-right: 1ch;
+}
+
+/* ----------------------------- EditableBlock_Cm ------------------- */
+/* plugin */
+.editable-codeblock-p {
+  width: calc(100% - 10px);
+  width: 100%;
+}
+
+.editableblock-cm {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.editableblock-cm .cm-editor {
+  background: none !important;
+}
+
+/* ----------------------------- quote ----------------------------- */
+.editableblock-cm.editableblock-quote {
+  width: calc(100% - 4px);
+  margin-left: 4px;
+  /* padding-left: 10px; */
+  background-color: rgba(136, 136, 136, 0.0666666667);
+}
+.editableblock-cm.editableblock-quote.callout-note {
+  background-color: rgba(2, 121, 254, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-note::before {
+  background-color: rgba(2, 121, 254, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-tip {
+  background-color: rgba(5, 178, 77, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-tip::before {
+  background-color: rgba(5, 178, 77, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-warning {
+  background-color: rgba(226, 130, 5, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-warning::before {
+  background-color: rgba(226, 130, 5, 0.8);
+}
+.editableblock-cm.editableblock-quote.callout-error {
+  background-color: rgba(226, 25, 64, 0.1333333333);
+}
+.editableblock-cm.editableblock-quote.callout-error::before {
+  background-color: rgba(226, 25, 64, 0.8);
+}
+
+.editableblock-cm.editableblock-quote::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  left: -4px;
+  top: 0;
+  background-color: #888888;
+  z-index: 200;
+}
+
+/* ----------------------------- EditableBlock_Ob ------------------- */
+.editableblock-obsidian .cm-editor > .cm-scroller > .cm-sizer {
+  margin: 0 !important;
+}
+
+/* -------------------------------- 搜索栏 ------------------------------- */
+.am-search {
+  position: relative;
+  width: 500px;
+  display: inline-block;
+  box-sizing: border-box;
+  z-index: 100;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
+}
+.am-search input.am-search-input {
+  height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: none;
+  outline: none;
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.am-search .am-search-suggestion {
+  width: 500px;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 12;
+  padding: 4px;
+  border-radius: 8px;
+  background-color: var(--ab-menu-bg-color);
+  opacity: 0.98;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.am-search .am-search-suggestion > div.item {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.am-search .am-search-suggestion > div.item:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-search .am-search-suggestion > div.item::after {
+  content: attr(data-altkey);
+  display: none;
+  position: absolute;
+  right: 7px;
+  top: unset;
+  font-size: 12px;
+  color: var(--ab-tab-root-tx-color);
+  opacity: 0.6;
+  color: #ffffff;
+}
+.am-search .am-search-suggestion > div.item > .value {
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  overflow: hidden;
+  height: auto;
+  min-height: 20px;
+  max-height: 70px;
+}
+.am-search .am-search-suggestion > div.item > .key {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 10px;
+  height: 20px;
+}
+
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 建议列表 */
+.am-panel.reverse .am-search .am-search-suggestion {
+  top: unset;
+  bottom: 100%;
+}
+
+.am-search .am-search-suggestion {
+  top: 100%;
+  bottom: unset;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  z-index: 100;
+  max-height: 260px;
+  overflow-y: auto;
+  /* 建议列表项 */
+}
+.am-search .am-search-suggestion > div {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 28px;
+  max-height: 98px;
+  margin: 0;
+  padding: 4px 12px;
+  line-height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.am-search .am-search-suggestion > div:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-search .am-search-suggestion > div.focus-active {
+  background-color: var(--am-bright-color) !important;
+  color: #ffffff;
+}
+
+/* -------------------------------- 多级菜单 ---------------------------- */
+/** 基本样式
+ * - am-context-menu.root-menu
+ *   - li.has-children
+ *     - content
+ *     - am-context-menu.sub-menu (并嵌套)
+ */
+.am-context-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu.sub-menu:not(.visible) {
+  display: none;
+}
+.am-context-menu:empty {
+  display: none;
+}
+.am-context-menu {
+  position: relative;
+  box-sizing: border-box;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 180px;
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(8, auto);
+  gap: 0 0;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  list-style: none;
+  padding: 4px;
+  counter-reset: alt-index 0;
+}
+.am-context-menu .am-context-menu-item {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  min-width: 180px;
+  min-height: 28px;
+  margin: 0;
+  padding: 4px 12px;
+  line-height: 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.am-context-menu .am-context-menu-item .left {
+  margin-right: 10px;
+}
+.am-context-menu .am-context-menu-item:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-context-menu .am-context-menu-item.focus-active {
+  background-color: var(--am-bright-color) !important;
+  color: #ffffff;
+}
+.am-context-menu .am-context-menu-item::after {
+  counter-increment: alt-index 1;
+  content: attr(data-altkey);
+  display: none;
+  position: absolute;
+  right: 28px;
+  top: 6px;
+  font-size: 12px;
+  color: var(--ab-tab-root-tx-color);
+  opacity: 0.6;
+  color: #ffffff;
+}
+.am-context-menu .am-context-menu-item.has-children::before {
+  content: "▶";
+  float: right;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
+  position: absolute;
+  top: -4px;
+  left: calc(0px + 100%);
+}
+
+.ab-contextmenu-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: var(--background-secondary);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-elevation-high);
+  max-width: 400px;
+  min-width: 200px;
+}
+.ab-contextmenu-tooltip .tooltip-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.am-toolbar {
+  position: relative;
+  box-sizing: border-box;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: 0;
+  min-height: 32px;
+  max-width: 506px;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  border-radius: 8px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  display: block;
+}
+.am-toolbar:empty {
+  display: none;
+}
+.am-toolbar .am-toolbar-item {
+  display: inline-block;
+  vertical-align: top;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  margin: 0 4px;
+  line-height: 100%;
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.am-toolbar .am-toolbar-item:hover {
+  background-color: var(--ab-tab-root-hv-color) !important;
+}
+.am-toolbar .am-toolbar-item:first-child {
+  margin-left: 4px;
+}
+.am-toolbar .am-toolbar-item:last-child {
+  margin-right: 4px;
+}
+
+.am-icon, .am-icon-auto {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  background-color: var(--ab-menu-bg-color) !important;
+  color: currentColor !important;
+}
+.am-icon:hover, .am-icon-auto:hover {
+  background-color: var(--ab-tab-root-hv-color) !important;
+}
+
+.tab-root div.setting_row {
+  width: 100%;
+  height: auto;
+  margin: 20px 0;
+  padding: 0 3px;
+}
+.tab-root div.setting_row button {
+  position: unset;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: currentColor;
+  border: none;
+}
+.tab-root div.setting_row > div.item_row {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  padding: 0 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0);
+  border-bottom: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+.tab-root div.setting_row > div.item_row:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.tab-root div.setting_row > div.item_row > * {
+  height: 30px;
+  line-height: 30px;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.tab-root div.setting_row > div.item_row > .drag-btn {
+  flex: 0 0 auto;
+  margin-right: 10px;
+  cursor: grab !important;
+  opacity: 0.6;
+}
+.tab-root div.setting_row > div.item_row > .name {
+  flex: 1 1 auto;
+  background: none;
+  color: currentColor;
+}
+.tab-root div.setting_row > div.item_row > .delete-btn {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.tab-root .setting_row-add-btn, .tab-root .setting_row-refresh-btn {
+  position: unset;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: currentColor;
+  border: none;
+  float: right;
+}
+.tab-root .setting_row-add-btn {
+  margin: 0 10px 0 16px;
+}
+
+.tab-root div.setting_row > div.item_row.dragging * {
+  pointer-events: none;
+}
+.tab-root div.setting_row > div.item_row.drag-over-top { /* 往上拖拽，插入到上方，显示上边框高亮 */
+  border-top: 1px solid #007bff;
+}
+.tab-root div.setting_row > div.item_row.drag-over-bottom { /* 往下拖拽，插入到下方，显示下边框高亮 */
+  border-bottom: 1px solid #007bff;
+}
+
+.am-panel .am-toolbar svg.lucide {
+  width: 16px;
+  height: 16px;
+}
+
+.editable-codeblock-p {
+  margin: 1px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+:root {
+  --am-bright-color: #23A8F2;
+  --am-text-color: #f6f6f6;
+  --am-background-color: #2f2f2f;
+  color: var(--am-text-color);
+  background-color: var(--am-background-color);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --am-text-color: #1E1E1E;
+    --am-background-color: #f6f6f6;
+  }
+}
+:root {
+  --ab-tab-root-bg-color: #0d1117;
+  --ab-tab-root-bd-color: #34343f;
+  --ab-tab-root-hv-color: #363639;
+  --ab-tab-root-tx-color: #9e9e9e;
+  --ab-bright-color: orange;
+  --pre-background-color: #1b1b1b;
+  --ab-table-border-width: 1px;
+  --ab-table-border-color: #363636;
+  --ab-width-inner: 100%;
+  --ab-width-outer: 100%;
+  --ab-menu-bg-color: #1B1B1B;
+  --ab-menu-text-color: #CCCCCC;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --ab-tab-root-bg-color: #ffffff;
+    --ab-tab-root-bd-color: #e0e0e0;
+    --ab-tab-root-hv-color: #d7d7d7;
+    --ab-tab-root-tx-color: #5c5c5c;
+    --pre-background-color: #f2f2f2;
+    --ab-menu-bg-color: #ffffff;
+    --ab-menu-text-color: black;
+  }
+}
+html, body, #main, #am-config {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+html, body, #main {
+  background: transparent !important;
+}
+
+#main {
+  position: relative;
+  /* 透明区域不接收鼠标事件 */
+  pointer-events: none;
+  /* 这个区域可以接收鼠标事件 */
+}
+#main > * {
+  pointer-events: auto;
+}
+#main > button {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  bottom: 5px;
+  left: 0px;
+  height: 26px;
+  padding: 0 !important;
+  z-index: 1;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  color: var(--am-text-color);
+}
+#main > button:hover {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+#main > button.active > svg {
+  stroke: var(--am-bright-color);
+}
+#main > .windows-pin {
+  bottom: 5px;
+  width: 34px;
+}
+#main > .btn-2 {
+  bottom: 50px;
+}
+
+#main.reverse > .windows-pin {
+  bottom: unset;
+  top: 5px;
+}
+
+/* -------------------------------- 总菜单面板 (组合基) ------------------ */
+.am-panel {
+  display: flex;
+  flex-direction: column;
+  bottom: unset;
+}
+.am-panel.reverse {
+  flex-direction: column-reverse;
+  top: unset;
+}
+.am-panel {
+  position: fixed;
+  margin: 0;
+  padding: 0;
+}
+.am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
+  display: block !important;
+}
+.am-panel.show-altkey > .am-search > .am-search-suggestion > div.item::after {
+  display: block !important;
+}
+
+/* -------------------------------- 快速编辑器 --------------------------- */
+.am-mini-editor {
+  position: relative;
+  box-sizing: border-box;
+  width: 700px;
+  margin: 0;
+  padding: 0;
+  height: 250px;
+  color: var(--ab-tab-root-tx-color);
+  background-color: var(--ab-menu-bg-color);
+  z-index: 10;
+  flex-direction: column;
+}
+.am-mini-editor > .editableblock-cm {
+  height: 100%;
+}
+.am-mini-editor > .editableblock-cm .cm-editor {
+  height: 100%;
+}
+.am-mini-editor > .am-mini-editor-buttons {
+  margin: 2px 0 0 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.am-mini-editor > .am-mini-editor-buttons > button {
+  height: 24px;
+  font-size: 14px;
+  padding: 0 12px;
+  opacity: 0.85;
+  border-radius: 10px;
+}
+
+/* -------------------------------- 自定义面板 --------------------------- */
+.am-custom-panel {
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+/* -------------------------------- 配置页面 ----------------------------- */
+.tab-root-parent {
+  padding: 0px !important;
+}
+
+.tab-root {
+  padding: 0px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--ab-tab-root-bg-color);
+  color: var(--ab-tab-root-tx-color);
+}
+.tab-root * {
+  box-sizing: border-box;
+}
+.tab-root .tab-nav-container {
+  display: flex;
+  height: 32px;
+  line-height: 32px;
+  background-color: var(--ab-tab-root-bd-color);
+}
+.tab-root .tab-nav-container > div {
+  display: inline-block;
+  padding: 0 12px;
+  cursor: pointer;
+  background-color: var(--ab-tab-root-bd-color);
+}
+.tab-root .tab-nav-container > div.active {
+  border-bottom: none;
+  background-color: var(--ab-tab-root-bg-color);
+}
+.tab-root .tab-content-container {
+  position: absolute;
+  top: 32px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--ab-tab-root-bg-color);
+  color: var(--ab-tab-root-tx-color);
+}
+.tab-root .tab-content-container > div {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 8px;
+  white-space: pre-wrap;
+  background-color: var(--ab-tab-root-bg-color);
+  display: none;
+}
+.tab-root .tab-content-container > div.active {
+  display: block;
+}
+.tab-root .tab-nav-container > div {
+  border-radius: 6px 6px 0 0;
+}
+.tab-root .tab-nav-container > div:first-child {
+  border-radius: 0 6px 0 0;
+}
+.tab-root div:has(> textarea) {
+  position: relative;
+  height: 100%;
+}
+.tab-root div:has(> textarea) textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", "Courier New", monospace; /* 跨平台强制mono字体 */
+  font-size: 14px;
+  line-height: 20px;
+  padding: 8px;
+  background-color: var(--pre-background-color);
+  color: var(--am-text-color);
+  resize: none;
+  border: none;
+  border-left: 1px solid rgba(0, 0, 0, 0);
+  border-radius: 8px;
+  outline: none;
+  box-shadow: none;
+}
+.tab-root div:has(> textarea) textarea.no-save {
+  border-left: 1px solid orange;
+}
+.tab-root div:has(> textarea) textarea.error-save {
+  border-left: 1px solid red;
+}
+.tab-root .setting-buttons {
+  position: absolute;
+  height: 28px;
+  right: 16px;
+  bottom: 16px;
+  opacity: 0.85;
+}
+.tab-root .setting-buttons button {
+  border-radius: 8px;
+  padding: 2px 18px;
+  margin-left: 10px;
+}
+.tab-root details {
+  white-space: normal;
+}
+
+.dataview-table {
+  overflow-x: auto;
+  width: 100%;
+}
+.dataview-table tbody {
+  overflow-y: auto;
+}
+.dataview-table tbody tr:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.dataview-table tbody tr > td {
+  white-space: pre;
+}
+.dataview-table .btn {
+  width: 100%;
+}
+
+.dataview-card {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  width: 100%;
+  overflow-y: auto;
+  gap: 9px;
+}
+.dataview-card .card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: solid 1px var(--ab-tab-root-bd-color);
+  padding: 10px;
+  border-radius: 10px;
+}
+.dataview-card .btn {
+  float: right;
+}
+
+.dataview-table .btn, .dataview-card .btn {
+  height: 26px;
+  padding: 0 10px;
+  line-height: 26px;
+  font-size: 0.95em;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  background-color: gray;
+  color: white;
+}
+.dataview-table .btn[color=green], .dataview-card .btn[color=green] {
+  background-color: #67C23A;
+  color: white;
+}
+.dataview-table .btn[color=red], .dataview-card .btn[color=red] {
+  background-color: #F56C6C;
+  color: white;
+}
+.dataview-table .btn[color=blue], .dataview-card .btn[color=blue] {
+  background-color: #409EFF;
+  color: white;
+}
+
+/* -------------------------------- 黑暗主题滚动条样式 -------------------- */
+@media (prefers-color-scheme: dark) {
+  /* 适用于 Webkit 内核的浏览器 (Chrome, Safari, Edge 等) */
+  ::-webkit-scrollbar {
+    width: 12px; /* 滚动条整体宽度 */
+    height: 12px; /* 对于水平滚动条的高度 */
+  }
+  ::-webkit-scrollbar-track {
+    background: #202324; /* 滚动条轨道背景色 */
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #4a4d4f; /* 滚动条滑块颜色 */
+    border-radius: 6px; /* 滑块圆角 */
+    border: 3px solid #202324; /* 在滑块周围创建边框，看起来像内边距 */
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #5a5e60; /* 鼠标悬停时滑块的颜色 */
+  }
+}
+/* -------------------------------- Obsidian 专用 ----------------------- */
+.am-ob-setting-btn {
+  position: absolute;
+  bottom: 12px;
+  z-index: 4;
+  left: 16px !important;
+  right: auto !important;
+}
+
+/* -------------------------------- 默认 ------------------------------- */
+.am-hide {
+  display: none !important;
+}
+
+.am-inner-html {
+  white-space: normal !important;
+}
+
+#main a, #am-config a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+#main a:hover, #am-config a:hover {
+  color: #535bf2;
+}
+#main h1, #am-config h1 {
+  text-align: center;
+}
+#main button, #am-config button {
+  cursor: pointer;
+}
+#main button:hover, #am-config button:hover {
+  border-color: #396cd8;
+}
+#main button:active, #am-config button:active {
+  border-color: #396cd8;
+  background-color: #e8e8e8;
+}
+@media (prefers-color-scheme: dark) {
+  #main a:hover, #am-config a:hover {
+    color: #24c8db;
+  }
+  #main button:active, #am-config button:active {
+    background-color: rgba(15, 15, 15, 0.4117647059);
+  }
+}
+
+/* -------------------------------- 默认并废弃 --------------------------- */
+#default_old :root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+#default_old .logo.vite:hover {
+  filter: drop-shadow(0 0 2em #747bff);
+}
+#default_old .logo.typescript:hover {
+  filter: drop-shadow(0 0 2em #2d79c7);
+}
+#default_old .container {
+  margin: 0;
+  padding-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+#default_old .logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: 0.75s;
+}
+#default_old .logo.tauri:hover {
+  filter: drop-shadow(0 0 2em #24c8db);
+}
+#default_old .row {
+  display: flex;
+  justify-content: center;
+}
+#default_old input,
+#default_old button {
+  outline: none;
+}
+#default_old #greet-input {
+  margin-right: 5px;
+}
