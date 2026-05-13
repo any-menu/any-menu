@@ -753,6 +753,11 @@ div.editable-textarea-textarea {
   max-width: 400px;
   min-width: 200px;
 }
+.ab-contextmenu-tooltip .tooltip-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 
 .am-toolbar {
   position: relative;

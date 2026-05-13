@@ -98,7 +98,7 @@ export class ABContextMenu_App extends ABContextMenu {
             } else {
               const img = document.createElement('img'); tooltip.appendChild(img);
                 img.setAttribute('src', item.detail as string);
-                img.setAttribute('style', 'max-width: 100%; height: auto; display: block;');
+                img.classList.add('tooltip-image');
             }
           }
           li.onmouseleave = () => {

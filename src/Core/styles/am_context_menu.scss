@@ -120,4 +120,10 @@
   box-shadow: var(--shadow-elevation-high);
   max-width: 400px;
   min-width: 200px;
+
+  .tooltip-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
 }
