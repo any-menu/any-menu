@@ -38,6 +38,24 @@ jobs:
           main.js
           styles.css
 
+  # 避免自动审查时，审查 Obsidian 插件用不上的部分
+  sync-obsidian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Remove unused directories
+        run: |
+          # 删除不需要参与 Obsidian 审查的目录
+          rm -rf src/App src/Core src/Tauri
+
+      - name: Push to only-obsidian branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: only-obsidian # 目标分支
+          folder: .             # 推送当前整个目录（因为上面已经删除了不需要的文件）
+          commit-message: "chore: sync obsidian branch"
+
   build-tauri:
     strategy:
       fail-fast: false
@@ -143,6 +161,7 @@ jobs:
           # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
           name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
           body: |
+            CHANGELOG: https://any-menu.github.io/any-menu/CHANGELOG.html
             <details>
               <summary>Download tips (English)</summary>
               <ul>
@@ -196,6 +215,7 @@ jobs:
             非手动的 beta 版本，与手动 beta 版本不同的是，每次 commit 都会更新。
             这也导致了这个版本有可能是存在bug或不可用的。仅供测试使用
 
+            CHANGELOG: https://any-menu.github.io/any-menu/CHANGELOG.html
             <details>
                 <summary>Download tips (English)</summary>
                 <ul>

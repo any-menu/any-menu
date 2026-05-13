@@ -112,6 +112,8 @@ export class PluginManager {
     return rawPlugin as PluginInterface;
   }
 
+  private static pluginSheets: Map<string, CSSStyleSheet> = new Map();
+
   /// 将插件的 CSS 注入到 <head>
   /// 使用 data-plugin-id 属性标记，便于卸载时精准查找并移除
   private static injectPluginCss(plugin: PluginInterface): void {
@@ -123,30 +125,54 @@ export class PluginManager {
     // 若已存在则先移除旧的（防止重复加载同一插件）
     PluginManager.removePluginCss(pluginId);
 
-    const styleEl = document.createElement('style');
-      styleEl.setAttribute('data-plugin-id', pluginId);
-      styleEl.textContent = css;
-      document.head.appendChild(styleEl);
+    // 新版，现代化的样式表对象
+    {
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(css);
+      // 将样式表追加到当前文档中
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+      // 存入 Map 以便卸载
+      PluginManager.pluginSheets.set(pluginId, sheet);
+    }
+    // 旧版，有安全风险
+    // {
+    //   const styleEl = document.createElement('style');
+    //     styleEl.setAttribute('data-plugin-id', pluginId);
+    //     styleEl.textContent = css;
+    //     document.head.appendChild(styleEl);
+    // }
 
     if (global_setting.isDebug) console.log(`Plugin CSS injected: ${pluginId}`);
   }
 
   /// 移除插件注入的 CSS <style> 标签
   private static removePluginCss(pluginId: string): void {
-    const existing = document.head.querySelector(`style[data-plugin-id="${pluginId}"]`);
-    if (existing) {
-      existing.remove();
-      if (global_setting.isDebug) console.log(`Plugin CSS removed: ${pluginId}`);
+    // 新版
+    {
+      const sheet = PluginManager.pluginSheets.get(pluginId);
+      if (sheet) {
+        document.adoptedStyleSheets = document.adoptedStyleSheets.filter(s => s !== sheet);
+        PluginManager.pluginSheets.delete(pluginId);
+      }
     }
+    // 旧版
+    // {
+    //   const existing = document.head.querySelector(`style[data-plugin-id="${pluginId}"]`);
+    //   if (existing) {
+    //     existing.remove();
+    //     if (global_setting.isDebug) console.log(`Plugin CSS removed: ${pluginId}`);
+    //   }
+    // }
   }
 
   // #region 废弃，旧版的插件加载和验证方案
 
+  /*
   /** 加载并验证插件
    * 
    * @deprecated 旧方案，废弃
    *   新版改进: 原字符串 + new Function 加载 -> Blob + dynamic import；类似 obsidian 插件体系的做法
-   */
+   *
   loadPlugin2(scriptContent: string): PluginInterface {
     try {
       // 执行脚本，要求返回插件对象
@@ -178,7 +204,7 @@ export class PluginManager {
    *     如果这个插件里包含副作用（比如删除文件、发起网络请求），在加载阶段就会被触发，这非常危险
    *   - 安全性几乎为零：new Function 和 eval 类似，它会在当前的全局作用域下执行代码。这意味着恶意插件可以直接访问 window / global
    *   - 插件的打印日志会混在主程序日志里，难以区分和调试。而 import 方案的 console 则可以很方便地看出来是插件所在的文件中打印出来的
-   */
+   *
 
   private loadPlugin_validatePlugin2(plugin: any): asserts plugin is PluginInterface {
     if (!plugin || typeof plugin !== 'object') {
@@ -204,6 +230,7 @@ export class PluginManager {
       throw new Error('onUnload 必须是函数类型');
     }
   }
+  */
 
   // #endregion
 
