@@ -56,11 +56,11 @@ export class PluginManager {
       // 1.1. (二选一)
       //   使用原生动态 import 加载这个虚拟文件
       //   使用 /* @vite-ignore */ 防止 Vite 在构建时试图解析这个动态路径
-      // const module = await import(/* @vite-ignore */ blobUrl);
+      const module = await import(/* @vite-ignore */ blobUrl);
 
       // 1.1. (二选一)
-      const dynamicImport = new Function('url', 'return import(url)');
-      const module = await dynamicImport(blobUrl);
+      // const dynamicImport = new Function('url', 'return import(url)');
+      // const module = await dynamicImport(blobUrl);
 
       //   获取 export default 导出的对象
       let rawPlugin = module.default;
