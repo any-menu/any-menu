@@ -1015,9 +1015,6 @@ html, body, #main {
   position: fixed;
   margin: 0;
   padding: 0;
-  left: var(--am-left, unset);
-  top: var(--am-top, unset);
-  bottom: var(--am-bottom, unset);
 }
 .am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
   display: block !important;
