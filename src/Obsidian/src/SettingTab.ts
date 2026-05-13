@@ -83,15 +83,16 @@ export class AMSettingTab extends PluginSettingTab {
   }
 
   private async restartPlugin(): Promise<void> {
-    const plugin = this.plugin;
-    const app = this.app;
+    new Notice('Obsidian 最新的安全策略不允许重启自己，请手动关闭后重启插件')
 
-    await (app as any).plugins.disablePlugin(plugin.manifest.id)  // 禁用当前插件
-    await (app as any).plugins.enablePlugin(plugin.manifest.id)   // 启用当前插件
+    // const plugin = this.plugin;
+    // const app = this.app;
+
+    // await (app as any).plugins.disablePlugin(plugin.manifest.id)  // 禁用当前插件
+    // await (app as any).plugins.enablePlugin(plugin.manifest.id)   // 启用当前插件
     
-    
-    new Notice('插件已成功重启') // 可选
-    this.display() // (可选) 重新刷新设置面板
+    // new Notice('插件已成功重启') // 可选
+    // this.display() // (可选) 重新刷新设置面板
   }
 }
 
