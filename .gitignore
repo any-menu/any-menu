@@ -1,0 +1,14 @@
+.vscode/*
+!.vscode/extensions.json
+
+node_modules/
+backup/
+tmp/
+temp/
+
+# Obsidian
+main.js
+/styles.css
+
+# rust-analyzer vscode 插件可能生成
+/target/

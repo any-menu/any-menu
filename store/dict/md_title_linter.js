@@ -1,0 +1,78 @@
+/**
+ * 说明: 标题加粗和链接等通常被视为合法的 md 语法，但一般情况下仅在你想要强调某些标题时才会使用它们。
+ * 
+ * 而 GPT 生成 / 从网页中复制的结果 (经历了html2md) 有时会由于格式给所有的标题添加上加粗或链接等，
+ * 这往往并不是我们想要的结果。这会导致语法的简洁性下降，语法冗余。
+ * 
+ * 标题不应全加粗的原理为:
+ * 
+ * > - 假如你的所有标题都要加粗，那你就不应该给所有标题一个md加粗样式
+ * > - 假如你的所有n级标题的末尾都要给分割线，那你就不应该加md的分割线
+ * > - 假如你的所有X语法都具备某个特征Y，而非X语法视情况可能具有特征Y，那么你应该通过样式去实现这一特征Y而非入侵式语法
+ * > 
+ * > 否则就是语法冗余。并且你也失去给了某些标题强调的可能性
+ * 
+ * 标题不应全加链接的原理为:
+ * 
+ * > 这种常见于博客的复制结果
+ * > 
+ * > 一些博客会为自己的标题加上 id 和链接，以便于你点击标题时自动锚点和页面自动滚动定位。
+ * > 
+ * > (可以使用事件监听来实现这一点来避免复制html时标题带上链接。但只有极少特别注重用户体验的博客这样去做了。
+ * > 很少有开发者会留意/注重到这一点，而且一般使用 a 标签实现起来更简单，所以也更多人使用这种方式)
+ * > 
+ * > 这对于复制结果的 md 而言，这种链接是多余的，是语法冗余的
+ */
+
+export default {
+    metadata: {
+        id: 'anymenu-md-title-linter',
+        name: '清除md标题样式冗余',
+        version: '1.0.1',
+        min_app_version: '1.1.0',
+        author: 'LincZero',
+        icon: `\
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heading-icon lucide-heading">
+    <defs>
+        <mask id="eraseMask">
+            <rect width="24" height="24" fill="white"/>
+            <line x1="2" y1="2" x2="22" y2="22"
+                stroke="black" stroke-width="3" stroke-linecap="round"/>
+        </mask>
+    </defs>
+  
+    <g mask="url(#eraseMask)">
+        <path d="M6 12h12"/>
+        <path d="M6 20V4"/>
+        <path d="M18 20V4"/>
+    </g>
+    
+    <line x1="2" y1="2" x2="22" y2="22"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>`
+    },
+
+    async run(ctx) {
+        let str = ctx.env.selectedText
+        if (!str) {
+            console.warn('需要选中文本后再执行');
+            return;
+        }
+        
+        const lines = str.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            // let line = lines[i]
+
+            // 是否标题
+            const headingMatch = lines[i].match(/^(#{1,6})\s*(.*)$/)
+            if (!headingMatch) continue
+            
+            lines[i] = lines[i].replace(/\[([^\]]*)\]\([^)]+\)/g, '$1') // 去除链接
+            lines[i] = lines[i].replace(/(\*\*|__)(.*?)\1/g, '$2')      // 先去除加粗
+            lines[i] = lines[i].replace(/(\*|_)(.*?)\1/g, '$2')           // 再去除斜体
+        }
+        str = lines.join('\n')
+
+        ctx.api.sendText(str)
+    }
+}

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "src/Tauri"
+		}
+	],
+	"settings": {
+		"commentTranslate.hover.enabled": false
+	}
+}

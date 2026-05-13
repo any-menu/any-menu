@@ -1,0 +1,233 @@
+---
+# icon use https://fontawesome.com/icons
+# layout: OldLayout
+home: true
+title: AnyMenu
+icon: home
+heroText: AnyMenu
+# tagline带图片时，文本最好长点能换行，否则空间分配不美观
+tagline: |
+  A powerful input method assistant / editor assistant, 
+  Integrates a variety of quick input tools that can be used in a general text environment
+heroStyle:
+  min-height: 450px
+heroImage: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon-alpha.png
+heroImageDark: https://raw.githubusercontent.com/any-menu/any-menu/refs/heads/main/docs/assets/icon-alpha.png
+
+actions:
+  - text: Introduce
+    icon: book
+    link: "#what-is-anymenu"
+  # - text: Demo
+  #   icon: list
+  #   link: ./README.show.md
+
+features:
+  - title: Quick Input
+    icon: italic
+    details: Quickly input text, phrases, symbols, icons, templates, etc. These can be done through quick search, quick menus, and advanced shortcut keys.
+    link: ./zh/quick_input/
+
+  - title: Quick Conversion
+    icon: repeat # or shuffle
+    details: In addition to direct output, it is also possible to select the text and convert it based on the content. It can be used for intelligent punctuation, intelligent tag pairs, text instructions, formatting, translation, GPT, etc.
+
+  - title: Quick Search
+    icon: magnifying-glass
+    details: Quick serach box. Quickly search and locate custom templates and custom phrases
+    link: ./zh/quick_search/
+
+  - title: Quick Menu
+    icon: bars
+    details: The quick multi-level menu enables users to visually view and invoke input templates, commands, etc. In some environments, it also allows for the visual preview of the rendered results of text templates.
+
+  - title: Quick Super Keys
+    icon: keyboard
+    details: Instead of using traditional shortcut keys, you can use unconventional system shortcuts such as "Caps+L". This adds flexibility and functionality while avoiding overcrowding the global shortcut key area.
+    link: ./zh/quick_keys/
+
+  - title: Quick Cursor
+    icon: i-cursor
+    details: It can use unconventional shortcut keys such as Caps+L to quickly operate the input cursor and commands, and comes with a set of Vim-like system functions.
+    link: ./zh/quick_keys/
+
+  # - title: Quick Hotstrings (In Development)
+  #   icon: font or quote-left or strikethrough
+  #   details: AnyCaps can use unconventional hotkeys for quick cursor and command operations
+
+  - title: Multi-platform, Highly Compatible, Unified
+    icon: bolt
+    details: Supports Obsidian plugin / Standalone desktop application. Use the same editing logic across any text editing environment, including plain/rich text editors, web pages, chat input boxes, etc.
+
+  - title: High Performance, Compact Size
+    icon: bolt-lightning
+    details: The App version is developed in Rust with WebView for display, delivering a performant, aesthetically pleasing, and lightweight user experience
+
+  - title: Simple and Easy to Use
+    icon: box-open
+    details: Easy to use out-of-the-box, requires no configuration, simple syntax, quick to get started
+
+  - title: Rich, Well-structured Documentation
+    icon: book
+    details: Provides aesthetically pleasing online documentation with illustrated explanations for each plugin sub-feature
+
+  # - title: Online Experience Available
+  #   icon: flask-vial
+  #   details: Provides an online App version for experiencing and testing online
+  #   link: https://any-block.github.io/any-block/
+
+  - title: Expand easy, Online Dictionaries/Scripts
+    icon: cloud
+    details: Comes with a dictionary/script marketplace, collecting user-defined dictionaries/scripts from the community. Access and use numerous extensions without needing to write or develop them yourself, offering rich and diverse functionality
+    link: ./zh/dict/
+
+  - title: Expand flexibilitye, Custom Dictionary/Script
+    icon: plug
+    details: Beyond downloading and using others' dictionaries and scripts, you can also create custom dictionaries and scripts
+    link: ./zh/dict/
+---
+
+[中文](./README.md) | [English](./README.en.md)
+
+# AnyMenu —— A powerful assistant for inputMethod / editor
+
+## What is AnyMenu
+
+- Positioning
+    - A cross-platform, lightweight, fast, and customizable **Input Method Companion / Editor Companion** focused on text editing environments.
+- Multi-platform
+    - Obsidian Plugin
+    - Cross-platform application
+- Main function
+    - Used to enhance input method or editor functionality, quickly generate templates, and provide auto-completion
+- Specific functions
+    - Quick text - Quick input of text, quick conversion of text
+    - Quick panel invocation - Quick search box, quick multi-level menu, quick editor (under development)
+    - Quick activation - Quick super key (Caps+), quick cursor (like vim), hot string (under development)
+    - User-friendly dictionary/script - Customization, cloud market
+    - Quick GPT (under development)
+
+## Document (using / tutorial / example)
+
+- [Document Homepage](https://any-menu.github.io/any-menu/README.md)
+- [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/quick_keys/README.md)
+  - [AnyCaps 设计方案](./zh/quick_keys/Tutorial.md)
+- [Dictionaries](./zh/dict/)
+  (Scripts are also considered a special type of dictionary.)
+  - [1. Download AnyMenu Dictionaries Online](./zh/dict/1.%20Online%20Dictionary%20Download.md)
+  - [2. Manually Download AnyMenu Dictionaries](./zh/dict/2.%20Manual%20Dictionary%20Download.md) (For use in offline environments / network issues / online marketplace unavailable / downloading unaudited third-party dictionaries)
+  - [3. Writing AnyMenu Dictionaries](./zh/dict/3.%20Writing%20Dictionaries.md)
+  - [4. Uploading Custom AnyMenu Dictionaries](./zh/dict/4.%20Uploading%20Dictionaries.md)
+- Related articles
+  - [Pain Point: Different Editor Environments Have Different Logics](./en/article/DifferentEditor.md)
+  - [What are the quick input / auto-completion solutions, and how do they compare?](./zh/quick_input/对比.md)
+
+## Features
+
+Features will be introduced by different modules (categorized into multiple groups/abstract categories).
+
+### Core Features
+
+[table]
+
+- Quick Input
+  - Custom text, phrases, templates, etc., for quick input
+- Quick Conversion
+  - Convert selected text into corresponding text based on certain rules. Can be used for smart punctuation, smart tag pairs, text commands, formatting, translation, GPT, and more
+- Quick Panel
+  - Default shortcut: `Alt+A` (configurable). Summon the panel anytime, anywhere, similar to utools and quicker
+- Quick Multi-level Menu
+  - Visual output, especially when using the Obsidian version, allowing you to see the Markdown-rendered result of the output content
+- Quick Search Box
+  - In addition to using the multi-level menu, you can also quickly find and output desired content via the search box
+- Shortcuts - Advanced (Caps+)
+  - Use non-traditional system shortcuts like `Caps+` or `'+` to execute commands, avoiding crowded global shortcuts
+- Quick Cursor
+  - Utilizes advanced shortcuts, with a default configuration of a vim-like scheme based on the `Caps+` approach
+- Multi-platform, High Compatibility, Unified
+  - Not just an Obsidian plugin but also available as a standalone app
+    In the app version, you can summon the same menu in any text-based editor environment, using the same operational logic to enhance your input method and current editor
+- Others
+  - Additional features that are under development, in progress, or planned can be found in [Miscellaneous](./zh/杂项.md)
+
+### Dictionary / Script Marketplace Module
+
+Currently officially supported dictionaries: (Just a few examples are listed.)
+
+```mermaid
+mindmap
+  root(AnyMenu)
+    (Phrase Type)
+      emoji
+      Kaomoji (Text Emoticons)
+    (Markdown Demo)
+      Markdown demo
+      Mermaid demo
+      AnyBlock plugin demo
+      MetaBind plugin demo
+    (Script Type)
+      Output current date and time
+      Markdown formatting
+      Markdown tags
+      HTML tags
+    (Other)
+      Obsidian command
+```
+
+Official dictionaries/scripts are continuously being expanded. You can also fully write your own custom dictionaries/scripts.
+
+## Graphic and textual demonstrations of some functions
+
+After configuring the dictionary, you can use it as follows:
+
+Quick Input Template:
+
+![](./assets/PixPin_2025-10-04_09-45-58.gif)
+
+The app version can be used in any text environment:
+
+![](./assets/PixPin_2025-10-04_09-38-24.gif)
+
+You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
+
+![](./assets/cloud_dict.png)
+
+## Differences Between Plugin Version and App Version
+
+> [!warning]
+> Regarding Simultaneous Installation:
+> 
+> - **Setup Method 1 (Default)**: The App version will automatically add Obsidian to its blocklist.
+> - **Setup Method 2**: You can modify the `app_black_list` setting in the App version to remove Obsidian from the blocklist.
+>
+> Resulting Behavior:
+> 
+> - In the default setup, if both the Plugin and App versions are installed, the same hotkey will prioritize the Plugin version. (Corresponds to Setup Method 1)
+> - You might prefer installing only the App version without the Plugin version. (Corresponds to Setup Method 2)
+> - Alternatively, you can assign different hotkeys to each, allowing flexible use within Obsidian based on the situation. (Corresponds to Setup Method 2)
+
+| Feature                          | Plugin version | App version |
+| -------------------------------- | -------------- | ----------- |
+| Multilevel menu                  | ✅             | ✅         |
+| Search Box                       | ✅             | ✅         |
+| Advanced Hotkeys (Caps+)         | ❌             | ✅         |
+| Better Selected Text Capture     | ✅             | ✅         |
+| Better Full Editor Text Capture  | ✅             | ❌         |
+| Performance                      |                | Potentially better |
+
+Among them
+
+- "Better Selected Text Capture" is related to whether the text processing and replacement functions can be used.
+- "Better Full Editor Text Capture" is related to whether functions such as finding the next matching text, multiple cursors, and full-text AI can be utilized. Even the ability to call some of the software's own APIs is possible.
+
+## Highlights
+
+Given that tools like Quicker and uTools already exist, what are the advantages compared to similar products? See below and [What Quick Input/Auto-completion Solutions Exist?](./zh/Comparison.md)
+
+- Zero Barrier to Entry
+  - It's not the one with the shortest or fastest input chain (the fastest are input method phrases and hotstring solutions, but they have a steeper learning curve).
+    However, it is definitely the most intuitive and easiest to use in terms of thinking logic.
+  - Can be used with any input method solution or any input method software.
+  - Easy to use, fast, powerful, and highly customizable.
+- Cross-platform
+  - If time permits, support for Windows/Linux platforms, Obsidian, and VSCode plugins will be added.
