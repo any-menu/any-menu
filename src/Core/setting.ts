@@ -203,6 +203,7 @@ export const global_setting: {
     activeDocUrl: undefined,
   },
   api: {
+    // 在 Obsidian 中可选择使用其提供的 sanitizeHTMLToDom 方法替换之
     saveInnerHTML: (el: HTMLElement, string: string) => {
       const safeNode = DOMPurify.sanitize(string, {
         USE_PROFILES: { svg: true },
