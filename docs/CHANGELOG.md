@@ -2,6 +2,22 @@
 
 更新日志
 
+## 1.1.3
+
+- feat
+  - obsidian 支持选择文本后自动弹出窗口
+- enhance
+  - 支持非聚焦模式弹出面板
+  - 支持翻转显示弹出面板
+  - 部分代码重构、整理和优化
+- fix
+  - 修复 obsidian v12 之后窗口名标志改变的问题
+- beta feat (实验功能)
+  - app 版本支持 http_server
+  - 新增浏览器扩展，可以协同 app 版本使用
+- BREAKECHANGE
+  - 默认加载非拼音版本
+
 ## 1.1.2-beta
 
 - feat

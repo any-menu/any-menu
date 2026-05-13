@@ -1,7 +1,7 @@
 {
   "name": "any-menu-core",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.1.3",
   "author": "LincZero",
   "description": "",
   "main": "index.js",

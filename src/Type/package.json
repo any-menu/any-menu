@@ -1,6 +1,6 @@
 {
   "name": "any-menu",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "description": "Type definitions for AnyMenu plugin development API",
   "keywords": [
     "anymenu",
