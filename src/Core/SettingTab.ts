@@ -62,7 +62,7 @@ function initSettingTab_miniDocs(tab_nav_container: HTMLElement, tab_content_con
      * - 风险评估：低 (无用户输入)
      * - 审查周期：每次翻译文件更新时人工审查
      */
-    div.innerHTML = t('Mini docs2')
+    global_setting.api.saveInnerHTML(div, t('Mini docs2'))
 
   tab_nav.classList.add('active');
   tab_content.classList.add('active');
@@ -405,7 +405,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   // Add 按钮
   const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('setting_row-add-btn');
-    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = t('Add');
+    global_setting.api.saveInnerHTML(add_btn, SVG_ICON_ADD); add_btn.title = t('Add');
   add_btn.addEventListener('click', () => {
     const newName = '';
     const newIndex = global_setting.config.toolbar_list.length;
@@ -416,7 +416,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
   // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
   const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('setting_row-refresh-btn');
-    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
+    global_setting.api.saveInnerHTML(refresh_btn, SVG_ICON_REFRESH); refresh_btn.title = t('Refresh');
   function fn_refresh() {
     el_rows.innerHTML = ''
     for (let i = 0; i < global_setting.config.toolbar_list.length; i++) {
@@ -433,7 +433,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
     // Drag, 需注意: 拖动后 index 需要重排
     const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
-      el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
+      global_setting.api.saveInnerHTML(el_row_drag, SVG_ICON_GRIP); el_row_drag.title = t('Drag');
 
     // Name，TODO 以后可以标记下是否是正确的项
     const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
@@ -448,7 +448,7 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
 
     // Delete
     const el_row_delete = document.createElement('button'); el_row.appendChild(el_row_delete); el_row_delete.classList.add('delete-btn');
-      el_row_delete.innerHTML = SVG_ICON_DELETE; el_row_delete.title = t('Delete');
+      global_setting.api.saveInnerHTML(el_row_delete, SVG_ICON_DELETE); el_row_delete.title = t('Delete');
     el_row_delete.addEventListener('click', () => {
       const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
       if (idx < 0 || idx >= global_setting.config.toolbar_list.length) return;
@@ -579,7 +579,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
 
   // Add 按钮
   const add_btn = document.createElement('button'); tab_content.appendChild(add_btn); add_btn.classList.add('setting_row-add-btn');
-    add_btn.innerHTML = SVG_ICON_ADD; add_btn.title = t('Add');
+    global_setting.api.saveInnerHTML(add_btn, SVG_ICON_ADD); add_btn.title = t('Add');
   add_btn.addEventListener('click', () => {
     const newName = '';
     const newIndex = global_setting.config.context_menu_list.length;
@@ -590,7 +590,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
 
   // Refresh 按钮 (主要是方便 debug 检查配置对象和界面是否保持一致性)
   const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('setting_row-refresh-btn');
-    refresh_btn.innerHTML = SVG_ICON_REFRESH; refresh_btn.title = t('Refresh');
+    global_setting.api.saveInnerHTML(refresh_btn, SVG_ICON_REFRESH); refresh_btn.title = t('Refresh');
   function fn_refresh() {
     el_rows.innerHTML = ''
     for (let i = 0; i < global_setting.config.context_menu_list.length; i++) {
@@ -607,7 +607,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
 
     // Drag, 需注意: 拖动后 index 需要重排
     const el_row_drag = document.createElement('span'); el_row.appendChild(el_row_drag); el_row_drag.classList.add('drag-btn');
-      el_row_drag.innerHTML = SVG_ICON_GRIP; el_row_drag.title = t('Drag');
+      global_setting.api.saveInnerHTML(el_row_drag, SVG_ICON_GRIP); el_row_drag.title = t('Drag');
 
     // Name，TODO 以后可以标记下是否是正确的项
     const el_row_name = document.createElement('input'); el_row.appendChild(el_row_name); el_row_name.classList.add('name');
@@ -622,7 +622,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
 
     // Delete
     const el_row_delete = document.createElement('button'); el_row.appendChild(el_row_delete); el_row_delete.classList.add('delete-btn');
-      el_row_delete.innerHTML = SVG_ICON_DELETE; el_row_delete.title = t('Delete');
+      global_setting.api.saveInnerHTML(el_row_delete, SVG_ICON_DELETE); el_row_delete.title = t('Delete');
     el_row_delete.addEventListener('click', () => {
       const idx = Number(el_row.dataset.index); if (Number.isNaN(idx)) return;
       if (idx < 0 || idx >= global_setting.config.context_menu_list.length) return;

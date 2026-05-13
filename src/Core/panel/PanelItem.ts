@@ -9,7 +9,6 @@ import { PluginInterfaceCtxDemo } from "../pluginManager/PluginInterface";
 import { global_setting } from "../../Core/setting";
 
 import { textToIcon } from "./utils"
-import DOMPurify from 'dompurify';
 
 export type PanelItem = {
   label: string // 显示名，众多别名中的主名称
@@ -54,7 +53,7 @@ export function init_item(
   else if (mode === 'icon') {
     li.title = item.label
     if (!item.icon) { // 没有图标则用名字构造一个简易图标
-      li.innerHTML = textToIcon(item.label, { twoLettersForEnglish: true }).html
+      global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
     } else if (item.icon.startsWith("lucide-")) {
       const iconName = item.icon.replace("lucide-", "");
       const iconUrl = `https://unpkg.com/lucide-static@latest/icons/${iconName}.svg`;
@@ -63,12 +62,10 @@ export function init_item(
         console.log('命中图标缓存', iconName)
         // 这个容器为了让多种方式生成的图标样式统一
         const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
-        span.innerHTML = DOMPurify.sanitize(lucideIconCache.get(iconName), {
-          USE_PROFILES: { svg: true }
-        });
+        global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName));
       } else {
         // 2. [可选] 在加载完成前，先放置一个骨架屏或 Loading SVG
-        // li.innerHTML = `<svg class="animate-spin ...">...</svg>`;
+        // global_setting.api.saveInnerHTML(li, `<svg class="animate-spin ...">...</svg>`);
 
         // 3. 异步获取图标
         fetch(iconUrl)
@@ -81,21 +78,17 @@ export function init_item(
             const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
 
             lucideIconCache.set(iconName, svgText); // 存入缓存
-            span.innerHTML = DOMPurify.sanitize(svgText, { // 安全插入到 DOM 中，严格 SVG 模式
-              USE_PROFILES: { svg: true }
-            });
+            global_setting.api.saveInnerHTML(span, svgText);
           })
           .catch(error => { // 异常则降级处理
             console.warn("Failed to load Lucide icon:", error);
-            li.innerHTML = textToIcon(item.label, { twoLettersForEnglish: true }).html
+            global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
           });
       }
     } else {
       // 这个容器为了让多种方式生成的图标样式统一
       const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-svg');
-      span.innerHTML = DOMPurify.sanitize(item.icon, { // 安全插入到 DOM 中，严格 SVG 模式
-        USE_PROFILES: { svg: true }
-      })
+        global_setting.api.saveInnerHTML(span, item.icon);
     }
   }
   // #endregion

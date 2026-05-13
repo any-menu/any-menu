@@ -1,3 +1,5 @@
+import { global_setting } from "../../setting";
+
 /** 装饰 - 输入框建议
  * 
  * - .autocomplete-p' (输入框的容器)
@@ -34,8 +36,7 @@ export function input_suggestion(el_input: HTMLInputElement, el_container: HTMLE
 
       // 创建建议项的DIV，其中与输入匹配的字符进行加粗
       const suggestionItem = document.createElement("div")
-      suggestionItem.innerHTML = "<strong>" + item.substring(0, val.length) + "</strong>"
-      suggestionItem.innerHTML += item.substring(val.length)      
+        global_setting.api.saveInnerHTML(suggestionItem, "<strong>" + item.substring(0, val.length) + "</strong>" + item.substring(val.length))
       
       // 建议列表项事件 - 点击
       suggestionItem.dataset.value = item

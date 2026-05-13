@@ -1,4 +1,5 @@
 import type { UrlRequestConfig, UrlResponse } from '../Type'
+import DOMPurify from 'dompurify';
 
 export const global_setting: {
   platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
@@ -116,6 +117,7 @@ export const global_setting: {
    * 通用 api 需要满足能在通用环境下执行，尽管不一定存在在通用环境下调用的情况
    */
   api: {
+    saveInnerHTML: (el: HTMLElement, content: string) => void
     readFile: (relPath: string) => Promise<string | null>
     readFolder: (relPath: string) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
@@ -201,6 +203,14 @@ export const global_setting: {
     activeDocUrl: undefined,
   },
   api: {
+    saveInnerHTML: (el: HTMLElement, string: string) => {
+      const safeNode = DOMPurify.sanitize(string, {
+        USE_PROFILES: { svg: true },
+        // 关键：让它返回 DOM 节点而不是字符串，并且不使用 innerHTML。否则 obsidian 那个自动 review 会说风险
+        RETURN_DOM_FRAGMENT: true
+      });
+      el.replaceChildren(safeNode);
+    },
     readFile: async () => { console.error("需实现 api.readFile 方法"); return null },
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
