@@ -41,6 +41,8 @@ jobs:
   # 避免自动审查时，审查 Obsidian 插件用不上的部分
   sync-obsidian:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
