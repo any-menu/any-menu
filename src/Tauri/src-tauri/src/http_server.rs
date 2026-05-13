@@ -7,6 +7,7 @@ use axum::{
     extract::{ws::{WebSocket, WebSocketUpgrade}, State},
     response::IntoResponse,
     routing::{get, post},
+    http::Method,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -27,7 +28,8 @@ async fn start_local_server2(app_handle: AppHandle) {
     // 允许任意来源的跨域请求 (CORS)，因为 content script 是注入在各个网页中的
     let cors = CorsLayer::new()
         .allow_origin(Any)
-        .allow_methods(Any)
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        // .allow_methods(Any)
         .allow_headers(Any);
 
     let app = Router::new()
@@ -47,6 +49,8 @@ async fn start_local_server2(app_handle: AppHandle) {
 }
 
 // #region 路由分发1
+
+// TODO 此处缺少逻辑：释放断开的 WebSocket 资源 (但也要考虑断开重连)
 
 /** 路由分发1
  * 
@@ -72,11 +76,18 @@ async fn route_new_websocket(
     let listener = match listener_opt {
         Some(l) => l,
         None => {
-            log::warn!("Ports 41668-41800 are all in use, falling back to random port");
-            let addr = SocketAddr::from(([127, 0, 0, 1], 0));
-            let l = tokio::net::TcpListener::bind(addr).await.expect("Failed to bind random port");
-            allocated_port = l.local_addr().unwrap().port();
-            l
+            // 暂不需要。很难出现所有端口都被占用的情况。
+            // 除非有个客户端一直无法成功连接，然后一直请求。若放任且进行兜底，可能会把过多端口占用掉
+            // 
+            // log::warn!("Ports 41668-41800 are all in use, falling back to random port");
+            // let addr = SocketAddr::from(([127, 0, 0, 1], 0));
+            // let l = tokio::net::TcpListener::bind(addr).await.expect("Failed to bind random port");
+            // allocated_port = l.local_addr().unwrap().port();
+            // l
+
+            // 此处打印错误并直接返回
+            log::error!("Ports 41668-41800 are all in use, cannot allocate WebSocket port");
+            return Json(0); // 返回 0 表示分配失败
         }
     };
 
@@ -111,6 +122,14 @@ async fn route_websocket_upgrade(
 async fn route_websocket(mut socket: WebSocket, app_handle: AppHandle) {
     log::info!("WebSocket connection established");
     
+    // (可选)
+    // 服务端建立连接后，立刻主动发送一条验证消息给客户端。
+    // 验证服务端主动向客户端通信的功能是否正常
+    // if let Err(e) = socket.send(axum::extract::ws::Message::Text("Hello from Tauri Server!".into())).await {
+    //     log::error!("Failed to send welcome message: {}", e);
+    //     return;
+    // }
+
     // 循环等待接收消息
     while let Some(msg) = socket.recv().await {
         match msg {
@@ -165,6 +184,10 @@ struct SelectionPayload {
     text: String,
     /// 选中的 HTML 内容
     html: String,
+    // 位置和是否显示等
+    // is_show: bool,
+    // pos_x: f64,
+    // pos_y: f64,
 }
 
 // #endregion
