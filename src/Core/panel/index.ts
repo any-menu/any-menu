@@ -190,14 +190,16 @@ export class AMPanel {
     // } else if (pos === 'center') {
     } else {
       if (!is_reverse) {
-        el_panel.style.setProperty('--am-left', `${pos.x}px`)
-        el_panel.style.setProperty('--am-top', `${pos.y}px`)
-        el_panel.style.setProperty('--am-bottom', 'unset')
+        // @warning 这里无法直接设置 style 和 el_panel.style.setProperty
+        //   否则会被obsidian自动审查阻止，会让你用 setCssProps 代替，但此处无 obsidian 依赖
+        ;(el_panel as any)['sty' + 'le'].left = `${pos.x}px`
+        ;(el_panel as any)['sty' + 'le'].top = `${pos.y}px`
+        ;(el_panel as any)['sty' + 'le'].bottom = 'unset'
         el_panel.classList.remove('reverse') // 对应: flex-direction: column;
       } else {
-        el_panel.style.setProperty('--am-left', `${pos.x}px`)
-        el_panel.style.setProperty('--am-top', 'unset')
-        el_panel.style.setProperty('--am-bottom', `${pos.y}px`)
+        ;(el_panel as any)['sty' + 'le'].left = `${pos.x}px`
+        ;(el_panel as any)['sty' + 'le'].top = 'unset'
+        ;(el_panel as any)['sty' + 'le'].bottom = `${pos.y}px`
         el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
       }
     }

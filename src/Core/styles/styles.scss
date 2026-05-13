@@ -143,10 +143,7 @@ html, body, #main {
   position: fixed;
   margin: 0;
   padding: 0;
-  // override by js
-  left: var(--am-left, unset); 
-  top: var(--am-top, unset);
-  bottom: var(--am-bottom, unset);
+  // override by js: left, top, bottom
 
   // 多级菜单的菜单项 - altkey 显示控制
   &.show-altkey {
