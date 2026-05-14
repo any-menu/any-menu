@@ -38,26 +38,6 @@ jobs:
           main.js
           styles.css
 
-  # 避免自动审查时，审查 Obsidian 插件用不上的部分
-  sync-obsidian:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Remove unused directories
-        run: |
-          # 删除不需要参与 Obsidian 审查的目录
-          rm -rf src/App src/Tauri
-
-      - name: Push to only-obsidian branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: only-obsidian # 目标分支
-          folder: .
-          commit-message: "chore: sync obsidian branch"
-
   build-tauri:
     strategy:
       fail-fast: false
