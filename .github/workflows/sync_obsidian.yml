@@ -19,6 +19,8 @@ jobs:
         run: |
           # 删除不需要参与 Obsidian 审查的目录
           rm -rf src/App src/Tauri
+          # 覆盖说明文件
+          mv docs/dev/only-obsidian.md README.md
 
       - name: Push to only-obsidian branch
         uses: JamesIves/github-pages-deploy-action@v4
@@ -37,6 +39,8 @@ jobs:
         run: |
           # 删除不需要同步到新仓库的目录
           rm -rf src/App src/Tauri
+          # 覆盖说明文件
+          mv docs/dev/only-obsidian.md README.md
 
       - name: Push to external repository
         uses: JamesIves/github-pages-deploy-action@v4
