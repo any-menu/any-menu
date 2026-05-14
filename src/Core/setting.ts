@@ -176,7 +176,7 @@ export const global_setting: {
 
     server_port: 41667,
     send_text_method: 'clipboard',
-    dict_online_source: 'gitee',
+    dict_online_source: 'github',
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
     note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     app_black_list: ['- Obsidian '],

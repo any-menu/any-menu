@@ -230,6 +230,9 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     const ret = await api.getDir_fromStorePath()
     if (!(ret && ret.code == 0 && ret.data?.json)) {
       console.error('Failed to load dict list from repo', ret)
+      if (global_setting.config.dict_online_source === 'github') {
+        console.error("You can try to change the dict_online_source to 'gitee' in settings.")
+      }
       dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = `${t('Load failed')}，请检查网络或稍后重试. code:${ret?.code}, msg:${ret?.msg}`
       return
     }
