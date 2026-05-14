@@ -190,7 +190,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           owner: any-menu # 目标仓库的 owner
-          repository: obsidian-any-menu # 目标仓库名
+          repo: obsidian-any-menu # 目标仓库名
           tag: ${{ github.ref_name }}
           commit: main
           token: ${{ secrets.ANYMENU }} # PAT GitHub Token。可选一，填写设置的PAT
