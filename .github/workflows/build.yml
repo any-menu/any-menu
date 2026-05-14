@@ -191,11 +191,11 @@ jobs:
         with:
           owner: any-menu # 目标仓库的 owner
           repo: obsidian-any-menu # 目标仓库名
-          tag: ${{ github.ref_name }}
           commit: main
           token: ${{ secrets.ANYMENU }} # PAT GitHub Token。可选一，填写设置的PAT
           # token: ${{ secrets.GITHUB_TOKEN }} # 内置 Github Token。可选二
-          # 'tag' 默认就是 github.ref_name (即你推送的 tag)，所以不用写
+          # 'tag' 默认就是 github.ref_name (即你推送的 tag)，但这里是另一个仓库，所以也要写
+          tag: ${{ github.ref_name }}
 
           name: 'Release ${{ github.ref_name }}' # Release 标题使用 tag 名
           body: |
