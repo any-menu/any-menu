@@ -15,7 +15,7 @@
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "ob:lint": "cd ./src/Obsidian && pnpm lint",
     "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
-    "bump": "node src/Scripts/bump.js",
+    "bump": "node src/Scripts/bump.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

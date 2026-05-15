@@ -12,6 +12,9 @@
 - `/manifest.json` 用于 obsidian 插件
 - `/src/Tauri/src-tauri/` 下的 `tauri.conf.json` 和 `Cargo.toml` 用于 App 版本
 
+现在我弄了一个脚本，方便一些。
+运行 `pnpm run bump 1.1.5` 即可 (自行替换目标版本)
+
 ## 常用命令
 
 ```bash
