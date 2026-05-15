@@ -199,9 +199,9 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
   })
   void load_file_content()
 
-  const btn_refresh = tab_content.createEl('button', { text: t('Refresh'), cls: 'absolute', attr: { style: 'position: absolute; bottom: 55px;' } })
+  const btn_refresh = tab_content.createEl('button', { text: t('Refresh'), cls: 'absolute', attr: { style: 'position: absolute; bottom: 55px; right: 30px;' } })
     btn_refresh.addEventListener('click', () => void load_file_content())
-  const btn_save = tab_content.createEl('button', { text: t('Save config'), cls: 'absolute', attr: { style: 'position: absolute; bottom: 16px;' } })
+  const btn_save = tab_content.createEl('button', { text: t('Save config'), cls: 'absolute', attr: { style: 'position: absolute; bottom: 16px; right: 30px;' } })
     btn_save.addEventListener('click', () => void save_file_content())
 
   async function load_file_content() {

@@ -1,7 +1,7 @@
 {
   "name": "any-menu",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.1.6",
   "author": "LincZero",
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",
@@ -13,6 +13,9 @@
     "ob:build": "cd ./src/Obsidian && pnpm build",
     "ob:build-pinyin": "cd ./src/Obsidian && pnpm build-pinyin",
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
+    "ob:lint": "cd ./src/Obsidian && pnpm lint",
+    "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
+    "bump": "node src/Scripts/bump.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
