@@ -206,7 +206,7 @@ export const global_setting: {
     // 在 Obsidian 中可选择使用其提供的 sanitizeHTMLToDom 方法替换之
     saveInnerHTML: (el: HTMLElement, string: string) => {
       const safeNode = DOMPurify.sanitize(string, {
-        USE_PROFILES: { svg: true },
+        USE_PROFILES: { html: true, svg: true },
         // 关键：让它返回 DOM 节点而不是字符串，并且不使用 innerHTML。否则 obsidian 那个自动 review 会说风险
         RETURN_DOM_FRAGMENT: true
       });
