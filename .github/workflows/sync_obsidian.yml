@@ -21,6 +21,8 @@ jobs:
           rm -rf src/App src/Tauri
           # 覆盖说明文件
           mv docs/dev/only-obsidian.md README.md
+          # 覆盖 package.json 等
+          mv src/Obsidian/obsidian-only/* src/Obsidian/
 
       - name: Push to only-obsidian branch
         uses: JamesIves/github-pages-deploy-action@v4
@@ -41,6 +43,8 @@ jobs:
           rm -rf src/App src/Tauri
           # 覆盖说明文件
           mv docs/dev/only-obsidian.md README.md
+          # 覆盖 package.json 等
+          mv src/Obsidian/obsidian-only/* src/Obsidian/
 
       - name: Push to external repository
         uses: JamesIves/github-pages-deploy-action@v4
