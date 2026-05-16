@@ -15,6 +15,11 @@
 现在我弄了一个脚本，方便一些。
 运行 `pnpm run bump 1.1.5` 即可 (自行替换目标版本)
 
+---
+
+其中 only-obsidian repo/branch 还需要 npm 上传一下
+`npm login`, `npm publish  --access public`
+
 ## 常用命令
 
 ```bash

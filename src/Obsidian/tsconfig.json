@@ -4,6 +4,7 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
+      "@/Core/*": ["./node_modules/@any-menu/any-menu-core/*"],
       "@/*": ["../../src/*"]
     },
     "module": "ESNext",
