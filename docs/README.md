@@ -107,7 +107,7 @@ features:
     - User-friendly dictionary/script - Customization, cloud market
     - Quick GPT (under development)
 
-## Document (using / tutorial / example)
+## Document (usage / tutorial / example)
 
 - [Document Homepage](https://any-menu.github.io/any-menu/README.md)
 - [Shortcut - Advanced, Fast Cursor (Caps+ Scheme)](./zh/quick_keys/README.md)
