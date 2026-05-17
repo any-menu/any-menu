@@ -130,16 +130,18 @@ html, body, #main {
 
 .am-panel {
   display: flex; // 让 .am-custom-panel 最大高度为填满余下
+  position: fixed;
+  margin: 0;
+  padding: 0;
+  // override by js: left, top, bottom
+
+  // reverse 模式
   flex-direction: column;
   bottom: unset;
   &.reverse {
     flex-direction: column-reverse;
     top: unset;
   }
-  position: fixed;
-  margin: 0;
-  padding: 0;
-  // override by js: left, top, bottom
 
   // 多级菜单的菜单项 - altkey 显示控制
   &.show-altkey {
@@ -244,6 +246,12 @@ html, body, #main {
         border-bottom: none;
         background-color: var(--ab-tab-root-bg-color);
       }
+
+      // nav-radius
+      border-radius: 6px 6px 0 0;
+      &:first-child {
+        border-radius: 0 6px 0 0;
+      }
     }
   }
   .tab-content-container {
@@ -269,14 +277,6 @@ html, body, #main {
       &.active {
         display: block;
       }
-    }
-  }
-
-  // nav-radius
-  .tab-nav-container>div {
-    border-radius: 6px 6px 0 0;
-    &:first-child {
-      border-radius: 0 6px 0 0;
     }
   }
 

@@ -563,30 +563,48 @@ div.editable-textarea-textarea {
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+/* -------------------------------- 输入建议 ----------------------------- */
+/* 建议列表 */
+.am-panel.reverse .am-search .am-search-suggestion {
+  top: unset;
+  bottom: 100%;
+}
+
 .am-search .am-search-suggestion {
   width: 500px;
+  max-height: 260px;
   box-sizing: border-box;
   position: absolute;
   left: 0;
   right: 0;
-  z-index: 12;
+  top: 100%;
+  bottom: unset;
   padding: 4px;
   border-radius: 8px;
   background-color: var(--ab-menu-bg-color);
   opacity: 0.98;
   border: 1px solid var(--ab-tab-root-bd-color);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  max-height: 400px;
   overflow-y: auto;
+  color: var(--ab-tab-root-tx-color);
+  z-index: 100;
+  /* 建议列表项 */
 }
 .am-search .am-search-suggestion > div.item {
   display: flex;
+  box-sizing: border-box;
   flex-wrap: nowrap;
   justify-content: space-between;
+  width: 100%;
   min-height: 28px;
+  max-height: 98px;
+  line-height: 20px;
+  margin: 0;
   padding: 4px 12px;
   cursor: pointer;
   border-radius: 6px;
+  font-size: 14px;
 }
 .am-search .am-search-suggestion > div.item:hover {
   background-color: var(--ab-tab-root-hv-color);
@@ -617,44 +635,7 @@ div.editable-textarea-textarea {
   margin-left: 10px;
   height: 20px;
 }
-
-/* -------------------------------- 输入建议 ----------------------------- */
-/* 建议列表 */
-.am-panel.reverse .am-search .am-search-suggestion {
-  top: unset;
-  bottom: 100%;
-}
-
-.am-search .am-search-suggestion {
-  top: 100%;
-  bottom: unset;
-  color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
-  border: 1px solid var(--ab-tab-root-bd-color);
-  border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-  padding: 4px;
-  z-index: 100;
-  max-height: 260px;
-  overflow-y: auto;
-  /* 建议列表项 */
-}
-.am-search .am-search-suggestion > div {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 28px;
-  max-height: 98px;
-  margin: 0;
-  padding: 4px 12px;
-  line-height: 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-.am-search .am-search-suggestion > div:hover {
-  background-color: var(--ab-tab-root-hv-color);
-}
-.am-search .am-search-suggestion > div.focus-active {
+.am-search .am-search-suggestion > div.item.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }
@@ -998,17 +979,15 @@ html, body, #main {
 /* -------------------------------- 总菜单面板 (组合基) ------------------ */
 .am-panel {
   display: flex;
+  position: fixed;
+  margin: 0;
+  padding: 0;
   flex-direction: column;
   bottom: unset;
 }
 .am-panel.reverse {
   flex-direction: column-reverse;
   top: unset;
-}
-.am-panel {
-  position: fixed;
-  margin: 0;
-  padding: 0;
 }
 .am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
   display: block;
@@ -1093,6 +1072,12 @@ html, body, #main {
   border-bottom: none;
   background-color: var(--ab-tab-root-bg-color);
 }
+.tab-root .tab-nav-container > div {
+  border-radius: 6px 6px 0 0;
+}
+.tab-root .tab-nav-container > div:first-child {
+  border-radius: 0 6px 0 0;
+}
 .tab-root .tab-content-container {
   position: absolute;
   top: 32px;
@@ -1113,12 +1098,6 @@ html, body, #main {
 }
 .tab-root .tab-content-container > div.active {
   display: block;
-}
-.tab-root .tab-nav-container > div {
-  border-radius: 6px 6px 0 0;
-}
-.tab-root .tab-nav-container > div:first-child {
-  border-radius: 0 6px 0 0;
 }
 .tab-root div:has(> textarea) {
   position: relative;
