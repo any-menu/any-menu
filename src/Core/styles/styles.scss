@@ -75,7 +75,7 @@ html, body, #main, #am-config {
   box-sizing: border-box;
 }
 html, body, #main {
-  background: transparent !important;
+  background: transparent !important; // 不 important 的话不生效，也找不到被谁覆盖，很奇怪。
 }
 
 #main {
@@ -89,15 +89,16 @@ html, body, #main {
   }
 
   // 置顶按钮 (debug模式下才显示)
-  >button {
+  >button.windows-pin {
     position: absolute;
     box-sizing: border-box;
     margin: 0;
     bottom: 5px;
     left: 0px;
+    width: 34px;
     height: 26px;
 
-    padding: 0 !important;
+    padding: 0;
     z-index: 1;
     border: none;
     box-shadow: none;
@@ -114,14 +115,9 @@ html, body, #main {
       stroke: var(--am-bright-color);
     }
   }
-
-  >.windows-pin {
-    bottom: 5px;
-    width: 34px;
-  }
-  >.btn-2 {
-    bottom: 50px;
-  }
+  // >.btn-2 {
+  //   bottom: 50px;
+  // }
 }
 #main.reverse {
   >.windows-pin {
@@ -149,13 +145,13 @@ html, body, #main {
   &.show-altkey {
     >.am-context-menu .am-context-menu-item {
       &::after {
-        display: block !important;
+        display: block;
       }
     }
 
     >.am-search>.am-search-suggestion>div.item {
       &::after {
-        display: block !important;
+        display: block;
       }
     }
   }
@@ -207,9 +203,16 @@ html, body, #main {
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
-.tab-root-parent { // 不一定有
-  padding: 0px !important;
+
+// 不一定有，Obsidian 版本才有。注意可能会和插件样式冲突
+.tab-root-parent {
+  padding: 0px;
+  border-radius: 8px;
+  .tab-root {
+    border-radius: 8px;
+  }
 }
+
 .tab-root {
   padding: 0px;
   position: relative;
@@ -431,8 +434,8 @@ html, body, #main {
   position: absolute;
   bottom: 12px;
   z-index: 4;
-  left: 16px !important;
-  right: auto !important;
+  left: 16px;
+  right: auto;
 }
 
 /* -------------------------------- 默认 ------------------------------- */
@@ -445,7 +448,7 @@ html, body, #main {
 // 用来表示 innerHTML 的情况
 // 自动换行 + 忽略 `\n` 便于 html 标签排版
 .am-inner-html {
-  white-space: normal !important;
+  white-space: normal;
 }
 
 #main, #am-config {

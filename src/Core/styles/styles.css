@@ -966,14 +966,15 @@ html, body, #main {
 #main > * {
   pointer-events: auto;
 }
-#main > button {
+#main > button.windows-pin {
   position: absolute;
   box-sizing: border-box;
   margin: 0;
   bottom: 5px;
   left: 0px;
+  width: 34px;
   height: 26px;
-  padding: 0 !important;
+  padding: 0;
   z-index: 1;
   border: none;
   box-shadow: none;
@@ -981,19 +982,12 @@ html, body, #main {
   background: transparent;
   color: var(--am-text-color);
 }
-#main > button:hover {
+#main > button.windows-pin:hover {
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
-#main > button.active > svg {
+#main > button.windows-pin.active > svg {
   stroke: var(--am-bright-color);
-}
-#main > .windows-pin {
-  bottom: 5px;
-  width: 34px;
-}
-#main > .btn-2 {
-  bottom: 50px;
 }
 
 #main.reverse > .windows-pin {
@@ -1017,10 +1011,10 @@ html, body, #main {
   padding: 0;
 }
 .am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
-  display: block !important;
+  display: block;
 }
 .am-panel.show-altkey > .am-search > .am-search-suggestion > div.item::after {
-  display: block !important;
+  display: block;
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */
@@ -1064,7 +1058,11 @@ html, body, #main {
 
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root-parent {
-  padding: 0px !important;
+  padding: 0px;
+  border-radius: 8px;
+}
+.tab-root-parent .tab-root {
+  border-radius: 8px;
 }
 
 .tab-root {
@@ -1255,8 +1253,8 @@ html, body, #main {
   position: absolute;
   bottom: 12px;
   z-index: 4;
-  left: 16px !important;
-  right: auto !important;
+  left: 16px;
+  right: auto;
 }
 
 /* -------------------------------- 默认 ------------------------------- */
@@ -1265,7 +1263,7 @@ html, body, #main {
 }
 
 .am-inner-html {
-  white-space: normal !important;
+  white-space: normal;
 }
 
 #main a, #am-config a {
