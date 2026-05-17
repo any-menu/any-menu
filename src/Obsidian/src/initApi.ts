@@ -25,7 +25,8 @@ export function initApi(plugin: Plugin) {
   global_setting.state.language = getLanguage()
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
-    const app = global_setting.other.obsidian_plugin.app
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
     if (!app) { console.error('obsidian app对象未初始化'); return }
 
     el.classList.add("markdown-rendered")
@@ -35,14 +36,16 @@ export function initApi(plugin: Plugin) {
     else if (global_setting.other.obsidian_ctx) {
       ;(global_setting.other.obsidian_ctx as MarkdownPostProcessorContext).addChild(mdrc);
     }
-    MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
+    void MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
   }
 
   global_setting.other.obsidian_run_command = async (commandId: string): Promise<void> => {
     if (!global_setting.other.obsidian_plugin) return
     // 用户如果不知道id，可以在控制台使用 app.commands.commands 查询
     // 另一个方式是一些插件会提供相关的命令，如 Meta Bind 插件提供 Select and copy command id 功能 (TODO 此插件也应该要提供)  
-    const app = (global_setting.other.obsidian_plugin.app as App)
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
+    if (!app) return
     // // @ts-expect-error 类型“App”上不存在属性“commands”
     // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
     // @ts-expect-error 类型“App”上不存在属性“commands”
@@ -55,9 +58,9 @@ export function initApi(plugin: Plugin) {
 
   global_setting.api.sendText = async (text: string) => {
     AMPanel.hide()
-    const plugin = global_setting.other.obsidian_plugin
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return
-    const cursorInfo = getCursorInfo(global_setting.other.obsidian_plugin)
+    const cursorInfo = getCursorInfo(plugin)
     if (!cursorInfo) return
 
     cursorInfo.editor.replaceSelection(text)
@@ -82,8 +85,8 @@ export function initApi(plugin: Plugin) {
   // app.vault.adapter.list("Template").then(a => console.log("---list", a)) // 输出 {files:[], folders:[]} 相对库根的路径
   // !注意: 使用相对路径时，在控制台是相对于库根路径的，而在插件内是相对于插件目录的
   global_setting.api.readFolder = async (relPath: string): Promise<string[]> => {
-    const plugin: any|null = global_setting.other.obsidian_plugin
-    const app = global_setting.other.obsidian_plugin?.app as App|null
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized'); return [] }
 
     // 这里的文件路径有两种策略
@@ -115,8 +118,8 @@ export function initApi(plugin: Plugin) {
   }
 
   global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
-    const plugin: any|null = global_setting.other.obsidian_plugin
-    const app = global_setting.other.obsidian_plugin?.app as App|null
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized2'); return null }
 
     // 这里的文件路径有两种策略
@@ -141,8 +144,8 @@ export function initApi(plugin: Plugin) {
   }
 
   global_setting.api.writeFile = async (relPath: string, content: string): Promise<boolean> => {
-    const plugin: any | null = global_setting.other.obsidian_plugin
-    const app = global_setting.other.obsidian_plugin?.app as App | null
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized for writeFile'); return false }
 
     // 这里的文件路径有两种策略
@@ -173,8 +176,8 @@ export function initApi(plugin: Plugin) {
   }
 
   global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {
-    const plugin: any | null = global_setting.other.obsidian_plugin
-    const app = global_setting.other.obsidian_plugin?.app as App | null
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized for deleteFile'); return false }
 
     // 这里的文件路径有两种策略
@@ -200,9 +203,8 @@ export function initApi(plugin: Plugin) {
 
   // obsidian 专用api: plugin.loadData, plugin.saveData 的封装
   global_setting.api.loadConfig = async (): Promise<boolean> => {
-    if (!global_setting.other.obsidian_plugin) return false
-    const plugin = global_setting.other.obsidian_plugin
-
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    if (!plugin) return false
     const data = await plugin.loadData() // 如果没有配置文件则为null
     const settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
 
@@ -220,8 +222,8 @@ export function initApi(plugin: Plugin) {
 
   // obsidian 专用api: plugin.loadData, plugin.saveData 的封装
   global_setting.api.saveConfig = async (): Promise<boolean> => {
-    if (!global_setting.other.obsidian_plugin) return false
-    const plugin = global_setting.other.obsidian_plugin
+    const plugin = global_setting.other.obsidian_plugin as Plugin|null
+    if (!plugin) return false
 
     const settings = {
       config: global_setting.config,

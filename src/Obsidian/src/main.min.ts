@@ -46,7 +46,7 @@ export default class AnyMenuPlugin extends Plugin {
   }
 
   onunload() {
-    document.body.querySelectorAll('body>.am-panel').forEach(el => el.remove())
+    activeDocument.body.querySelectorAll('body>.am-panel').forEach(el => el.remove())
     if (global_setting.isDebug) console.log('<<< Unloading plugin AnyMenu')
   }
 }

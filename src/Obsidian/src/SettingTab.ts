@@ -10,7 +10,7 @@
  * 现已弃用 ob plugins.settings
  */
 
-import { App, PluginSettingTab, Setting, Modal, sanitizeHTMLToDom, Notice } from "obsidian"
+import { App, PluginSettingTab, Setting, Notice, type Plugin } from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { global_setting } from "@/Core/setting";
 import { t } from "@/Core/locales/helper";
@@ -33,7 +33,7 @@ export const AM_SETTINGS_DEFAULT: AMSettingInterface = {
 export class AMSettingTab extends PluginSettingTab {
   isInitialized = false
 
-  constructor(app: App, private plugin: any) {
+  constructor(app: App, private plugin: Plugin) {
     super(app, plugin);
   }
 
@@ -45,7 +45,7 @@ export class AMSettingTab extends PluginSettingTab {
     containerEl.textContent = ""
 
     containerEl.classList.add('tab-root-parent');
-    const tab_root = document.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
+    const tab_root = activeDocument.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
     initSettingTab_obConfig(tab_nav_container, tab_content_container)
@@ -98,9 +98,9 @@ export class AMSettingTab extends PluginSettingTab {
 
 /// Obsidian 可视化配置
 function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+  const tab_nav = activeDocument.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config');
-  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  const tab_content = activeDocument.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
 
   tab_content.createEl('div', { text: t('Config2') });
@@ -142,9 +142,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
   .setName(t('Dict online source'))
   .setDesc(t('Dict online source2'))
   .addDropdown(dropdown => {
-    dropdown.addOption('gitee', 'gitee')
-    dropdown.addOption('github', 'github')
-    dropdown.setValue(global_setting.config.dict_online_source as 'gitee' | 'github')
+    dropdown.addOption('gitee', 'Gitee')
+    dropdown.addOption('github', 'GitHub')
+    dropdown.setValue(global_setting.config.dict_online_source)
     dropdown.onChange(async (value) => {
       global_setting.config.dict_online_source = value as 'gitee' | 'github'
       await global_setting.api.saveConfig()
@@ -182,9 +182,9 @@ function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_con
  *   该方案的一个缺点是: 插件的文件夹名是可以改变的
  */
 function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+  const tab_nav = activeDocument.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config file');
-  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  const tab_content = activeDocument.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'obsidian-setting-file'); tab_content.setAttribute('index', 'obsidian-setting-file');
 
   // 自动刷新。注意不要用 `onclick =` 写法，会被标签页另一个行为覆盖；注意这可能会覆盖未保存的状态
@@ -217,7 +217,10 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
   async function save_file_content() {
     try {
       textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
-      const obj = JSON.parse(textarea.value)
+      const obj = JSON.parse(textarea.value) as {
+        config: typeof global_setting.config,
+        isDebug: boolean
+      }
       global_setting.config = obj.config
       global_setting.isDebug = obj.isDebug
       await global_setting.api.saveConfig()
