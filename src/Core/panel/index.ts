@@ -26,7 +26,6 @@ import { AMContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
 import { AMToolbar } from './toolbar/index'
 import { global_setting } from '../setting'
-import { is } from 'zod/v4/locales'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
