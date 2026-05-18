@@ -13,7 +13,7 @@ export * from './ABContextMenu_Ob'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
-  const el_panel = document.createElement('div'); document.body.appendChild(el_panel);
+  const el_panel = activeDocument.createElement('div'); activeDocument.body.appendChild(el_panel);
   // 搜索框和多极菜单 - 元素
   AMPanel.factory(el_panel)
   // 搜索框和多极菜单 - 数据内容
@@ -45,7 +45,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   })
 
   const show_panel = async (editor: Editor, panel_list?: string[]) => {
-    // 1. 光标位置
+    // 1. 光标位置 (右下)
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return
     const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
@@ -57,8 +57,14 @@ export function registerAMContextMenu(plugin: Plugin) {
     const panel_size = AMPanel.get_size(panel_list)
     const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
+    // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
+    {
+      cursor3.x += 2
+      cursor3.y += 2
+    }
+
     // 3. 显示面板
-    AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list)
+    AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list)
   }
 
   // 注册工具带
@@ -130,7 +136,7 @@ export function getCursorInfo(plugin: Plugin, editor?: Editor): {
   }
   function getCursorElement(): HTMLElement | null {
     // 查找 CodeMirror 光标元素
-    const cursor = document.querySelector('.cm-cursor') as HTMLElement
+    const cursor = activeDocument.querySelector('.cm-cursor') as HTMLElement
     return cursor
   }
 }

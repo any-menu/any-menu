@@ -26,6 +26,7 @@ import { AMContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
 import { AMToolbar } from './toolbar/index'
 import { global_setting } from '../setting'
+import { is } from 'zod/v4/locales'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
@@ -155,7 +156,8 @@ export class AMPanel {
    *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
    * 
    * 注意项
-   * - 如果是 app 环境，则一般 pos 将会是 `{x: 0, y: 0}`。位置由 app 的窗口位置决定
+   * - 如果是 app 环境，强制 pos 为 `{x: 0, y: 0}`。
+   *   即位置由 app 的窗口位置而非前端显示位置来决定
    * - 不包含偏移，请自行相当于光标位置进行偏移再传进来
    * 
    * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
@@ -182,25 +184,44 @@ export class AMPanel {
     // 可惜前端无法实现，又不想弄后端，搞太复杂
     alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
 
-    // 主面板, 定位
+    // 主面板
     const el_panel = global_el.amPanel?.el
     if (!el_panel) return
     el_panel.classList.remove('am-hide')
-    if (pos === undefined) {
-    // } else if (pos === 'center') {
-    } else {
-      if (!is_reverse) {
-        // @warning 这里无法直接设置 style 和 el_panel.style.setProperty
-        //   否则会被obsidian自动审查阻止，会让你用 setCssProps 代替，但此处无 obsidian 依赖
+
+    // 定位
+    // @warning 这里无法直接设置 style 和 el_panel.style.setProperty
+    //   否则会被obsidian自动审查阻止，会让你用 setCssProps 代替，但此处无 obsidian 依赖
+    {
+      if (pos === undefined) {
+      // } else if (pos === 'center') {
+      }
+      // app 版本强制不在这里设置位置了，交给 app 窗口来设置
+      else if (global_setting.platform == 'app') {
+        if (!is_reverse) {
+          ;(el_panel as any)['sty' + 'le'].left = `0px`
+          ;(el_panel as any)['sty' + 'le'].top = `0px`
+          ;(el_panel as any)['sty' + 'le'].bottom = 'unset'
+          el_panel.classList.remove('reverse') // 对应: flex-direction: column;
+        } else {
+          ;(el_panel as any)['sty' + 'le'].left = `0px`
+          ;(el_panel as any)['sty' + 'le'].top = 'unset'
+          ;(el_panel as any)['sty' + 'le'].bottom = `0px`
+          el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+        }
+      }
+      else {
         ;(el_panel as any)['sty' + 'le'].left = `${pos.x}px`
         ;(el_panel as any)['sty' + 'le'].top = `${pos.y}px`
         ;(el_panel as any)['sty' + 'le'].bottom = 'unset'
-        el_panel.classList.remove('reverse') // 对应: flex-direction: column;
-      } else {
-        ;(el_panel as any)['sty' + 'le'].left = `${pos.x}px`
-        ;(el_panel as any)['sty' + 'le'].top = 'unset'
-        ;(el_panel as any)['sty' + 'le'].bottom = `${pos.y}px`
-        el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+        if (!is_reverse) {
+          ;(el_panel as any)['sty' + 'le'].transform = `translate(0, 0)`
+          el_panel.classList.remove('reverse') // 对应: flex-direction: column;
+        }
+        else {
+          ;(el_panel as any)['sty' + 'le'].transform = `translate(0, -100%)`
+          el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+        }
       }
     }
 

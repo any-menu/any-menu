@@ -137,10 +137,8 @@ html, body, #main {
 
   // reverse 模式
   flex-direction: column;
-  bottom: unset;
   &.reverse {
     flex-direction: column-reverse;
-    top: unset;
   }
 
   // 多级菜单的菜单项 - altkey 显示控制
