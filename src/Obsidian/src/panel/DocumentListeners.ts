@@ -153,10 +153,10 @@ export class DocumentListeners {
     void show_panel(this.plugin, editor, global_setting.key_panel.panel2)
 
     async function show_panel (plugin: Plugin, editor: Editor, panel_list?: string[]) {
-      // 1. 光标位置
+      // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo(plugin, editor)
       if (!cursorInfo) return
-      const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
+      const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.top }
 
       // 2. 光标修正 - 屏幕尺寸
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
@@ -165,8 +165,14 @@ export class DocumentListeners {
       const panel_size = AMPanel.get_size(panel_list)
       const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
+      // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
+      {
+        cursor3.x += 2
+        cursor3.y -= 2
+      }
+
       // 3. 显示面板 // TODO 和手动显示不同，这里最好默认在字符的上方显示，并且必须是非聚焦显示
-      AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list, false, true)
+      AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
     }
   }
 }

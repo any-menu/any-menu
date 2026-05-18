@@ -45,7 +45,7 @@ export function registerAMContextMenu(plugin: Plugin) {
   })
 
   const show_panel = async (editor: Editor, panel_list?: string[]) => {
-    // 1. 光标位置
+    // 1. 光标位置 (右下)
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return
     const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.bottom }
@@ -57,8 +57,14 @@ export function registerAMContextMenu(plugin: Plugin) {
     const panel_size = AMPanel.get_size(panel_list)
     const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
+    // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
+    {
+      cursor3.x += 2
+      cursor3.y += 2
+    }
+
     // 3. 显示面板
-    AMPanel.show({x: cursor3.x + 2, y: cursor3.y + 2}, panel_list)
+    AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list)
   }
 
   // 注册工具带
