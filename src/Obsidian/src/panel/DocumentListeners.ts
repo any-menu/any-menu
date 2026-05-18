@@ -4,16 +4,16 @@
  * ## 设计要点 (插件版和 app 版通用)
  * 
  * 这里设计一套 "选中文本自动弹出面板" 的通用交互逻辑，
- * 插件版 (document版) 和 app 版都使用这套逻辑，避免分别实现两套逻辑导致的差异和维护成本
+ * 插件版 (Obsidian / Browser / 其他document版) 和 app 版都使用这套逻辑，避免分别实现两套逻辑导致的差异和维护成本
  * 
  * (1) 监听事件 - 面板未出现时
  * 
  * - 键盘按下 (无需监听抬起)
  * - 鼠标按下和抬起鼠标
  *   - 右键按下事件/上下文菜单事件
- * - 鼠标移动
  * - 鼠标双击 (双击选中)
  * - ~~选择改变~~ (这个仅在浏览器版本可以被监听，在 app 版本难以直接监听到)
+ * - 鼠标移动 (可选，不一定)
  * 
  * (2) 监听事件 - 面板出现后
  * 
@@ -25,6 +25,8 @@
  *   (只有主动唤出面板才应该抢焦点，否则不应该抢焦点)
  * - 倒置翻转显示 (不要遮挡当前选中文本的下面的内容，优先在上方显示，避免影响用户原来的进一步操作)
  *   (只有主动唤出才可在下面显示)
+ * 
+ * TODO 封装一个基础类，然后 Obsidian、浏览器版等再派生具体差异实现
  */
 
 import { global_setting } from "@/Core/setting"
@@ -71,7 +73,7 @@ export class DocumentListeners {
     // possible issue? not always true?
     this.isMouseSelecting = true;
     // timeout is because selectionchange event is asynchronous and might not fire before mouseup
-    setTimeout(() => this.renderPreviewTextToolbar(), 10);
+    window.setTimeout(() => void this.renderPreviewTextToolbar(), 10);
   }
 
   onKeyDown = (ev: KeyboardEvent) => {
@@ -120,7 +122,7 @@ export class DocumentListeners {
     if (!global_setting.config.auto_show_toolbar_on_select) return
     if (!this.previewSelection) return
     // 超时是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
-    if (this.isMouseSelecting) setTimeout(() => this.renderPreviewTextToolbar(), 10);
+    if (this.isMouseSelecting) window.setTimeout(() => void this.renderPreviewTextToolbar(), 10);
 
     this.isMouseSelecting = false;
   }
@@ -131,7 +133,7 @@ export class DocumentListeners {
    * 
    * 使用在预览模式或 Markdown 嵌入中选择的任何文本更新局部变量
    */
-  onSelectionChange = (_event: any) => {
+  onSelectionChange = (_event: unknown) => {
     const selectedText = getSelection(this.plugin);
     const selection = activeDocument.getSelection();
     const hasSelection = selectedText && selection && !selection.isCollapsed;
@@ -148,7 +150,7 @@ export class DocumentListeners {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    show_panel(this.plugin, editor)
+    void show_panel(this.plugin, editor, global_setting.key_panel.panel2)
 
     async function show_panel (plugin: Plugin, editor: Editor, panel_list?: string[]) {
       // 1. 光标位置
