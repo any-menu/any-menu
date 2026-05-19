@@ -985,6 +985,10 @@ html, body, #main {
 .am-panel.reverse {
   flex-direction: column-reverse;
 }
+.am-panel.am-hide {
+  visibility: hidden !important;
+  display: flex !important;
+}
 .am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
   display: block;
 }

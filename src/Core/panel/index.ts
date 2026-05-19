@@ -352,6 +352,8 @@ export class AMPanel {
 
   // #endregion
 
+  // ---------- 一些 static 方法 ----------
+
   /// 失焦隐藏 & 点击穿透
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
   static visual_listener_mousedown = (ev: MouseEvent) => {
@@ -380,29 +382,37 @@ export class AMPanel {
     }
   }
 
+  /// 上一次显示的面板列表
+  static cache_last_panel_list: string[] = []
   /** 获取面板尺寸
    * 
-   * 有新旧两种方案。预期最后的实现是先用旧方案约估，然后显示，然后再用新方案去调整 ?
-   * 
-   * TODO 目前的一个问题在于: 用户无法很好地自定义css
-   *   如果用户需要调整尺寸，可能最后需要提供一个设置配置，去修改那里的宽高
-   * TODO 暂不支持宽度计算
+   * 有两种获取方案。
+   * 先用方案一约估，然后显示。后续使用方案二获得更准确的尺寸。
    */
   static get_size(list?: string[]): {width: number, height: number} {
-
-    // // 新方案：直接获取 am-panel 的尺寸
-    // // (缺点是: 需要显示后才能获取。也许可以结合使用，缓存第一次显示的尺寸？)
-    // const el_panel = global_el.amPanel?.el
-    // if (!el_panel) return { width: 0, height: 0 }
-    // const rect = el_panel.getBoundingClientRect()
-    // const width = rect.width
-    // const height = rect.height
-
-    // 旧方案: 单独计算所有子组件的尺寸 (这可以显示前获取，但缺点是会被 css 影响尺寸)
-    // 并且对于宽度难以获取，对于动态内容的子面板只能估算，不能准确获取
     if (!list) {
       list = global_setting.key_panel.panel1
     }
+
+    // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)
+    const isSameList = 
+      this.cache_last_panel_list.length === list.length && 
+      list.every((item, index) => item === this.cache_last_panel_list[index])
+    if (isSameList) {
+      const el_panel = global_el.amPanel?.el
+      if (el_panel) {
+        const rect = el_panel.getBoundingClientRect()
+        const width = rect.width
+        const height = rect.height
+        if (width > 0 && height > 0) {
+          return { width, height }
+        }
+      }
+    }
+
+    // 方案一: 单独计算所有子组件的尺寸 (可以显示前估算)
+    // 缺点1: 会被用户 css 影响尺寸 (除非用 css 变量)
+    // 缺点2: 动态宽高难以获取，对于动态内容的子面板只能估算，不能准确获取
     let width_list: number[] = [0]
     let height: number = 0
     let min_height = 0 // 主要用于处理建议栏
