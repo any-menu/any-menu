@@ -134,11 +134,20 @@ html, body, #main {
   margin: 0;
   padding: 0;
   // override by js: left, top, bottom
+  z-index: 15; // App 环境用不着，用于其他环境。我 Ob 的左分隔线 index 为14
 
   // reverse 模式
   flex-direction: column;
   &.reverse {
     flex-direction: column-reverse;
+  }
+
+  // 特殊: 这里的隐藏不使用 display，而使用 visibility
+  // 一是在 fixed 场景下响应更快 (不脱离渲染树)
+  // 二是在方便获取尺寸
+  &.am-hide {
+    visibility: hidden !important;
+    display: flex !important;
   }
 
   // 多级菜单的菜单项 - altkey 显示控制

@@ -352,6 +352,8 @@ export class AMPanel {
 
   // #endregion
 
+  // ---------- 一些 static 方法 ----------
+
   /// 失焦隐藏 & 点击穿透
   /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
   static visual_listener_mousedown = (ev: MouseEvent) => {
@@ -380,46 +382,61 @@ export class AMPanel {
     }
   }
 
+  /// 上一次显示的面板列表
+  static cache_last_panel_list: string[] = []
   /** 获取面板尺寸
    * 
-   * 有新旧两种方案。预期最后的实现是先用旧方案约估，然后显示，然后再用新方案去调整 ?
-   * 
-   * TODO 目前的一个问题在于: 用户无法很好地自定义css
-   *   如果用户需要调整尺寸，可能最后需要提供一个设置配置，去修改那里的宽高
-   * TODO 暂不支持宽度计算
+   * 有两种获取方案。
+   * 先用方案一约估，然后显示。后续使用方案二获得更准确的尺寸。
    */
   static get_size(list?: string[]): {width: number, height: number} {
-
-    // // 新方案：直接获取 am-panel 的尺寸 (缺点是: 需要显示后才能获取)
-    // const el_panel = global_el.amPanel?.el
-    // if (!el_panel) return { width: 0, height: 0 }
-    // const rect = el_panel.getBoundingClientRect()
-    // const width = rect.width
-    // const height = rect.height
-
-    // 旧方案: 单独计算所有子组件的尺寸 (这可以显示前获取，但缺点是会被 css 影响尺寸)
     if (!list) {
       list = global_setting.key_panel.panel1
     }
-    let width = 0
-    let height = 0
-    let min_height = 0
+
+    // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)
+    const isSameList = 
+      this.cache_last_panel_list.length === list.length && 
+      list.every((item, index) => item === this.cache_last_panel_list[index])
+    if (isSameList) {
+      const el_panel = global_el.amPanel?.el
+      if (el_panel) {
+        const rect = el_panel.getBoundingClientRect()
+        const width = rect.width
+        const height = rect.height
+        if (width > 0 && height > 0) {
+          return { width, height }
+        }
+      }
+    }
+
+    // 方案一: 单独计算所有子组件的尺寸 (可以显示前估算)
+    // 缺点1: 会被用户 css 影响尺寸 (除非用 css 变量)
+    // 缺点2: 动态宽高难以获取，对于动态内容的子面板只能估算，不能准确获取
+    let width_list: number[] = [0]
+    let height: number = 0
+    let min_height = 0 // 主要用于处理建议栏
     for (const item of list) {
       if (item == 'search') {
         height += 32
-        min_height = min_height > 32+260 ? min_height : 32+260 // 加建议栏的高度
+        width_list.push(500)
+        min_height = min_height > height+260 ? min_height : height+260 // 加建议栏的高度
       }
       else if (item == 'menu') {
         height += 248
+        // height 和 width 其实都会随内容增多而增多
       }
       else if (item == 'miniEditor') {
         height += 276
+        // 难以获取
       }
       else if (item == 'info') {
         height += 276
+        // 难以获取
       }
       else if (item == 'toolbar') {
         height += 32
+        // height 和 width 其实都会随内容增多而增多
       }
       else {
         continue
@@ -428,6 +445,7 @@ export class AMPanel {
     if (height < min_height) {
       height = min_height
     }
+    const width = Math.max(...width_list)
 
     return { width, height }
   }
@@ -440,12 +458,16 @@ export class AMPanel {
    *   目前我的一个建议是，若基于鼠标位置显示，则靠边；
    *   若是基于光标位置显示，则反向显示 (避免遮挡当前输入内容)
    *   TODO 如果是 revert 模式，应该通知页面倒置建议栏的位置
+   * @param center_x x轴中心模式，即让窗口的中心对准光标位置
+   *   此状态下，x轴不会应用纠正模式 (TODO 应强制为靠边显示)
+   *   有的中心模式还是根据整个选取矩形来的，我这里只根据结束光标位置来
    */
   static fix_position(
     screen_size: {width: number, height: number},
     panel_size: {width: number, height: number},
     cursor: { x: number, y: number },
-    mode: "revert"|"side" = "side"
+    mode: "revert"|"side" = "side",
+    center_x: boolean = false
   ): {x: number, y: number} {
     const side_gap = 4    // 靠边间隙
     const line_height = 24 // 反向显示时，需要减行高
@@ -460,14 +482,20 @@ export class AMPanel {
       }
     }
 
-    // // x轴溢出 TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
-    // if (screen_size.width - side_gap < cursor.x + panel_size.width) {
-    //   if (mode == "revert") {
-    //     cursor.x = cursor.x - panel_size.width
-    //   } else {
-    //     cursor.x = screen_size.width - side_gap - panel_size.width
-    //   }
-    // }
+    // x轴中心模式
+    if (center_x) {
+      cursor.x = cursor.x - panel_size.width / 2
+    }
+    else {
+      // // x轴溢出 TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
+      // if (screen_size.width - side_gap < cursor.x + panel_size.width) {
+      //   if (mode == "revert") {
+      //     cursor.x = cursor.x - panel_size.width
+      //   } else {
+      //     cursor.x = screen_size.width - side_gap - panel_size.width
+      //   }
+      // }
+    }
 
     return { x: cursor.x, y: cursor.y }
   }

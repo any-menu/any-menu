@@ -979,10 +979,15 @@ html, body, #main {
   position: fixed;
   margin: 0;
   padding: 0;
+  z-index: 15;
   flex-direction: column;
 }
 .am-panel.reverse {
   flex-direction: column-reverse;
+}
+.am-panel.am-hide {
+  visibility: hidden !important;
+  display: flex !important;
 }
 .am-panel.show-altkey > .am-context-menu .am-context-menu-item::after {
   display: block;
