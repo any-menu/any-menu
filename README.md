@@ -4,6 +4,9 @@
 
 [中文](./README.md) | [English](./README.en.md)
 
+> [!WARNING]
+> It is still under development and improvement. Currently, it is in the beta version.
+
 # AnyMenu —— A powerful assistant for inputMethod / editor
 
 ## What is AnyMenu
