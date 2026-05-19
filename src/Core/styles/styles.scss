@@ -134,6 +134,7 @@ html, body, #main {
   margin: 0;
   padding: 0;
   // override by js: left, top, bottom
+  z-index: 1; // App 环境用不着，用于其他环境
 
   // reverse 模式
   flex-direction: column;

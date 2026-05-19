@@ -163,11 +163,11 @@ export class DocumentListeners {
 
       // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
       const panel_size = AMPanel.get_size(panel_list)
-      const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
+      const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert", true)
 
       // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
       {
-        cursor3.x += 2
+        // cursor3.x += 2 (中心模式，不偏移)
         cursor3.y -= 2
       }
 
