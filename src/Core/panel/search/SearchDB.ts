@@ -27,7 +27,18 @@ class SearchDB {
   reverse: ReverseIndexDB // FuzzySearchEngine
   hash: undefined
 
-  pinyin: any|undefined
+  pinyin?: {
+    // 函数调用
+    (text: string, options: {
+      style: number;
+      heteronym: boolean;
+      segment: boolean;
+    }): any[]; // pinyin 默认返回 string[][], any[] 也行
+    
+    // 静态常量属性 (在 pinyin 库中它们的值是 number 类型)
+    STYLE_NORMAL: number;
+    STYLE_FIRST_LETTER: number;
+  }
 
   static factory() {
     if (SEARCH_DB) return SEARCH_DB
@@ -45,11 +56,11 @@ class SearchDB {
     this.trie = new TrieDB()
     this.reverse = new ReverseIndexDB()
 
-    try {
-      import('pinyin').then(({ default: pinyin }) => {
-        this.pinyin = pinyin
-      })
-    } catch {}
+    import('pinyin').then(({ default: pinyin }) => {
+      this.pinyin = pinyin
+    }).catch(_err => {
+      console.info("No use pinyin features.")
+    })
 
     // debug时，用demo判断引擎是否正常
     if (global_setting.isDebug) {
