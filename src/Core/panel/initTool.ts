@@ -14,8 +14,6 @@ import * as yaml from 'js-yaml';
  * TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
  * 这里也要区分是 搜索框数据 / 静态菜单数据 / 动态菜单数据
  * 
- * TODO 工具栏数据
- * 
  * TODO id 制，方便自定义脚本/按钮去引用其他词典的功能
  * 拟定策略:
  * - 脚本: id 为路径名

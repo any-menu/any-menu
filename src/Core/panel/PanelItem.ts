@@ -64,19 +64,20 @@ export function init_item(
         const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
         global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName));
       } else {
-        // 2. [可选] 在加载完成前，先放置一个骨架屏或 Loading SVG
-        // global_setting.api.saveInnerHTML(li, `<svg class="animate-spin ...">...</svg>`);
+        // 这个容器为了让多种方式生成的图标样式统一
+        const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
+
+        // 2. (可选) 在加载完成前，先放置一个占位元素或 Loading SVG
+        global_setting.api.saveInnerHTML(span, '');
 
         // 3. 异步获取图标
         fetch(iconUrl)
-          .then(response => {
+          .then(response => { // 异常则降级处理
             if (!response.ok) throw new Error(`Icon ${iconName} not found`);
+            global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
             return response.text();
           })
           .then(svgText => {
-            // 这个容器为了让多种方式生成的图标样式统一
-            const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
-
             lucideIconCache.set(iconName, svgText); // 存入缓存
             global_setting.api.saveInnerHTML(span, svgText);
           })

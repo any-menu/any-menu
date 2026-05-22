@@ -27,7 +27,7 @@ const prod = (process.argv[2] === 'production');
 		bundle: true,
 		external: [
 			'obsidian',
-			'pinyin', // [!code hl] 这个依赖极大，pinyin版保留，而min版去除这个
+			'pinyin', // [!code hl] 这个依赖极大 (10MB)，pinyin版保留，而min版去除这个
 			...builtins
 		],
 		format: 'cjs',

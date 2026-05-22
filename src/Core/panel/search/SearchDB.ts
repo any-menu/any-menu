@@ -27,7 +27,18 @@ class SearchDB {
   reverse: ReverseIndexDB // FuzzySearchEngine
   hash: undefined
 
-  pinyin: any|undefined
+  pinyin?: {
+    // 函数调用
+    (text: string, options: {
+      style: number;
+      heteronym: boolean;
+      segment: boolean;
+    }): any[]; // pinyin 默认返回 string[][], any[] 也行
+    
+    // 静态常量属性 (在 pinyin 库中它们的值是 number 类型)
+    STYLE_NORMAL: number;
+    STYLE_FIRST_LETTER: number;
+  }
 
   static factory() {
     if (SEARCH_DB) return SEARCH_DB
@@ -45,11 +56,12 @@ class SearchDB {
     this.trie = new TrieDB()
     this.reverse = new ReverseIndexDB()
 
-    try {
-      import('pinyin').then(({ default: pinyin }) => {
-        this.pinyin = pinyin
-      })
-    } catch {}
+    // 暂时可手动注释此处以强制禁用拼音功能
+    import('pinyin').then(({ default: pinyin }) => {
+      this.pinyin = pinyin
+    }).catch(_err => {
+      console.info("No use pinyin features.")
+    })
 
     // debug时，用demo判断引擎是否正常
     if (global_setting.isDebug) {
@@ -112,31 +124,32 @@ class SearchDB {
 
       // 3. 拼音key
       // 有中文不一定就有拼音。其范围不一定和拼音库的范围相符合（他两可能采用了不同的汉字字标范围，如是否包含某些扩展区）
-      if (!this.pinyin) continue
-      const has_chinese = /[\u4e00-\u9fa5]/.test(key)
+      if (this.pinyin != undefined) {
+        const has_chinese = /[\u4e00-\u9fa5]/.test(key)
 
-      // 3.1. 全拼音key
-      if (has_chinese && global_setting.config.pinyin_index) {
-        const key_pinyin: string = this.pinyin(key, {
-          style: this.pinyin.STYLE_NORMAL, // 普通风格，不带声调
-          heteronym: false, // 不返回多音字的所有读音
-          segment: false // 不使用分词
-        }).join('')
-        keys.push(key_pinyin)
+        // 3.1. 全拼音key
+        if (has_chinese && global_setting.config.pinyin_index) {
+          const key_pinyin: string = this.pinyin(key, {
+            style: this.pinyin.STYLE_NORMAL, // 普通风格，不带声调
+            heteronym: false, // 不返回多音字的所有读音
+            segment: false // 不使用分词
+          }).join('')
+          keys.push(key_pinyin)
+        }
+
+        // 3.2. 拼音首字母key
+        if (has_chinese && global_setting.config.pinyin_first_index) {
+          const key_first_pinyin: string = this.pinyin(key, {
+            style: this.pinyin.STYLE_FIRST_LETTER, // 首字母风格
+            heteronym: false,
+            segment: false
+          }).join('')
+          keys.push(key_first_pinyin)
+        }
       }
 
-      // 3.2. 拼音首字母key
-      if (has_chinese && global_setting.config.pinyin_first_index) {
-        const key_first_pinyin: string = this.pinyin(key, {
-          style: this.pinyin.STYLE_FIRST_LETTER, // 首字母风格
-          heteronym: false,
-          segment: false
-        }).join('')
-        keys.push(key_first_pinyin)
-      }
-
-      // 填入搜索索引
-      // 塞同一前缀树还是分别塞？分别塞的好处
+      // 4. 填入搜索索引
+      // 塞同一前缀树还是分别塞？
       // 塞多个的话，按分类塞还是按属性(显示/路径/拼音/首拼音)塞
       // - 塞同一个:
       //   - 好处是全部按匹配相关度排序，而不需要分别检索后合并再排序。汉字和拼音感觉适合这种
