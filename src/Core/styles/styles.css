@@ -983,7 +983,6 @@ html, body, #main {
   position: absolute;
   top: 5px;
   right: -22px;
-  opacity: 0.85;
 }
 
 .am-pin, .windows-pin {
@@ -999,12 +998,18 @@ html, body, #main {
   outline: none;
   background: transparent;
   color: var(--am-text-color);
+  opacity: 0.7;
 }
 .am-pin:hover, .windows-pin:hover {
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
-.am-pin.active > svg, .windows-pin.active > svg {
+
+.windows-pin-active {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.am-pin-active .am-pin > svg, .am-pin-active .windows-pin > svg, .windows-pin-active .am-pin > svg, .windows-pin-active .windows-pin > svg {
   stroke: var(--am-bright-color);
 }
 
