@@ -946,26 +946,8 @@ html, body, #main {
 }
 #main > button.windows-pin {
   position: absolute;
-  box-sizing: border-box;
-  margin: 0;
   bottom: 5px;
-  left: 0px;
-  width: 34px;
-  height: 26px;
-  padding: 0;
-  z-index: 1;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background: transparent;
-  color: var(--am-text-color);
-}
-#main > button.windows-pin:hover {
-  background: rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-#main > button.windows-pin.active > svg {
-  stroke: var(--am-bright-color);
+  left: 4px;
 }
 
 #main.reverse > .windows-pin {
@@ -994,6 +976,36 @@ html, body, #main {
 }
 .am-panel.show-altkey > .am-search > .am-search-suggestion > div.item::after {
   display: block;
+}
+
+/* -------------------------------- 面板置顶按钮 ------------------------- */
+.am-pin {
+  position: absolute;
+  top: 5px;
+  right: -22px;
+  opacity: 0.85;
+}
+
+.am-pin, .windows-pin {
+  box-sizing: border-box;
+  margin: 0;
+  width: 24px;
+  height: 26px;
+  padding: 0;
+  z-index: 101;
+  cursor: pointer;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+  color: var(--am-text-color);
+}
+.am-pin:hover, .windows-pin:hover {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.am-pin.active > svg, .windows-pin.active > svg {
+  stroke: var(--am-bright-color);
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */

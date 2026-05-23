@@ -132,6 +132,7 @@ export const global_setting: {
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
+    pin: (pin_button?: HTMLElement) => Promise<void> // 切换窗口/面板的置顶状态，或拖拽窗口
     sendText: (text: string) => Promise<void>
     saveToClipboard: (text: string) => Promise<void>
     // 统一的网络请求接口，并简化try/catch
@@ -225,6 +226,7 @@ export const global_setting: {
       console.warn("未实现 api.notify 方法，将使用 console.warn 替代");
       console.warn(message)
     },
+    pin: async (_pin_button?: HTMLElement) => { console.error("需实现 api.pin 方法") },
     sendText: async (text: string) => {
       console.warn("未实现 api.sendText 方法，将使用通用浏览器行为")
 

@@ -3,7 +3,9 @@ import { global_setting } from '../../../Core/setting'
 import { hideWindow } from '../module/window'
 import { toml_parse } from '../../../Core/panel/contextmenu/demo'
 
+// 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 import { invoke } from "@tauri-apps/api/core"
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
 
@@ -81,6 +83,21 @@ export function initApi() {
       });
     } catch (error) {
       console.error('发送通知失败:', error);
+    }
+  }
+
+  global_setting.api.pin = async (pin_button?: HTMLElement) => {
+    const appWindow = getCurrentWindow()
+    global_setting.state.isPin = !global_setting.state.isPin
+    if (global_setting.state.isPin) {
+      pin_button?.classList.add('active')
+      await appWindow.setAlwaysOnTop(true)  // 置顶窗口
+      document.body.setAttribute('style', 'background: rgba(0, 0, 0, 0.5) !important')
+    }
+    else {
+      pin_button?.classList.remove('active')
+      await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
+      document.body.setAttribute('style', 'background: transparent')
     }
   }
 
