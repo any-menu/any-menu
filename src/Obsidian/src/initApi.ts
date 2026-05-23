@@ -9,7 +9,7 @@ import { RequestUrlParam, requestUrl } from 'obsidian'
 import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/setting'
-import { AMPanel } from '@/Core/panel';
+import { AMPanel, global_el } from '@/Core/panel';
 import { getCursorInfo } from './panel'
 import { AM_SETTINGS_DEFAULT } from "./SettingTab"
 
@@ -54,6 +54,16 @@ export function initApi(plugin: Plugin) {
 
   global_setting.api.notify = async (message: string): Promise<void> => {
     new Notice(message); // 参数二可选持续时间
+  }
+
+  global_setting.api.pin = async () => {
+    global_setting.state.isPin = !global_setting.state.isPin
+    if (global_setting.state.isPin) {
+      global_el.amPanel?.el.classList.add('am-pin-active')
+    }
+    else {
+      global_el.amPanel?.el.classList.remove('am-pin-active')
+    }
   }
 
   global_setting.api.sendText = async (text: string) => {
