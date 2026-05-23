@@ -142,10 +142,16 @@ export class DocumentListeners {
 
   /**
    * 在预览模式下显示文本工具栏以供选择
+   * 
+   * 注意: 和手动显示不同:
+   * - 在字符的上方显示
+   * - 必须是非聚焦显示
+   * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
    */
   private async renderPreviewTextToolbar() {
-    if (!global_setting.config.auto_show_toolbar_on_select) return
-    if (!this.previewSelection) return
+    if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
+    if (global_setting.state.isPin) return // 已置顶
+    if (!this.previewSelection) return // 没有选择
   
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
@@ -171,7 +177,7 @@ export class DocumentListeners {
         cursor3.y -= 2
       }
 
-      // 3. 显示面板 // TODO 和手动显示不同，这里最好默认在字符的上方显示，并且必须是非聚焦显示
+      // 3. 显示面板
       AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
     }
   }

@@ -22,9 +22,10 @@
 export * from './contextmenu/index'
 export * from './search/index'
 import { AMSearch } from './search/index'
+import { AMToolbar } from './toolbar/index'
 import { AMContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
-import { AMToolbar } from './toolbar/index'
+import { AMPin } from './pin/index'
 import { global_setting } from '../setting'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
@@ -80,6 +81,9 @@ export class AMPanel {
 
   /** 单例模式 */
   static factory(el: HTMLElement) {
+    if (global_el.amPanel) {
+      return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
+    }
     if (!global_el.amPanel) {
       global_el.amPanel = new AMPanel(el)
     }
@@ -97,6 +101,10 @@ export class AMPanel {
     }
     if (!global_el.amCustom) {
       global_el.amCustom = document.createElement('div'); el.appendChild(global_el.amCustom); global_el.amCustom.classList.add('am-custom-panel')
+    }
+    // 可选，置顶按钮
+    {
+      AMPin.factory(el)
     }
 
     // alt切换快捷提示
@@ -144,7 +152,9 @@ export class AMPanel {
   }
 
   /** 显示面板
-   * TODO 支持显示在屏幕中间偏上 (类似于 utools，并支持由插件如此使用)
+   * 
+   * TODO 所有参数都应该支持使用 undefined 来表示上次的状态
+   *   一般的一共场景是 pin 后再显示，但在 pin 状态的处理更简单，直接不 show，不执行该函数就行
    * 
    * @param pos
    * - {x, y} 具体坐标
