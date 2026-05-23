@@ -150,7 +150,6 @@ export class DocumentListeners {
    */
   private async renderPreviewTextToolbar() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
-    if (global_setting.state.isPin) return // 已置顶
     if (!this.previewSelection) return // 没有选择
   
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
@@ -178,6 +177,7 @@ export class DocumentListeners {
       }
 
       // 3. 显示面板
+      if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
       AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
     }
   }
