@@ -73,7 +73,7 @@ export function registerAMContextMenu(plugin: Plugin) {
 
 // #region 通用部分
 
-/** 获取游标位置
+/** 获取游标位置，包括对一些信息的采集
  * @param plugin 有editor优先用editor，没有则尝试通过plugin获取当前活动的editor
  */
 export function getCursorInfo(plugin: Plugin, editor?: Editor): {
