@@ -152,7 +152,9 @@ export class AMPanel {
   }
 
   /** 显示面板
-   * TODO 支持显示在屏幕中间偏上 (类似于 utools，并支持由插件如此使用)
+   * 
+   * TODO 所有参数都应该支持使用 undefined 来表示上次的状态
+   *   一般的一共场景是 pin 后再显示，但在 pin 状态的处理更简单，直接不 show，不执行该函数就行
    * 
    * @param pos
    * - {x, y} 具体坐标
