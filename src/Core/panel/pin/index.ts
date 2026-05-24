@@ -7,8 +7,6 @@ export class AMPin {
 
   /**
    * @param el 挂载的元素，同时也是 .am-panel 元素
-   * 
-   * 注意: 普通浏览器环境和 App 环境中，这个置顶和拖拽的行为有所差异。App 版本要作用于窗口上
    */
   constructor(el: HTMLElement) {
     const amPin = document.createElement('div'); el.appendChild(amPin); amPin.classList.add('am-pin')
@@ -31,6 +29,8 @@ export class AMPin {
    * - panel 有可能使用了 transform 来实现翻转，所以判断是否超出视口时要使用实际位置而非 inline style 的 left 和 top
    * - Obsidian 环境中限制不要拖拽得太高，Obsidian 的窗口拖拽事件要优先于面板的拖拽事件
    * - 拖拽后强制设置为置顶状态，且不要触发 click 事件
+   * - 普通浏览器环境和 App 环境中，这个置顶和拖拽的行为的实现有所差异。
+   *   App 通过 `-webkit-app-region` 实现。且设置该值后，拖拽时连鼠标按下事件都不会触发
    */
   initEvent(pinEl: HTMLElement, panelEl: HTMLElement) {
     let isDragging = false  // 是否拖拽状态 (是否鼠标按下了)
@@ -52,6 +52,7 @@ export class AMPin {
 
       // 状态标记
       didDrag = true
+      if (global_setting.platform === 'app') return // App 环境不走这里。不过一般也到不了这个事件，仅以防万一
 
       // 移动后的值
       const dx = e.clientX - startMouseX
@@ -77,7 +78,6 @@ export class AMPin {
       newTop  = Math.max(minTop, Math.min(newTop,  maxTop))
 
       // 应用新值
-      if (global_setting.platform === 'app') return // TODO 后面再写
       panelEl.style.left = `${newLeft}px`
       panelEl.style.top  = `${newTop}px`
     }
