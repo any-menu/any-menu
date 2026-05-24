@@ -38,69 +38,68 @@ window.addEventListener("DOMContentLoaded", async () => {
   await init() // 保证先读取配置再初始化别的
 
   const { tab_nav_container, tab_content_container } = initSettingTab_1(el as HTMLElement)
-
-  // #region Config file
-  {
-    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-      tab_nav.textContent = t('Config file');
-    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-    tab_nav.setAttribute('index', 'config-file'); tab_content.setAttribute('index', 'config-file');
-
-    // 自动刷新。注意不要用 `onclick =` 写法，会被标签页另一个行为覆盖；注意这可能会覆盖未保存的状态
-    tab_nav.addEventListener('click', () => fn_refresh())
-
-    const textarea = document.createElement('textarea'); tab_content.appendChild(textarea);
-    async function fn_refresh() {
-      textarea.classList.remove('no-save', 'error-save')
-      textarea.value = 'Loading...'
-      const result = await global_setting.api.loadConfig()
-      if (typeof result === 'string') textarea.value = result
-      else textarea.value = 'Error: Load config failed'
-    }
-    void fn_refresh()
-    textarea.oninput = () => {
-      textarea.classList.add('no-save'); textarea?.classList.remove('error-save');
-    }
-
-    const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2', 'absolute');
-      refresh_btn.textContent = t('Refresh'); refresh_btn.setAttribute('style', 'position: absolute; bottom: 55px; right: 30px;');
-    refresh_btn.onclick = () => fn_refresh()
-
-    const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2', 'absolute');
-      save_btn.textContent = t('Save config'); save_btn.setAttribute('style', 'position: absolute; bottom: 16px; right: 30px;');
-    save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
-  }
-  // #endregion
-
-  // #region Plugin manager
-  /*{
-    const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-      tab_nav.textContent = 'Plugin manager';
-    const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-    tab_nav.setAttribute('index', 'plugin-manager'); tab_content.setAttribute('index', 'plugin-manager');
-
-    const el_refresh_btn = document.createElement('button'); tab_content.appendChild(el_refresh_btn); el_refresh_btn.classList.add('btn-2');
-      el_refresh_btn.textContent = 'Refresh plugin list';
-      el_refresh_btn.onclick = () => {
-        load_plugins()
-      }
-      
-    function load_plugins() {
-      tab_content.querySelectorAll('ul').forEach(e=>e.remove());
-      const el_plugins = document.createElement('ul'); tab_content.appendChild(el_plugins);
-      console.log('Plugin len', PLUGIN_MANAGER.plugin_list);
-      for (const key in PLUGIN_MANAGER.plugin_list) {
-        const plugin = PLUGIN_MANAGER.plugin_list[key];
-        const li = document.createElement('li'); el_plugins.appendChild(li);
-          li.textContent = `${plugin.metadata.name} v${plugin.metadata.version} by ${plugin.metadata.author ?? 'Unknown'}`;
-      }
-    }
-    load_plugins()
-  }*/
-  // #endregion
-
+  initSettingTab_configFile(tab_nav_container, tab_content_container)
+  // initSettingTab_pluginManager(tab_nav_container, tab_content_container)
   initSettingTab_2(tab_nav_container, tab_content_container)
 })
+
+/// 配置文件
+function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Config file');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'config-file'); tab_content.setAttribute('index', 'config-file');
+
+  // 自动刷新。注意不要用 `onclick =` 写法，会被标签页另一个行为覆盖；注意这可能会覆盖未保存的状态
+  tab_nav.addEventListener('click', () => fn_refresh())
+
+  const textarea = document.createElement('textarea'); tab_content.appendChild(textarea);
+  async function fn_refresh() {
+    textarea.classList.remove('no-save', 'error-save')
+    textarea.value = 'Loading...'
+    const result = await global_setting.api.loadConfig()
+    if (typeof result === 'string') textarea.value = result
+    else textarea.value = 'Error: Load config failed'
+  }
+  void fn_refresh()
+  textarea.oninput = () => {
+    textarea.classList.add('no-save'); textarea?.classList.remove('error-save');
+  }
+
+  const refresh_btn = document.createElement('button'); tab_content.appendChild(refresh_btn); refresh_btn.classList.add('btn-2', 'absolute');
+    refresh_btn.textContent = t('Refresh'); refresh_btn.setAttribute('style', 'position: absolute; bottom: 55px; right: 30px;');
+  refresh_btn.onclick = () => fn_refresh()
+
+  const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2', 'absolute');
+    save_btn.textContent = t('Save config'); save_btn.setAttribute('style', 'position: absolute; bottom: 16px; right: 30px;');
+  save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
+}
+
+/*/// 插件管理器
+function initSettingTab_pluginManager(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = 'Plugin manager';
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'plugin-manager'); tab_content.setAttribute('index', 'plugin-manager');
+
+  const el_refresh_btn = document.createElement('button'); tab_content.appendChild(el_refresh_btn); el_refresh_btn.classList.add('btn-2');
+    el_refresh_btn.textContent = 'Refresh plugin list';
+    el_refresh_btn.onclick = () => {
+      load_plugins()
+    }
+    
+  function load_plugins() {
+    tab_content.querySelectorAll('ul').forEach(e=>e.remove());
+    const el_plugins = document.createElement('ul'); tab_content.appendChild(el_plugins);
+    console.log('Plugin len', PLUGIN_MANAGER.plugin_list);
+    for (const key in PLUGIN_MANAGER.plugin_list) {
+      const plugin = PLUGIN_MANAGER.plugin_list[key];
+      const li = document.createElement('li'); el_plugins.appendChild(li);
+        li.textContent = `${plugin.metadata.name} v${plugin.metadata.version} by ${plugin.metadata.author ?? 'Unknown'}`;
+    }
+  }
+  load_plugins()
+}*/
 
 /** 保存配置
  * @param new_str 新的配置字符串
