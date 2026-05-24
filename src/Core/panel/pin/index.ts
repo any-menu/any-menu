@@ -29,6 +29,7 @@ export class AMPin {
    * 注意: 
    * - amPanel 本来就会使用 inline style 的 left 和 top 来控制位置
    * - panel 有可能使用了 transform 来实现翻转，所以判断是否超出视口时要使用实际位置而非 inline style 的 left 和 top
+   * - Obsidian 环境中限制不要拖拽得太高，Obsidian 的窗口拖拽事件要优先于面板的拖拽事件
    * - 拖拽后强制设置为置顶状态，且不要触发 click 事件
    */
   initEvent(pinEl: HTMLElement, panelEl: HTMLElement) {
@@ -36,12 +37,12 @@ export class AMPin {
     let didDrag = false     // 是否发生过拖动
     let startElLeft = 0     // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
     let startElTop = 0      // 起始元素  top 属性 (不一定为真实位置, 可能有 transform 等属性)
-    let startElx = 0        // 起始元素的实际 x 轴位置
-    let startEly = 0        // 起始元素的实际 y 轴位置
+    let startElx = 0        // 起始元素 x 轴位置
+    let startEly = 0        // 起始元素 y 轴位置
     let startElOffsetLeft = 0 // == `- startElx + startElLeft` == minLeft
     let startElOffsetTop = 0  // == `- startEly + startElTop`  == minTop
-    let startElWidth = 0
-    let startElHeight = 0
+    let startElWidth = 0    // 起始元素宽度
+    let startElHeight = 0   // 起始元素高度
     let startMouseX = 0     // 起始光标 x 轴
     let startMouseY = 0     // 起始光标 y 轴
 
@@ -60,14 +61,20 @@ export class AMPin {
 
       // 位置校正
       // 限制在视口范围内，防止面板被拖出屏幕
-      // TODO 优化
-      //   其实 pin 按钮不出屏幕就可以了，面板本体可以允许被拖出。
-      //   并注意 pin 按钮会超出 panel
       // 26px 是 pin 按钮超出 am-panel 的空间
-      const maxLeft = (window.innerWidth  - startElWidth - 26) + startElOffsetLeft
-      const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
-      newLeft = Math.max(startElOffsetLeft, Math.min(newLeft, maxLeft))
-      newTop  = Math.max(startElOffsetTop, Math.min(newTop,  maxTop))
+      // (二选一) panel 面板完整在屏幕内
+      // const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft
+      // const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
+      // const minLeft = startElOffsetLeft
+      // const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
+      // (二选一) pin 按钮不出屏幕。面板本体可以允许被拖出
+      const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft // 左上同
+      const maxTop  = (window.innerHeight - 26) + startElOffsetTop
+      const minLeft = startElOffsetLeft - startElWidth
+      const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0) // 左上同
+
+      newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft))
+      newTop  = Math.max(minTop, Math.min(newTop,  maxTop))
 
       // 应用新值
       if (global_setting.platform === 'app') return // TODO 后面再写
