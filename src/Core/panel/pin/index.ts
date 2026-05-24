@@ -28,15 +28,22 @@ export class AMPin {
    * 
    * 注意: 
    * - amPanel 本来就会使用 inline style 的 left 和 top 来控制位置
+   * - panel 有可能使用了 transform 来实现翻转，所以判断是否超出视口时要使用实际位置而非 inline style 的 left 和 top
    * - 拖拽后强制设置为置顶状态，且不要触发 click 事件
    */
   initEvent(pinEl: HTMLElement, panelEl: HTMLElement) {
     let isDragging = false  // 是否拖拽状态 (是否鼠标按下了)
     let didDrag = false     // 是否发生过拖动
-    let startX = 0          // 起始x轴
-    let startY = 0          // 起始y轴
-    let startLeft = 0       // 起始 left
-    let startTop = 0        // 起始 top
+    let startElLeft = 0     // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
+    let startElTop = 0      // 起始元素  top 属性 (不一定为真实位置, 可能有 transform 等属性)
+    let startElx = 0        // 起始元素的实际 x 轴位置
+    let startEly = 0        // 起始元素的实际 y 轴位置
+    let startElOffsetLeft = 0 // == `- startElx + startElLeft` == minLeft
+    let startElOffsetTop = 0  // == `- startEly + startElTop`  == minTop
+    let startElWidth = 0
+    let startElHeight = 0
+    let startMouseX = 0     // 起始光标 x 轴
+    let startMouseY = 0     // 起始光标 y 轴
 
     // 鼠标移动 (无节流，也无使用虚拟dom节约性能)
     const onMouseMove = (e: MouseEvent) => {
@@ -46,19 +53,23 @@ export class AMPin {
       didDrag = true
 
       // 移动后的值
-      const dx = e.clientX - startX
-      const dy = e.clientY - startY
-      let newLeft = startLeft + dx
-      let newTop  = startTop  + dy
+      const dx = e.clientX - startMouseX
+      const dy = e.clientY - startMouseY
+      let newLeft = startElLeft + dx
+      let newTop  = startElTop  + dy
 
+      // 位置校正
       // 限制在视口范围内，防止面板被拖出屏幕
-      const panelRect = panelEl.getBoundingClientRect()
-      const maxLeft = window.innerWidth  - panelRect.width - 26 // 26 是 pin 按钮超出 am-panel 的空间
-      const maxTop  = window.innerHeight - panelRect.height
-      newLeft = Math.max(0, Math.min(newLeft, maxLeft))
-      newTop  = Math.max(0, Math.min(newTop,  maxTop))
+      // TODO 优化
+      //   其实 pin 按钮不出屏幕就可以了，面板本体可以允许被拖出。
+      //   并注意 pin 按钮会超出 panel
+      // 26px 是 pin 按钮超出 am-panel 的空间
+      const maxLeft = (window.innerWidth  - startElWidth - 26) + startElOffsetLeft
+      const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
+      newLeft = Math.max(startElOffsetLeft, Math.min(newLeft, maxLeft))
+      newTop  = Math.max(startElOffsetTop, Math.min(newTop,  maxTop))
 
-      // 新值
+      // 应用新值
       if (global_setting.platform === 'app') return // TODO 后面再写
       panelEl.style.left = `${newLeft}px`
       panelEl.style.top  = `${newTop}px`
@@ -92,12 +103,18 @@ export class AMPin {
       if (e.button !== 0) return // 仅响应左键
 
       // 初始状态
-      // 若 panel 使用的是非 px 单位（如未设置），先初始化
+      const startElRect = panelEl.getBoundingClientRect()
+      startElx = startElRect.x
+      startEly = startElRect.y
+      startElWidth = startElRect.width
+      startElHeight = startElRect.height
       const computedStyle = window.getComputedStyle(panelEl)
-      startLeft = parseInt(computedStyle.left) || panelEl.offsetLeft
-      startTop  = parseInt(computedStyle.top)  || panelEl.offsetTop
-      startX = e.clientX
-      startY = e.clientY
+      startElLeft = parseInt(computedStyle.left) || panelEl.offsetLeft // 避免非 px 单位
+      startElTop  = parseInt(computedStyle.top)  || panelEl.offsetTop
+      startElOffsetLeft = - startElx + startElLeft
+      startElOffsetTop  = - startEly + startElTop
+      startMouseX = e.clientX
+      startMouseY = e.clientY
 
       // 状态标记
       isDragging = true
