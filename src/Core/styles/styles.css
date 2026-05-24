@@ -1000,6 +1000,9 @@ html, body, #main {
   color: var(--am-text-color);
   opacity: 0.7;
 }
+.am-pin, .am-pin svg, .windows-pin, .windows-pin svg {
+  -webkit-app-region: drag;
+}
 .am-pin:hover, .windows-pin:hover {
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;

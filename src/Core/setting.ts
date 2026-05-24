@@ -132,7 +132,7 @@ export const global_setting: {
     getScreenSize: () => Promise<{ width: number, height: number }>
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
-    pin: () => Promise<void> // 切换窗口/面板的置顶状态，或拖拽窗口
+    pin: (isPin?: boolean) => Promise<void> // 切换窗口/面板的置顶状态，或拖拽窗口
     sendText: (text: string) => Promise<void>
     saveToClipboard: (text: string) => Promise<void>
     // 统一的网络请求接口，并简化try/catch
