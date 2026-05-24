@@ -56,8 +56,13 @@ export function initApi(plugin: Plugin) {
     new Notice(message); // 参数二可选持续时间
   }
 
-  global_setting.api.pin = async () => {
-    global_setting.state.isPin = !global_setting.state.isPin
+  global_setting.api.pin = async (isPin?: boolean) => {
+    if (isPin === undefined) {
+      global_setting.state.isPin = !global_setting.state.isPin
+    } else {
+      global_setting.state.isPin = isPin
+    }
+
     if (global_setting.state.isPin) {
       global_el.amPanel?.el.classList.add('am-pin-active')
     }

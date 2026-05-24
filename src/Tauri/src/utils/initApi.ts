@@ -87,9 +87,14 @@ export function initApi() {
     }
   }
 
-  global_setting.api.pin = async () => {
+  global_setting.api.pin = async (isPin?: boolean) => {
+    if (isPin === undefined) {
+      global_setting.state.isPin = !global_setting.state.isPin
+    } else {
+      global_setting.state.isPin = isPin
+    }
+
     const appWindow = getCurrentWindow()
-    global_setting.state.isPin = !global_setting.state.isPin
     if (global_setting.state.isPin) {
       document.body.classList.add('windows-pin-active') // 方便 app 窗口底色控制，和方便多个 pin 按钮共享状态
       global_el.amPanel?.el.classList.add('am-pin-active')
