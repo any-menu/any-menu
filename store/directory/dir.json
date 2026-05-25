@@ -224,6 +224,22 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-md-heading-up",
+		"path": "md_heading_up.js",
+		"name": "提升标题等级",
+		"description": "将 Markdown 标题提升一级，例如 H2 -> H1。注意不能包含 H1",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
+		"id": "anymenu-md-heading-down",
+		"path": "md_heading_down.js",
+		"name": "降低标题等级",
+		"description": "将 Markdown 标题降低一级，例如 H1 -> H2。注意不能包含 H6",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "any-menu-emoji",
 		"path": "any-menu/any-menu-plugin-emoji",
 		"name": "EmojiTools",
