@@ -5,14 +5,15 @@
  * 用法类似 Obsidian 的 GUI 配置
  */
 export class SettingItem {
-  parent_el: HTMLElement
   el: HTMLElement
   el_info: HTMLElement
   el_name: HTMLElement
   el_desc: HTMLElement
   el_control: HTMLElement
 
-  constructor(parent_el: HTMLElement) {
+  constructor(
+    public parent_el: HTMLElement
+  ) {
     this.el = document.createElement('div'); parent_el.appendChild(this.el);
       this.el.classList.add('setting-item');
 
@@ -69,10 +70,9 @@ export class SettingItem {
     return this;
   }
 
-  addButton(callback: () => void) {
-    return this;
-  }
-
+  // addButton(callback: () => void) {
+  //   return this;
+  // }
   // addSearch
   // addComponent
   // addTextArea
