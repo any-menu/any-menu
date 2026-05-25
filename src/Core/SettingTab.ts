@@ -1,6 +1,9 @@
 import { t } from './locales/helper';
 import { global_setting } from './setting';
 import { RepoAPI } from './webApi'
+import { SettingItem } from './SettingItem';
+
+// import { Pane } from 'tweakpane'; // 约为Ob插件版本增添270KB，有些大，不要了
 
 /**
  * 初始化设置标签页 (!!! 需要依次调用 initSettingTab_1 和 initSettingTab_2)
@@ -23,6 +26,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   void initSettingTab_webDict(tab_nav_container, tab_content_container)
   void initSettingTab_toolbar(tab_nav_container, tab_content_container)
   void initSettingTab_contextMenu(tab_nav_container, tab_content_container)
+  void initSettingTab_configUI(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
 }
@@ -723,6 +727,96 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
   // #endregion
 }
 
+/** 可视化配置
+ * 
+ * TODO 注意项: app 通过配置文件的修改不会反馈到配置中，需要重启，这可能会造成冲突
+ */
+function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Config');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'setting-ui'); tab_content.setAttribute('index', 'setting-ui');
+
+  // 自动刷新
+  tab_nav.addEventListener('click', () => void init(tab_content))
+
+  // 首次刷新
+  init(tab_content)
+
+  function init(tab_content: HTMLElement) {
+    tab_content.innerHTML = ''
+    const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
+
+    new SettingItem(tab_content)
+      .setName(t('Pinyin index'))
+      .setDesc(t('Pinyin index2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.config.pinyin_index)
+        .onChange(async (value) => {
+          global_setting.config.pinyin_index = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Pinyin first index'))
+      .setDesc(t('Pinyin first index2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.config.pinyin_first_index)
+        .onChange(async (value) => {
+          global_setting.config.pinyin_first_index = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Dict paths'))
+      .setDesc(t('Dict paths2'))
+      .addText(text => text
+        .setValue(global_setting.config.dict_paths)
+        .onChange(async (value) => {
+          global_setting.config.dict_paths = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Dict online source'))
+      .setDesc(t('Dict online source2'))
+      .addDropdown(dropdown => {
+        dropdown.addOption('gitee', 'Gitee')
+        dropdown.addOption('github', 'GitHub')
+        dropdown.setValue(global_setting.config.dict_online_source)
+        dropdown.onChange(async (value) => {
+          global_setting.config.dict_online_source = value as 'gitee' | 'github'
+          await global_setting.api.saveConfig()
+        })
+      })
+
+    new SettingItem(tab_content)
+      .setName(t('Debug mode'))
+      .setDesc(t('Debug mode2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.isDebug)
+        .onChange(async (value) => {
+          global_setting.isDebug = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Auto show toolbar on select'))
+      .setDesc(t('Auto show toolbar on select2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.config.auto_show_toolbar_on_select)
+        .onChange(async (value) => {
+          global_setting.config.auto_show_toolbar_on_select = value
+          await global_setting.api.saveConfig()
+        })
+      )
+  }
+}
+
 // take from https://lucide.dev/icons/grip
 const SVG_ICON_GRIP = `<svg xmlns="http://www.w3.org/2000/svg"
   width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grip-icon lucide-grip">
@@ -792,6 +886,7 @@ function json2table(
   })
 }
 
+/** 数据生成卡片，用法类似 `json2table` */
 function json2card(
   container: HTMLElement, data: any[],
   data_header: {

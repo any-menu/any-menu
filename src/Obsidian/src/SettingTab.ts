@@ -10,7 +10,7 @@
  * 现已弃用 ob plugins.settings
  */
 
-import { App, PluginSettingTab, Setting, Notice, type Plugin } from "obsidian"
+import { App, PluginSettingTab, Notice, type Plugin } from "obsidian"
 import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
 import { global_setting } from "@/Core/setting";
 import { t } from "@/Core/locales/helper";
@@ -48,7 +48,6 @@ export class AMSettingTab extends PluginSettingTab {
     const tab_root = activeDocument.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
-    initSettingTab_obConfig(tab_nav_container, tab_content_container)
     initSettingTab_obConfigFile(tab_nav_container, tab_content_container)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
@@ -94,84 +93,6 @@ export class AMSettingTab extends PluginSettingTab {
     // new Notice('插件已成功重启') // 可选
     // this.display() // (可选) 重新刷新设置面板
   }
-}
-
-/// Obsidian 可视化配置
-function initSettingTab_obConfig(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
-  const tab_nav = activeDocument.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = t('Config');
-  const tab_content = activeDocument.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
-  tab_nav.setAttribute('index', 'obsidian-setting'); tab_content.setAttribute('index', 'obsidian-setting');
-
-  tab_content.createEl('div', { text: t('Config2') });
-
-  new Setting(tab_content)
-  .setName(t('Pinyin index'))
-  .setDesc(t('Pinyin index2'))
-  .addToggle(toggle => toggle
-    .setValue(global_setting.config.pinyin_index)
-    .onChange(async (value) => {
-      global_setting.config.pinyin_index = value
-      await global_setting.api.saveConfig()
-    })
-  )
-
-  new Setting(tab_content)
-  .setName(t('Pinyin first index'))
-  .setDesc(t('Pinyin first index2'))
-  .addToggle(toggle => toggle
-    .setValue(global_setting.config.pinyin_first_index)
-    .onChange(async (value) => {
-      global_setting.config.pinyin_first_index = value
-      await global_setting.api.saveConfig()
-    })
-  )
-
-  new Setting(tab_content)
-  .setName(t('Dict paths'))
-  .setDesc(t('Dict paths2'))
-  .addText(text => text
-    .setValue(global_setting.config.dict_paths)
-    .onChange(async (value) => {
-      global_setting.config.dict_paths = value
-      await global_setting.api.saveConfig()
-    })
-  )
-
-  new Setting(tab_content)
-  .setName(t('Dict online source'))
-  .setDesc(t('Dict online source2'))
-  .addDropdown(dropdown => {
-    dropdown.addOption('gitee', 'Gitee')
-    dropdown.addOption('github', 'GitHub')
-    dropdown.setValue(global_setting.config.dict_online_source)
-    dropdown.onChange(async (value) => {
-      global_setting.config.dict_online_source = value as 'gitee' | 'github'
-      await global_setting.api.saveConfig()
-    })
-  })
-
-  new Setting(tab_content)
-  .setName(t('Debug mode'))
-  .setDesc(t('Debug mode2'))
-  .addToggle(toggle => toggle
-    .setValue(global_setting.isDebug)
-    .onChange(async (value) => {
-      global_setting.isDebug = value
-      await global_setting.api.saveConfig()
-    })
-  )
-
-  new Setting(tab_content)
-  .setName(t('Auto show toolbar on select'))
-  .setDesc(t('Auto show toolbar on select2'))
-  .addToggle(toggle => toggle
-    .setValue(global_setting.config.auto_show_toolbar_on_select)
-    .onChange(async (value) => {
-      global_setting.config.auto_show_toolbar_on_select = value
-      await global_setting.api.saveConfig()
-    })
-  )
 }
 
 /** Obsidian 纯文本编辑 data.json

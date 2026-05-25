@@ -433,6 +433,101 @@ html, body, #main {
   }
 }
 
+/* -------------------------------- 配置页面配置项 ------------------------ */
+
+.tab-root .setting-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 10px 2px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 12px;
+
+  .setting-item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .setting-item-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .setting-item-desc {
+      font-size: 0.9em;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+  }
+
+  .setting-item-control {
+    margin-top: 4px;
+
+    .setting-item-text {
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 0.5px solid var(--ab-tab-root-bd-color);
+      outline: none;
+      box-shadow: none;
+      background-color: var(--pre-background-color);
+      color: var(--am-text-color);
+    }
+
+    // 开关使用滑块风格
+    .setting-item-toggle {
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+      border-radius: 10px;
+      background-color: var(--ab-tab-root-bd-color);
+      position: relative;
+      cursor: pointer;
+
+      input {
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: white;
+        transition: all 0.25s ease;
+      }
+
+      // 开启状态
+      &.is-enabled {
+        background-color: var(--am-bright-color);
+
+        &::after {
+          left: 22px; // width - toggle width - padding
+        }
+      }
+    }
+
+    .setting-item-select {
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 0.5px solid var(--ab-tab-root-bd-color);
+      outline: none;
+      box-shadow: none;
+      background-color: var(--pre-background-color);
+      color: var(--am-text-color);
+    }
+  }
+}
+
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */
 
 @media (prefers-color-scheme: dark) {

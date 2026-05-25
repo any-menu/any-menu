@@ -29,7 +29,7 @@ For more instructions and tutorials:
 
   // Obsidian 专属设置，setting.ts (obsidian 的可视化设置)
   'Config': 'Config',
-  'Config2': 'Currently, not all configurable items support visual editing. For some configurations, you can manually edit the data.json file in the plugin folder.',
+  'Config2': 'Currently, not all configurable items support visual editing. Some configurations can be edited manually in the plugin/software folder by opening the configuration files.',
   'Config file2': `Note: In this case, editing the data.json file in the plugin folder is the same as in the text mode you used before, except for the additional JSON format check. There is no difference.
 It is generally not recommended to perform manual editing. It is recommended to use other tabs for visual editing. If you need to edit here, it is suggested to press the "Refresh" button before doing so.`,
   'Pinyin index': 'Pinyin index',
