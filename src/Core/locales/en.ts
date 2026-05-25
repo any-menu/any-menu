@@ -35,14 +35,15 @@ It is generally not recommended to perform manual editing. It is recommended to 
   'Pinyin index': 'Pinyin index',
   'Pinyin index2': 'Is it the case that the Chinese "key" is automatically constructed with a pinyin index?',
   'Pinyin first index': 'Pinyin first index',
-  'Pinyin first index2': 'Is it the case that the Chinese "key" is automatically constructed into an index using the initial letters of pinyin?',
+  'Pinyin first index2': 'Is it the case that the Chinese "key" is automatically constructed into an index using the initial letters of pinyin?\n\
+(Note: The Chinese pinyin library can be quite large, so the default version does not come with the pinyin index function. If you need to use it, please manually download the pinyin version from the Github repository.)',
   'Dict paths': 'Dict paths',
   'Dict paths2': 'Dictionary storage path. You can save it in the document library for easy editing at any time, such as ./dict/; \n\
 You can also save the dictionary in the plugin file, such as ./.obsidian/plugins/any-menu/',
   'Dict online source': 'Dict online source',
   'Dict online source2': 'Source of online dictionary: gitee or github',
   'Debug mode': 'Debug mode',
-  'Debug mode2': 'Only for developer use',
+  'Debug mode2': 'Only for developer use. Mainly for enabling some additional console logging.',
   'Auto show toolbar on select': 'Auto show toolbar on select',
   'Auto show toolbar on select2': 'Automatically show the toolbar when text is selected in the editor',
   'Reload plugin': 'Reload plugin',

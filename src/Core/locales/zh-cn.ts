@@ -33,16 +33,17 @@ export default {
   'Config file2': `注意：在这编辑与你在插件文件夹中文本方式编辑 data.json，除多了 json 格式检查外没有区别。
 一般不推荐进行手动编辑，推荐使用其他标签页进行可视化编辑。如果需要在此编辑，建议编辑前先按下 "刷新" 按钮`,
   'Pinyin index': '拼音索引',
-  'Pinyin index2': '是否为中文key自动构建拼音索引',
+  'Pinyin index2': '是否为中文key自动构建拼音索引\n\
+(注意中文拼音库会比较大，所以默认版本不自带拼音索引功能。如需使用请到 Github 仓库中手动下载拼音版本)',
   'Pinyin first index': '拼音首字母索引',
   'Pinyin first index2': '是否为中文key自动构建拼音首字母索引',
   'Dict paths': '词典路径',
   'Dict paths2': '词典保存路径。你可以保存在文档库中方便随时编辑，如 ./dict/；\n\
 也可以把词典保存在插件文件中，如 ./.obsidian/plugins/any-menu/',
   'Dict online source': '在线词库来源',
-  'Dict online source2': '在线词库来源: gitee 或 github (无法访问 github 则推荐用 gitee)',
+  'Dict online source2': '在线词库来源: gitee 或 github (若无法访问 github 则推荐用 gitee)',
   'Debug mode': '调试模式',
-  'Debug mode2': '仅供开发者使用',
+  'Debug mode2': '仅供开发者使用。主要为开启一些额外的控制台打印。',
   'Auto show toolbar on select': '选中文本时自动显示工具栏',
   'Auto show toolbar on select2': '在编辑器中选中文本时，自动弹出工具栏',
   'Reload plugin': '重启插件',
