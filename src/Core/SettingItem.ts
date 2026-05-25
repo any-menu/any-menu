@@ -41,6 +41,16 @@ export class SettingItem {
     return this
   }
 
+  /*
+   * Obsidian版本还有:
+   * - setClass
+   * - setTooltip
+   * - setHeading
+   * - setDisabled
+   */
+
+  // #region 添加一些子组件
+
   addText(callback: (text: SettingItemText) => void) {
     const text = new SettingItemText(this.el_control);
     callback(text);
@@ -59,13 +69,22 @@ export class SettingItem {
     return this;
   }
 
-  addButton(label: string, onClick: () => void) {
-    const btn = document.createElement('button'); this.el_control.appendChild(btn);
-    btn.textContent = label;
-    btn.classList.add('btn-2');
-    btn.onclick = onClick;
+  addButton(callback: () => void) {
+    return this;
   }
+
+  // addSearch
+  // addComponent
+  // addTextArea
+  // addColorPicker
+  // addProgressBar
+  // addSlider
+  // addMomentFormat
+
+  // #endregion
 }
+
+export type Setting = SettingItem
 
 /// 设置项 - 文本输入框
 class SettingItemText {
