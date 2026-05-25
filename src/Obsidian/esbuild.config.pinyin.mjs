@@ -38,7 +38,7 @@ const prod = (process.argv[2] === 'production');
 		treeShaking: true,
 		outfile: '../../dist-pinyin/main.js',
 		// minify: false, // 9.4MB -> 8.1MB
-		metafile: true, // 依赖大小分析
+		metafile: true, // 依赖体积大小分析
 	}).catch(() => process.exit(1));
 
 	// 将 metafile 写入磁盘，生成结果可使用 https://esbuild.github.io/analyze/ 进行分析查看
