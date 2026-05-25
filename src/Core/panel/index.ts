@@ -285,8 +285,10 @@ export class AMPanel {
 
   /** 隐藏面板
    * 
-   * - 无参数则表示隐藏全部
-   * - 空列表则表示不隐藏子面板，子隐藏容器
+   * @param list 要隐藏的子面板列表
+   *   - 有参数: 容器不隐藏，只隐藏列表中的那几个子面板
+   *   - 空列表: 容器隐藏，子面板不隐藏 (方便下次显示容器时保留子面板显示状态)
+   *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
   static hide(list?: string[]) {
     if (global_setting.state.isPin) return
@@ -294,11 +296,11 @@ export class AMPanel {
     // 主面板
     const el_panel = global_el.amPanel?.el
     if (!el_panel) return
-    if (list != undefined && list.length == 0) el_panel.classList.add('am-hide')
 
     // 子面板
     // 全部隐藏
     if (list == undefined) {
+      el_panel.classList.add('am-hide')
       global_el.amSearch?.hide()
       global_el.amToolbar?.hide()
       global_el.amContextMenu?.hide()
@@ -309,6 +311,7 @@ export class AMPanel {
     }
     // 仅隐藏列表中的
     else {
+      if (list.length == 0) el_panel.classList.add('am-hide')
       for (const item of list) {
         if (item == 'search')  global_el.amSearch?.hide()
         else if (item == 'toolbar') global_el.amToolbar?.hide()
