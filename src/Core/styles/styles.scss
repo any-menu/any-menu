@@ -456,6 +456,7 @@ table.dataview-table {
   margin: 10px 2px;
   // border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 12px;
+  background: none;
 
   .setting-item-info {
     display: flex;
@@ -550,7 +551,9 @@ table.dataview-table {
     display: flex;
     align-items: center; // 与 flex 解决内联对齐地狱
     margin: 0;
+    padding: 0;
     cursor: pointer;
+    font-size: 22px;
 
     // 折叠箭头
     .collapse-btn {
@@ -570,7 +573,7 @@ table.dataview-table {
         margin: 0;
         border: solid var(--ab-tab-root-tx-color);
         border-width: 0 1.5px 1.5px 0;
-        transform: rotate(45deg);
+        transform: rotate(45deg) translate(-1px, 0px);
       }
     }
 

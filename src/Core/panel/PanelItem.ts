@@ -73,8 +73,10 @@ export function init_item(
         // 3. 异步获取图标
         fetch(iconUrl)
           .then(response => { // 异常则降级处理
-            if (!response.ok) throw new Error(`Icon ${iconName} not found`);
-            global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
+            if (!response.ok) {
+              global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
+              throw new Error(`Icon ${iconName} not found`);
+            }
             return response.text();
           })
           .then(svgText => {

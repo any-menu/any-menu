@@ -43,7 +43,7 @@ export default {
   'Dict index config': '字典索引配置',
   'Pinyin index': '拼音索引',
   'Pinyin index2': '是否为中文key自动构建拼音索引\n\
-(注意中文拼音库会比较大，所以默认版本不自带拼音索引功能。如需使用请到 Github 仓库中手动下载拼音版本)',
+(注意中文拼音库会比较大，所以插件版本默认不自带拼音索引功能。如需使用请到 Github 仓库中手动下载拼音版本)',
   'Pinyin first index': '拼音首字母索引',
   'Pinyin first index2': '是否为中文key自动构建拼音首字母索引',
   'Index engine': '索引引擎',
