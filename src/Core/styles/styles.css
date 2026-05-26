@@ -1163,20 +1163,26 @@ html, body, #main {
   white-space: normal;
 }
 
-.dataview-table {
+table.dataview-table {
   overflow-x: auto;
   width: 100%;
+  border-collapse: collapse;
 }
-.dataview-table tbody {
+table.dataview-table tbody {
   overflow-y: auto;
 }
-.dataview-table tbody tr:hover {
+table.dataview-table tbody tr:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.dataview-table tbody tr > td {
-  white-space: pre;
+table.dataview-table tbody tr:hover > td {
+  border-color: var(--ab-tab-root-bg-color);
 }
-.dataview-table .btn {
+table.dataview-table tbody tr > td {
+  white-space: pre;
+  border: 1px solid var(--ab-table-border-color);
+  padding: 0 8px;
+}
+table.dataview-table .btn {
   width: 100%;
 }
 
@@ -1195,6 +1201,9 @@ html, body, #main {
   border: solid 1px var(--ab-tab-root-bd-color);
   padding: 10px;
   border-radius: 10px;
+}
+.dataview-card .card:hover {
+  background-color: var(--ab-tab-root-hv-color);
 }
 .dataview-card .btn {
   float: right;

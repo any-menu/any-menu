@@ -361,16 +361,22 @@ html, body, #main {
   }
 }
 
-.dataview-table {
+table.dataview-table {
   overflow-x: auto;
   width: 100%;
+  border-collapse: collapse;
   tbody {
     overflow-y: auto;
     tr:hover {
       background-color: var(--ab-tab-root-hv-color);
+      >td {
+        border-color: var(--ab-tab-root-bg-color);
+      }
     }
     tr>td {
       white-space: pre;
+      border: 1px solid var(--ab-table-border-color);
+      padding: 0 8px;
     }
   }
   .btn {
@@ -395,6 +401,10 @@ html, body, #main {
     border: solid 1px var(--ab-tab-root-bd-color);
     padding: 10px;
     border-radius: 10px;
+
+    &:hover {
+      background-color: var(--ab-tab-root-hv-color);
+    }
   }
   .btn {
     float: right;

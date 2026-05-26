@@ -112,17 +112,30 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       }
     const refresh_btn = document.createElement('button'); buttons.appendChild(refresh_btn);
       refresh_btn.textContent = t('Refresh dict list')
-      refresh_btn.onclick = async () => void getDictData_and_showData()
+      refresh_btn.onclick = async () => void getDictData_and_showData('card', false)
   }
 
   // 首次刷新
   void getDictData_and_showData()
 
-  /** 获取要展示的数据 + 展示已获取的数据 */
-  async function getDictData_and_showData(mode: 'table'|'card' = 'card') {
+  // 插件列表数据 (缓存)
+  // 避免每次点击进来该页面或切换布局时都进行完整刷新 (需要网络请求)，有些慢了
+  // 一般有网络缓存后只需要刷新是否下载和启用状态就够了
+  let data_cache: any | null = null
+  /** 获取要展示的数据 + 展示已获取的数据
+   * @param is_use_cache 若存在网络缓存，是否使用缓存。一般仅没缓存时，或仅手动刷新时不使用
+   */
+  async function getDictData_and_showData(mode: 'table'|'card' = 'card', is_use_cache = true) {
+    let data: any
+    if (is_use_cache && data_cache) {
+      data = data_cache
+    } else {
+      data = await getDictData()
+      if (!data) return
+      else data_cache = data
+    }
+
     const api = new RepoAPI()
-    const data = await getDictData()
-    if (!data) return
     const data_header = [
       ...(global_setting.isDebug ? [{
         name: t('Id'),
@@ -870,6 +883,7 @@ function json2table(
     callback: (el: HTMLElement, item:any) => void
   }[]
 ) {
+  container.innerHTML = ''
   container.dataset.viewmode = 'table'
   const table = document.createElement('table'); container.appendChild(table);
     table.classList.add('dataview-table');
@@ -900,6 +914,7 @@ function json2card(
     callback: (el: HTMLElement, item:any) => void
   }[]
 ) {
+  container.innerHTML = ''
   container.dataset.viewmode = 'card'
   const div = document.createElement('div'); container.appendChild(div);
     div.classList.add('dataview-card');
