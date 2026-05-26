@@ -766,8 +766,8 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
       .setHeading(t('Dict config'))
 
     new SettingItem(tab_content)
-      .setName(t('Dict paths'))
-      .setDesc(t('Dict paths2'))
+      .setName(t('Dict path'))
+      .setDesc(t('Dict path2'))
       .addText(text => text
         .setValue(global_setting.config.dict_paths)
         .onChange(async (value) => {
@@ -788,6 +788,10 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
           await global_setting.api.saveConfig()
         })
       })
+
+    // --------- 字典索引配置 -------------------
+    new SettingItem(tab_content)
+      .setHeading(t('Dict index config'))
 
     new SettingItem(tab_content)
       .setName(t('Pinyin index'))
@@ -831,6 +835,17 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
       .setHeading(t('Other config'))
 
     new SettingItem(tab_content)
+      .setName(t('Note path'))
+      .setDesc(t('Note path2'))
+      .addText(text => text
+        .setValue(global_setting.config.note_paths)
+        .onChange(async (value) => {
+          global_setting.config.note_paths = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
       .setName(t('Debug mode'))
       .setDesc(t('Debug mode2'))
       .addToggle(toggle => toggle
@@ -870,6 +885,38 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
           await global_setting.api.saveConfig()
         })
       )
+
+
+    // --------- App配置 ----------------------
+    if (global_setting.platform === 'app') {
+      new SettingItem(tab_content)
+        .setHeading(t('App config'))
+
+      new SettingItem(tab_content)
+        .setName(t('Send text method'))
+        .setDesc(t('Send text method2'))
+        .addDropdown(dropdown => {
+          dropdown.addOption('clipboard', 'Clipboard')
+          dropdown.addOption('keyboard', 'Keyboard')
+          dropdown.addOption('auto', 'Auto')
+          dropdown.setValue(global_setting.config.send_text_method)
+          dropdown.onChange(async (value) => {
+            global_setting.config.send_text_method = value as 'clipboard' | 'keyboard' | 'auto'
+            await global_setting.api.saveConfig()
+          })
+        })
+
+      new SettingItem(tab_content)
+        .setName(t('Is use ad shortcut'))
+        .setDesc(t('Is use ad shortcut2'))
+        .addToggle(toggle => toggle
+          .setValue(global_setting.config.app_ad_shortcut)
+          .onChange(async (value) => {
+            global_setting.config.app_ad_shortcut = value
+            await global_setting.api.saveConfig()
+          })
+        )
+    }
   }
 }
 
