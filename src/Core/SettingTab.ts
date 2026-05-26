@@ -762,7 +762,7 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
     new SettingItem(tab_content)
-      .setHeading(t('Config dict'))
+      .setHeading(t('Dict config'))
 
     new SettingItem(tab_content)
       .setName(t('Pinyin index'))
@@ -810,8 +810,10 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         })
       })
 
+    // new SettingItem(tab_content)
+    //   .setDivider()
     new SettingItem(tab_content)
-      .setDivider()
+      .setHeading(t('Other config'))
 
     new SettingItem(tab_content)
       .setName(t('Debug mode'))

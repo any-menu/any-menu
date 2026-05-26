@@ -540,7 +540,43 @@ table.dataview-table {
 
   .setting-item-heading {
     flex-basis: 100%; // 独占一行
+    display: flex;
+    align-items: center; // 与 flex 解决内联对齐地狱
     margin: 0;
+    cursor: pointer;
+
+    // 折叠箭头
+    .collapse-btn {
+      display: inline-flex;
+      box-sizing: border-box;
+      flex-shrink: 0; // 不允许缩小
+      width: 7px;
+      height: 7px;
+      margin-left: 10px;
+      &::after {
+        content: "";
+        display: block;
+        box-sizing: border-box;
+        width: 7px;
+        height: 7px;
+        padding: 0;
+        margin: 0;
+        border: solid var(--ab-tab-root-tx-color);
+        border-width: 0 1.5px 1.5px 0;
+        transform: rotate(45deg);
+      }
+    }
+
+    &.is-collapsed {
+      .collapse-btn::after {
+        transform: rotate(-45deg) translate(-2px, 0px);
+      }
+    }
+
+    &:hover .collapse-btn::after {
+      color: var(--am-bright-color);
+      border-color: var(--am-bright-color);
+    }
   }
 
   .setting-item-divider {
