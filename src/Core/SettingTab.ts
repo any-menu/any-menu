@@ -115,13 +115,14 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
       refresh_btn.onclick = async () => void getDictData_and_showData('card', false)
   }
 
-  // 首次刷新
-  void getDictData_and_showData()
-
   // 插件列表数据 (缓存)
   // 避免每次点击进来该页面或切换布局时都进行完整刷新 (需要网络请求)，有些慢了
   // 一般有网络缓存后只需要刷新是否下载和启用状态就够了
   let data_cache: any | null = null
+
+  // 首次刷新
+  void getDictData_and_showData()
+
   /** 获取要展示的数据 + 展示已获取的数据
    * @param is_use_cache 若存在网络缓存，是否使用缓存。一般仅没缓存时，或仅手动刷新时不使用
    */
