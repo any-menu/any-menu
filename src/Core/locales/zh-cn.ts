@@ -38,6 +38,8 @@ export default {
 (注意中文拼音库会比较大，所以默认版本不自带拼音索引功能。如需使用请到 Github 仓库中手动下载拼音版本)',
   'Pinyin first index': '拼音首字母索引',
   'Pinyin first index2': '是否为中文key自动构建拼音首字母索引',
+  'Index engine': '索引引擎',
+  'Index engine2': '模糊匹配/倒序 | 前缀树',
   'Dict paths': '词典路径',
   'Dict paths2': '词典保存路径。你可以保存在文档库中方便随时编辑，如 ./dict/；\n\
 也可以把词典保存在插件文件中，如 ./.obsidian/plugins/any-menu/',
@@ -47,7 +49,9 @@ export default {
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用。主要为开启一些额外的控制台打印。',
   'Auto show toolbar on select': '选中文本时自动显示工具栏',
-  'Auto show toolbar on select2': '在编辑器中选中文本时，自动弹出工具栏',
+  'Auto show toolbar on select2': '在编辑器中选中文本时，自动弹出工具栏。',
+  'Server port': 'HTTP服务器端口',
+  'Server port2': '对于App版本是开启的HTTP服务端口，对于插件版本是要访问的端口。两者需一致。',
   'Reload plugin': '重启插件',
 
   // Online dict / Local dict

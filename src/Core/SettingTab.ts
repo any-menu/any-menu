@@ -761,30 +761,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     tab_content.innerHTML = ''
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
+    // --------- 字典配置 ----------------------
     new SettingItem(tab_content)
       .setHeading(t('Dict config'))
-
-    new SettingItem(tab_content)
-      .setName(t('Pinyin index'))
-      .setDesc(t('Pinyin index2'))
-      .addToggle(toggle => toggle
-        .setValue(global_setting.config.pinyin_index)
-        .onChange(async (value) => {
-          global_setting.config.pinyin_index = value
-          await global_setting.api.saveConfig()
-        })
-      )
-
-    new SettingItem(tab_content)
-      .setName(t('Pinyin first index'))
-      .setDesc(t('Pinyin first index2'))
-      .addToggle(toggle => toggle
-        .setValue(global_setting.config.pinyin_first_index)
-        .onChange(async (value) => {
-          global_setting.config.pinyin_first_index = value
-          await global_setting.api.saveConfig()
-        })
-      )
 
     new SettingItem(tab_content)
       .setName(t('Dict paths'))
@@ -810,6 +789,42 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         })
       })
 
+    new SettingItem(tab_content)
+      .setName(t('Pinyin index'))
+      .setDesc(t('Pinyin index2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.config.pinyin_index)
+        .onChange(async (value) => {
+          global_setting.config.pinyin_index = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Pinyin first index'))
+      .setDesc(t('Pinyin first index2'))
+      .addToggle(toggle => toggle
+        .setValue(global_setting.config.pinyin_first_index)
+        .onChange(async (value) => {
+          global_setting.config.pinyin_first_index = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Index engine'))
+      .setDesc(t('Index engine2'))
+      .addDropdown(dropdown => {
+        dropdown.addOption('reverse', 'Reverse')
+        dropdown.addOption('trie', 'Trie')
+        dropdown.setValue(global_setting.config.search_engine)
+        dropdown.onChange(async (value) => {
+          global_setting.config.search_engine = value as 'reverse' | 'trie'
+          await global_setting.api.saveConfig()
+        })
+      })
+
+    // --------- 其他配置 ----------------------
     // new SettingItem(tab_content)
     //   .setDivider()
     new SettingItem(tab_content)
@@ -833,6 +848,25 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         .setValue(global_setting.config.auto_show_toolbar_on_select)
         .onChange(async (value) => {
           global_setting.config.auto_show_toolbar_on_select = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Server port'))
+      .setDesc(t('Server port2'))
+      .addText(text => text
+        .setType('number')
+        .setValue(String(global_setting.config.server_port))
+        .onChange(async (value, el) => {
+          const port = Number(value)
+          if (Number.isNaN(port) || port <= 0 || port >= 65536) {
+            el.value = String(global_setting.config.server_port)
+            console.error('Invalid port number ' + port + ', reset to', global_setting.config.server_port)
+            global_setting.api.notify('Invalid port number: ' + port)
+            return
+          }
+          global_setting.config.server_port = port
           await global_setting.api.saveConfig()
         })
       )

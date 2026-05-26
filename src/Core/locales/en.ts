@@ -43,11 +43,15 @@ It is generally not recommended to perform manual editing. It is recommended to 
 You can also save the dictionary in the plugin file, such as ./.obsidian/plugins/any-menu/',
   'Dict online source': 'Dict online source',
   'Dict online source2': 'Source of online dictionary: gitee or github',
+  'Index engine': 'Index engine',
+  'Index engine2': 'Fuzzy matching/reverse order | Prefix tree',
   'Other config': 'Other config',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use. Mainly for enabling some additional console logging.',
   'Auto show toolbar on select': 'Auto show toolbar on select',
   'Auto show toolbar on select2': 'Automatically show the toolbar when text is selected in the editor',
+  'Server port': 'HTTP server port',
+  'Server port2': 'For the App version, it is the port for the HTTP service; for the plugin version, it is the port to access. Both need to be consistent',
   'Reload plugin': 'Reload plugin',
 
   // Online dict / Local dict

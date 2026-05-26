@@ -138,14 +138,20 @@ class SettingItemText {
       this.el.type = 'text';
   }
 
+  setType(type: 'text' | 'number' | 'date' | 'color' | 'email' | 'url' | 'time' | 'password') {
+    this.el.dataset.type = type;
+    this.el.type = type;
+    return this
+  }
+
   setValue(value: string) {
     this.el.value = value;
     return this
   }
 
-  onChange(callback: (value: string) => void) {
-    this.el.addEventListener('input', () => {
-      callback(this.el.value);
+  onChange(callback: (value: string, el: HTMLInputElement) => void) {
+    this.el.addEventListener('change', () => {
+      callback(this.el.value, this.el);
     });
     return this
   }
@@ -185,9 +191,9 @@ class SettingItemToggle {
     return this
   }
 
-  onChange(callback: (value: boolean) => void) {
+  onChange(callback: (value: boolean, el: HTMLElement) => void) {
     this.el_input.addEventListener('change', () => {
-      callback(this.el_input.checked);
+      callback(this.el_input.checked, this.el);
     });
     return this
   }
@@ -223,9 +229,9 @@ class SettingItemSelect {
     return this
   }
 
-  onChange(callback: (value: string) => void) {
+  onChange(callback: (value: string, el: HTMLElement) => void) {
     this.el.addEventListener('change', () => {
-      callback(this.el.value);
+      callback(this.el.value, this.el);
     });
     return this
   }
