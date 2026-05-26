@@ -42,6 +42,21 @@ export class SettingItem {
     return this
   }
 
+  /// 添加标题
+  setHeading(heading: string) {
+    const heading_el = document.createElement('h2'); this.el.appendChild(heading_el);
+      heading_el.classList.add('setting-item-heading');
+      heading_el.textContent = heading;
+    return this
+  }
+
+  /// 添加分割线
+  setDivider() {
+    const divider_el = document.createElement('hr'); this.el.appendChild(divider_el);
+      divider_el.classList.add('setting-item-divider');
+    return this
+  }
+
   /*
    * Obsidian版本还有:
    * - setClass

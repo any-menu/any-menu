@@ -1231,12 +1231,12 @@ html, body, #main {
 .tab-root .setting-item {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0 12px;
   box-sizing: border-box;
   padding: 12px;
   margin: 10px 2px;
-  border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 12px;
 }
 .tab-root .setting-item .setting-item-info {
@@ -1306,6 +1306,17 @@ html, body, #main {
   box-shadow: none;
   background-color: var(--pre-background-color);
   color: var(--am-text-color);
+}
+.tab-root .setting-item .setting-item-heading {
+  flex-basis: 100%;
+  margin: 0;
+}
+.tab-root .setting-item .setting-item-divider {
+  flex-basis: 100%;
+  width: 100%;
+  height: 1px;
+  border: none;
+  background-color: var(--ab-tab-root-bd-color);
 }
 
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */

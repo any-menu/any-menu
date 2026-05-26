@@ -748,6 +748,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
     new SettingItem(tab_content)
+      .setHeading(t('Config dict'))
+
+    new SettingItem(tab_content)
       .setName(t('Pinyin index'))
       .setDesc(t('Pinyin index2'))
       .addToggle(toggle => toggle
@@ -792,6 +795,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
           await global_setting.api.saveConfig()
         })
       })
+
+    new SettingItem(tab_content)
+      .setDivider()
 
     new SettingItem(tab_content)
       .setName(t('Debug mode'))
