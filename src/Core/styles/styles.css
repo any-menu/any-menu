@@ -1265,6 +1265,11 @@ table.dataview-table .btn {
 .tab-root .setting-item .setting-item-control {
   margin-top: 4px;
 }
+.tab-root .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
+.tab-root .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 .tab-root .setting-item .setting-item-control .setting-item-text {
   padding: 4px 8px;
   border-radius: 6px;

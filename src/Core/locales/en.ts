@@ -51,7 +51,8 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Auto show toolbar on select': 'Auto show toolbar on select',
   'Auto show toolbar on select2': 'Automatically show the toolbar when text is selected in the editor',
   'Server port': 'HTTP server port',
-  'Server port2': 'For the App version, it is the port for the HTTP service; for the plugin version, it is the port to access. Both need to be consistent',
+  'Server port2': 'For the App version, it is the port for the HTTP service; for the plugin version, it is the port to access.\n\
+Both need to be consistent. Enter 0 to disable this service. If you have not installed the local App version, this item is also invalid.',
   'Reload plugin': 'Reload plugin',
 
   // Online dict / Local dict
