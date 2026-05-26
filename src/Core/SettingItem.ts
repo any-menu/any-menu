@@ -42,6 +42,48 @@ export class SettingItem {
     return this
   }
 
+  /// 添加标题
+  setHeading(heading: string) {
+    const heading_el = document.createElement('h2'); this.el.appendChild(heading_el);
+      heading_el.classList.add('setting-item-heading');
+      heading_el.textContent = heading;
+    const collapse_btn = document.createElement('span'); heading_el.appendChild(collapse_btn);
+      collapse_btn.classList.add('collapse-btn');
+    this.el.classList.add('has-heading');
+
+    // 按钮 - 切换该标题到下一标题之间内容的显示隐藏
+    let is_collapsed = false;
+    heading_el.addEventListener('click', () => {
+      is_collapsed = !is_collapsed;
+      if (is_collapsed) {
+        heading_el.classList.add('is-collapsed');
+        // 隐藏该标题 (含标题的SettingItem) 到下一标题之间的内容
+        let next_el = this.el.nextElementSibling;
+        while (next_el && !next_el.classList.contains('has-heading')) {
+          (next_el as HTMLElement).classList.add('am-hide');
+          next_el = next_el.nextElementSibling;
+        }
+      } else {
+        heading_el.classList.remove('is-collapsed');
+        // 显示该标题 (含标题的SettingItem) 到下一标题之间的内容
+        let next_el = this.el.nextElementSibling;
+        while (next_el && !next_el.classList.contains('has-heading')) {
+          (next_el as HTMLElement).classList.remove('am-hide');
+          next_el = next_el.nextElementSibling;
+        }
+      }
+    })
+
+    return this
+  }
+
+  /// 添加分割线
+  setDivider() {
+    const divider_el = document.createElement('hr'); this.el.appendChild(divider_el);
+      divider_el.classList.add('setting-item-divider');
+    return this
+  }
+
   /*
    * Obsidian版本还有:
    * - setClass

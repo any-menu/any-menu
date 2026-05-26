@@ -1163,20 +1163,26 @@ html, body, #main {
   white-space: normal;
 }
 
-.dataview-table {
+table.dataview-table {
   overflow-x: auto;
   width: 100%;
+  border-collapse: collapse;
 }
-.dataview-table tbody {
+table.dataview-table tbody {
   overflow-y: auto;
 }
-.dataview-table tbody tr:hover {
+table.dataview-table tbody tr:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.dataview-table tbody tr > td {
-  white-space: pre;
+table.dataview-table tbody tr:hover > td {
+  border-color: var(--ab-tab-root-bg-color);
 }
-.dataview-table .btn {
+table.dataview-table tbody tr > td {
+  white-space: pre;
+  border: 1px solid var(--ab-table-border-color);
+  padding: 0 8px;
+}
+table.dataview-table .btn {
   width: 100%;
 }
 
@@ -1195,6 +1201,9 @@ html, body, #main {
   border: solid 1px var(--ab-tab-root-bd-color);
   padding: 10px;
   border-radius: 10px;
+}
+.dataview-card .card:hover {
+  background-color: var(--ab-tab-root-hv-color);
 }
 .dataview-card .btn {
   float: right;
@@ -1231,12 +1240,12 @@ html, body, #main {
 .tab-root .setting-item {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0 12px;
   box-sizing: border-box;
   padding: 12px;
   margin: 10px 2px;
-  border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 12px;
 }
 .tab-root .setting-item .setting-item-info {
@@ -1306,6 +1315,47 @@ html, body, #main {
   box-shadow: none;
   background-color: var(--pre-background-color);
   color: var(--am-text-color);
+}
+.tab-root .setting-item .setting-item-heading {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+.tab-root .setting-item .setting-item-heading .collapse-btn {
+  display: inline-flex;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-left: 10px;
+}
+.tab-root .setting-item .setting-item-heading .collapse-btn::after {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  margin: 0;
+  border: solid var(--ab-tab-root-tx-color);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+.tab-root .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
+  transform: rotate(-45deg) translate(-2px, 0px);
+}
+.tab-root .setting-item .setting-item-heading:hover .collapse-btn::after {
+  color: var(--am-bright-color);
+  border-color: var(--am-bright-color);
+}
+.tab-root .setting-item .setting-item-divider {
+  flex-basis: 100%;
+  width: 100%;
+  height: 1px;
+  border: none;
+  background-color: var(--ab-tab-root-bd-color);
 }
 
 /* -------------------------------- 黑暗主题滚动条样式 -------------------- */

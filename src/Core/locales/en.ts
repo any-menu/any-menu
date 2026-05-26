@@ -32,6 +32,7 @@ For more instructions and tutorials:
   'Config2': 'Currently, not all configurable items support visual editing. Some configurations can be edited manually in the plugin/software folder by opening the configuration files.',
   'Config file2': `Note: In this case, editing the data.json file in the plugin folder is the same as in the text mode you used before, except for the additional JSON format check. There is no difference.
 It is generally not recommended to perform manual editing. It is recommended to use other tabs for visual editing. If you need to edit here, it is suggested to press the "Refresh" button before doing so.`,
+  'Dict config': 'Dict Config',
   'Pinyin index': 'Pinyin index',
   'Pinyin index2': 'Is it the case that the Chinese "key" is automatically constructed with a pinyin index?',
   'Pinyin first index': 'Pinyin first index',
@@ -42,6 +43,7 @@ It is generally not recommended to perform manual editing. It is recommended to 
 You can also save the dictionary in the plugin file, such as ./.obsidian/plugins/any-menu/',
   'Dict online source': 'Dict online source',
   'Dict online source2': 'Source of online dictionary: gitee or github',
+  'Other config': 'Other config',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use. Mainly for enabling some additional console logging.',
   'Auto show toolbar on select': 'Auto show toolbar on select',
