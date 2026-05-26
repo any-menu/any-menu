@@ -1,7 +1,7 @@
 {
   "id": "any-menu",
   "name": "AnyMenu",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "minAppVersion": "1.8.7",
   "description": "A powerful input method assistant / editor assistant. Integrates a variety of quick input tools that can be used in a general text environment. Like quicker input, quicker conversion, quicker search, quicker menu, etc.",
   "author": "LincZero",
