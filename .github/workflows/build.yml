@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      tag:
+        # description: '手动指定版本号 (补跑用)'
+        required: false
 
 jobs:
   build-obsidian:
@@ -134,7 +138,7 @@ jobs:
           ls -R ./dist
           mv ./dist/obsidian-any-menu/dist-pinyin/main.js ./dist/obsidian-any-menu/main-pinyin.js # 防止命名冲突
 
-      # release 到正式版 tag
+      # release
       - name: Create Release
         if: github.ref_type == 'tag'
         uses: ncipollo/release-action@v1
