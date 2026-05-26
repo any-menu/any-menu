@@ -7,10 +7,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      tag:
-        # description: '手动指定版本号 (补跑用)'
-        required: false
 
 jobs:
   build-obsidian:
