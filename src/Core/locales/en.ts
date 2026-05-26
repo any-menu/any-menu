@@ -47,7 +47,7 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Pinyin index2': 'Is it the case that the Chinese "key" is automatically constructed with a pinyin index?',
   'Pinyin first index': 'Pinyin first index',
   'Pinyin first index2': 'Is it the case that the Chinese "key" is automatically constructed into an index using the initial letters of pinyin?\n\
-(Note: The Chinese pinyin library can be quite large, so the default version does not come with the pinyin index function. If you need to use it, please manually download the pinyin version from the Github repository.)',
+(Note: The Chinese pinyin library can be quite large, so the plugin version does not come with the pinyin index function by default. If you need to use it, please manually download the pinyin version from the Github repository)',
 
   'Other config': 'Other config',
   'Note path': 'Note path',

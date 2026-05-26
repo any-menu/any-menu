@@ -1247,6 +1247,7 @@ table.dataview-table .btn {
   padding: 12px;
   margin: 10px 2px;
   border-radius: 12px;
+  background: none;
 }
 .tab-root .setting-item .setting-item-info {
   display: flex;
@@ -1326,7 +1327,9 @@ table.dataview-table .btn {
   display: flex;
   align-items: center;
   margin: 0;
+  padding: 0;
   cursor: pointer;
+  font-size: 22px;
 }
 .tab-root .setting-item .setting-item-heading .collapse-btn {
   display: inline-flex;
@@ -1346,7 +1349,7 @@ table.dataview-table .btn {
   margin: 0;
   border: solid var(--ab-tab-root-tx-color);
   border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
+  transform: rotate(45deg) translate(-1px, 0px);
 }
 .tab-root .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
   transform: rotate(-45deg) translate(-2px, 0px);
