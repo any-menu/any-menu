@@ -761,8 +761,37 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     tab_content.innerHTML = ''
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
+    // --------- 字典配置 ----------------------
     new SettingItem(tab_content)
       .setHeading(t('Dict config'))
+
+    new SettingItem(tab_content)
+      .setName(t('Dict path'))
+      .setDesc(t('Dict path2'))
+      .addText(text => text
+        .setValue(global_setting.config.dict_paths)
+        .onChange(async (value) => {
+          global_setting.config.dict_paths = value
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Dict online source'))
+      .setDesc(t('Dict online source2'))
+      .addDropdown(dropdown => {
+        dropdown.addOption('gitee', 'Gitee')
+        dropdown.addOption('github', 'GitHub')
+        dropdown.setValue(global_setting.config.dict_online_source)
+        dropdown.onChange(async (value) => {
+          global_setting.config.dict_online_source = value as 'gitee' | 'github'
+          await global_setting.api.saveConfig()
+        })
+      })
+
+    // --------- 字典索引配置 -------------------
+    new SettingItem(tab_content)
+      .setHeading(t('Dict index config'))
 
     new SettingItem(tab_content)
       .setName(t('Pinyin index'))
@@ -787,33 +816,34 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
       )
 
     new SettingItem(tab_content)
-      .setName(t('Dict paths'))
-      .setDesc(t('Dict paths2'))
-      .addText(text => text
-        .setValue(global_setting.config.dict_paths)
-        .onChange(async (value) => {
-          global_setting.config.dict_paths = value
-          await global_setting.api.saveConfig()
-        })
-      )
-
-    new SettingItem(tab_content)
-      .setName(t('Dict online source'))
-      .setDesc(t('Dict online source2'))
+      .setName(t('Index engine'))
+      .setDesc(t('Index engine2'))
       .addDropdown(dropdown => {
-        dropdown.addOption('gitee', 'Gitee')
-        dropdown.addOption('github', 'GitHub')
-        dropdown.setValue(global_setting.config.dict_online_source)
+        dropdown.addOption('reverse', 'Reverse')
+        dropdown.addOption('trie', 'Trie')
+        dropdown.setValue(global_setting.config.search_engine)
         dropdown.onChange(async (value) => {
-          global_setting.config.dict_online_source = value as 'gitee' | 'github'
+          global_setting.config.search_engine = value as 'reverse' | 'trie'
           await global_setting.api.saveConfig()
         })
       })
 
+    // --------- 其他配置 ----------------------
     // new SettingItem(tab_content)
     //   .setDivider()
     new SettingItem(tab_content)
       .setHeading(t('Other config'))
+
+    new SettingItem(tab_content)
+      .setName(t('Note path'))
+      .setDesc(t('Note path2'))
+      .addText(text => text
+        .setValue(global_setting.config.note_paths)
+        .onChange(async (value) => {
+          global_setting.config.note_paths = value
+          await global_setting.api.saveConfig()
+        })
+      )
 
     new SettingItem(tab_content)
       .setName(t('Debug mode'))
@@ -836,6 +866,57 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
           await global_setting.api.saveConfig()
         })
       )
+
+    new SettingItem(tab_content)
+      .setName(t('Server port'))
+      .setDesc(t('Server port2'))
+      .addText(text => text
+        .setType('number')
+        .setValue(String(global_setting.config.server_port))
+        .onChange(async (value, el) => {
+          const port = Number(value)
+          if (Number.isNaN(port) || port <= 0 || port >= 65536) {
+            el.value = String(global_setting.config.server_port)
+            console.error('Invalid port number ' + port + ', reset to', global_setting.config.server_port)
+            global_setting.api.notify('Invalid port number: ' + port)
+            return
+          }
+          global_setting.config.server_port = port
+          await global_setting.api.saveConfig()
+        })
+      )
+
+
+    // --------- App配置 ----------------------
+    if (global_setting.platform === 'app') {
+      new SettingItem(tab_content)
+        .setHeading(t('App config'))
+
+      new SettingItem(tab_content)
+        .setName(t('Send text method'))
+        .setDesc(t('Send text method2'))
+        .addDropdown(dropdown => {
+          dropdown.addOption('clipboard', 'Clipboard')
+          dropdown.addOption('keyboard', 'Keyboard')
+          dropdown.addOption('auto', 'Auto')
+          dropdown.setValue(global_setting.config.send_text_method)
+          dropdown.onChange(async (value) => {
+            global_setting.config.send_text_method = value as 'clipboard' | 'keyboard' | 'auto'
+            await global_setting.api.saveConfig()
+          })
+        })
+
+      new SettingItem(tab_content)
+        .setName(t('Is use ad shortcut'))
+        .setDesc(t('Is use ad shortcut2'))
+        .addToggle(toggle => toggle
+          .setValue(global_setting.config.app_ad_shortcut)
+          .onChange(async (value) => {
+            global_setting.config.app_ad_shortcut = value
+            await global_setting.api.saveConfig()
+          })
+        )
+    }
   }
 }
 

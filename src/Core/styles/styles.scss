@@ -477,6 +477,13 @@ table.dataview-table {
   .setting-item-control {
     margin-top: 4px;
 
+    // 移除 number input 的默认上下箭头
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
     .setting-item-text {
       padding: 4px 8px;
       border-radius: 6px;

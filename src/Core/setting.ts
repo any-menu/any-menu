@@ -10,6 +10,8 @@ export const global_setting: {
    *   输出文本时需要先隐藏窗口 -> 等待聚焦转移和光标归位回原位 -> 再输出文本
    * - 不聚焦使用: 需要阻止任何点击事件避免聚焦转移
    *   可以在聚焦不改变的情况下直接输出文本，少了等待理论上会更快，而且能在窗口上多次操作和多次输出
+   * 
+   * @deprecated 目前不再使用该选项。而是使用主动召唤则抢焦点，选中文本自动弹出则不抢焦点的方式。
    */
   focusStrategy: true | false,
   // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
@@ -52,6 +54,12 @@ export const global_setting: {
     // 用于实现同设备上不同环境的通信。
     // 需要保证本地应用、Obsidian 插件、浏览器扩展等不同环境的端口一致，且不被占用。
     server_port: number,
+    // 在线词库来源 'gitee'|'github'
+    dict_online_source: 'gitee'|'github',
+    // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
+    dict_paths: string,
+    // 记录笔记的基础路径
+    note_paths: string,
     /** 发送文本的方式。
      * 'keyboard'|'clipboard'|'auto'
      * enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
@@ -62,15 +70,10 @@ export const global_setting: {
      * - 受自动补全和缩进影响: 如输出emoji中，由于经常包含括号和双引号等符号，可能被自动补全成一对。又如自动换行，可能会被自动缩进，导致重复缩进
      * 仅当你清楚以上情况，总是输出短语时，才建议使用 keyboard
      * 
+     * TODO: auto 方式应该还需要判断是否有某些特殊字符，来决定是否使用 keyboard，因为有些环境（如微信）即使是短文本也不适合用 keyboard 方式。
      * TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
      */
     send_text_method: 'keyboard'|'clipboard'|'auto',
-    // 在线词库来源 'gitee'|'github'
-    dict_online_source: 'gitee'|'github',
-    // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
-    dict_paths: string,
-    // 记录笔记的基础路径
-    note_paths: string,
     // app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
     app_black_list: string[],
     // app是否使用高级快捷键，TODO 未起作用
@@ -176,10 +179,10 @@ export const global_setting: {
     search_limit: 500,
 
     server_port: 41667,
-    send_text_method: 'clipboard',
     dict_online_source: 'github',
     dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
     note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    send_text_method: 'clipboard',
     app_black_list: ['- Obsidian '],
     app_ad_shortcut: true,
 
