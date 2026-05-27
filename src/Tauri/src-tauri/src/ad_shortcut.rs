@@ -819,6 +819,11 @@ fn layer_caps(
         // 需要解决: 最好是能在通知前端并弹出新窗口后，依然能继续监听到事件。从而捕获在那之后的各种按键。包括 Caps 松开
         // 
         // 在解决这个bug之前，这里会强制松开Caps层
+        EventType::KeyPress(Key::KeyQ) => {
+            app_handle.emit("active-window-toggle", 2).unwrap();
+            state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
+            return HandlerResult::Block
+        },
         EventType::KeyPress(Key::KeyN) => {
             app_handle.emit("active-window-toggle", 2).unwrap();
             state.caps_active.set(false); // 在解决这个bug之前，这里会强制松开Caps层
