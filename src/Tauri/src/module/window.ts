@@ -8,7 +8,7 @@
 import {
   getCurrentWindow, cursorPosition, PhysicalPosition, Window as TauriWindow
 } from '@tauri-apps/api/window'
-import { AMPanel } from '../../../Core/panel/'
+import { AMPanel, global_el } from '../../../Core/panel/'
 import { global_setting } from '../../../Core/setting'
 
 import { setupAppChangeListener } from './focus'
@@ -27,7 +27,7 @@ export const global_state: {
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
-  // initAutoHide2()
+  initAutoHide2()
   // initClickThroughBehavior()
 })
 
@@ -85,14 +85,14 @@ function initAutoHide() {
 }
 
 let intervalId: ReturnType<typeof setInterval> | null = null // 定时器ID
-let currentInterval = 33 // 当前轮询间隔，初始为33ms (~30fps)，根据状态动态调整
+let currentInterval = 66 // 当前轮询间隔，初始为66ms (~15fps)，根据状态动态调整
   // 例如稳定时降频省资源，状态变化时立即恢复高频
 let isIgnoring: boolean | null = null; // 是否忽略鼠标中 (是否点击穿透中)
 // 缓存窗口位置，避免每帧都 IPC 查询
 let cachedWinX = 0
 let cachedWinY = 0
 // let lastOverContent = false
-// let unchangedCount = 0
+// let unchangedCount = 0 // 鼠标长期在同一个元素上时的计数器，大了后会减少刷新频率
 // let unlistenMove: (() => void) | null = null
 
 /** 自动隐藏功能、鼠标悬浮穿透功能
@@ -156,9 +156,15 @@ function initAutoHide2() {
 
     async function poll() {
       try {
-        const curPos = await cursorPosition()
-        const dpr = window.devicePixelRatio || 1
+        // 面板不可见时 (如主动隐藏后) 自动解除穿透模式检测
+        const panel_el = global_el.amPanel?.el
+        if (!panel_el || panel_el.classList.contains('am-hide')) {
+          exit_cursor_ignore_state()
+        }
 
+        // 位置坐标
+        const curPos = await cursorPosition() // 鼠标位置
+        const dpr = window.devicePixelRatio || 1
         // 屏幕物理坐标 → 窗口逻辑坐标
         const logicalX = (curPos.x - cachedWinX) / dpr
         const logicalY = (curPos.y - cachedWinY) / dpr
