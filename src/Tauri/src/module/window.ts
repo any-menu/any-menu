@@ -165,8 +165,7 @@ function initAutoHide2() {
         // 位置坐标
         const curPos = await cursorPosition() // 鼠标位置
         const dpr = window.devicePixelRatio || 1
-        // 屏幕物理坐标 → 窗口逻辑坐标
-        const logicalX = (curPos.x - cachedWinX) / dpr
+        const logicalX = (curPos.x - cachedWinX) / dpr // 屏幕物理坐标 → 窗口逻辑坐标
         const logicalY = (curPos.y - cachedWinY) / dpr
 
         const el = document.elementFromPoint(logicalX, logicalY)
@@ -176,24 +175,25 @@ function initAutoHide2() {
           el === document.body                // <body>
         );
 
-        if (!isTransparent && isIgnoring) {
+        if (!isTransparent) {
           exit_cursor_ignore_state()
         } else if (isTransparent && !isIgnoring) { // 一般不会
           into_cursor_ignore_state()
         }
+        // else // isTransparent && isIgnoring，忽略，等待下轮循环
 
         // 自适应轮询频率：稳定时降频省资源，状态变化时立即恢复高频
         // if (overContent === lastOverContent) {
         //   unchangedCount++
-        //   const target = unchangedCount > 30 ? 500 : 33
+        //   const target = unchangedCount > 30 ? 500 : 66
         //   if (target !== currentInterval) {
         //     currentInterval = target
         //     restartInterval()
         //   }
         // } else {
         //   unchangedCount = 0
-        //   if (currentInterval !== 33) {
-        //     currentInterval = 33
+        //   if (currentInterval !== 66) {
+        //     currentInterval = 66
         //     restartInterval()
         //   }
         // }
