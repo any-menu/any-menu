@@ -1,4 +1,8 @@
 @import url("../../Core/styles/styles.css");
+html, body, #app {
+  background: transparent !important;
+}
+
 #main[data-position-mode=center] .am-panel {
   height: 600px;
 }

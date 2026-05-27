@@ -1,5 +1,9 @@
 @import url('../../Core/styles/styles.css');
 
+html, body, #app {
+    background: transparent !important;
+}
+
 #main {
     // &[data-position-mode="cursor"] {}
     &[data-position-mode="center"] {

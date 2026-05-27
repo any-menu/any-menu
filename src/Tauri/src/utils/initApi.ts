@@ -1,7 +1,7 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
 import { global_setting } from '../../../Core/setting'
 import { global_el } from '../../../Core/panel'
-import { hideWindow } from '../module/window'
+import { hideWindow, showWindow } from '../module/window'
 import { toml_parse } from '../../../Core/panel/contextmenu/demo'
 
 // 注意api/window里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
@@ -330,6 +330,10 @@ export function initApi() {
   //     };
   //   }
   // }
+
+  // app 专用 API
+  global_setting.other.app_show = showWindow
+  global_setting.other.app_hide = hideWindow
 }
 
 // 这样的toml配置会有注释，如果用 global_setting.config 转toml则没注释

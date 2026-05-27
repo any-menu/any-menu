@@ -9,6 +9,7 @@ import {
   getCurrentWindow, cursorPosition, PhysicalPosition, Window as TauriWindow
 } from '@tauri-apps/api/window'
 import { AMPanel } from '../../../Core/panel/'
+import { global_setting } from '../../../Core/setting'
 
 import { setupAppChangeListener } from './focus'
 setupAppChangeListener()
@@ -21,28 +22,12 @@ export const global_state: {
   hideTimeout:  null
 }
 
-/** 窗口切换是否显示 */
-export async function toggleWindow(panel_list?: string[]) {  
-  try {
-    const appWindow = getCurrentWindow()
-    // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
-    const isFocused = await appWindow.isFocused() // 窗口是否聚焦
-    
-    if (isFocused) {
-      await hideWindow()
-    } else {
-      await showWindow('cursor', panel_list)
-    }
-  } catch (error) {
-    console.error('Window show fail:', error)
-  }
-}
-
 // #region 窗口隐藏相关
 
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
   initAutoHide()
+  // initAutoHide2()
   // initClickThroughBehavior()
 })
 
@@ -135,6 +120,35 @@ window.addEventListener("DOMContentLoaded", () => {
   // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
 }*/
 
+// import { invoke } from '@tauri-apps/api/core'
+
+// let lastIgnore: boolean | null = null;
+// function initAutoHide2() {
+//   // Alpha 区域鼠标穿透
+//   // 前端监听鼠标移动，判断当前像素是否透明
+
+//   /// TODO 可以再优化节流
+//   document.addEventListener('mousemove', async (e) => {
+//     const el = document.elementFromPoint(e.clientX, e.clientY);
+
+//     // (二选一) 判断方法一 (通过设置透明区域)    
+//     // const isTransparent = el === null;
+  
+//     // (二选一) 判断方法二 (假如的你透明区域一定是html/body)
+//     const isTransparent = (
+//       el === null ||
+//       el === document.documentElement ||  // <html>
+//       el === document.body                // <body>
+//     );
+
+//     console.log('是否透明:', isTransparent, '元素:', el)
+//     if (isTransparent === lastIgnore) return; // 状态没变就不调用，避免频繁 IPC
+//     lastIgnore = isTransparent;
+
+//     await invoke('set_ignore_cursor', { ignore: isTransparent });
+//   });
+// }
+
 /** 自动隐藏功能、鼠标穿透功能 */
 function initAutoHide() {
   // 监听窗口失焦事件
@@ -186,27 +200,23 @@ function initAutoHide() {
 
 // #endregion
 
-import { global_setting } from '../../../Core/setting'
-
-// /** 缓存菜单尺寸 (仅一级菜单)
-//  * 
-//  * 弃用: 目前的面板通过包含的子面板去计算，而非固定的
-//  */
-// let menuSize = { width: -1, height: -1 }
-// async function cacheMenuSize() {
-//   await new Promise(resolve => setTimeout(resolve, 500)) // 延时等待渲染完成
-//   const el_search = document.querySelector('#main>.am-search');
-//   const el_menu = document.querySelector('#main>.am-context-menu');
-// 
-//   menuSize.height = (el_search?.clientHeight ?? 0) + (el_menu?.clientHeight ?? 0)
-//   menuSize.width = Math.max(el_search?.clientWidth ?? 0, el_menu?.clientWidth ?? 0)
-//   // console.log('菜单尺寸:', menuSize);
-// }
-
-if (global_setting.platform === 'app') {
-  global_setting.other.app_show = showWindow
-  global_setting.other.app_hide = hideWindow
+/** 窗口切换是否显示 */
+export async function toggleWindow(panel_list?: string[]) {  
+  try {
+    const appWindow = getCurrentWindow()
+    // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
+    const isFocused = await appWindow.isFocused() // 窗口是否聚焦
+    
+    if (isFocused) {
+      await hideWindow()
+    } else {
+      await showWindow('cursor', panel_list)
+    }
+  } catch (error) {
+    console.error('Window show fail:', error)
+  }
 }
+
 /**
  * 显示窗口 (对标 Panel 的 show 方法)
  * 
@@ -219,7 +229,7 @@ if (global_setting.platform === 'app') {
  * @param is_focus 同 Panel::show 的参数
  * @param is_reverse 同 Panel::show 的参数
  */
-async function showWindow(
+export async function showWindow(
   pos?: 'cursor'|'center'|{x: number, y: number},
   panel_list?: string[],
   is_focus: boolean = true,
