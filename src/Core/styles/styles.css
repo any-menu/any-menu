@@ -723,8 +723,10 @@ div.editable-textarea-textarea {
 }
 
 .ab-contextmenu-tooltip {
-  position: fixed;
-  z-index: 9999;
+  position: absolute;
+  top: 1px;
+  left: calc(100% + 1px);
+  z-index: 900;
   background: var(--background-secondary);
   padding: 8px;
   border-radius: 4px;
