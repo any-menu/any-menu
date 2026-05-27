@@ -22,7 +22,7 @@ export const global_state: {
   hideTimeout:  null
 }
 
-// #region 窗口隐藏相关
+// #region 窗口自动隐藏 / 鼠标穿透相关
 
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
@@ -31,13 +31,191 @@ window.addEventListener("DOMContentLoaded", () => {
   // initClickThroughBehavior()
 })
 
-///** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透
-// * @deprecated 废弃
-// *   替代方案: 为 Core 模块实现 app_hide，由 Panel 模块控制，Paenl 穿透事件时进行窗口隐藏
-// *   废弃原因: 这里只能检测一个 "矩形减矩形" (#main 减 .am-panel) 的区域
-// *     而交于 Panel 检测区域更灵活: "矩形减矩形" 加上 .am-panel 中没有并子面板填充的地方，可检测更复杂的区域
-// */
-/*function initClickThroughBehavior() {
+/** 自动隐藏功能、鼠标点击穿透功能
+ * 
+ * - 窗口级别 (判断鼠标是否在窗口内)
+ * - 聚焦级别 (只通过聚焦判断，不通过鼠标位置判断)
+ */
+function initAutoHide() {
+  // 监听窗口焦点切换事件
+  const appWindow = getCurrentWindow()
+  appWindow.onFocusChanged(({ payload: focused }) => {
+    // 失焦，则隐藏窗口
+    if (!focused) {
+      global_state.hideTimeout = window.setTimeout(() => {
+        hideWindow()
+      }, 1)
+    }
+    // 重新获得焦点，则清除计数器
+    else if (focused && global_state.hideTimeout) {
+      clearTimeout(global_state.hideTimeout)
+      global_state.hideTimeout = null
+    }
+  })
+
+  // // 监听鼠标点击事件（检测点击外部）
+  // document.addEventListener('click', (event) => {
+  //   // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+  //   event.stopPropagation()
+  // })
+
+  // // 监听全局鼠标事件（通过窗口边界检测）
+  // document.addEventListener('mouseleave', () => {
+  //   if (!global_state.isWindowVisible) return
+  //   // 鼠标离开窗口区域时延迟隐藏
+  //   global_state.hideTimeout = window.setTimeout(() => {
+  //     hideWindow()
+  //   }, 200) // 给用户一点时间重新进入窗口
+  // })
+
+  // // 鼠标重新进入窗口时取消隐藏
+  // document.addEventListener('mouseenter', () => {
+  //   if (global_state.hideTimeout) {
+  //     clearTimeout(global_state.hideTimeout)
+  //     global_state.hideTimeout = null
+  //   }
+  // })
+
+  // ESC键隐藏窗口
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideWindow()
+    }
+  })
+}
+
+let intervalId: ReturnType<typeof setInterval> | null = null // 定时器ID
+let currentInterval = 33 // 当前轮询间隔，初始为33ms (~30fps)，根据状态动态调整
+  // 例如稳定时降频省资源，状态变化时立即恢复高频
+let isIgnoring: boolean | null = null; // 是否忽略鼠标中 (是否点击穿透中)
+// 缓存窗口位置，避免每帧都 IPC 查询
+let cachedWinX = 0
+let cachedWinY = 0
+// let lastOverContent = false
+// let unchangedCount = 0
+// let unlistenMove: (() => void) | null = null
+
+/** 自动隐藏功能、鼠标悬浮穿透功能
+ * 
+ * - 元素级别 (判断鼠标是否脱离某个div)
+ * - 悬浮级别 (通过鼠标位置判断)
+ * 
+ * 状态机:
+ * 
+ * - 不穿透状态: 通过 mousemove 判断鼠标是否脱离指定 div / 脱离非透明区域
+ * - 穿透状态: 无法再使用 mousemove 检测到鼠标行为。通过 tauri api `cursorPosition` 判断鼠标是否重新进入
+ * - 默认穿透状态 (面板出现位置不一定是鼠标所在位置)
+ * 
+ * TODO 当遇到置顶、窗口隐藏的行为时，可能需要将状态修改为非穿透状态
+ */
+function initAutoHide2() {
+  // Alpha 区域鼠标穿透
+  // 前端监听鼠标移动，判断当前像素是否透明
+
+  /// TODO 可以再优化节流
+  document.addEventListener('mousemove', async (e) => {
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+
+    // (二选一) 判断方法一 (通过设置透明区域)    
+    // const isTransparent = el === null;
+  
+    // (二选一) 判断方法二 (假如的你透明区域一定是html/body)
+    const isTransparent = ( // 是否为透明区域
+      el === null ||
+      el === document.documentElement ||  // <html>
+      el === document.body                // <body>
+    );
+
+    if (isTransparent === isIgnoring) return; // 状态没变就不调用，避免频繁 IPC
+    isIgnoring = isTransparent;
+    if (isTransparent) into_cursor_ignore_state()
+  });
+
+  // 获取窗口位置
+  async function refreshWindowPos(is_clear: boolean = false) {
+    if (is_clear) {
+      cachedWinX = 0
+      cachedWinY = 0
+      return
+    }
+
+    const appWindow = getCurrentWindow()
+    const pos = await appWindow.outerPosition()
+    cachedWinX = pos.x
+    cachedWinY = pos.y
+  }
+
+  // 进入穿透状态
+  async function into_cursor_ignore_state() {
+    const appWindow = getCurrentWindow()
+    appWindow.setIgnoreCursorEvents(true); refreshWindowPos(); console.log('进入穿透模式');
+    isIgnoring = true;
+
+    if (intervalId !== null) clearInterval(intervalId)
+    intervalId = setInterval(poll, currentInterval)
+
+    async function poll() {
+      try {
+        const curPos = await cursorPosition()
+        const dpr = window.devicePixelRatio || 1
+
+        // 屏幕物理坐标 → 窗口逻辑坐标
+        const logicalX = (curPos.x - cachedWinX) / dpr
+        const logicalY = (curPos.y - cachedWinY) / dpr
+
+        const el = document.elementFromPoint(logicalX, logicalY)
+        const isTransparent = ( // 是否为透明区域
+          el === null ||
+          el === document.documentElement ||  // <html>
+          el === document.body                // <body>
+        );
+
+        if (!isTransparent && isIgnoring) {
+          exit_cursor_ignore_state()
+        } else if (isTransparent && !isIgnoring) { // 一般不会
+          into_cursor_ignore_state()
+        }
+
+        // 自适应轮询频率：稳定时降频省资源，状态变化时立即恢复高频
+        // if (overContent === lastOverContent) {
+        //   unchangedCount++
+        //   const target = unchangedCount > 30 ? 500 : 33
+        //   if (target !== currentInterval) {
+        //     currentInterval = target
+        //     restartInterval()
+        //   }
+        // } else {
+        //   unchangedCount = 0
+        //   if (currentInterval !== 33) {
+        //     currentInterval = 33
+        //     restartInterval()
+        //   }
+        // }
+        // lastOverContent = overContent
+      } catch {
+        // 窗口销毁 / 坐标不可用时静默忽略
+      }
+    }
+  }
+
+  // 退出穿透状态
+  async function exit_cursor_ignore_state() {
+    const appWindow = getCurrentWindow()
+    appWindow.setIgnoreCursorEvents(false); refreshWindowPos(); console.log('退出穿透模式');
+    isIgnoring = false;
+
+    if (intervalId !== null) clearInterval(intervalId)
+    intervalId = null
+  }
+}
+
+/*/** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透
+ * @deprecated 废弃
+ *   替代方案: 为 Core 模块实现 app_hide，由 Panel 模块控制，Paenl 穿透事件时进行窗口隐藏
+ *   废弃原因: 这里只能检测一个 "矩形减矩形" (#main 减 .am-panel) 的区域
+ *     而交于 Panel 检测区域更灵活: "矩形减矩形" 加上 .am-panel 中没有并子面板填充的地方，可检测更复杂的区域
+ *
+function _initClickThroughBehavior() {
   const appWindow = getCurrentWindow()
   const mainElement = document.querySelector('#main')
 
@@ -119,84 +297,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
 }*/
-
-// import { invoke } from '@tauri-apps/api/core'
-
-// let lastIgnore: boolean | null = null;
-// function initAutoHide2() {
-//   // Alpha 区域鼠标穿透
-//   // 前端监听鼠标移动，判断当前像素是否透明
-
-//   /// TODO 可以再优化节流
-//   document.addEventListener('mousemove', async (e) => {
-//     const el = document.elementFromPoint(e.clientX, e.clientY);
-
-//     // (二选一) 判断方法一 (通过设置透明区域)    
-//     // const isTransparent = el === null;
-  
-//     // (二选一) 判断方法二 (假如的你透明区域一定是html/body)
-//     const isTransparent = (
-//       el === null ||
-//       el === document.documentElement ||  // <html>
-//       el === document.body                // <body>
-//     );
-
-//     console.log('是否透明:', isTransparent, '元素:', el)
-//     if (isTransparent === lastIgnore) return; // 状态没变就不调用，避免频繁 IPC
-//     lastIgnore = isTransparent;
-
-//     await invoke('set_ignore_cursor', { ignore: isTransparent });
-//   });
-// }
-
-/** 自动隐藏功能、鼠标穿透功能 */
-function initAutoHide() {
-  // 监听窗口失焦事件
-  const appWindow = getCurrentWindow()
-  appWindow.onFocusChanged(({ payload: focused }) => {
-    // 失焦
-    if (!focused) {
-      global_state.hideTimeout = window.setTimeout(() => {
-        hideWindow() // 该行可临时注释以进行调试
-      }, 1)
-    }
-    // 重新获得焦点
-    else if (focused && global_state.hideTimeout) {
-      clearTimeout(global_state.hideTimeout)
-      global_state.hideTimeout = null
-    }
-  })
-
-  // // 监听鼠标点击事件（检测点击外部）
-  // document.addEventListener('click', (event) => {
-  //   // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
-  //   event.stopPropagation()
-  // })
-
-  // // 监听全局鼠标事件（通过窗口边界检测）
-  // document.addEventListener('mouseleave', () => {
-  //   if (!global_state.isWindowVisible) return
-  //   // 鼠标离开窗口区域时延迟隐藏
-  //   global_state.hideTimeout = window.setTimeout(() => {
-  //     hideWindow()
-  //   }, 200) // 给用户一点时间重新进入窗口
-  // })
-
-  // // 鼠标重新进入窗口时取消隐藏
-  // document.addEventListener('mouseenter', () => {
-  //   if (global_state.hideTimeout) {
-  //     clearTimeout(global_state.hideTimeout)
-  //     global_state.hideTimeout = null
-  //   }
-  // })
-
-  // ESC键隐藏窗口
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      hideWindow()
-    }
-  })
-}
 
 // #endregion
 
