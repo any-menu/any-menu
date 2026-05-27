@@ -729,7 +729,8 @@ div.editable-textarea-textarea {
   z-index: 900;
   background: var(--background-secondary);
   padding: 8px;
-  border-radius: 4px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 10px;
   box-shadow: var(--shadow-elevation-high);
   max-width: 400px;
   min-width: 200px;
