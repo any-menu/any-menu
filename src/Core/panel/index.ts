@@ -367,9 +367,16 @@ export class AMPanel {
 
   // ---------- 一些 static 方法 ----------
 
-  /// 失焦隐藏 & 点击穿透
-  /// 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
-  static visual_listener_mousedown = (ev: MouseEvent) => {
+  /** 失焦隐藏 & 点击穿透
+   * 
+   * 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
+   * 
+   * 区别于悬浮穿透，点击穿透要先点击一下隐藏，再点才能穿透
+   * 
+   * 在任意环境中，面板都要隐藏
+   * 而在 App 环境中，还要隐藏窗口
+   */
+  static visual_listener_mousedown (ev: MouseEvent) {
     if (!global_el.amPanel?.el) return
     if (!(ev.target instanceof Element)) return
 
@@ -383,14 +390,14 @@ export class AMPanel {
     else {
       // 前者不包括 .am-panel (允许不规则区域)
       if (ev.target.matches('.am-panel *')) return
-      this.hide()
+      AMPanel.hide()
     }
   }
   /// ESC隐藏
-  static visual_listener_keydown = (ev: KeyboardEvent) => {
+  static visual_listener_keydown (ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       ev.preventDefault()
-      this.hide()
+      AMPanel.hide()
       return
     }
   }

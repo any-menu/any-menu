@@ -146,6 +146,15 @@ html, body, #main {
 }
 
 /* -------------------------------- 面板置顶按钮 ------------------------- */
+// 仅在 App 环境中，允许通过按钮拖动窗口
+#main>.am-panel {
+  .am-pin, .windows-pin {
+    &, svg {
+      -webkit-app-region: drag; // 允许在桌面应用环境中，使用按钮拖动窗口
+    }
+  }
+}
+
 .am-pin {
   position: absolute;
   top: 5px;
@@ -167,10 +176,6 @@ html, body, #main {
   background: transparent;
   color: var(--am-text-color);
   opacity: 0.7;
-
-  &, svg {
-    -webkit-app-region: drag; // 允许在桌面应用环境中，使用按钮拖动窗口
-  }
 
   &:hover {
     background: rgba(0, 0, 0, 0.2);

@@ -112,11 +112,14 @@
 
 // 可视化效果渲染
 .ab-contextmenu-tooltip {
-  position: fixed;
-  z-index: 9999;
+  position: absolute;
+  top: 1px;
+  left: calc(100% + 1px);
+  z-index: 900;
   background: var(--background-secondary);
   padding: 8px;
-  border-radius: 4px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 10px;
   box-shadow: var(--shadow-elevation-high);
   max-width: 400px;
   min-width: 200px;

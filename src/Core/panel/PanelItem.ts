@@ -180,13 +180,21 @@ export function init_item(
     let tooltip: HTMLElement|undefined = undefined
     li.onmouseenter = () => {
       if (item.detail == "command_ob") return // 命令flag, 不显示
+
+      // 先清空 li 中可能存在的 tooltip，避免重复创建和内存泄露
+      const existingTooltip = li.querySelector('.ab-contextmenu-tooltip')
+      if (existingTooltip) {
+        li.removeChild(existingTooltip)
+      }
+
       tooltip = document.createElement('div'); li.appendChild(tooltip);
       tooltip.classList.add('ab-contextmenu-tooltip')
-      const domRect = li.getBoundingClientRect()
-      tooltip.setAttribute('style', `
-        top: ${domRect.top + 1}px;
-        left: ${domRect.right + 1}px;
-      `)
+      // 旧版写法，position: fixed。现在改为了absolute 定位
+      // const domRect = li.getBoundingClientRect()
+      // tooltip.setAttribute('style', `
+      //   top: ${domRect.top + 1}px;
+      //   left: ${domRect.right + 1}px;
+      // `)
 
       if (item.detail == "md") { // 一个flag, 表示渲染显示
         if (typeof item.callback == "string") {

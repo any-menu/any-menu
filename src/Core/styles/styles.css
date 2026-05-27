@@ -723,8 +723,10 @@ div.editable-textarea-textarea {
 }
 
 .ab-contextmenu-tooltip {
-  position: fixed;
-  z-index: 9999;
+  position: absolute;
+  top: 1px;
+  left: calc(100% + 1px);
+  z-index: 900;
   background: var(--background-secondary);
   padding: 8px;
   border-radius: 4px;
@@ -979,6 +981,10 @@ html, body, #main {
 }
 
 /* -------------------------------- 面板置顶按钮 ------------------------- */
+#main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
+  -webkit-app-region: drag;
+}
+
 .am-pin {
   position: absolute;
   top: 5px;
@@ -999,9 +1005,6 @@ html, body, #main {
   background: transparent;
   color: var(--am-text-color);
   opacity: 0.7;
-}
-.am-pin, .am-pin svg, .windows-pin, .windows-pin svg {
-  -webkit-app-region: drag;
 }
 .am-pin:hover, .windows-pin:hover {
   background: rgba(0, 0, 0, 0.2);

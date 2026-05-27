@@ -1,13 +1,34 @@
 <div align="center" style="margin-bottom: 20px">
-  <img width="35%" src="./docs/assets/icon.png">
+  <img width="128" src="./docs/assets/icon.png">
 </div>
 
-[中文](./README.md) | [English](./README.en.md)
+<h1 align="center">AnyMenu</h1>
+
+<p align="center">
+  <strong>一款强大的输入法助手/编辑器助手</strong><br>
+  <sub>专注于文本编辑环境的、跨平台、轻量、快速、可自定义的输入法伴侣/编辑器编辑伴侣</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/any-menu/any-menu/releases/latest">
+    <img src="https://img.shields.io/github/v/release/any-menu/any-menu?style=flat-square&color=DD2476&label=%E7%89%88%E6%9C%AC">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/%E5%8D%8F%E8%AE%AE-AGPL--3.0-3b82f6?style=flat-square" alt="AGPL-3.0">
+  </a>
+  <a href="https://github.com/any-block/any-block/releases">
+    <img src="https://img.shields.io/github/downloads/any-menu/any-menu/total?style=flat-square&color=success&label=Github 下载量">
+  </a>
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fany-menu.json&style=flat-square&label=Obsidain 下载量">
+  <br>
+  <img src="https://img.shields.io/badge/Tauri-v2-FFC131?style=flat-square" alt="Tauri v2">
+  <img src="https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-Windows%2010%20%2F%2011%20%2F%20Obsidian-0078D6?style=flat-square">
+  <br>
+  <a href="./README.zh.md">中文</a> | <a href="./README.md">English</a>
+</p>
 
 > [!WARNING]
 > 还在开发完善中，目前为尝鲜版
-
-# AnyMenu —— 一款强大的输入法助手/编辑器助手
 
 ## 什么是AnyMenu
 
@@ -158,7 +179,11 @@ NEW
   - [ ] Obsidian 版本支持通信模式
   - [x] Ob 版修复无法搜索的问题 (似乎和拼音有关)
   - [x] Ob 版修复 Emoji 插件失效问题 (没复现了)
+  - [ ] 专用选项: 当选中并转化输出时，自动将输出内容再次选中，以便连续转换
+  - [ ] Obsidian 的高级快捷键 (目前设计的是 Ctrl/Alt 的快速单点)
 - [ ] 完成 Color/Bg 插件
+  - [ ] 需要先完成单按钮的多行为
+- [ ] 插件自定义的面板支持分离独立和固定 (Obsidian 和 App 版本的实现不同)
 
 OLD
 
