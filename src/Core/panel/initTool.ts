@@ -68,6 +68,7 @@ export async function initMenuData() {
   await fill_by_folder(global_setting.config.dict_paths)
 
   async function fill_by_folder(folder_path: string) {
+    // 会遍历里面的文件执行 fiil_by_file 的 (TODO 递归执行)
     try {
       const files: string[] = await global_setting.api.readFolder(folder_path)
       if (!files || files.length === 0) throw new Error("No files found")
@@ -141,38 +142,6 @@ export async function initMenuData() {
     }
   }
 
-  async function fill_by_toml(file_content: string, file_name_short: string) {
-    // 解析
-    let menu_items: PanelItem[] = []
-    try {
-      menu_items = toml_parse(file_content)["categories"] as PanelItem[]
-    } catch (error) {
-      console.error("Parse error:", error)
-      return
-    }
-
-    // 搜索建议部分
-    const records: {key: string, value: string, name?: string}[] = []
-    function recursive(items: PanelItem[]) {
-      for (const item of items) {
-        if (item.callback && typeof item.callback === 'string') {
-          records.push({ key: item.key ?? item.label, value: item.callback, ...(item.key ? {name: item.key} : {}) })
-        }
-        if (item.children) recursive(item.children)
-      }
-    }
-    if (menu_items) recursive(menu_items)
-    SEARCH_DB.add_data_by_json(records, file_name_short)
-
-    // 多级菜单部分
-    myContextMenu.append_data([
-      {
-        label: file_name_short,
-        children: menu_items
-      }
-    ])
-  }
-
   async function fill_by_csv(file_content: string, file_name_short: string) {
     // 搜索建议部分
     SEARCH_DB.add_data_by_csv(file_content, file_name_short)
@@ -190,7 +159,11 @@ export async function initMenuData() {
 
     // 搜索建议部分
     let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
-      return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
+      return {
+        key: item["keyword"],
+        value: item["title"],
+        name: item["description"] ?? undefined,
+      }
     })
     SEARCH_DB.add_data_by_json(records, file_name_short)
   }
@@ -207,28 +180,66 @@ export async function initMenuData() {
 
     // 搜索建议部分
     let records: {key: string, value: string, name?: string}[] = yamlData.map((item: any) => {
-      return { key: item["keyword"], value: item["title"], name: item["description"] ?? undefined }
+      return {
+        key: item["keyword"],
+        value: item["title"],
+        name: item["description"] ?? undefined,
+      }
     })
     SEARCH_DB.add_data_by_json(records, file_name_short)
+  }
+
+  async function fill_by_toml(file_content: string, file_name_short: string) {
+    // 解析
+    let menu_items: PanelItem[] = []
+    try {
+      menu_items = toml_parse(file_content)["categories"] as PanelItem[]
+    } catch (error) {
+      console.error("Parse error:", error)
+      return
+    }
+
+    // 搜索建议部分
+    const records: {key: string, value: string, name?: string}[] = []
+    function recursive(items: PanelItem[]) {
+      for (const item of items) {
+        if (item.callback && typeof item.callback === 'string') {
+          records.push({
+            key: item.key ?? item.label,
+            value: item.callback,
+            name: item.key ?? undefined,
+          })
+        }
+        if (item.children) recursive(item.children)
+      }
+    }
+    if (menu_items) recursive(menu_items)
+    SEARCH_DB.add_data_by_json(records, file_name_short)
+
+    // 多级菜单部分
+    myContextMenu.append_data([
+      {
+        label: file_name_short,
+        children: menu_items,
+      }
+    ])
   }
 
   async function fill_by_js(file_content: string, file_name_short: string) {
     // 脚本部分
     const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
 
-    // 多级菜单部分
-    myContextMenu.append_data([{
+    const panelItem: PanelItem = {
       label: file_name_short,
+      icon: plugin.metadata.icon,
       callback: plugin.run,
-      icon: plugin.metadata.icon
-    }])
+    }
+
+    // 多级菜单部分
+    myContextMenu.append_data([panelItem])
 
     // toolbar 部分
-    myToolbar.append_data([{
-      label: file_name_short,
-      callback: plugin.run,
-      icon: plugin.metadata.icon
-    }])
+    myToolbar.append_data([panelItem])
   }
 
   // #endregion
