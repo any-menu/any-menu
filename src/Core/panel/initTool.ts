@@ -234,6 +234,14 @@ export async function initMenuData() {
       callback: plugin.run,
     }
 
+    // 搜索建议部分
+    SEARCH_DB.add_data_by_script({
+      id: plugin.metadata.id, // PLUGIN_MANAGER.plugin_list[id]?.run 可运行
+      name: plugin.metadata.name ?? undefined,
+      key: file_name_short,
+      value: file_name_short,
+    })
+
     // 面板项 —— 多级菜单部分
     myContextMenu.append_data([panelItem])
 

@@ -1,7 +1,7 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import type { PluginInterface } from '../../Type'
-import { PluginInterfaceDemo } from './PluginInterface';
+import type { PluginInterface, PluginInterfaceCtx } from '../../Type'
+import { PluginInterfaceCtxDemo, PluginInterfaceDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
 // 需要开启 tsconfig.json 中的
@@ -33,9 +33,9 @@ const PluginSchema = z.object({
 /** 插件管理
  */
 export class PluginManager {  
-  // 存储所有已加载的插件
+  // 存储所有已加载的插件。可在此通过id搜索插件以供调用
   plugin_list: Record<string, PluginInterface> = {};
-  dict_list: Record<string, PluginInterface> = {};
+  // dict_list: Record<string, PluginInterface> = {};
 
   static factory() {
     return new PluginManager();
@@ -120,6 +120,64 @@ export class PluginManager {
     return rawPlugin as PluginInterface;
   }
 
+  /** 插件运行时的 ctx 环境获取
+   * @param label 插件名，仅日志打印时使用，标注来源
+   */
+  static getPluginContext(label?: string): PluginInterfaceCtx {
+    const ctx = {
+      env: {
+        platform: global_setting.platform,
+        selectedText: global_setting.state.selectedText,
+        activeAppName: global_setting.state.activeAppName || undefined,
+        activeDocTitle: global_setting.state.activeDocTitle,
+        activeDocUrl: global_setting.state.activeDocUrl,
+        obsidian:  global_setting.platform === 'obsidian-plugin' ? {
+          plugin: global_setting.other.obsidian_plugin,
+          ctx: global_setting.other.obsidian_ctx
+        } : undefined,
+      },
+      api: {
+        ...PluginInterfaceCtxDemo.api,
+        notify: async (message: string) => {
+          await global_setting.api.notify((label ?? 'unknown') + ': ' + message)
+        },
+        readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => {
+          // relPath 禁止包含 ../ 等路径穿越
+          if (relPath.includes('../')) {
+            console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+            return null
+          }
+
+          let filePath: string
+          if (basePath === 'CONFIG') {
+            filePath = './dict_config/' + relPath
+          } else { // if (basePath === 'PUBLIC')
+            filePath = global_setting.config.note_paths + relPath
+          }
+          return await global_setting.api.readFile(filePath);
+        },
+        writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => {
+          // relPath 禁止包含 ../ 等路径穿越
+          if (relPath.includes('../')) {
+            console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+            return false
+          }
+
+          let filePath: string
+          if (basePath === 'CONFIG') {
+            filePath = './dict_config/' + relPath
+          } else { // if (basePath === 'PUBLIC')
+            filePath = global_setting.config.note_paths + relPath
+          }
+          return await global_setting.api.writeFile(filePath, content, is_append);
+        }
+      }
+    }
+    return ctx
+  }
+
+  // #region 插件 CSS 注入与移除
+
   private static pluginSheets: Map<string, CSSStyleSheet> = new Map();
 
   /// 将插件的 CSS 注入到 <head>
@@ -172,6 +230,8 @@ export class PluginManager {
     //   }
     // }
   }
+
+  // #endregion
 
   // #region 废弃，旧版的插件加载和验证方案
 

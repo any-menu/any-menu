@@ -5,8 +5,8 @@
  */
 
 import type { PluginInterfaceCtx } from "../../Type"
-import { PluginInterfaceCtxDemo } from "../pluginManager/PluginInterface";
-import { global_setting } from "../../Core/setting";
+import { PluginManager } from "../pluginManager/PluginManager"
+import { global_setting } from "../../Core/setting"
 
 import { textToIcon } from "./utils"
 
@@ -149,56 +149,7 @@ export function init_item(
     else {
       const callback = item.callback
       li.addEventListener('click', async () => {
-        const ctx = {
-          env: {
-            platform: global_setting.platform,
-            selectedText: global_setting.state.selectedText,
-            activeAppName: global_setting.state.activeAppName || undefined,
-            activeDocTitle: global_setting.state.activeDocTitle,
-            activeDocUrl: global_setting.state.activeDocUrl,
-            obsidian:  global_setting.platform === 'obsidian-plugin' ? {
-              plugin: global_setting.other.obsidian_plugin,
-              ctx: global_setting.other.obsidian_ctx
-            } : undefined,
-          },
-          api: {
-            ...PluginInterfaceCtxDemo.api,
-            notify: async (message: string) => {
-              await global_setting.api.notify(item.label + ': ' + message)
-            },
-            readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => {
-              // relPath 禁止包含 ../ 等路径穿越
-              if (relPath.includes('../')) {
-                console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-                return null
-              }
-
-              let filePath: string
-              if (basePath === 'CONFIG') {
-                filePath = './dict_config/' + relPath
-              } else { // if (basePath === 'PUBLIC')
-                filePath = global_setting.config.note_paths + relPath
-              }
-              return await global_setting.api.readFile(filePath);
-            },
-            writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => {
-              // relPath 禁止包含 ../ 等路径穿越
-              if (relPath.includes('../')) {
-                console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-                return false
-              }
-
-              let filePath: string
-              if (basePath === 'CONFIG') {
-                filePath = './dict_config/' + relPath
-              } else { // if (basePath === 'PUBLIC')
-                filePath = global_setting.config.note_paths + relPath
-              }
-              return await global_setting.api.writeFile(filePath, content, is_append);
-            }
-          }
-        }
-        void callback(ctx)
+        void callback(PluginManager.getPluginContext(item.label))
       })
       item.callback
     }

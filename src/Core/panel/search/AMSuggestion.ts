@@ -1,6 +1,7 @@
 import { global_setting } from "../../setting"
 import { SEARCH_DB } from "./SearchDB"
 import { global_el } from "../index"
+import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
 
 // 建议项
 export class AMSuggestion {
@@ -191,9 +192,20 @@ export class AMSuggestion {
       const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
         div_key.textContent = item.key
 
+      // 给每个搜索项绑定事件 vs 全局监听点击建议项事件
+      // 改为后者似乎收益非常有限，就不改了
+      // 真正性能瓶颈还是每次搜索后的 DOM 重建，数量限制机制
       div.onclick = () => {
         // el_input.value = '' // 弃用，让 input hide 再 show 时清空内容
-        void global_setting.api.sendText(item.value); this.hide();
+        if (item.value.startsWith('@am-script: ')) {
+          const script_id = item.value.substring('@am-script: '.length)
+          PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginContext(item.key))
+          this.hide()
+        }
+        else {
+          void global_setting.api.sendText(item.value)
+          this.hide()
+        }
       }
     }
 
