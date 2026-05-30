@@ -5,16 +5,31 @@ let cache_el_am_icon = null
 
 export default {
     metadata: {
-        id: 'anymenu-md-background',
-        name: 'md背景色',
+        id: 'anymenu-md-color',
+        name: 'md文字色',
         version: '1.0.1',
         min_app_version: '1.1.11',
         author: 'LincZero',
-        icon: 'lucide-highlighter'
+        icon: 'lucide-baseline'
+        // 备用:
+        // 文字编辑类别: https://lucide.dev/icons/categories#text
+        // 
+        // 基线: lucide-baseline
+        // 下滑线: lucide-underline
+        // 加粗: lucide-bold
+        // 斜体: lucide-italic
+        // 高亮: lucide-highlighter
+        // 字体: lucide-type
+        // 描边: lucide-type-outline
+        // 游标: lucide-text-cursor
+        // 调色盘: lucide-palette
+        // 颜料刷1: lucide-paintbrush
+        // 取色: lucide-pipette
+        // 橡皮擦: lucide-eraser
     },
 
     onUnload() {
-        if (cache_ctx) cache_ctx.api.unregisterSubPanel('md-background-panel')
+        if (cache_ctx) cache_ctx.api.unregisterSubPanel('md-color-panel')
     },
 
     async run(ctx) {
@@ -31,17 +46,18 @@ export default {
         if (spanMatch) {
             let style = spanMatch[1];
             let newStr = spanMatch[2];
-            const bgRegex = /background\s*:[^;]*(;?)/i;
-            if (bgRegex.test(style)) {
-                // 已有 background 属性，直接替换
-                style = style.replace(bgRegex, `background:${cache_color};`);
+            // 用负向后行断言，避免误匹配 background-color
+            const colorRegex = /(?<![a-zA-Z-])color\s*:[^;]*(;?)/i;
+            if (colorRegex.test(style)) {
+                // 已有 color 属性，直接替换
+                style = style.replace(colorRegex, `color:${cache_color};`);
             } else {
-                // 没有 background 属性，追加
-                style = `background:${cache_color};${style}`;
+                // 没有 color 属性，追加
+                style = `color:${cache_color};${style}`;
             }
             ctx.api.sendText(`<span style="${style}">${newStr}</span>`);
         } else {
-            ctx.api.sendText(`<span style="background:${cache_color}">${str}</span>`);
+            ctx.api.sendText(`<span style="color:${cache_color}">${str}</span>`);
         }
     },
 
@@ -53,12 +69,12 @@ export default {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
                 cache_el = buildPanel()
-                ctx.api.registerSubPanel({ id: 'md-background-panel', el: cache_el })
+                ctx.api.registerSubPanel({ id: 'md-color-panel', el: cache_el })
             }
 
             // 切换到当前面板
             ctx.api.hidePanel(['menu'])
-            ctx.api.showPanel(['md-background-panel'])
+            ctx.api.showPanel(['md-color-panel'])
 
             e.preventDefault()
             e.stopPropagation()
@@ -77,7 +93,7 @@ export default {
 
 function buildPanel() {
     const root = document.createElement('div')
-        root.className = 'md-background-panel'
+        root.className = 'md-color-panel'
     
     const input = document.createElement('input');
         root.appendChild(input);

@@ -120,14 +120,6 @@
 		"version": "1.0.0"
 	},
 	{
-		"id": "anymenu-background",
-		"path": "background.js",
-		"name": "文字背景",
-		"description": "文字背景 (测试)",
-		"author": "LincZero",
-		"version": "1.0.0"
-	},
-	{
 		"id": "anymenu-date",
 		"path": "date.js",
 		"name": "日期",
@@ -197,7 +189,15 @@
 		"name": "md背景色",
 		"description": "md背景色",
 		"author": "LincZero",
-		"version": "1.0.0"
+		"version": "1.0.1"
+	},
+	{
+		"id": "anymenu-md-color",
+		"path": "md_color.js",
+		"name": "md文字色",
+		"description": "md文字色",
+		"author": "LincZero",
+		"version": "1.0.1"
 	},
 	{
 		"id": "anymenu-md-delete-bord",
