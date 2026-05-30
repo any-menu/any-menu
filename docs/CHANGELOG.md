@@ -2,6 +2,23 @@
 
 更新日志
 
+## 1.1.11
+
+- feat
+  - 新的插件 api: onCreateItem
+  - 新的插件: md_background (支持右键和子面板)，旧的 background 插件将废弃
+  - 搜索内容支持搜索到插件并执行
+  - App 版本增强了鼠标悬浮穿透功能
+- fix
+  - Obsidian 版本修复前几个版本导致的 tooltip 位置错误
+- enhance
+  - 默认新增 caps+q 键召唤菜单
+- refactor
+  - 整理的面板项、搜索引擎等代码内容
+  - 整理了面板显示和鼠标穿透的逻辑
+- docs
+  - 文档页新增了一些徽标
+
 ## 1.1.10
 
 - fix

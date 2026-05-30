@@ -109,7 +109,7 @@ export class PluginManager {
     }
 
     // 检查版本号
-    const isCompatible = PluginManager.isVersionCompatible(rawPlugin.metadata.min_app_version, currentAppVersion);
+    const isCompatible = PluginManager.loadPlugin_isVersionCompatible(rawPlugin.metadata.min_app_version, currentAppVersion);
     if (!isCompatible) {
       throw new Error(`Plugin "${rawPlugin.metadata.name || rawPlugin.metadata.id}" requires app version ${rawPlugin.metadata.min_app_version} or higher. Current version: ${currentAppVersion}`);
     }
@@ -118,6 +118,23 @@ export class PluginManager {
     // 原因是 Zod 默认会剔除(strip)未定义的字段，如果我们返回 result.data，
     // 插件自身定义的内部变量或辅助函数就会丢失，会导致插件内部的 this.xxx 调用失败。
     return rawPlugin as PluginInterface;
+  }
+
+  /** 比较应用版本是否满足插件的最低要求
+   * @returns true: 当前版本 >= 最低要求版本; false: 当前版本 < 最低要求版本
+   */
+  static loadPlugin_isVersionCompatible(minVersion: string, currentVersion: string): boolean {
+    const minParts = minVersion.split('.').map(Number);
+    const currParts = currentVersion.split('.').map(Number);
+
+    const maxLength = Math.max(minParts.length, currParts.length);
+    for (let i = 0; i < maxLength; i++) {
+      const min = minParts[i] || 0;
+      const curr = currParts[i] || 0;
+      if (curr > min) return true;  // 当前版本 > 最小版本
+      if (curr < min) return false; // 当前版本 < 最小版本
+    }
+    return true;                    // 当前版本 = 最小版本
   }
 
   /** 插件运行时的 ctx 环境获取
@@ -317,23 +334,6 @@ export class PluginManager {
 
     // 插件 - 卸载
     if (plugin.onUnload) plugin.onUnload();
-  }
-
-  /** 比较应用版本是否满足插件的最低要求
-   * @returns true: 当前版本 >= 最低要求版本; false: 当前版本 < 最低要求版本
-   */
-  static isVersionCompatible(minVersion: string, currentVersion: string): boolean {
-    const minParts = minVersion.split('.').map(Number);
-    const currParts = currentVersion.split('.').map(Number);
-
-    const maxLength = Math.max(minParts.length, currParts.length);
-    for (let i = 0; i < maxLength; i++) {
-      const min = minParts[i] || 0;
-      const curr = currParts[i] || 0;
-      if (curr > min) return true;  // 当前版本 > 最小版本
-      if (curr < min) return false; // 当前版本 < 最小版本
-    }
-    return true;                    // 当前版本 = 最小版本
   }
 }
 

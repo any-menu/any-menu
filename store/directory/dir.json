@@ -192,6 +192,14 @@
 		"version": "1.0.0"
 	},
 	{
+		"id": "anymenu-md-background",
+		"path": "md_background.js",
+		"name": "md背景色",
+		"description": "md背景色",
+		"author": "LincZero",
+		"version": "1.0.0"
+	},
+	{
 		"id": "anymenu-md-delete-bord",
 		"path": "md_delete_bord.js",
 		"name": "去除md加粗样式",
