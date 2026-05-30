@@ -729,7 +729,8 @@ div.editable-textarea-textarea {
   z-index: 900;
   background: var(--background-secondary);
   padding: 8px;
-  border-radius: 4px;
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 10px;
   box-shadow: var(--shadow-elevation-high);
   max-width: 400px;
   min-width: 200px;
@@ -1012,7 +1013,7 @@ html, body, #main {
 }
 
 .windows-pin-active {
-  background: rgba(0, 0, 0, 0.5) !important;
+  background: rgba(0, 0, 0, 0.1) !important;
 }
 
 .am-pin-active .am-pin > svg, .am-pin-active .windows-pin > svg, .windows-pin-active .am-pin > svg, .windows-pin-active .windows-pin > svg {
