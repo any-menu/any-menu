@@ -1,6 +1,6 @@
 {
   "name": "any-menu",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Type definitions for AnyMenu plugin development API",
   "keywords": [
     "anymenu",
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/any-menu/any-menu.git",
+    "url": "git+https://github.com/any-menu/any-menu.git",
     "directory": "src/Type"
   }
 }
