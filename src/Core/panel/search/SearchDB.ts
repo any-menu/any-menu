@@ -3,7 +3,6 @@
 import { global_setting } from '../../setting'
 import { TrieDB, type TrieNode } from './TrieDB'
 import { ReverseIndexDB } from './ReverseIndexDB'
-import { PLUGIN_MANAGER } from 'pluginManager/PluginManager'
 
 /** 核心数据库
  * 
@@ -234,8 +233,6 @@ class SearchDB {
       return []
     }
   }
-
-
 
   /** 前缀查询
    * @return 返回 {完整字符串, 值} 数组
