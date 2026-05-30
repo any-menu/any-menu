@@ -156,19 +156,11 @@ export class AMSuggestion {
 
   // #endregion
 
+  /** 搜索并显示建议项 */
   search(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
     if (el_suggestion == null) return []
 
-    let result: {key: string, value: string}[] = []
-    if (global_setting.config.search_engine === 'trie') {
-      result = SEARCH_DB.query_by_trie(query)
-    } else if (global_setting.config.search_engine === 'reverse') {
-      result = SEARCH_DB.query_by_reverse(query)
-    } else {
-      console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
-      return []
-    }
-    // console.log(`query [${query}]: `, result)
+    let result: {key: string, value: string}[] = SEARCH_DB.query(query)
 
     // 数量检查
     if (result.length === 0) {

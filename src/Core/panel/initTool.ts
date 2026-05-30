@@ -143,7 +143,7 @@ export async function initMenuData() {
   }
 
   async function fill_by_csv(file_content: string, file_name_short: string) {
-    // 搜索建议部分
+    // 解析 + 搜索建议部分
     SEARCH_DB.add_data_by_csv(file_content, file_name_short)
   }
 
@@ -216,7 +216,7 @@ export async function initMenuData() {
     if (menu_items) recursive(menu_items)
     SEARCH_DB.add_data_by_json(records, file_name_short)
 
-    // 多级菜单部分
+    // 面板项 —— 多级菜单部分
     myContextMenu.append_data([
       {
         label: file_name_short,
@@ -226,19 +226,18 @@ export async function initMenuData() {
   }
 
   async function fill_by_js(file_content: string, file_name_short: string) {
-    // 脚本部分
+    // 解析，脚本部分
     const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
-
     const panelItem: PanelItem = {
       label: file_name_short,
       icon: plugin.metadata.icon,
       callback: plugin.run,
     }
 
-    // 多级菜单部分
+    // 面板项 —— 多级菜单部分
     myContextMenu.append_data([panelItem])
 
-    // toolbar 部分
+    // 面板项 —— toolbar 部分
     myToolbar.append_data([panelItem])
   }
 
