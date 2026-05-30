@@ -232,6 +232,7 @@ export async function initMenuData() {
       label: file_name_short,
       icon: plugin.metadata.icon,
       callback: plugin.run,
+      onCreateItem_callback: plugin.onCreateItem ?? undefined,
     }
 
     // 搜索建议部分

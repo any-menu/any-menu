@@ -46,6 +46,39 @@ export interface PluginInterface {
    */
   run: (ctx: PluginInterfaceCtx) => Promise<void>;
 
+  /*
+   * 算了，感觉还是直接 callback 给按钮对象让绑定比较方便。
+   * 虽然容易被滥用，但仔细一想。用户一样可以通过 document 暴力去找到按钮并控制。限制意义不大
+   * 
+   * 注册事件回调
+   * @param event 事件名称，预定义事件包括但不限于:
+   *   - 按钮类 (仅限工具栏按钮，不包含菜单项)
+   *     - `onRun`: 等同于 run
+   *     - `click`: 右键点击时触发，参数为点击位置和目标元素等信息
+   *     - `createBtn`: 按钮创建后触发
+   *   - 全局类
+   *     - `onPanelShow`: 面板显示时触发
+   *     - `onPanelHide`: 面板隐藏时触发
+   *     - `onSubPanelShow:子面板ID`: 子面板显示时触发
+   *     - `onSubPanelHide:子面板ID`: 子面板隐藏时触发
+   *     - `onConfigChange:配置项ID`: 配置项修改时触发
+   *     - `onAppEvent:事件名称`: 宿主应用事件（如 Obsidian 的 workspace events）触发时触发
+   * @param callback 事件回调函数，参数根据事件类型不同而不同，具体见文档说明
+   *
+  registerEvent: (event: string, callback: (...args: any[]) => void) => void;
+   */
+
+  /**
+   * 面板中该脚本的项被创建时调用
+   * 
+   * @version 1.1.11 新增
+   * @param ctx 注意与 run 的 ctx 类型虽然相同，但传递时机是不同的。
+   *   - 这里的 ctx 在初始化时就有的，因此会缺失一些运行时信息，如选中文本、当前页面标题等。
+   *   - 只有 run 的 ctx 才会有这些运行时信息。
+   *   TODO 这个问题获取后续可以完善。提供一个 api 让插件在非 run 函数内也能 get 一些运行期信息
+   */
+  onCreateItem?: (el: HTMLElement, ctx: PluginInterfaceCtx) => void;
+
   /**
    * 插件加载时调用
    * TODO
