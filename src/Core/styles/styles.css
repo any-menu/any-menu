@@ -765,6 +765,7 @@ div.editable-textarea-textarea {
   height: 100%;
   padding: 0;
   margin: 0 4px;
+  position: relative;
   line-height: 100%;
   border-radius: 8px;
   white-space: nowrap;
@@ -785,6 +786,8 @@ div.editable-textarea-textarea {
   width: 28px;
   height: 28px;
   line-height: 28px;
+  box-sizing: border-box;
+  position: relative;
   align-items: center;
   justify-content: center;
   -webkit-user-select: none;
@@ -799,6 +802,20 @@ div.editable-textarea-textarea {
 }
 .am-icon:hover, .am-icon-auto:hover {
   background-color: var(--ab-tab-root-hv-color) !important;
+}
+.am-icon, .am-icon-auto {
+  --color: currentColor;
+}
+.am-icon.has-more::after, .am-icon-auto.has-more::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 0 0 6px 6px;
+  border-color: transparent transparent var(--color) transparent;
 }
 
 .tab-root div.setting_row {
