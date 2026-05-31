@@ -50,6 +50,9 @@ export default {
   'Index engine2': '模糊匹配/倒序 | 前缀树',
 
   'Other config': '其他配置',
+  'Show panel: preset 1': '显示面板: 预设 1',
+  'Show panel: preset 2': '显示面板: 预设 2',
+  'Show panel: preset 3': '显示面板: 预设 3',
   'Note path': '笔记保存路径',
   'Note path2': '快捷笔记功能中，笔记的保存路径。',
   'Debug mode': '调试模式',

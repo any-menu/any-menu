@@ -14,15 +14,6 @@ export const global_setting: {
    * @deprecated 目前不再使用该选项。而是使用主动召唤则抢焦点，选中文本自动弹出则不抢焦点的方式。
    */
   focusStrategy: true | false,
-  // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
-  key_panel: {
-    panel1: string[], // 通常是搜索+多极菜单。其中 penel1 也作为 default_panel 使用
-    panel2: string[], // 通常是 miniEditor
-    panel3: string[], // 通常是 info
-    key1: string,
-    key2: string,
-    key3: string,
-  },
   /** 跨平台的、user的 通用配置
    * 
    * - 这里是通用模块，不跨平台的不存这
@@ -32,7 +23,7 @@ export const global_setting: {
    * 该内容修改后，应该同步到配置文件
    */
   config: {
-    language: 'auto'|'English'|'中文'|string // 语言
+    language: 'auto'|'English'|'中文'|string, // 语言
     // 弃用: 根据召唤面板的方式自动选择。例如选中文本自动弹出菜单时通常不抢焦点，主动召唤通常需要抢焦点
     // 抢焦点模式 = 默认聚焦+默认置顶。隐藏条件: 失焦、直接点击窗口的#main/body、点击菜单项
     // 不抢焦点模式 = 不聚焦+默认置顶。隐藏条件: 失焦[-]、直接点击窗口的#main/body、点击菜单项、窗口外点击[+]
@@ -88,6 +79,16 @@ export const global_setting: {
     toolbar_list: string[],
     context_menu_list: string[],
     auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
+
+    // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
+    key_panel: {
+      key1: string,
+      key2: string,
+      key3: string,
+      panel_preset_1: string[], // 建议: 搜索+工具栏+多极菜单。主动唤出的显示项
+      panel_preset_2: string[], // 建议: 搜索+工具栏。自动唤出的显示项
+      panel_preset_3: string[], // 建议: miniEditor / info
+    },
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -162,14 +163,6 @@ export const global_setting: {
   platform: 'app',
   isDebug: false,
   focusStrategy: true,
-  key_panel: {
-    panel1: ['search', 'toolbar', 'menu'],
-    panel2: ['search', 'toolbar'], // ['miniEditor']
-    panel3: ['info'],
-    key1: 'Alt+A',
-    key2: 'Alt+S',
-    key3: 'Alt+D',
-  },
   config: {
     language: 'auto',
 
@@ -190,6 +183,15 @@ export const global_setting: {
     toolbar_list: [],
     context_menu_list: [],
     auto_show_toolbar_on_select: false,
+
+    key_panel: {
+      key1: 'Alt+A',
+      key2: 'Alt+S',
+      key3: 'Alt+D',
+      panel_preset_1: ['search', 'toolbar', 'menu'],
+      panel_preset_2: ['search', 'toolbar'], // ['miniEditor']
+      panel_preset_3: ['info'],
+    },
   },
   config_: {
     is_auto_startup: false,

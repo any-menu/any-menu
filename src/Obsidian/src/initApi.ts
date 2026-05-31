@@ -92,7 +92,7 @@ export function initApi(plugin: Plugin) {
       // 不由鼠标/键盘导致的选中状态，这种选中状态也应该弹出工具栏
       // if (global_setting.config.auto_show_toolbar_on_select) {
       //   global_setting.state.selectedText = text
-      //   void show_panel_auto(plugin, editor, global_setting.key_panel.panel2)
+      //   void show_panel_auto(plugin, editor, global_setting.config.key_panel.panel_preset_2)
       // }
     }
   }

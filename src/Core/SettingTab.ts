@@ -761,7 +761,8 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     tab_content.innerHTML = ''
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
-    // --------- 字典配置 ----------------------
+    // #region 字典配置
+
     new SettingItem(tab_content)
       .setHeading(t('Dict config'))
 
@@ -789,7 +790,10 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         })
       })
 
-    // --------- 字典索引配置 -------------------
+    // #endregion
+
+    // #region 字典索引配置
+
     new SettingItem(tab_content)
       .setHeading(t('Dict index config'))
 
@@ -828,11 +832,42 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         })
       })
 
-    // --------- 其他配置 ----------------------
-    // new SettingItem(tab_content)
-    //   .setDivider()
+    // #endregion
+
+    // #region 其他配置
+
     new SettingItem(tab_content)
       .setHeading(t('Other config'))
+
+    new SettingItem(tab_content)
+      .setName(t('Show panel: preset 1'))
+      .addText(text => text
+        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_1))
+        .onChange(async (value) => {
+          global_setting.config.key_panel.panel_preset_1 = JSON.parse(value)
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Show panel: preset 2'))
+      .addText(text => text
+        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_2))
+        .onChange(async (value) => {
+          global_setting.config.key_panel.panel_preset_2 = JSON.parse(value)
+          await global_setting.api.saveConfig()
+        })
+      )
+
+    new SettingItem(tab_content)
+      .setName(t('Show panel: preset 3'))
+      .addText(text => text
+        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_3))
+        .onChange(async (value) => {
+          global_setting.config.key_panel.panel_preset_3 = JSON.parse(value)
+          await global_setting.api.saveConfig()
+        })
+      )
 
     new SettingItem(tab_content)
       .setName(t('Note path'))
@@ -886,8 +921,10 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         })
       )
 
+    // #endregion
 
-    // --------- App配置 ----------------------
+    // #region App配置
+
     if (global_setting.platform === 'app') {
       new SettingItem(tab_content)
         .setHeading(t('App config'))
@@ -917,6 +954,8 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
           })
         )
     }
+
+    // #endregion
   }
 }
 

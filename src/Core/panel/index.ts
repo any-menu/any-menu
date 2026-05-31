@@ -235,7 +235,7 @@ export class AMPanel {
     }
 
     if (!list) {
-      list = global_setting.key_panel.panel1
+      list = global_setting.config.key_panel.panel_preset_1
     }
 
     // 子面板
@@ -411,7 +411,7 @@ export class AMPanel {
    */
   static get_size(list?: string[]): {width: number, height: number} {
     if (!list) {
-      list = global_setting.key_panel.panel1
+      list = global_setting.config.key_panel.panel_preset_1
     }
 
     // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)

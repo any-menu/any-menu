@@ -50,6 +50,9 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
 (Note: The Chinese pinyin library can be quite large, so the plugin version does not come with the pinyin index function by default. If you need to use it, please manually download the pinyin version from the Github repository)',
 
   'Other config': 'Other config',
+  'Show panel: preset 1': 'Show panel: preset 1',
+  'Show panel: preset 2': 'Show panel: preset 2',
+  'Show panel: preset 3': 'Show panel: preset 3',
   'Note path': 'Note path',
   'Note path2': 'In the quick note function, the save path of the note.',
   'Debug mode': 'Debug mode',
