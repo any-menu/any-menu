@@ -48,7 +48,7 @@ export function initApi(plugin: Plugin) {
     // // @ts-expect-error 类型“App”上不存在属性“commands”
     // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
     // @ts-expect-error 类型“App”上不存在属性“commands”
-    app.commands.executeCommandById(commandId)
+    app.commands?.executeCommandById?.(commandId)
   }
 
   global_setting.api.notify = async (message: string): Promise<void> => {
@@ -76,8 +76,18 @@ export function initApi(plugin: Plugin) {
     if (!plugin) return
     const cursorInfo = getCursorInfo(plugin)
     if (!cursorInfo) return
+    const editor = cursorInfo.editor
 
-    cursorInfo.editor.replaceSelection(text)
+    // 输出前先判断是否有选中内容，若有，输出后保持选中新内容
+    const hasSelection = editor.somethingSelected()
+    if (!hasSelection) {
+      editor.replaceSelection(text)
+    } else {
+      const fromCursor = editor.getCursor("from") // 替换前记录起始位置
+      editor.replaceSelection(text)
+      const endCursor = editor.getCursor("to") // 替换后光标即为末尾
+      editor.setSelection(fromCursor, endCursor)
+    }
   }
 
   global_setting.api.saveToClipboard = async (text: string): Promise<void> => {
@@ -325,7 +335,7 @@ export function initApi(plugin: Plugin) {
         console.error('Obsidian stream request failed:', error, conf);
         return {
           code: -1,
-          msg: error?.message || 'An unknown error occurred in Obsidian stream request.',
+          msg: (error as any)?.message || 'An unknown error occurred in Obsidian stream request.',
           data: { text: '', originalResponse: error },
         };
       }
@@ -362,7 +372,7 @@ export function initApi(plugin: Plugin) {
       console.error('Obsidian request failed:', error, conf);
       return {
         code: -1,
-        msg: error?.message || 'An unknown error occurred in Obsidian request.',
+        msg: (error as any)?.message || 'An unknown error occurred in Obsidian request.',
         data: { text: '', originalResponse: error },
       };
     }
