@@ -2,7 +2,6 @@ import {
   MarkdownRenderChild, MarkdownRenderer, MarkdownView,
   type MarkdownPostProcessorContext,
   type Plugin,
-  type App,
   Notice,
 } from 'obsidian'
 import { RequestUrlParam, requestUrl } from 'obsidian'
@@ -220,7 +219,7 @@ export function initApi(plugin: Plugin) {
   global_setting.api.loadConfig = async (): Promise<boolean> => {
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return false
-    const data = await plugin.loadData() // 如果没有配置文件则为null
+    const data: unknown = await plugin.loadData() // 如果没有配置文件则为null
     const settings = Object.assign({}, AM_SETTINGS_DEFAULT, data); // 合并默认值和配置文件的值
 
     // 需要保持一致性，obsidian 专属设置与通用的 global 设置
@@ -230,7 +229,7 @@ export function initApi(plugin: Plugin) {
 
     // 如果没有配置文件则生成一个默认值的配置文件
     if (!data) {
-      plugin.saveData(settings)
+      await plugin.saveData(settings)
     }
     return true
   }
@@ -322,7 +321,7 @@ export function initApi(plugin: Plugin) {
 
         conf.onDone?.();
         return { code: 0, data: { text: '', json: null, originalResponse: null } };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Obsidian stream request failed:', error, conf);
         return {
           code: -1,
@@ -343,11 +342,11 @@ export function initApi(plugin: Plugin) {
 
       const response = await requestUrl(requestParams);
 
-      let json = null;
+      let json: unknown = null;
       if (conf.isParseJson) {
         try {
           json = response.json;
-        } catch (e) {
+        } catch (_) {
           json = null;
         }
       }
@@ -359,7 +358,7 @@ export function initApi(plugin: Plugin) {
           originalResponse: response,
         },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Obsidian request failed:', error, conf);
       return {
         code: -1,
