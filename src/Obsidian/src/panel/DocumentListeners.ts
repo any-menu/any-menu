@@ -155,9 +155,9 @@ export class DocumentListeners {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    void show_panel(this.plugin, editor, global_setting.key_panel.panel2)
+    void show_panel_auto(this.plugin, editor, global_setting.key_panel.panel2)
 
-    async function show_panel (plugin: Plugin, editor: Editor, panel_list?: string[]) {
+    async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[]) {
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo(plugin, editor)
       if (!cursorInfo) return

@@ -87,6 +87,13 @@ export function initApi(plugin: Plugin) {
       editor.replaceSelection(text)
       const endCursor = editor.getCursor("to") // 替换后光标即为末尾
       editor.setSelection(fromCursor, endCursor)
+
+      // 此处好像无法正常工作。算了，如果要连续处理的话用快捷键召唤面板应该也差不多
+      // 不由鼠标/键盘导致的选中状态，这种选中状态也应该弹出工具栏
+      // if (global_setting.config.auto_show_toolbar_on_select) {
+      //   global_setting.state.selectedText = text
+      //   void show_panel_auto(plugin, editor, global_setting.key_panel.panel2)
+      // }
     }
   }
 
