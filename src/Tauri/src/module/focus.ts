@@ -89,6 +89,9 @@ export function setupAppChangeListener() {
     else if (typeof payload == 'number' && payload === 2) {
       void toggleWindow(global_setting.config.key_panel.panel_preset_2)
     }
+    else if (typeof payload == 'number' && payload === 3) {
+      void toggleWindow(global_setting.config.key_panel.panel_preset_3)
+    }
     else if (typeof payload == 'object' && Array.isArray(payload)) {
       console.error('Unknown payload for active-window-toggle2:', payload)
     }
