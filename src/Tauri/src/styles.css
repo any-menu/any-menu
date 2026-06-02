@@ -4,9 +4,10 @@ html, body, #app {
 }
 
 #main[data-position-mode=center] .am-panel {
+  width: 100%;
   height: 600px;
 }
 #main[data-position-mode=center] .am-panel > div {
-  width: 1000px;
+  width: 100%;
   max-width: unset;
 }

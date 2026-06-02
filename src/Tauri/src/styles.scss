@@ -8,10 +8,11 @@ html, body, #app {
     // &[data-position-mode="cursor"] {}
     &[data-position-mode="center"] {
         .am-panel {
+            width: 100%;
             height: 600px;
         }
         .am-panel>div {
-            width: 1000px;
+            width: 100%;
             max-width: unset;
         }
     }
