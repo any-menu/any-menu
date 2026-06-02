@@ -14,6 +14,10 @@ html, body, #app {
         .am-panel>div {
             width: 100%;
             max-width: unset;
+            &.am-pin { // 居中模式下固定按钮位置不同
+                width: 24px;
+                right: 6px;
+            }
         }
     }
 }

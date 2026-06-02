@@ -11,3 +11,7 @@ html, body, #app {
   width: 100%;
   max-width: unset;
 }
+#main[data-position-mode=center] .am-panel > div.am-pin {
+  width: 24px;
+  right: 6px;
+}
