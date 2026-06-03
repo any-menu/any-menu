@@ -155,7 +155,7 @@ export class AMMiniEditor {
 
   // #region 显示/隐藏菜单
 
-  show(new_text?: string, is_focus: boolean = false) {
+  public show(new_text?: string, is_focus: boolean = false) {
     this.el.classList.remove('am-hide'); this.isShow = true;
 
     if (new_text) this.cache_text = new_text
@@ -182,10 +182,18 @@ export class AMMiniEditor {
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
-  hide() {
+  public hide() {
     this.el.classList.add('am-hide'); this.isShow = false;
 
     window.removeEventListener('keydown', this.visual_listener_keydown)
+  }
+
+  public toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.show()
+    } else {
+      this.hide()
+    }
   }
 
   // Enter 发送文本

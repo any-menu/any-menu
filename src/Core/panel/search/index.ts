@@ -53,7 +53,7 @@ export class AMSearch {
 
   // #region 显示/隐藏
   
-  show(is_focus: boolean = false) {
+  public show(is_focus: boolean = false) {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
@@ -72,7 +72,7 @@ export class AMSearch {
     // if (global_setting.platform == 'app') return
   }
 
-  hide() {
+  public hide() {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.hide()
 
@@ -95,6 +95,14 @@ export class AMSearch {
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
     // if (global_setting.platform == 'app') return
+  }
+
+  public toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.show()
+    } else {
+      this.hide()
+    }
   }
 
   // #endregion

@@ -35,6 +35,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
       return await global_setting.api.writeFile(relPath, content, is_append);
     },
 
+    // #region 面板相关
     hidePanel: (list?: string[]) => {
       AMPanel.hide(list)
       if (list == undefined && global_setting.platform === 'app') {
@@ -49,12 +50,16 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
         AMPanel.show(undefined, list)
       }
     },
+    togglePanel: (item: string) => {
+      AMPanel.toggle(item)
+    },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);
     },
     unregisterSubPanel: (id: string) => {
       global_el.amPanel?.unregister_sub_panel(id);
     }
+    // #endregion
   }
 }
 

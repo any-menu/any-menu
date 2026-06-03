@@ -268,13 +268,9 @@ export class AMPanel {
         })
       }
       else {
-        for (const key in global_el.amPanel?.SubPanel) {
-          if (key == item) {
-            global_el.amPanel?.SubPanel[key].classList.remove('am-hide')
-            break
-          }
-        }
-        // 找不找得到这里也结束这轮循环了
+        const target_custom_el = global_el.amPanel?.SubPanel?.[item]
+        if (target_custom_el) target_custom_el.classList.remove('am-hide')
+        else console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
       }
     }
 
@@ -329,6 +325,37 @@ export class AMPanel {
       }
       return
     }
+  }
+
+  /** 切换面板显示/隐藏状态 */
+  static toggle(item: string) {
+    // 非自定义
+    if (item == 'search') global_el.amSearch?.toggle()
+    else if (item == 'toolbar') global_el.amToolbar?.toggle()
+    else if (item == 'menu') global_el.amContextMenu?.toggle()
+    else if (item == 'miniEditor') {
+      global_el.amMiniEditor?.set_flag('miniEditor')
+      global_el.amMiniEditor?.toggle()
+    }
+    else if (item == 'info') {
+      global_el.amMiniEditor?.set_flag('info')
+      global_el.amMiniEditor?.toggle()
+    }
+    // 插件自定义子面板
+    else {
+      const target_custom_el = global_el.amPanel?.SubPanel?.[item]
+      if (!target_custom_el) {
+        console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
+        return
+      }
+
+      if (target_custom_el.classList.contains('am-hide')) {
+        target_custom_el.classList.remove('am-hide')
+      } else {
+        target_custom_el.classList.add('am-hide')
+      }
+    }
+
   }
 
   // #region 自定义子面板管理

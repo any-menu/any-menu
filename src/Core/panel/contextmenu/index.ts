@@ -130,6 +130,7 @@ export class AMContextMenu {
     this.menu_el_data_current = this.menu_el_data_root
     this.vFocus_update('clean')
   }
+
   /// 隐藏该菜单
   public hide() {
     if (!this.el) return
@@ -138,6 +139,15 @@ export class AMContextMenu {
 
     // 状态重置
     this.vFocus_update('clean')
+  }
+
+  /// 切换该面板显示/隐藏状态
+  public toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.show()
+    } else {
+      this.hide()
+    }
   }
 
   // #endregion

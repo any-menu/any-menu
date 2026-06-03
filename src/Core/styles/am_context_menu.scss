@@ -31,7 +31,7 @@
   // 多列布局。一列满了再下一列，如果想平均分布则用 columns 而非这个
   display: grid;
   grid-auto-flow: column; // 横向排列
-  grid-template-rows: repeat(8, auto); // 每列最多n个
+  grid-template-rows: repeat(10, auto); // 每列最多n个
   gap: 0 0;
 
   color: var(--ab-tab-root-tx-color);

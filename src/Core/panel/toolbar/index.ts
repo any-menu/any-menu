@@ -83,15 +83,23 @@ export class AMToolbar {
 
   // #region 显示/隐藏菜单
 
-  show() {
+  public show() {
     this.el.classList.remove('am-hide'); this.isShow = true;
 
     this.el.classList.add('visible')
     this.el?.classList.remove('show-altkey')
   }
 
-  hide() {
+  public hide() {
     this.el.classList.add('am-hide'); this.isShow = false;
+  }
+
+  public toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.show()
+    } else {
+      this.hide()
+    }
   }
 
   // #endregion
