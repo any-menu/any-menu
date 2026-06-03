@@ -71,7 +71,7 @@ export function initApi(plugin: Plugin) {
   }
 
   global_setting.api.sendText = async (text: string) => {
-    AMPanel.hide()
+    AMPanel.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return
     const cursorInfo = getCursorInfo(plugin)

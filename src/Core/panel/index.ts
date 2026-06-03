@@ -177,7 +177,7 @@ export class AMPanel {
    *   反向显示时，面板内容将显示在 pos 的上方 (而不是下方)，且根据 list 顺序从下往上显示。
    *   注意: 如果是 app 环境，需要 app 配合
    */
-  static show(
+  static panel_show(
     pos: {x: number, y: number}|undefined,
     list?: string[],
     is_focus: boolean = true,
@@ -242,29 +242,29 @@ export class AMPanel {
     let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
     for (const item of list) {
       if (item == 'search') {
-        global_el.amSearch?.show(!is_focued)
+        global_el.amSearch?.panel_show(!is_focued)
         is_focued = true
       }
       else if (item == 'toolbar') {
-        global_el.amToolbar?.show()
+        global_el.amToolbar?.panel_show()
       }
       else if (item == 'menu') {
-        global_el.amContextMenu?.show()
+        global_el.amContextMenu?.panel_show()
       }
       else if (item == 'miniEditor') {
         global_el.amMiniEditor?.set_flag('miniEditor')
-        global_el.amMiniEditor?.show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        global_el.amMiniEditor?.panel_show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
         global_el.amMiniEditor?.set_flag('info')
-        global_el.amMiniEditor?.show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        global_el.amMiniEditor?.panel_show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
 
         // 异步添加 info 内容
         global_setting.api.getInfo().then((info_text: string|null) => {
           global_setting.state.infoText += '[info]\n' + (info_text ?? "null") + "\n\n"
-          global_el.amMiniEditor?.show(global_setting.state.infoText, false)
+          global_el.amMiniEditor?.panel_show(global_setting.state.infoText, false)
         })
       }
       else {
@@ -286,7 +286,7 @@ export class AMPanel {
    *   - 空列表: 容器隐藏，子面板不隐藏 (方便下次显示容器时保留子面板显示状态)
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
-  static hide(list?: string[]) {
+  static panel_hide(list?: string[]) {
     if (global_setting.state.isPin) return
 
     // 主面板
@@ -297,10 +297,10 @@ export class AMPanel {
     // 全部隐藏
     if (list == undefined) {
       el_panel.classList.add('am-hide')
-      global_el.amSearch?.hide()
-      global_el.amToolbar?.hide()
-      global_el.amContextMenu?.hide()
-      global_el.amMiniEditor?.hide()
+      global_el.amSearch?.panel_hide()
+      global_el.amToolbar?.panel_hide()
+      global_el.amContextMenu?.panel_hide()
+      global_el.amMiniEditor?.panel_hide()
       for (const key in global_el.amPanel?.SubPanel) {
         global_el.amPanel?.SubPanel[key].classList.add('am-hide')
       }
@@ -309,11 +309,11 @@ export class AMPanel {
     else {
       if (list.length == 0) el_panel.classList.add('am-hide')
       for (const item of list) {
-        if (item == 'search')  global_el.amSearch?.hide()
-        else if (item == 'toolbar') global_el.amToolbar?.hide()
-        else if (item == 'menu') global_el.amContextMenu?.hide()
-        else if (item == 'miniEditor') global_el.amMiniEditor?.hide()
-        else if (item == 'info') global_el.amMiniEditor?.hide()
+        if (item == 'search')  global_el.amSearch?.panel_hide()
+        else if (item == 'toolbar') global_el.amToolbar?.panel_hide()
+        else if (item == 'menu') global_el.amContextMenu?.panel_hide()
+        else if (item == 'miniEditor') global_el.amMiniEditor?.panel_hide()
+        else if (item == 'info') global_el.amMiniEditor?.panel_hide()
         else {
           for (const key in global_el.amPanel?.SubPanel) {
             if (key == item) {
@@ -328,18 +328,18 @@ export class AMPanel {
   }
 
   /** 切换面板显示/隐藏状态 */
-  static toggle(item: string) {
+  static panel_toggle(item: string) {
     // 非自定义
-    if (item == 'search') global_el.amSearch?.toggle()
-    else if (item == 'toolbar') global_el.amToolbar?.toggle()
-    else if (item == 'menu') global_el.amContextMenu?.toggle()
+    if (item == 'search') global_el.amSearch?.panel_toggle()
+    else if (item == 'toolbar') global_el.amToolbar?.panel_toggle()
+    else if (item == 'menu') global_el.amContextMenu?.panel_toggle()
     else if (item == 'miniEditor') {
       global_el.amMiniEditor?.set_flag('miniEditor')
-      global_el.amMiniEditor?.toggle()
+      global_el.amMiniEditor?.panel_toggle()
     }
     else if (item == 'info') {
       global_el.amMiniEditor?.set_flag('info')
-      global_el.amMiniEditor?.toggle()
+      global_el.amMiniEditor?.panel_toggle()
     }
     // 插件自定义子面板
     else {
@@ -417,14 +417,14 @@ export class AMPanel {
     else {
       // 前者不包括 .am-panel (允许不规则区域)
       if (ev.target.matches('.am-panel *')) return
-      AMPanel.hide()
+      AMPanel.panel_hide()
     }
   }
   /// ESC隐藏
   static visual_listener_keydown (ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       ev.preventDefault()
-      AMPanel.hide()
+      AMPanel.panel_hide()
       return
     }
   }

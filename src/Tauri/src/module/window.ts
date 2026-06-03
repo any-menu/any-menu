@@ -485,13 +485,13 @@ export async function showWindow(
   void applyFocusMode()
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.show({x: 0, y: 0}, panel_list, is_focus, is_reverse)
+  AMPanel.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse)
 }
 
 /** 隐藏窗口 */
 export async function hideWindow(list?: string[]) {
   if (global_setting.state.isPin) return // 置顶状态
-  AMPanel.hide(list) // 隐藏面板&失焦面板
+  AMPanel.panel_hide(list) // 隐藏面板&失焦面板
 
   if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉
 

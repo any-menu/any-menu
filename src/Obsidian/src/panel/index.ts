@@ -71,7 +71,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list)
+    AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list)
   }
 
   // 注册工具带

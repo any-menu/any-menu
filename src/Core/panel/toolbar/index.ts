@@ -18,7 +18,7 @@ export class AMToolbar {
   ) {
     this.el_parent = el_parent
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-toolbar');
-    this.hide()
+    this.panel_hide()
   }
 
   /** 添加 index 项
@@ -83,22 +83,22 @@ export class AMToolbar {
 
   // #region 显示/隐藏菜单
 
-  public show() {
+  public panel_show() {
     this.el.classList.remove('am-hide'); this.isShow = true;
 
     this.el.classList.add('visible')
     this.el?.classList.remove('show-altkey')
   }
 
-  public hide() {
+  public panel_hide() {
     this.el.classList.add('am-hide'); this.isShow = false;
   }
 
-  public toggle() {
+  public panel_toggle() {
     if (this.el?.classList.contains('am-hide')) {
-      this.show()
+      this.panel_show()
     } else {
-      this.hide()
+      this.panel_hide()
     }
   }
 

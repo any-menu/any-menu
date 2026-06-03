@@ -81,7 +81,7 @@ export class DocumentListeners {
     this.isMouseSelecting = false;
     this.isMouseDown = false;
     if (ev.key === 'Escape') {
-      AMPanel.hide([])
+      AMPanel.panel_hide([])
     }
   }
 
@@ -99,7 +99,7 @@ export class DocumentListeners {
 
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
-    AMPanel.hide([])
+    AMPanel.panel_hide([])
   }
 
   /** 追踪鼠标位置 */
@@ -178,7 +178,7 @@ export class DocumentListeners {
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
+      AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
     }
   }
 }
