@@ -130,10 +130,10 @@
 	{
 		"id": "anymenu-table",
 		"path": "table.js",
-		"name": "cNrN生成表格",
-		"description": "输出 markdown 表格。若选中文本格式为 \"c列数r行数\"，则生成对应行列的 markdown 表格",
+		"name": "多种方式生成表格",
+		"description": "输出 markdown 表格。支持多种生成方式。如选中 \"c列数r行数\"，或选中 tsv/csv 内容等",
 		"author": "LincZero",
-		"version": "1.0.0"
+		"version": "1.1.0"
 	},
 	{
 		"id": "anymenu-table-transpose",
