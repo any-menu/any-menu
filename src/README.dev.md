@@ -18,9 +18,9 @@
 ---
 
 其中 only-obsidian repo/branch 还需要 npm 上传一下
-`npm login`, `npm publish ./src/Core  --access public`
+`npm login`, `npm publish ./src/Core --access public`
 如果有插件 API 变动， Type 也需要 npm 上传一下
-`npm login`, `npm publish ./src/Type  --access public`
+`npm login`, `npm publish ./src/Type --access public`
 
 ## 常用命令
 

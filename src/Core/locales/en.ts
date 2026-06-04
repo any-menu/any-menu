@@ -5,7 +5,7 @@ export default {
 <br><br>
 The default shortcuts are Alt+A to open the search box and menu, and Alt+S to open the quick editor (The App version can also use the advanced shortcuts Caps+M or Caps+N) (All shortcuts can be modified in the settings).
 <br><br>
-(The shortcuts above are the recommended settings. Because Obsidian officially does not recommend plugins using shortcuts by default, please manually set the shortcuts for the two commands: "Show panel: search and menu" and "Show panel: miniEditor").
+(The shortcuts above are the recommended settings. Because Obsidian officially does not recommend plugins using shortcuts by default, please manually set the shortcuts for the two commands: "Show panel: preset 1" and "Show panel: preset 2").
 <br><br>
 For more instructions and tutorials:
 <ul>
