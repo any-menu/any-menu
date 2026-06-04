@@ -23,7 +23,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     } : undefined,
   },
   api: {
-    sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.hide(); },
+    sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.panel_hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
     notify: (message: string) => global_setting.api.notify(message),
 
@@ -35,8 +35,9 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
       return await global_setting.api.writeFile(relPath, content, is_append);
     },
 
+    // #region 面板相关
     hidePanel: (list?: string[]) => {
-      AMPanel.hide(list)
+      AMPanel.panel_hide(list)
       if (list == undefined && global_setting.platform === 'app') {
         global_setting.other.app_hide(list)
       }
@@ -46,8 +47,11 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
         global_setting.other.app_show(position, list)
       } else {
         if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
-        AMPanel.show(undefined, list)
+        AMPanel.panel_show(undefined, list)
       }
+    },
+    togglePanel: (item: string) => {
+      AMPanel.panel_toggle(item)
     },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);
@@ -55,6 +59,7 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     unregisterSubPanel: (id: string) => {
       global_el.amPanel?.unregister_sub_panel(id);
     }
+    // #endregion
   }
 }
 

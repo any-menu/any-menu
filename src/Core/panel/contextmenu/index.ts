@@ -99,7 +99,7 @@ export class AMContextMenu {
 
     // 创建菜单 DOM (默认隐藏)
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-context-menu', 'root-menu');
-    this.hide()
+    this.panel_hide()
 
     // 禁止右键切换光标。不阻止默认菜单和冒泡，不禁止菜单，仅禁止聚焦
     // 原因：聚焦切换到菜单内可能引起ab块重渲染，导致挂钩生命到ab块的菜单消失，而不挂钩生命到ab块则菜单项功能可能引起bug
@@ -119,7 +119,7 @@ export class AMContextMenu {
   // #region 显示/隐藏菜单
 
   /// 显示该菜单
-  public show() {
+  public panel_show() {
     if (!this.el) return
     this.el.classList.remove('am-hide')
     this.el.classList.add('visible')
@@ -130,14 +130,24 @@ export class AMContextMenu {
     this.menu_el_data_current = this.menu_el_data_root
     this.vFocus_update('clean')
   }
+
   /// 隐藏该菜单
-  public hide() {
+  public panel_hide() {
     if (!this.el) return
     this.el.classList.add('am-hide')
     this.el.classList.remove('visible')
 
     // 状态重置
     this.vFocus_update('clean')
+  }
+
+  /// 切换该面板显示/隐藏状态
+  public panel_toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.panel_show()
+    } else {
+      this.panel_hide()
+    }
   }
 
   // #endregion
@@ -173,7 +183,7 @@ export class AMContextMenu {
   //       y -= offsetY
   //     }
   // 
-  //     this.show(x, y)
+  //     this.panel_show(x, y)
   //   })
   // }
 
@@ -330,20 +340,20 @@ export class AMContextMenu {
     //   if (!this.isShow) return
     //   if (header_r.contains(ev.target as Node)) return
     //   header_callback(header_2.value)
-    //   this.hide()
+    //   this.panel_hide()
     // })
     header_input.addEventListener('keydown', (ev) => { // input enter和suggestion enter冲突，前者先触发
       if (ev.key === 'Enter') { // 按回车应用值
         ev.preventDefault()
         // 获取隐藏值 (提示值)
         header_callback(header_input.value)
-        this.hide()
+        this.panel_hide()
       }
       // if (ev.key === 'Escape') { // 按esc不应用值
       //   ev.preventDefault()
       //   ev.stopPropagation()
       //   header_2.value = header_old
-      //   this.hide()
+      //   this.panel_hide()
       // }
     })
     this.append_el(header_r)

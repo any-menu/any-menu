@@ -24,14 +24,14 @@ export class AMSuggestion {
     const el_suggestion = document.createElement('div');
     this.el_suggestion = el_suggestion
       el_suggestion.classList.add('am-search-suggestion');
-    this.hide()
+    this.panel_hide()
   }
 
-  show() {
+  panel_show() {
     const el_suggestion = this.el_suggestion
     el_suggestion.innerHTML = ''; el_suggestion.classList.remove('am-hide');
   }
-  hide() {
+  panel_hide() {
     const el_suggestion = this.el_suggestion
     el_suggestion.innerHTML = ''; el_suggestion.classList.add('am-hide');
   }
@@ -60,7 +60,7 @@ export class AMSuggestion {
     el_input.addEventListener('keydown', (ev) => {
       // 无内容时，由多级菜单接管事件
       if (el_input.value.trim() === '') {
-        this.hide()
+        this.panel_hide()
         return
       }
 
@@ -165,13 +165,13 @@ export class AMSuggestion {
 
     // 数量检查
     if (result.length === 0) {
-      this.hide()
+      this.panel_hide()
       return []
     }
     // if (result.length == 50) {} // 达到上限
 
     // 添加到建议列表
-    this.show()
+    this.panel_show()
     let alt_key_index = 0
     for (const item of result) {
       // alt_key_key
@@ -200,11 +200,11 @@ export class AMSuggestion {
         if (item.value.startsWith('@am-script: ')) {
           const script_id = item.value.substring('@am-script: '.length)
           PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginContext(item.key))
-          this.hide()
+          this.panel_hide()
         }
         else {
           void global_setting.api.sendText(item.value)
-          this.hide()
+          this.panel_hide()
         }
       }
     }

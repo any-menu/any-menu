@@ -5,7 +5,7 @@ export default {
 <br><br>
 默认使用 Alt+A 打开搜索框和菜单、Alt+S 打开快速编辑器 (App版也可以用高级快捷键 Caps+M 或 Caps+N) (均可在设置中修改快捷键)
 <br><br>
-(以上是推荐设置的快捷键，由于 Obsidian 官方不推荐插件默认使用快捷键，请自行分别设置 "Show panel: search and menu" 和 "Show panel: miniEditor" 这两个命令的快捷键)
+(以上是推荐设置的快捷键，由于 Obsidian 官方不推荐插件默认使用快捷键，请自行分别设置 "Show panel: preset 1" 和 "Show panel: preset 2" 这两个命令的快捷键)
 <br><br>
 更多说明和教程浏览:
 <ul>
@@ -50,6 +50,9 @@ export default {
   'Index engine2': '模糊匹配/倒序 | 前缀树',
 
   'Other config': '其他配置',
+  'Show panel: preset 1': '显示面板: 预设 1',
+  'Show panel: preset 2': '显示面板: 预设 2',
+  'Show panel: preset 3': '显示面板: 预设 3',
   'Note path': '笔记保存路径',
   'Note path2': '快捷笔记功能中，笔记的保存路径。',
   'Debug mode': '调试模式',

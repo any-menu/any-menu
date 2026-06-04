@@ -171,6 +171,8 @@ export interface PluginInterfaceCtx {
       is_append?: boolean
     ) => Promise<boolean>;
 
+    // #region 面板相关
+
     /**
      * 隐藏面板（低风险）
      * @param list 不传表示隐藏全部，空列表表示不隐藏子面板只隐藏容器
@@ -183,6 +185,13 @@ export interface PluginInterfaceCtx {
      * @param position 不填表示沿用之前的位置（推荐）
      */
     showPanel: (list?: string[], position?: 'center' | 'cursor') => void;
+
+    /**
+     * 切换面板的显示/隐藏状态（低风险）
+     * 
+     * 基本同 hidePanel 和 showPanel
+     */
+    togglePanel: (item: string) => void;
 
     /**
      * 注册子面板（中风险，会注入 HTML 元素），注册后通过 `showPanel` 控制显示/隐藏
@@ -200,6 +209,8 @@ export interface PluginInterfaceCtx {
      * 注销子面板
      */
     unregisterSubPanel: (id: string) => void;
+
+    // #endregion
 
     // TODO: 
     // - 特定文件访问权限 (低风险)

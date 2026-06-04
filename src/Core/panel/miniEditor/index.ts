@@ -28,7 +28,7 @@ export class AMMiniEditor {
   ) {
     this.el_parent = el_parent
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
-    this.hide()
+    this.panel_hide()
 
     // EditableBlock
     this.cache_text = 'test Mini Editor2' // TODO tmp
@@ -92,7 +92,7 @@ export class AMMiniEditor {
           console.error('MiniEditor 保存笔记失败', err);
         });
         // TODO Tauri 版本存在bug，Tauri 版本中，鼠标外点会分别隐藏元素+窗口。但这里只会影响元素而不影响窗口
-        this.hide(); // 隐藏窗口
+        this.panel_hide(); // 隐藏窗口
       }
     const btn_md_mode = document.createElement('button'); buttons.appendChild(btn_md_mode);
       if (global_setting.state.editor_engine === 'codeblock') {
@@ -155,7 +155,7 @@ export class AMMiniEditor {
 
   // #region 显示/隐藏菜单
 
-  show(new_text?: string, is_focus: boolean = false) {
+  public panel_show(new_text?: string, is_focus: boolean = false) {
     this.el.classList.remove('am-hide'); this.isShow = true;
 
     if (new_text) this.cache_text = new_text
@@ -182,10 +182,18 @@ export class AMMiniEditor {
     window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
-  hide() {
+  public panel_hide() {
     this.el.classList.add('am-hide'); this.isShow = false;
 
     window.removeEventListener('keydown', this.visual_listener_keydown)
+  }
+
+  public panel_toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.panel_show()
+    } else {
+      this.panel_hide()
+    }
   }
 
   // Enter 发送文本

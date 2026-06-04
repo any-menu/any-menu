@@ -664,7 +664,7 @@ div.editable-textarea-textarea {
   margin: 0;
   display: grid;
   grid-auto-flow: column;
-  grid-template-rows: repeat(8, auto);
+  grid-template-rows: repeat(10, auto);
   gap: 0 0;
   color: var(--ab-tab-root-tx-color);
   background-color: var(--ab-menu-bg-color);
@@ -762,7 +762,7 @@ div.editable-textarea-textarea {
   display: inline-block;
   vertical-align: top;
   align-items: center;
-  height: 100%;
+  height: 28px;
   padding: 0;
   margin: 0 4px;
   position: relative;

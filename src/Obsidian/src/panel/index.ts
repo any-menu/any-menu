@@ -1,6 +1,7 @@
 import {
   MarkdownView, Plugin, type Editor
 } from 'obsidian'
+import { t } from '@/Core/locales/helper'
 import { AMPanel } from '@/Core/panel/'
 // import { ABContextMenu } from '@/Core/panel/contextmenu/index'
 // import { AMSearch } from "@/Core/panel/search"
@@ -21,27 +22,33 @@ export function registerAMContextMenu(plugin: Plugin) {
 
   // 注册命令
   plugin.addCommand({
-    id: 'any-menu-panel-serach',
-    name: 'Show panel: search and menu',
+    id: 'any-menu-panel-1',
+    name: t('Show panel: preset 1'),
     // callback: () => {},
     editorCallback: async (editor, _view) => { // 仅于编辑器界面才能触发的回调
-      void show_panel(editor, global_setting.key_panel.panel1)
+      void show_panel(editor, global_setting.config.key_panel.panel_preset_1)
     },
     // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
     //   { modifiers: ["Alt"], key: "A" }
     // ]
   })
-
   plugin.addCommand({
-    id: 'any-menu-panel-minieditor',
-    name: 'Show panel: miniEditor',
+    id: 'any-menu-panel-2',
+    name: t('Show panel: preset 2'),
     // callback: () => {},
     editorCallback: (editor, _view) => {
-      void show_panel(editor, global_setting.key_panel.panel2)
+      void show_panel(editor, global_setting.config.key_panel.panel_preset_2)
     },
     // hotkeys: [
     //   { modifiers: ["Alt"], key: "S" }
     // ]
+  })
+  plugin.addCommand({
+    id: 'any-menu-panel-3',
+    name: t('Show panel: preset 3'),
+    editorCallback: (editor, _view) => {
+      void show_panel(editor, global_setting.config.key_panel.panel_preset_3)
+    },
   })
 
   const show_panel = async (editor: Editor, panel_list?: string[]) => {
@@ -64,7 +71,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    AMPanel.show({x: cursor3.x, y: cursor3.y}, panel_list)
+    AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list)
   }
 
   // 注册工具带

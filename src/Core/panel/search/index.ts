@@ -27,7 +27,7 @@ export class AMSearch {
    */
   constructor(el_parent: HTMLElement) {
     this.el = this.createDom(el_parent)
-    this.hide()
+    this.panel_hide()
   }
 
   /** 输入框
@@ -53,9 +53,9 @@ export class AMSearch {
 
   // #region 显示/隐藏
   
-  show(is_focus: boolean = false) {
+  public panel_show(is_focus: boolean = false) {
     if (this.el_input) this.el_input.value = ''
-    if (this.amSuggestion) this.amSuggestion.hide()
+    if (this.amSuggestion) this.amSuggestion.panel_hide()
 
     if (this.el) {
       this.el.classList.remove('am-hide')
@@ -72,9 +72,9 @@ export class AMSearch {
     // if (global_setting.platform == 'app') return
   }
 
-  hide() {
+  public panel_hide() {
     if (this.el_input) this.el_input.value = ''
-    if (this.amSuggestion) this.amSuggestion.hide()
+    if (this.amSuggestion) this.amSuggestion.panel_hide()
 
     if (this.el) this.el.classList.add('am-hide')
     this.el_input?.blur()
@@ -95,6 +95,14 @@ export class AMSearch {
 
     // ~~在 app (非ob/编辑器或浏览器插件等) 环境跟随窗口显示隐藏，用不到聚焦变换~~
     // if (global_setting.platform == 'app') return
+  }
+
+  public panel_toggle() {
+    if (this.el?.classList.contains('am-hide')) {
+      this.panel_show()
+    } else {
+      this.panel_hide()
+    }
   }
 
   // #endregion
