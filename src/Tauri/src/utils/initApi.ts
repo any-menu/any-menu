@@ -129,6 +129,15 @@ export function initApi() {
     }
   }
 
+  global_setting.api.isFolder = async (relPath: string): Promise<boolean> => {
+    try {
+      const ret: boolean = await invoke("is_folder", { path: relPath })
+      return ret
+    } catch {
+      return false
+    }
+  }
+
   global_setting.api.readFolder = async (relPath: string) => {
     const files: string[]|null = await invoke("read_folder", { path: relPath })
     if (typeof files !== 'object' || !Array.isArray(files)) {

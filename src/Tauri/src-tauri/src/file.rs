@@ -6,6 +6,14 @@ use std::path::Path;
 // 而且后端只提供了读写 api，不参与解析
 
 #[tauri::command]
+pub fn is_folder(path: &str) -> bool {
+    match fs::read_dir(path) {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+
+#[tauri::command]
 pub fn read_file(path: &str) -> Option<String> {
     match fs::read_to_string(&path) {
         Ok(content) => {

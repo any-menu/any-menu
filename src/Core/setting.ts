@@ -122,6 +122,7 @@ export const global_setting: {
    */
   api: {
     saveInnerHTML: (el: HTMLElement, content: string) => void
+    isFolder: (relPath: string) => Promise<boolean>
     readFile: (relPath: string) => Promise<string | null>
     readFolder: (relPath: string) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
@@ -218,6 +219,7 @@ export const global_setting: {
       });
       el.replaceChildren(safeNode);
     },
+    isFolder: async () => { console.error("需实现 api.isFolder 方法"); return false },
     readFile: async () => { console.error("需实现 api.readFile 方法"); return null },
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
