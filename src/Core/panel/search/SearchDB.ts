@@ -30,8 +30,8 @@ import { ReverseIndexDB } from './ReverseIndexDB'
  */
 class SearchDB {
   trie: TrieDB // 前缀树搜索引擎
-  reverse: ReverseIndexDB // 模糊搜索搜索引擎 FuzzySearchEngine
-  hash: undefined // (未支持) 哈希搜索引擎。主要是哈希要全量匹配，适用性一般不是很高
+  reverse: ReverseIndexDB     // 模糊搜索搜索引擎 FuzzySearchEngine
+  hash: undefined             // (未支持) 哈希搜索引擎。主要是哈希要全量匹配，适用性一般不是很高
 
   pinyin?: {
     // 函数调用
@@ -47,10 +47,9 @@ class SearchDB {
   }
 
   static factory() {
-    if (SEARCH_DB) return SEARCH_DB
     return new SearchDB()
   }
-  
+
   private constructor() {
     // if (global_setting.config.search_engine == 'trie') {
     //   this.trie = new TrieDB()
@@ -225,9 +224,9 @@ class SearchDB {
    */
   query(query: string): {key: string, value: string}[] {
     if (global_setting.config.search_engine === 'trie') {
-      return SEARCH_DB.query_by_trie(query)
+      return this.query_by_trie(query)
     } else if (global_setting.config.search_engine === 'reverse') {
-      return SEARCH_DB.query_by_reverse(query)
+      return this.query_by_reverse(query)
     } else {
       console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
       return []
@@ -291,3 +290,5 @@ class SearchDB {
 
 export let SEARCH_DB: SearchDB
 SEARCH_DB = SearchDB.factory()
+export let SEARCH_DB_img: SearchDB // 图片/路径版本的数据库
+SEARCH_DB_img = SearchDB.factory()
