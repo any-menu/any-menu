@@ -70,11 +70,19 @@ export async function initMenuData() {
   async function fill_by_folder(folder_path: string) {
     // 会遍历里面的文件执行 fiil_by_file 的 (TODO 递归执行)
     try {
-      const files: string[] = await global_setting.api.readFolder(folder_path)
-      if (!files || files.length === 0) throw new Error("No files found")
-      // 并发处理文件提升性能，但等待所有文件处理结束后再返回
-      // 旧: for (const file_path of files) await fill_by_file(file_path)
-      const promises = files.map(file_path => fill_by_file(file_path))
+      const entries: string[] = await global_setting.api.readFolder(folder_path)
+      if (!entries || entries.length === 0) throw new Error("No files found")
+
+      const promises = entries.map(async (entry_path) => {
+        const ret = await global_setting.api.isFolder(entry_path) // 目录则递归，文件则读取并处理
+        if (ret) {
+          await fill_by_folder(entry_path)
+        } else {
+          await fill_by_file(entry_path)
+        }
+      })
+
+      // 前面并发处理文件，但等待所有文件处理结束后再返回
       await Promise.all(promises)
     } catch (error) {
       console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
@@ -83,9 +91,10 @@ export async function initMenuData() {
 
   async function fill_by_file(file_path: string) {
     // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
-    let file_name_short: string // 不加路径和扩展名
-    let file_ext: string
-    const file_name_full = file_path.split(/\/|\\/).pop()??''
+    // file_path                // 文件路径
+    let file_name_short: string // 文件名 (不加路径和扩展名, f.a.json -> f.a)
+    let file_ext: string        // 扩展名 (f.a.json -> json)
+    const file_name_full = file_path.split(/\/|\\/).pop()??'' // 文件名 (不加路径)
     const file_part = file_name_full.split('.')
     if (file_part.length < 2) {
       file_name_short = file_name_full
@@ -94,6 +103,9 @@ export async function initMenuData() {
     else {
       file_name_short = file_part.slice(0, -1).join('.')
       file_ext = file_part[file_part.length - 1].toLowerCase()
+    }
+    if (!['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
+      return // 排除无关文件
     }
 
     // 插件是否已开启
@@ -117,13 +129,9 @@ export async function initMenuData() {
 
     // 文件内容
     let file_content: string|null = ''
-    if (['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
-      file_content = await global_setting.api.readFile(file_path)
-      if (typeof file_content !== 'string') {
-        throw new Error("Invalid file content format")
-      }
-    } else {// 无关文件
-      return
+    file_content = await global_setting.api.readFile(file_path)
+    if (typeof file_content !== 'string') {
+      throw new Error("Invalid file content format")
     }
 
     // 分发各种扩展名/特定文件名 // TODO 存在顺序问题
