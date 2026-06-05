@@ -124,7 +124,7 @@ export const global_setting: {
     saveInnerHTML: (el: HTMLElement, content: string) => void
     isFolder: (relPath: string) => Promise<boolean>
     readFile: (relPath: string) => Promise<string | null>
-    readFolder: (relPath: string) => Promise<string[]>
+    readFolder: (relPath: string, recursion_depth?: number) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
     // 从配置文件同步的 global config 对象 (注意 app 和 obsidian 版配置文件不同)

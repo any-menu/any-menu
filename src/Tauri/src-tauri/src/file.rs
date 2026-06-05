@@ -26,24 +26,55 @@ pub fn read_file(path: &str) -> Option<String> {
     }
 }
 
-/// 读取目录下的所有文件路径，并返回文件路径列表
-/// 似乎不会改变目录的形式 (绝对/相对路径)
-#[tauri::command]
-pub fn read_folder(path: &str) -> Option<Vec<String>> {
+fn read_folder_inner(path: &Path, recursion_depth: i32, out: &mut Vec<String>) {
     let Ok(entries) = fs::read_dir(path) else {
-        log::error!("读取目录 {} 时出错: 目录不存在或无法访问", path);
-        return None;
+        log::error!("读取目录 {} 时出错: 目录不存在或无法访问", path.display());
+        return;
     };
 
-    let mut file_paths = Vec::new(); // 文件路径列表
     for entry in entries {
         let Ok(entry) = entry else { continue }; // 跳过无法读取的条目
         let file_path = entry.path();
-        if !file_path.is_file() { continue; } // 跳过目录
-        let Some(path_str) = file_path.to_str() else { continue; }; // 跳过无法转换为字符串的路径
-        file_paths.push(path_str.to_string());
+
+        // 文件，添加到结果列表
+        if file_path.is_file() {
+            if let Some(path_str) = file_path.to_str() {
+                out.push(path_str.replace('\\', "/"));
+            }
+            continue;
+        }
+
+        // 目录，递归
+        if file_path.is_dir() {
+            if recursion_depth == 0 {
+                continue;
+            }
+
+            let next_depth = if recursion_depth < 0 {
+                -1
+            } else {
+                recursion_depth - 1
+            };
+
+            read_folder_inner(&file_path, next_depth, out);
+        }
+    }
+}
+
+/// 读取目录下的所有文件路径，并返回文件路径列表
+/// 似乎不会改变目录的形式 (绝对/相对路径)
+#[tauri::command]
+pub fn read_folder(path: &str, recursion_depth: Option<i32>) -> Option<Vec<String>> {
+    let recursion_depth = recursion_depth.unwrap_or(-1);
+    let path_obj = Path::new(path);
+
+    if !path_obj.exists() || !path_obj.is_dir() {
+        log::error!("读取目录 {} 时出错: 目录不存在或无法访问", path);
+        return None;
     }
 
+    let mut file_paths = Vec::new(); // 文件路径列表
+    read_folder_inner(path_obj, recursion_depth, &mut file_paths);
     Some(file_paths)
 }
 

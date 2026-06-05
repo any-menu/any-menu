@@ -68,18 +68,14 @@ export async function initMenuData() {
   await fill_by_folder(global_setting.config.dict_paths)
 
   async function fill_by_folder(folder_path: string) {
-    // 会遍历里面的文件执行 fiil_by_file 的 (TODO 递归执行)
+    // 会遍历里面的文件执行 fiil_by_file 的
+    // 目前限制只递归一次，readFolder 可用参数 `-1` 表示无限递归
     try {
-      const entries: string[] = await global_setting.api.readFolder(folder_path)
+      const entries: string[] = await global_setting.api.readFolder(folder_path, 1)
       if (!entries || entries.length === 0) throw new Error("No files found")
 
       const promises = entries.map(async (entry_path) => {
-        const ret = await global_setting.api.isFolder(entry_path) // 目录则递归，文件则读取并处理
-        if (ret) {
-          await fill_by_folder(entry_path)
-        } else {
-          await fill_by_file(entry_path)
-        }
+        await fill_by_file(entry_path)
       })
 
       // 前面并发处理文件，但等待所有文件处理结束后再返回

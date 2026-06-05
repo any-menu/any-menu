@@ -365,7 +365,18 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   /** 获取要展示的数据 */
   async function getDictData() {
     dataview.innerHTML = ''; dataview.classList.add('am-hide'); span.classList.remove('am-hide'); span.textContent = t('Loading');
-    const ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths)
+
+    let ret: string[] = await global_setting.api.readFolder(global_setting.config.dict_paths, 1)
+    ret = ret.filter(path => { // 过滤掉部分扩展名，去除路径前缀
+      const ext = path.split('.').pop()?.toLowerCase()
+      if (!ext) return false
+      return ['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(ext)
+    })
+    // .map(path => {
+    //   const parts = path.split('/')
+    //   return parts[parts.length - 1]
+    // })
+
     dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
 
     local_dict_list.length = 0

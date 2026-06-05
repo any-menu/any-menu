@@ -138,8 +138,10 @@ export function initApi() {
     }
   }
 
-  global_setting.api.readFolder = async (relPath: string) => {
-    const files: string[]|null = await invoke("read_folder", { path: relPath })
+  global_setting.api.readFolder = async (relPath: string, recursion_depth?: number) => {
+    if (!recursion_depth) recursion_depth = 0
+
+    const files: string[]|null = await invoke("read_folder", { path: relPath, recursion_depth })
     if (typeof files !== 'object' || !Array.isArray(files)) {
       console.error("Invalid directory listing format", relPath, files)
       return []
