@@ -279,8 +279,7 @@ export function initApi(plugin: Plugin) {
 
     // 需要保持一致性，obsidian 专属设置与通用的 global 设置
     global_setting.isDebug = settings.isDebug
-    global_setting.config = settings.config
-
+    global_setting.config = global_setting.config = { ...global_setting.config, ...settings.config };
 
     // 如果没有配置文件则生成一个默认值的配置文件
     // if (!data) {
