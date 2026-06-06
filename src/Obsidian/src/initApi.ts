@@ -283,9 +283,12 @@ export function initApi(plugin: Plugin) {
 
 
     // 如果没有配置文件则生成一个默认值的配置文件
-    if (!data) {
-      await plugin.saveData(settings)
-    }
+    // if (!data) {
+    //   await plugin.saveData(settings)
+    // }
+    // 无论如何均重新保存一遍。避免在开发更新过程中，添加新的选项
+    await plugin.saveData(settings)
+
     return true
   }
 

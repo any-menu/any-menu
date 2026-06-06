@@ -217,6 +217,9 @@ export function initApi() {
       console.error('配置解析失败，请检查格式是否正确', error)
       return ''
     }
+
+    // 无论如何均重新保存一遍。避免在开发更新过程中，添加新的选项
+    await global_setting.api.saveConfig()
     
     return file_content
   }
