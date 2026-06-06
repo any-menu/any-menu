@@ -592,10 +592,11 @@ div.editable-textarea-textarea {
   /* 建议列表项 */
 }
 .am-search .am-search-suggestion > div.item {
-  display: flex;
   box-sizing: border-box;
+  display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+  position: relative;
   width: 100%;
   min-height: 28px;
   max-height: 98px;
@@ -613,7 +614,7 @@ div.editable-textarea-textarea {
   content: attr(data-altkey);
   display: none;
   position: absolute;
-  right: 7px;
+  right: 3px;
   top: unset;
   font-size: 12px;
   opacity: 0.6;
@@ -637,6 +638,38 @@ div.editable-textarea-textarea {
 .am-search .am-search-suggestion > div.item.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
+}
+
+/* --------------------------------- 图片搜索建议 ----------------------------- */
+.am-search .am-search-suggestion.img-mode {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  min-width: 700px;
+  min-height: 350px;
+  /* 建议列表项 */
+}
+.am-search .am-search-suggestion.img-mode > div.item {
+  box-sizing: border-box;
+  flex-direction: column;
+  width: calc((100% - 10px) / 6);
+  max-height: unset;
+}
+.am-search .am-search-suggestion.img-mode > div.item .img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin: 0;
+  padding: 0;
+}
+.am-search .am-search-suggestion.img-mode > div.item .key {
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
 /* -------------------------------- 多级菜单 ---------------------------- */

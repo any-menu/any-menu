@@ -228,7 +228,6 @@ export class AMSuggestion {
    */
   private search_img(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
     let result: {key: string, value: string}[] = SEARCH_DB_img.query(query)
-    console.log('图片搜索结果', result)
 
     // 数量检查
     if (result.length === 0) {
@@ -254,25 +253,26 @@ export class AMSuggestion {
 
       const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item');
         div.setAttribute('data-altkey', alt_key_key);
-      const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
-        div_value.textContent = item.value
+      const div_img = document.createElement('img'); div.appendChild(div_img); div_img.classList.add('img')
+        div_img.src = global_setting.config.dict_paths + item.value
+        div_img.alt = item.value
+      // const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
+      //   div_value.textContent = item.value
       const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
         div_key.textContent = item.key
+      div.title = item.key + '\n\n' + item.value
 
       // 给每个搜索项绑定事件 vs 全局监听点击建议项事件
       // 改为后者似乎收益非常有限，就不改了
       // 真正性能瓶颈还是每次搜索后的 DOM 重建，数量限制机制
       div.onclick = () => {
-        // el_input.value = '' // 弃用，让 input hide 再 show 时清空内容
-        if (item.value.startsWith('@am-script: ')) {
-          const script_id = item.value.substring('@am-script: '.length)
-          PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginContext(item.key))
-          this.panel_hide()
-        }
-        else {
-          void global_setting.api.sendText(item.value)
-          this.panel_hide()
-        }
+        // 一定是图片
+        // if (item.value.startsWith('@am-script: ')) {}
+        // else if (item.value.endsWith('.jpg') || item.value.endsWith('.png') || item.value.endsWith('.gif')) {}
+        // else {}
+
+        console.warn("未实现图片的输出功能，敬请期待")
+        global_setting.api.notify("未实现图片的输出功能，敬请期待")
       }
     }
 
