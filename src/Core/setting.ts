@@ -72,7 +72,7 @@ export const global_setting: {
 
     // 本地的词典/插件管理
     plugins: {
-      name: string,
+      path: string, // 相对于 dict_paths 的路径
       version?: string,
       enabled: boolean,
     }[],

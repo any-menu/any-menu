@@ -334,9 +334,9 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         name: t('Is enabled'),
         callback: (el: HTMLElement, item: any) => {
           const td5_btn = document.createElement('button'); el.appendChild(td5_btn); td5_btn.classList.add('btn');
-          const ret_ = global_setting.config.plugins.find(p => p.name === item.relPath)
+          const ret_ = global_setting.config.plugins.find(p => p.path === item.relPath)
           const ret = ret_ ?? {
-            name: item.relPath,
+            path: item.relPath,
             enabled: false
           }
           if (!ret_) {
@@ -380,11 +380,11 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     dataview.classList.remove('am-hide'); span.classList.add('am-hide'); span.textContent = t('Load successed');
 
     local_dict_list.length = 0
-    const dir = ret.map(item => {
-      const relPath = item.replace(global_setting.config.dict_paths, '')
-      local_dict_list.push({path: item, relPath: relPath, isDownloaded: false, isEnabled: false})
+    const dir = ret.map(path => {
+      const relPath = path.replace(global_setting.config.dict_paths, '')
+      local_dict_list.push({path: path, relPath: relPath, isDownloaded: false, isEnabled: false})
       return {
-        path: item,
+        path: path,
         relPath: relPath
       }
     })

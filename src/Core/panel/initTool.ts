@@ -91,6 +91,7 @@ export async function initMenuData() {
     let file_name_short: string // 文件名 (不加路径和扩展名, f.a.json -> f.a)
     let file_ext: string        // 扩展名 (f.a.json -> json)
     const file_name_full = file_path.split(/\/|\\/).pop()??'' // 文件名 (不加路径)
+    const file_path_rel = file_path.replace(global_setting.config.dict_paths, '')
     const file_part = file_name_full.split('.')
     if (file_part.length < 2) {
       file_name_short = file_name_full
@@ -108,14 +109,14 @@ export async function initMenuData() {
     let isFound = false
     let isEnable = false
     for (const plugin of global_setting.config.plugins) {
-      if (plugin.name !== file_name_full) continue
+      if (plugin.path !== file_path_rel) continue
       isFound = true
       if (plugin.enabled) isEnable = true
       break
     }
     if (!isFound) {
       global_setting.config.plugins.push({
-        name: file_name_full,
+        path: file_path_rel,
         enabled: false
       })
       global_setting.api.saveConfig()
