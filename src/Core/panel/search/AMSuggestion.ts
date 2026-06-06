@@ -49,7 +49,9 @@ export class AMSuggestion {
     // input事件 - 输入
     el_input.addEventListener('input', (ev) => {
       const target = ev.target as HTMLInputElement
-      search_result = this.search(el_suggestion, target.value)
+      this.search(el_suggestion, target.value).then(result => {
+        search_result = result
+      })
 
       // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
       const el_items = el_suggestion.querySelectorAll(":scope>div.item")
@@ -158,16 +160,16 @@ export class AMSuggestion {
   // #endregion
 
   /** 搜索并显示建议项 */
-  search(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
+  async search(el_suggestion: HTMLElement, query: string): Promise<{key: string, value: string}[]> {
     if (el_suggestion == null) return []
 
     // 图片/路径搜索
     if (query.endsWith('.jpg') || query.endsWith('.png') || query.endsWith('.gif')) {
       el_suggestion.classList.add('img-mode')
-      return this.search_img(el_suggestion, query.slice(0, -4))
+      return await this.search_img(el_suggestion, query.slice(0, -4))
     } else if (query.startsWith(' ')) {
       el_suggestion.classList.add('img-mode')
-      return this.search_img(el_suggestion, query.trimStart())
+      return await this.search_img(el_suggestion, query.trimStart())
     } else {
       el_suggestion.classList.remove('img-mode')
     }
@@ -226,7 +228,7 @@ export class AMSuggestion {
   /** 搜索并显示建议项 —— 图片版/路径版
    * (使用空格前缀进行区分)
    */
-  private search_img(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
+  private async search_img(el_suggestion: HTMLElement, query: string): Promise<{key: string, value: string}[]> {
     let result: {key: string, value: string}[] = SEARCH_DB_img.query(query)
 
     // 数量检查
@@ -251,10 +253,15 @@ export class AMSuggestion {
       }
       alt_key_index++
 
+      let img_src = item.value
+      if (global_setting.platform === 'app') {
+        img_src = await global_setting.other.app_convertFileSrc(img_src)
+      }
+
       const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item');
         div.setAttribute('data-altkey', alt_key_key);
       const div_img = document.createElement('img'); div.appendChild(div_img); div_img.classList.add('img')
-        div_img.src = global_setting.config.dict_paths + item.value
+        div_img.src = img_src
         div_img.alt = item.value
       // const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
       //   div_value.textContent = item.value

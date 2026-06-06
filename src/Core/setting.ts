@@ -159,6 +159,9 @@ export const global_setting: {
     // @param pos 不填表示沿用之前的位置
     app_show: (pos?: 'cursor'|'center', panel_list?: string[]) => Promise<void>,
     app_hide: (panel_list?: string[]) => Promise<void>,
+    // (特殊) 本地资源协议
+    // 最终生成的 URL 类似：https://asset.localhost/path_encode...
+    app_convertFileSrc: (relPath: string) => Promise<string>,
   }
 } = {
   platform: 'app',
@@ -268,5 +271,6 @@ export const global_setting: {
     renderMarkdown: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
     app_show: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_hide: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
+    app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },
   }
 }

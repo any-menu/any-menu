@@ -87,10 +87,13 @@ export async function initMenuData() {
 
   async function fill_by_file(file_path: string) {
     // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
-    // file_path                // 文件路径
-    let file_name_short: string // 文件名 (不加路径和扩展名, f.a.json -> f.a)
+    // file_path                // 文件路径 = 文件夹名 + 文件全名，文件全名 = 文件短名 + 扩展名
+    let file_folder: string     // 文件夹名
+    let file_name_short: string // 文件短名 (不加路径和扩展名, f.a.json -> f.a)
     let file_ext: string        // 扩展名 (f.a.json -> json)
-    const file_name_full = file_path.split(/\/|\\/).pop()??'' // 文件名 (不加路径)
+    file_folder = file_path.split(/\/|\\/).slice(0, -1).join('/')
+    file_folder = (file_folder == '') ? '' : (file_folder + '/')
+    const file_name_full = file_path.split(/\/|\\/).pop()??'' // 文件全名 (不加路径)
     const file_path_rel = file_path.replace(global_setting.config.dict_paths, '')
     const file_part = file_name_full.split('.')
     if (file_part.length < 2) {
@@ -136,7 +139,7 @@ export async function initMenuData() {
     } else if (file_ext === 'csv' || file_ext === 'txt') {
       void fill_by_csv(file_content, file_name_short)
     } else if (file_name_full.endsWith('.img.json')) {
-      void fill_by_img_json(file_content, file_name_short)
+      void fill_by_img_json(file_content, file_name_short, file_folder)
     } else if (file_ext === 'json') {
       void fill_by_json(file_content, file_name_short)
     } else if (file_ext === 'yaml' || file_ext === 'yml') {
@@ -270,8 +273,7 @@ export async function initMenuData() {
    * 
    * - 使用 SEARCH_DB_img，其余全部一样
    */
-  async function fill_by_img_json(file_content: string, file_name_short: string) {
-
+  async function fill_by_img_json(file_content: string, file_name_short: string, file_folder: string) {
     // 解析
     let jsonData: any
     try {
@@ -285,7 +287,7 @@ export async function initMenuData() {
     let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
       return {
         key: item["keyword"],
-        value: item["path"],
+        value: file_folder + item["path"],
       }
     })
     SEARCH_DB_img.add_data_by_json(records, file_name_short)
