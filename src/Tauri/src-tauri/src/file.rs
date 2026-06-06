@@ -154,3 +154,19 @@ pub fn delete_file(path: &str) -> bool {
         }
     }
 }
+
+/// 获取可执行程序的路径 (如 Tauri/src-tauri/target/debug/)
+#[tauri::command]
+pub fn get_exe_dir() -> Result<String, String> {
+    let exe_path = std::env::current_exe().map_err(|e| e.to_string())?;
+    let exe_dir = exe_path.parent().ok_or("无法获取可执行文件目录")?;
+    Ok(exe_dir.to_string_lossy().to_string())
+}
+
+/// 获取资源目录 (如 Tauri/src-tauri/)
+#[tauri::command]
+pub fn get_resource_dir() -> Result<String, String> {
+    let resource_dir = std::env::current_dir().map_err(|e| e.to_string())?;
+    log::info!("当前路径: {}", resource_dir.display());
+    Ok(resource_dir.to_string_lossy().to_string())
+}
