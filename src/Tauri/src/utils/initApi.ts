@@ -169,8 +169,17 @@ export function initApi() {
     return await invoke("delete_file", { path: relPath });
   }
 
-  // 注意: 这里的 relPath 在开发环境中要相对于 Tauri/src-tauri/target/debug/
-  //   和之前相对于 Tauri/src-tauri/ 不同。很奇怪
+  // TODO 注意: 
+  // 
+  // 之前的开发中，都是开发环境用 Tauri/src-tauri/ (比较方便)，
+  // 生产环境中用 Tauri/src-tauri/target/debug/
+  // 
+  // 但这里由于安全策略，前者也要相对于 Tauri/src-tauri/target/debug/。
+  //   和之前不同。
+  // 
+  // 所以在开发阶段，如果你想要让这里也生效，
+  // 你需要把 src-tauri/dist 文件夹往 src-tauri/target/debug/ 复制一下
+  // 后续我再看怎么弄更统一一点
   global_setting.other.app_convertFileSrc = async (relPath: string) => {
     // 去掉开头的 "./" 或 ".\\"
     const cleanPath = relPath.replace(/^\.(\/|\\)/, '');

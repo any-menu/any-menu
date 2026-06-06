@@ -645,9 +645,8 @@ div.editable-textarea-textarea {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
+  align-items: flex-start;
+  gap: 8px;
   min-width: 700px;
   min-height: 350px;
   /* 建议列表项 */
@@ -655,7 +654,7 @@ div.editable-textarea-textarea {
 .am-search .am-search-suggestion.img-mode > div.item {
   box-sizing: border-box;
   flex-direction: column;
-  width: calc((100% - 10px) / 6);
+  width: calc((100% - 48px) / 6);
   max-height: unset;
 }
 .am-search .am-search-suggestion.img-mode > div.item .img {

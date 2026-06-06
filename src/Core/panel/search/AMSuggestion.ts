@@ -47,11 +47,9 @@ export class AMSuggestion {
     }[] = []
 
     // input事件 - 输入
-    el_input.addEventListener('input', (ev) => {
+    el_input.addEventListener('input', async (ev) => {
       const target = ev.target as HTMLInputElement
-      this.search(el_suggestion, target.value).then(result => {
-        search_result = result
-      })
+      search_result = await this.search(el_suggestion, target.value)
 
       // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
       const el_items = el_suggestion.querySelectorAll(":scope>div.item")
@@ -126,10 +124,12 @@ export class AMSuggestion {
 
   /** 更新虚拟聚焦项 (选中项)
    * @param flag
-   * - 空，使用当前的currentFocus值
-   * - '0'，选中第一项
-   * - 'up'，选中上一项 (可循环选择)
-   * - 'down'，选中下一项 (可循环选择)
+   *   - 空，使用当前的currentFocus值
+   *   - '0'，选中第一项
+   *   - 'up'，选中上一项 (可循环选择)
+   *   - 'down'，选中下一项 (可循环选择)
+   * 
+   * @bug input 后会有两个事件: 搜索和 vFoucs_update
    */
   private vFocus_update(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
     if (flag === '0') this.currentFocus = 0
@@ -280,6 +280,8 @@ export class AMSuggestion {
 
         console.warn("未实现图片的输出功能，敬请期待")
         global_setting.api.notify("未实现图片的输出功能，敬请期待")
+
+        // this.panel_hide()
       }
     }
 
