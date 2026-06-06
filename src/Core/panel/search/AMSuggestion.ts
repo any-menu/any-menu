@@ -1,5 +1,5 @@
 import { global_setting } from "../../setting"
-import { SEARCH_DB } from "./SearchDB"
+import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
 import { global_el } from "../index"
 import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
 
@@ -161,7 +161,74 @@ export class AMSuggestion {
   search(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
     if (el_suggestion == null) return []
 
+    // 图片/路径搜索
+    if (query.endsWith('.jpg') || query.endsWith('.png') || query.endsWith('.gif')) {
+      el_suggestion.classList.add('img-mode')
+      return this.search_img(el_suggestion, query.slice(0, -4))
+    } else if (query.startsWith(' ')) {
+      el_suggestion.classList.add('img-mode')
+      return this.search_img(el_suggestion, query.trimStart())
+    } else {
+      el_suggestion.classList.remove('img-mode')
+    }
+
     let result: {key: string, value: string}[] = SEARCH_DB.query(query)
+
+    // 数量检查
+    if (result.length === 0) {
+      this.panel_hide()
+      return []
+    }
+    // if (result.length == 50) {} // 达到上限
+
+    // 添加到建议列表
+    this.panel_show()
+    let alt_key_index = 0
+    for (const item of result) {
+      // alt_key_key
+      let alt_key_key: string = ''
+      if (alt_key_index < 9) {
+        alt_key_key = (alt_key_index + 1).toString()
+      } else if (alt_key_index == 9) {
+        alt_key_key = "0"
+      } else if (alt_key_index < 36) {
+        alt_key_key = String.fromCharCode(97 + alt_key_index - 10)
+      }
+      alt_key_index++
+
+      const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item');
+        div.setAttribute('data-altkey', alt_key_key);
+      const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
+        div_value.textContent = item.value
+      const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
+        div_key.textContent = item.key
+
+      // 给每个搜索项绑定事件 vs 全局监听点击建议项事件
+      // 改为后者似乎收益非常有限，就不改了
+      // 真正性能瓶颈还是每次搜索后的 DOM 重建，数量限制机制
+      div.onclick = () => {
+        // el_input.value = '' // 弃用，让 input hide 再 show 时清空内容
+        if (item.value.startsWith('@am-script: ')) {
+          const script_id = item.value.substring('@am-script: '.length)
+          PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginContext(item.key))
+          this.panel_hide()
+        }
+        else {
+          void global_setting.api.sendText(item.value)
+          this.panel_hide()
+        }
+      }
+    }
+
+    return result
+  }
+
+  /** 搜索并显示建议项 —— 图片版/路径版
+   * (使用空格前缀进行区分)
+   */
+  private search_img(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
+    let result: {key: string, value: string}[] = SEARCH_DB_img.query(query)
+    console.log('图片搜索结果', result)
 
     // 数量检查
     if (result.length === 0) {

@@ -5,7 +5,7 @@ import { type AMContextMenu } from "./contextmenu"
 import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
 import { type PanelItem } from "./PanelItem"
-import { SEARCH_DB } from "./search/SearchDB"
+import { SEARCH_DB, SEARCH_DB_img } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
@@ -119,7 +119,6 @@ export async function initMenuData() {
         enabled: false
       })
       global_setting.api.saveConfig()
-      return
     }
     if (!isEnable) return
 
@@ -135,6 +134,8 @@ export async function initMenuData() {
       void fill_by_toml(file_content, file_name_short)
     } else if (file_ext === 'csv' || file_ext === 'txt') {
       void fill_by_csv(file_content, file_name_short)
+    } else if (file_name_full.endsWith('.img.json')) {
+      void fill_by_img_json(file_content, file_name_short)
     } else if (file_ext === 'json') {
       void fill_by_json(file_content, file_name_short)
     } else if (file_ext === 'yaml' || file_ext === 'yml') {
@@ -252,6 +253,41 @@ export async function initMenuData() {
 
     // 面板项 —— toolbar 部分
     myToolbar.append_data([panelItem])
+  }
+
+  /** 图片词典
+   * 
+   * 与 fill_by_json 类似，设计区别在于:
+   * 
+   * - 其是自动根据文件夹生成的缓存速查表
+   * - 其目标均为图片路径，输出时会去黏贴图片内容
+   * - 会进入单独的数据库。
+   *   并不需要文字结果和图片结果混杂在一起，在输出的场景中，都是会非常明确要输出文本还是图片的。
+   *   搜索命令其实也同理。
+   * 
+   * 实现区别在于:
+   * 
+   * - 使用 SEARCH_DB_img，其余全部一样
+   */
+  async function fill_by_img_json(file_content: string, file_name_short: string) {
+
+    // 解析
+    let jsonData: any
+    try {
+      jsonData = JSON.parse(file_content)
+    } catch (error) {
+      console.error("Parse error:", error)
+      return
+    }
+
+    // 搜索建议部分
+    let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
+      return {
+        key: item["keyword"],
+        value: item["path"],
+      }
+    })
+    SEARCH_DB_img.add_data_by_json(records, file_name_short)
   }
 
   // #endregion
