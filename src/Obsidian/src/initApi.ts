@@ -70,7 +70,13 @@ export function initApi(plugin: Plugin) {
     }
   }
 
-  global_setting.api.sendText = async (text: string) => {
+  global_setting.api.sendText = async (text: string, mode?: 'IMG_MODE') => {
+    if (mode === 'IMG_MODE') {
+      console.warn("非 App 环境未实现图片的输出功能，敬请期待");
+      void global_setting.api.notify("非 App 环境未实现图片的输出功能，敬请期待");
+      return
+    }
+
     AMPanel.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return

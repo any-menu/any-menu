@@ -522,9 +522,15 @@ pub fn send(text: &str, method: &str) -> String {
         }
     }
 
+    /// @param text
+    ///   如果文本为空字符串
+    ///   - 行为1: 也能写入剪切板，并且下次黏贴相当于什么也没黏贴，无事发生
+    ///   - 行为2: (当前) 不写如剪切板，下次黏贴使用最近剪切板项
     fn send_by_clipboard(text: &str) -> String {
-        // 将文本写入剪贴板
-        clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
+        // 将文本写入剪贴板剪切板
+        if !text.is_empty() {
+            clipboard::clipboard_set_text(text).expect("Failed to set clipboard text");
+        }
 
         // 模拟 Ctrl+V 按键来粘贴
         clipboard::simulate_paste().expect("Failed to simulate paste");

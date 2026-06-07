@@ -272,16 +272,14 @@ export class AMSuggestion {
       // 给每个搜索项绑定事件 vs 全局监听点击建议项事件
       // 改为后者似乎收益非常有限，就不改了
       // 真正性能瓶颈还是每次搜索后的 DOM 重建，数量限制机制
-      div.onclick = () => {
+      div.onclick = async () => {
         // 一定是图片
         // if (item.value.startsWith('@am-script: ')) {}
         // else if (item.value.endsWith('.jpg') || item.value.endsWith('.png') || item.value.endsWith('.gif')) {}
         // else {}
 
-        console.warn("未实现图片的输出功能，敬请期待")
-        global_setting.api.notify("未实现图片的输出功能，敬请期待")
-
-        // this.panel_hide()
+        global_setting.api.sendText(item.value, 'IMG_MODE')
+        this.panel_hide()
       }
     }
 

@@ -138,7 +138,7 @@ export const global_setting: {
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
     pin: (isPin?: boolean) => Promise<void> // 切换窗口/面板的置顶状态，或拖拽窗口
-    sendText: (text: string) => Promise<void>
+    sendText: (text: string, mode?: 'IMG_MODE') => Promise<void>
     saveToClipboard: (text: string) => Promise<void>
     // 统一的网络请求接口，并简化try/catch
     // 需要注意的是: 有前端版本和后端版本

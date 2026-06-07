@@ -11,6 +11,8 @@ import { resolveResource } from '@tauri-apps/api/path';
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
+import { writeImage } from '@tauri-apps/plugin-clipboard-manager';
+import { readFile } from '@tauri-apps/plugin-fs';
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
@@ -109,7 +111,50 @@ export function initApi() {
     }
   }
 
-  global_setting.api.sendText = async (str: string) => {
+  // 当 'IMG_MODE' 时，str 是图片相对路径
+  global_setting.api.sendText = async (str: string, mode?: 'IMG_MODE') => {
+    // 图片发送模式 (TODO 支持混合发送模式)
+    if (mode === 'IMG_MODE') {
+      // 方案1 - 使用纯前端 api 复制到剪切板
+      {
+        // 1. 从已显示的 img 元素获取图片 Blob
+        // const response = await fetch(str);
+        // const blob = await response.blob();
+        // 2. 写入系统剪贴板（像在网页里复制图片一样）
+        // 
+        // 弃用: 原因是这里可能有 gif 格式，Chromium 剪切板 API 只稳定支持 image/png (或jpg)
+        //   剪切 gif 会报错：
+        //   Uncaught (in promise) NotAllowedError: Failed to execute 'write' on 'Clipboard': Type image/gif not supported on write.
+        // 
+        // await navigator.clipboard.write([
+        //   new ClipboardItem({ [blob.type]: blob }),
+        // ]);
+      }
+
+      // 方案2 - 使用 Tauri 剪切板插件
+      {
+        // const fileData = await readFile(str); // 返回 Uint8Array
+        // await writeImage(fileData);
+
+        // 但这里的 writeImage 一直出问题，明明原型是接受多种参数类型，但无论给 Uint8Array 还是路径名都不行
+      }
+
+      // 方案3 - 自定义后端 API
+      {
+        await invoke<null|string>("clipboard_set_file", { path: str })
+      }
+
+      hideWindow()
+      await new Promise(resolve => setTimeout(resolve, 200)); // 等待一小段时间确保窗口已隐藏且焦点已切换 (复制非纯文本好像时间要久些)
+
+      await invoke("send", { // 通知后端黏贴
+          text: "", // 特殊 - 如果文本为空，就会使用当前剪切板项
+          method: "clipboard"
+      });
+
+      return
+    }
+
     // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
     // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
     // 这里应该多一个判断。不过这里恒为后者
@@ -130,6 +175,8 @@ export function initApi() {
       }
     }
   }
+
+  // ------- TODO 后面这些后续更换成使用 Tauri fs 插件实现，而非使用自定义 ------------
 
   global_setting.api.isFolder = async (relPath: string): Promise<boolean> => {
     try {
