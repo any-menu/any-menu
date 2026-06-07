@@ -20,6 +20,7 @@
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
     "notification:default",
+    "clipboard-manager:allow-write-image",
     {
       "identifier": "http:default",
       "allow": [
