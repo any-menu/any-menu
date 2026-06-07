@@ -21,6 +21,8 @@
     "global-shortcut:allow-unregister",
     "notification:default",
     "clipboard-manager:allow-write-image",
+    "fs:default",
+    "fs:allow-read-file",
     {
       "identifier": "http:default",
       "allow": [
@@ -36,6 +38,12 @@
       ],
       "deny": [
         { "url": "https://private.tauri.app" }
+      ]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "**" }
       ]
     }
   ]

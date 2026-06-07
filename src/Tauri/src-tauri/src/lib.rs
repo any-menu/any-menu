@@ -97,6 +97,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .plugin(tauri_plugin_clipboard_manager::init()) // 剪贴板管理插件
+        .plugin(tauri_plugin_fs::init()) // 文件系统插件
         .setup(|app| {
             let app_handle = app.app_handle();
 
