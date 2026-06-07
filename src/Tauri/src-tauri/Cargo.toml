@@ -32,6 +32,7 @@ chrono = "0.4.42" # 日期时间
 tauri-plugin-http = "2" # HTTP 请求插件 (用于在线词典/脚本)
 rdev = { version = "0.5.3", features = ["unstable_grab"] } # 监听和发送跨平台鼠键 (用于高级快捷键)
 tauri-plugin-notification = "2" # 本地通知插件
+tauri-plugin-clipboard-manager = "2" # 剪切板插件
 axum = { version = "0.8.9", features = ["ws"] } # HTTP服务器框架
 tower-http = { version = "0.6.10", features = ["cors"] } # HTTP服务器实用工具 (如解决跨域问题)
 tokio = "1.52.3" # 异步运行时 (HTTP服务器依赖)

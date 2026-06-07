@@ -57,5 +57,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "clipboard-manager": {
+      "all": true
+    }
   }
 }
