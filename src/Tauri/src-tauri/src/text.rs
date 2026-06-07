@@ -59,6 +59,57 @@ pub mod clipboard {
         }
     }
 
+    /** 将文件复制到剪切板
+     * 
+     * path 为文件路径，可能是文件、文件夹、图片等路径
+     * 该函数相当于你在资源管理器中对该路径所表示的文件/文件夹按下了 Ctrl+C，将其复制到你的剪切板中 
+     * 
+     * @param `file_path` 可以是绝对路径，也可以是相对于当前工作目录的相对路径。
+     *   文件必须真实存在，否则会返回错误。
+     * 
+     * co-author: deepseek-v4, gemini-3-pro
+     */
+    #[tauri::command]
+    pub fn clipboard_set_file(path: String) -> Result<(), String> {
+        use clipboard_rs::{Clipboard, ClipboardContext};
+        use std::fs;
+
+        // 1. 将相对路径转换为绝对路径 (前提是该文件必须存在)
+        let abs_path = fs::canonicalize(&path)
+            .map_err(|e| format!("无法解析文件绝对路径，文件是否存在? : {}", e))?;
+        let mut abs_path_str = abs_path.to_string_lossy().to_string();
+
+        // 2. 修复 Windows 下 canonicalize 带来的 "\\?\" 绝对路径前缀问题
+        #[cfg(target_os = "windows")]
+        if abs_path_str.starts_with(r"\\?\") {
+            abs_path_str = abs_path_str.replace(r"\\?\", "");
+        }
+
+        // 3. 初始化剪切板上下文
+        let ctx = ClipboardContext::new().map_err(|e| e.to_string())?;
+        
+        // 4. macOS 和 Linux 系统下的剪切板期望使用 file:// 协议开头的 URI
+        #[cfg(any(target_os = "macos", target_os = "linux"))]
+        let final_path = if !abs_path_str.starts_with("file://") {
+            format!("file://{}", abs_path_str)
+        } else {
+            abs_path_str
+        };
+
+        // 4. Windows 系统下直接使用绝对路径即可
+        #[cfg(target_os = "windows")]
+        let final_path = if abs_path_str.starts_with("file://") {
+            abs_path_str.strip_prefix("file://").unwrap_or(&abs_path_str).to_string()
+        } else {
+            abs_path_str
+        };
+
+        // 5. 写入剪切板，注意这里传入的是包含路径的数组
+        ctx.set_files(vec![final_path]).map_err(|e| e.to_string())?;
+
+        Ok(())
+    }
+
     /// 更健壮的 clipboard_get_text() 方法
     /// 尝试改善bug: 直接 clipboard_get_text() 有可能会冲突，获取失败，提示: Failed to open clipboard
     #[cfg(target_os = "windows")]
