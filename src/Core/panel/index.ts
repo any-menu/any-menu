@@ -151,6 +151,8 @@ export class AMPanel {
     el.classList.add('am-panel');
   }
 
+  // #region 面板相关
+
   /** 显示面板
    * 
    * TODO 所有参数都应该支持使用 undefined 来表示上次的状态
@@ -235,7 +237,7 @@ export class AMPanel {
     }
 
     if (!list) {
-      list = global_setting.config.key_panel.panel_preset_1
+      list = global_setting.config.panel_preset2[0].list
     }
 
     // 子面板
@@ -326,6 +328,8 @@ export class AMPanel {
       return
     }
   }
+
+  // #endregion
 
   /** 切换面板显示/隐藏状态 */
   static panel_toggle(item: string) {
@@ -438,7 +442,7 @@ export class AMPanel {
    */
   static get_size(list?: string[]): {width: number, height: number} {
     if (!list) {
-      list = global_setting.config.key_panel.panel_preset_1
+      list = global_setting.config.panel_preset2[0].list
     }
 
     // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)

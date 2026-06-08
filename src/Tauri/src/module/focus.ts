@@ -6,25 +6,25 @@ import { toggleWindow } from './window'
 import { global_el } from '../../../Core/panel'
 
 // 显示面板: 搜索框+菜单
-const SHORTCUT_1 = global_setting.config.key_panel.key1
+const SHORTCUT_1 = global_setting.config.panel_preset2[0].key
 const SHORTCUT_1_EVENT = async () => {
   await register(SHORTCUT_1, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow(global_setting.config.key_panel.panel_preset_1)
+    void toggleWindow(global_setting.config.panel_preset2[0].list)
   })
 }
 
 // 显示面板: 迷你编辑器
-const SHORTCUT_2 = global_setting.config.key_panel.key2
+const SHORTCUT_2 = global_setting.config.panel_preset2[1].key
 const SHORTCUT_2_EVENT = async () => {
   await register(SHORTCUT_2, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow(global_setting.config.key_panel.panel_preset_2)
+    void toggleWindow(global_setting.config.panel_preset2[1].list)
   })
 }
 
 // 显示面板: 当前窗口信息 (仅debug模式开启)
-const SHORTCUT_3 = global_setting.config.key_panel.key3
+const SHORTCUT_3 = global_setting.config.panel_preset2[2].key
 const SHORTCUT_3_EVENT = async () => {
   if (global_setting.isDebug == false) {
     console.warn('Debug mode is off, shortcut Alt+D will not be registered')
@@ -33,7 +33,7 @@ const SHORTCUT_3_EVENT = async () => {
   await register(SHORTCUT_3, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
     global_setting.state.infoText = ''
-    void toggleWindow(global_setting.config.key_panel.panel_preset_3)
+    void toggleWindow(global_setting.config.panel_preset2[2].list)
   })
 }
 
@@ -81,16 +81,16 @@ export function setupAppChangeListener() {
     const payload: any = v.payload // 临时: 2|null
 
     if (payload === null) { // 对应rust返回 `()`
-      void toggleWindow(global_setting.config.key_panel.panel_preset_1)
+      void toggleWindow(global_setting.config.panel_preset2[0].list)
     }
     else if (typeof payload == 'number' && payload === 1) {
-      void toggleWindow(global_setting.config.key_panel.panel_preset_1)
+      void toggleWindow(global_setting.config.panel_preset2[0].list)
     }
     else if (typeof payload == 'number' && payload === 2) {
-      void toggleWindow(global_setting.config.key_panel.panel_preset_2)
+      void toggleWindow(global_setting.config.panel_preset2[1].list)
     }
     else if (typeof payload == 'number' && payload === 3) {
-      void toggleWindow(global_setting.config.key_panel.panel_preset_3)
+      void toggleWindow(global_setting.config.panel_preset2[2].list)
     }
     else if (typeof payload == 'object' && Array.isArray(payload)) {
       console.error('Unknown payload for active-window-toggle2:', payload)

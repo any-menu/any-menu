@@ -853,9 +853,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     new SettingItem(tab_content)
       .setName(t('Show panel: preset 1'))
       .addText(text => text
-        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_1))
+        .setValue(JSON.stringify(global_setting.config.panel_preset2[0].list))
         .onChange(async (value) => {
-          global_setting.config.key_panel.panel_preset_1 = JSON.parse(value)
+          global_setting.config.panel_preset2[0].list = JSON.parse(value)
           await global_setting.api.saveConfig()
         })
       )
@@ -863,9 +863,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     new SettingItem(tab_content)
       .setName(t('Show panel: preset 2'))
       .addText(text => text
-        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_2))
+        .setValue(JSON.stringify(global_setting.config.panel_preset2[1].list))
         .onChange(async (value) => {
-          global_setting.config.key_panel.panel_preset_2 = JSON.parse(value)
+          global_setting.config.panel_preset2[1].list = JSON.parse(value)
           await global_setting.api.saveConfig()
         })
       )
@@ -873,9 +873,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     new SettingItem(tab_content)
       .setName(t('Show panel: preset 3'))
       .addText(text => text
-        .setValue(JSON.stringify(global_setting.config.key_panel.panel_preset_3))
+        .setValue(JSON.stringify(global_setting.config.panel_preset2[2].list))
         .onChange(async (value) => {
-          global_setting.config.key_panel.panel_preset_3 = JSON.parse(value)
+          global_setting.config.panel_preset2[2].list = JSON.parse(value)
           await global_setting.api.saveConfig()
         })
       )

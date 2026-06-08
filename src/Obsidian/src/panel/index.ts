@@ -26,7 +26,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: t('Show panel: preset 1'),
     // callback: () => {},
     editorCallback: async (editor, _view) => { // 仅于编辑器界面才能触发的回调
-      void show_panel(editor, global_setting.config.key_panel.panel_preset_1)
+      void show_panel(editor, global_setting.config.panel_preset2[0].list)
     },
     // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
     //   { modifiers: ["Alt"], key: "A" }
@@ -37,7 +37,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: t('Show panel: preset 2'),
     // callback: () => {},
     editorCallback: (editor, _view) => {
-      void show_panel(editor, global_setting.config.key_panel.panel_preset_2)
+      void show_panel(editor, global_setting.config.panel_preset2[1].list)
     },
     // hotkeys: [
     //   { modifiers: ["Alt"], key: "S" }
@@ -47,7 +47,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     id: 'any-menu-panel-3',
     name: t('Show panel: preset 3'),
     editorCallback: (editor, _view) => {
-      void show_panel(editor, global_setting.config.key_panel.panel_preset_3)
+      void show_panel(editor, global_setting.config.panel_preset2[2].list)
     },
   })
 

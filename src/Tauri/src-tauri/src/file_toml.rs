@@ -304,6 +304,8 @@ app_ad_shortcut = true
 toolbar_list = []
 # 多级菜单列表。细节同上
 context_menu_list = []
+
+auto_show_toolbar_on_select = false
 "#;
     fs::write(path, default_toml).map_err(|e| e.to_string())
 }
