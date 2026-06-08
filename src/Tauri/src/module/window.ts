@@ -26,17 +26,19 @@ export const global_state: {
 
 /** 事件组、全局快捷键 */
 window.addEventListener("DOMContentLoaded", () => {
-  initAutoHide()
-  initAutoHide2()
+  // 决定了当面板或窗口显示后，在什么条件下会自动隐藏
+  initAutoHide_focus()
+  initAutoHide_esc()
+  initAutoHide_cursorIgnore()
+
   // initClickThroughBehavior()
 })
 
-/** 自动隐藏功能、鼠标点击穿透功能
+/** 自动隐藏 - 失焦后隐藏面板
  * 
- * - 窗口级别 (判断鼠标是否在窗口内)
- * - 聚焦级别 (只通过聚焦判断，不通过鼠标位置判断)
+ * 聚焦级别 (只通过聚焦判断，不通过鼠标位置判断)
  */
-function initAutoHide() {
+function initAutoHide_focus() {
   // 监听窗口焦点切换事件
   const appWindow = getCurrentWindow()
   appWindow.onFocusChanged(({ payload: focused }) => {
@@ -52,37 +54,58 @@ function initAutoHide() {
       global_state.hideTimeout = null
     }
   })
+}
 
-  // // 监听鼠标点击事件（检测点击外部）
-  // document.addEventListener('click', (event) => {
-  //   // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
-  //   event.stopPropagation()
-  // })
-
-  // // 监听全局鼠标事件（通过窗口边界检测）
-  // document.addEventListener('mouseleave', () => {
-  //   if (!global_state.isWindowVisible) return
-  //   // 鼠标离开窗口区域时延迟隐藏
-  //   global_state.hideTimeout = window.setTimeout(() => {
-  //     hideWindow()
-  //   }, 200) // 给用户一点时间重新进入窗口
-  // })
-
-  // // 鼠标重新进入窗口时取消隐藏
-  // document.addEventListener('mouseenter', () => {
-  //   if (global_state.hideTimeout) {
-  //     clearTimeout(global_state.hideTimeout)
-  //     global_state.hideTimeout = null
-  //   }
-  // })
-
-  // ESC键隐藏窗口
+/** 自动隐藏 - 按Esc隐藏面板 */
+function initAutoHide_esc() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       hideWindow()
     }
   })
 }
+
+/* 自动隐藏 - 点击面板特定区域隐藏面板 (伪点击穿透)
+ * 
+ * 当点击窗口以内，面板以外的区域，隐藏该区域
+ * 
+ * @deprecated 弃用，该逻辑迁移到了 panel 类中 (非 App 环境也会用到)
+ *   而在 App 环境中，由于设置了悬浮穿透功能，
+ *   这种情况 (点击窗口以内面板以外区域) 一般不会发生。
+ *   此功能更只作为安全冗余设计进行兜底
+ */
+/*function _initAutoHide_clickArea() {}*/
+
+/* 自动隐藏 - 非悬浮隐藏
+ * 
+ * 当鼠标不再悬浮于窗口/面板上时，自动隐藏窗口和面板
+ * 
+ * @deprecated 目前并不存在使用场景，且还未开发
+ */
+/*function _initAutoHide_noOver() {
+  // 监听鼠标点击事件（检测点击外部）
+  document.addEventListener('click', (event) => {
+    // 阻止事件冒泡，确保点击窗口内部不会触发隐藏
+    event.stopPropagation()
+  })
+
+  // 监听全局鼠标事件（通过窗口边界检测）
+  document.addEventListener('mouseleave', () => {
+    if (!global_state.isWindowVisible) return
+    // 鼠标离开窗口区域时延迟隐藏
+    global_state.hideTimeout = window.setTimeout(() => {
+      hideWindow()
+    }, 200) // 给用户一点时间重新进入窗口
+  })
+
+  // 鼠标重新进入窗口时取消隐藏
+  document.addEventListener('mouseenter', () => {
+    if (global_state.hideTimeout) {
+      clearTimeout(global_state.hideTimeout)
+      global_state.hideTimeout = null
+    }
+  })
+}*/
 
 let intervalId: ReturnType<typeof setInterval> | null = null // 定时器ID
 let currentInterval = 66 // 当前轮询间隔，初始为66ms (~15fps)，根据状态动态调整
@@ -95,10 +118,12 @@ let cachedWinY = 0
 // let unchangedCount = 0 // 鼠标长期在同一个元素上时的计数器，大了后会减少刷新频率
 // let unlistenMove: (() => void) | null = null
 
-/** 自动隐藏功能、鼠标悬浮穿透功能
+/** 自动隐藏 - 鼠标悬浮穿透功能
  * 
- * - 元素级别 (判断鼠标是否脱离某个div)
- * - 悬浮级别 (通过鼠标位置判断)
+ * 当鼠标悬浮于窗口以内，面板以外的区域时，将窗口设置成穿透状态。
+ * 当鼠标悬浮回面板以内区域时，将窗口设置回不穿透状态。
+ * 
+ * 其他实现细节：
  * 
  * 状态机:
  * 
@@ -108,11 +133,9 @@ let cachedWinY = 0
  * 
  * TODO 当遇到置顶、窗口隐藏的行为时，可能需要将状态修改为非穿透状态
  */
-function initAutoHide2() {
-  // Alpha 区域鼠标穿透
-  // 前端监听鼠标移动，判断当前像素是否透明
-
-  /// TODO 可以再优化节流
+function initAutoHide_cursorIgnore() {
+  // 检索鼠标移动出面板的可见 (不透明) 区域
+  // TODO 可以再优化节流
   document.addEventListener('mousemove', async (e) => {
     const el = document.elementFromPoint(e.clientX, e.clientY);
 
