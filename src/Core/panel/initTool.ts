@@ -286,7 +286,8 @@ export async function initMenuData() {
     // 搜索建议部分
     let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
       return {
-        key: item["keyword"],
+        key: file_name_short.replace('.img', '') + "/ " + item["keyword"],
+        name: item["keyword"],
         value: file_folder + item["path"],
       }
     })
