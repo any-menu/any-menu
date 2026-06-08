@@ -36,7 +36,8 @@ export default {
   'Dict config': '字典配置',
   'Dict path': '词典路径',
   'Dict path2': '词典保存路径。你可以保存在文档库中方便随时编辑，如 ./dict/；\n\
-也可以把词典保存在插件文件中，如 ./.obsidian/plugins/any-menu/',
+也可以把词典保存在插件文件中，如 `./.obsidian/plugins/any-menu/`\n\
+(安全策略) 程序及插件无法访问配置路径以外的路径',
   'Dict online source': '在线词库来源',
   'Dict online source2': '在线词库来源: gitee 或 github (若无法访问 github 则推荐用 gitee)',
 
@@ -54,7 +55,8 @@ export default {
   'Show panel: preset 2': '显示面板: 预设 2',
   'Show panel: preset 3': '显示面板: 预设 3',
   'Note path': '笔记保存路径',
-  'Note path2': '快捷笔记功能中，笔记的保存路径。',
+  'Note path2': '快捷笔记功能中，笔记的保存路径。\n\
+(安全策略) 程序及插件无法访问配置路径以外的路径',
   'Debug mode': '调试模式',
   'Debug mode2': '仅供开发者使用。主要为开启一些额外的控制台打印。',
   'Auto show toolbar on select': '选中文本时自动显示工具栏',

@@ -36,7 +36,8 @@ It is generally not recommended to perform manual editing. It is recommended to 
   'Dict config': 'Dict Config',
   'Dict path': 'Dict path',
   'Dict path2': 'Dictionary storage path. You can save it in the document library for easy editing at any time, such as ./dict/; \n\
-You can also save the dictionary in the plugin file, such as ./.obsidian/plugins/any-menu/',
+You can also save the dictionary in the plugin file, such as `./.obsidian/plugins/any-menu/`\n\
+(Security policy) The program and plugins are unable to access paths other than the configured ones.',
   'Dict online source': 'Dict online source',
   'Dict online source2': 'Source of online dictionary: gitee or github',
   'Index engine': 'Index engine',
@@ -54,7 +55,8 @@ You can also save the dictionary in the plugin file, such as ./.obsidian/plugins
   'Show panel: preset 2': 'Show panel: preset 2',
   'Show panel: preset 3': 'Show panel: preset 3',
   'Note path': 'Note path',
-  'Note path2': 'In the quick note function, the save path of the note.',
+  'Note path2': 'In the quick note function, the save path of the note.\n\
+(Security policy) The program and plugins are unable to access paths other than the configured ones.',
   'Debug mode': 'Debug mode',
   'Debug mode2': 'Only for developer use. Mainly for enabling some additional console logging.',
   'Auto show toolbar on select': 'Auto show toolbar on select',
