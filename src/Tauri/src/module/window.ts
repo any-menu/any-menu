@@ -307,7 +307,7 @@ function _initClickThroughBehavior() {
 // #endregion
 
 /** 窗口切换是否显示 */
-export async function toggleWindow(panel_list?: string[]) {  
+export async function toggleWindow(panel_list?: string[], is_focus?: boolean) {  
   try {
     const appWindow = getCurrentWindow()
     // const isVisible = await appWindow.isVisible() // 检查窗口是否可见
@@ -316,7 +316,7 @@ export async function toggleWindow(panel_list?: string[]) {
     if (isFocused) {
       await hideWindow()
     } else {
-      await showWindow('cursor', panel_list)
+      await showWindow('cursor', panel_list, is_focus)
     }
   } catch (error) {
     console.error('Window show fail:', error)

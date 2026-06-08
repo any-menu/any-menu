@@ -26,7 +26,10 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: t('Show panel: preset 1'),
     // callback: () => {},
     editorCallback: async (editor, _view) => { // 仅于编辑器界面才能触发的回调
-      void show_panel(editor, global_setting.config.panel_preset2[0].list)
+      void show_panel(editor,
+        global_setting.config.panel_preset2[0].list,
+        global_setting.config.panel_preset2[0].is_focus
+      )
     },
     // hotkeys: [ // 官方说: 如有可能尽量避免设置默认快捷键，以避免与用户设置的快捷键冲突，尽管用户快捷键优先级更高
     //   { modifiers: ["Alt"], key: "A" }
@@ -37,7 +40,10 @@ export function registerAMContextMenu(plugin: Plugin) {
     name: t('Show panel: preset 2'),
     // callback: () => {},
     editorCallback: (editor, _view) => {
-      void show_panel(editor, global_setting.config.panel_preset2[1].list)
+      void show_panel(editor,
+        global_setting.config.panel_preset2[1].list,
+        global_setting.config.panel_preset2[1].is_focus
+      )
     },
     // hotkeys: [
     //   { modifiers: ["Alt"], key: "S" }
@@ -47,11 +53,14 @@ export function registerAMContextMenu(plugin: Plugin) {
     id: 'any-menu-panel-3',
     name: t('Show panel: preset 3'),
     editorCallback: (editor, _view) => {
-      void show_panel(editor, global_setting.config.panel_preset2[2].list)
+      void show_panel(editor,
+        global_setting.config.panel_preset2[2].list,
+        global_setting.config.panel_preset2[2].is_focus
+      )
     },
   })
 
-  const show_panel = async (editor: Editor, panel_list?: string[]) => {
+  const show_panel = async (editor: Editor, panel_list?: string[], is_focus?: boolean) => {
     // 1. 光标位置 (右下)
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return
@@ -71,7 +80,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list)
+    AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus)
   }
 
   // 注册工具带

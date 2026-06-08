@@ -6,34 +6,34 @@ import { toggleWindow } from './window'
 import { global_el } from '../../../Core/panel'
 
 // 显示面板: 搜索框+菜单
-const SHORTCUT_1 = global_setting.config.panel_preset2[0].key
+const PRESET_1 = global_setting.config.panel_preset2[0]
 const SHORTCUT_1_EVENT = async () => {
-  await register(SHORTCUT_1, (event) => {
+  await register(PRESET_1.key, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow(global_setting.config.panel_preset2[0].list)
+    void toggleWindow(PRESET_1.list, PRESET_1.is_focus)
   })
 }
 
 // 显示面板: 迷你编辑器
-const SHORTCUT_2 = global_setting.config.panel_preset2[1].key
+const PRESET_2 = global_setting.config.panel_preset2[1]
 const SHORTCUT_2_EVENT = async () => {
-  await register(SHORTCUT_2, (event) => {
+  await register(PRESET_2.key, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
-    void toggleWindow(global_setting.config.panel_preset2[1].list)
+    void toggleWindow(PRESET_2.list, PRESET_2.is_focus)
   })
 }
 
 // 显示面板: 当前窗口信息 (仅debug模式开启)
-const SHORTCUT_3 = global_setting.config.panel_preset2[2].key
+const PRESET_3 = global_setting.config.panel_preset2[2]
 const SHORTCUT_3_EVENT = async () => {
   if (global_setting.isDebug == false) {
     console.warn('Debug mode is off, shortcut Alt+D will not be registered')
     return
   }
-  await register(SHORTCUT_3, (event) => {
+  await register(PRESET_3.key, (event) => {
     if (event.state !== 'Pressed') return // Pressed/Released
     global_setting.state.infoText = ''
-    void toggleWindow(global_setting.config.panel_preset2[2].list)
+    void toggleWindow(PRESET_3.list, PRESET_3.is_focus)
   })
 }
 
@@ -81,16 +81,16 @@ export function setupAppChangeListener() {
     const payload: any = v.payload // 临时: 2|null
 
     if (payload === null) { // 对应rust返回 `()`
-      void toggleWindow(global_setting.config.panel_preset2[0].list)
+      void toggleWindow(PRESET_1.list, PRESET_1.is_focus)
     }
     else if (typeof payload == 'number' && payload === 1) {
-      void toggleWindow(global_setting.config.panel_preset2[0].list)
+      void toggleWindow(PRESET_1.list, PRESET_1.is_focus)
     }
     else if (typeof payload == 'number' && payload === 2) {
-      void toggleWindow(global_setting.config.panel_preset2[1].list)
+      void toggleWindow(PRESET_2.list, PRESET_2.is_focus)
     }
     else if (typeof payload == 'number' && payload === 3) {
-      void toggleWindow(global_setting.config.panel_preset2[2].list)
+      void toggleWindow(PRESET_3.list, PRESET_3.is_focus)
     }
     else if (typeof payload == 'object' && Array.isArray(payload)) {
       console.error('Unknown payload for active-window-toggle2:', payload)
@@ -176,15 +176,15 @@ async function updateShortcuts(appName: string) {
 
   // 动态注册或注销全局快捷键
   try {
-    const is_shortcut_registered1 = await isRegistered(SHORTCUT_1) as boolean
-    const is_shortcut_registered2 = await isRegistered(SHORTCUT_2) as boolean
-    const is_shortcut_registered3 = await isRegistered(SHORTCUT_3) as boolean
+    const is_shortcut_registered1 = await isRegistered(PRESET_1.key) as boolean
+    const is_shortcut_registered2 = await isRegistered(PRESET_2.key) as boolean
+    const is_shortcut_registered3 = await isRegistered(PRESET_3.key) as boolean
 
     // 在黑名单 (不应注册快捷键)，如果快捷键已注册，则取消注册
     if (isInBlacklist) {
-      if (is_shortcut_registered1) await unregister(SHORTCUT_1)
-      if (is_shortcut_registered2) await unregister(SHORTCUT_2)
-      if (is_shortcut_registered3) await unregister(SHORTCUT_3)
+      if (is_shortcut_registered1) await unregister(PRESET_1.key)
+      if (is_shortcut_registered2) await unregister(PRESET_2.key)
+      if (is_shortcut_registered3) await unregister(PRESET_3.key)
     }
     // 不在黑名单 (应注册快捷键)，如果快捷键未注册，则注册它
     else {

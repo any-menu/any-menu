@@ -155,9 +155,13 @@ export class DocumentListeners {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    void show_panel_auto(this.plugin, editor, global_setting.config.panel_preset2[1].list)
+    void show_panel_auto(this.plugin, editor,
+      global_setting.config.panel_preset2[1].list,
+      // global_setting.config.panel_preset2[1].is_focus
+      false // TODO 临时，等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
+    )
 
-    async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[]) {
+    async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[], is_focus?: boolean) {
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo(plugin, editor)
       if (!cursorInfo) return
@@ -178,7 +182,7 @@ export class DocumentListeners {
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, false, true)
+      AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus, true)
     }
   }
 }

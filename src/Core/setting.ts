@@ -215,7 +215,9 @@ export const global_setting: {
       {
         key: 'Alt+S',
         list: ['search', 'toolbar'], // ['miniEditor']
-        is_focus: true,
+        is_focus: true, // TODO 这里应为 false。
+        // 等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
+        // Obsidian 那边也暂时暂时硬编码了下 false
         position_mode: 'cursor',
       },
       {
