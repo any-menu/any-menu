@@ -286,7 +286,8 @@ export async function initMenuData() {
     // 搜索建议部分
     let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
       return {
-        key: file_name_short.replace('.img', '') + "/ " + item["keyword"],
+        // file_name_short 会有表情包词典名，path 会有表情包子文件夹分类名
+        key: file_name_short.replace('.img', '') + "/ " + item["path"],
         name: item["keyword"],
         value: file_folder + item["path"],
       }
