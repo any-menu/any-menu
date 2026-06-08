@@ -11,8 +11,8 @@ import { resolveResource } from '@tauri-apps/api/path';
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
-import { writeImage } from '@tauri-apps/plugin-clipboard-manager';
-import { readFile } from '@tauri-apps/plugin-fs';
+// import { writeImage } from '@tauri-apps/plugin-clipboard-manager'; // TODO 删除依赖
+// import { readFile } from '@tauri-apps/plugin-fs'; // TODO 删除依赖，或换用当前文件处理的实现方式
 
 // api适配 (Ob/App/Other 环境)
 export function initApi() {
