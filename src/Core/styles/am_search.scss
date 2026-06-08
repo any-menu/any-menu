@@ -59,12 +59,12 @@
   z-index: 100;
 
   /* 建议列表项 */
-  // 一样的其实，后续合并一下
   >div.item {
-    display: flex;
     box-sizing: border-box;
+    display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
+    position: relative;
     width: 100%;
     min-height: 28px; // (20+8+0)
     max-height: 98px; // 三行半
@@ -84,7 +84,7 @@
       content: attr(data-altkey); // counter(alt-index);
       display: none;
       position: absolute;
-      right: 7px;
+      right: 3px;
       top: unset;
       font-size: 12px;
       opacity: 0.6;
@@ -112,6 +112,40 @@
     &.focus-active {
       background-color: var(--am-bright-color) !important; // 优先于 :hover
       color: #ffffff;
+    }
+  }
+}
+
+/* --------------------------------- 图片搜索建议 ----------------------------- */
+.am-search .am-search-suggestion.img-mode {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 700px;
+  min-height: 350px;
+
+  /* 建议列表项 */
+  >div.item {
+    box-sizing: border-box;
+    flex-direction: column;
+    width: calc((100% - 48px) / 6); // 控制一行 n 个: 需减去 gap*(n-1)，并除以 n
+    // 备用: calc((100% - 24px) / 4), calc((100% - 32px) / 5), calc((100% - 48px) / 6)
+    max-height: unset;
+
+    .img {
+      width: 100%;
+      aspect-ratio: 1 / 1;  // 高度同宽度
+      object-fit: cover;    // 裁剪
+      margin: 0;
+      padding: 0;
+    }
+
+    .key {
+      margin: 0;
+      padding: 0;
+      text-align: center;
     }
   }
 }

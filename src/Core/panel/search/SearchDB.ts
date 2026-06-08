@@ -30,8 +30,8 @@ import { ReverseIndexDB } from './ReverseIndexDB'
  */
 class SearchDB {
   trie: TrieDB // 前缀树搜索引擎
-  reverse: ReverseIndexDB // 模糊搜索搜索引擎 FuzzySearchEngine
-  hash: undefined // (未支持) 哈希搜索引擎。主要是哈希要全量匹配，适用性一般不是很高
+  reverse: ReverseIndexDB     // 模糊搜索搜索引擎 FuzzySearchEngine
+  hash: undefined             // (未支持) 哈希搜索引擎。主要是哈希要全量匹配，适用性一般不是很高
 
   pinyin?: {
     // 函数调用
@@ -47,10 +47,9 @@ class SearchDB {
   }
 
   static factory() {
-    if (SEARCH_DB) return SEARCH_DB
     return new SearchDB()
   }
-  
+
   private constructor() {
     // if (global_setting.config.search_engine == 'trie') {
     //   this.trie = new TrieDB()
@@ -225,9 +224,9 @@ class SearchDB {
    */
   query(query: string): {key: string, value: string}[] {
     if (global_setting.config.search_engine === 'trie') {
-      return SEARCH_DB.query_by_trie(query)
+      return this.query_by_trie(query)
     } else if (global_setting.config.search_engine === 'reverse') {
-      return SEARCH_DB.query_by_reverse(query)
+      return this.query_by_reverse(query)
     } else {
       console.error(`未知的搜索引擎类型: ${global_setting.config.search_engine}`)
       return []
@@ -289,5 +288,23 @@ class SearchDB {
   }
 }
 
+/* 分库说明:
+ * 
+ * 优点:
+ * 在你输出的时候，你总是十分明确地知道你当前需要输出的是文本、还是输出图片、还是使用脚本
+ * 很难出现你不知道需要输出哪种类型的情况，也很少需要在搜索结果中混杂这些不同类型的搜索结果
+ * 
+ * 缺点:
+ * 使用同一个搜索框搜索会更直觉，更简单
+ * 如果使用多个不同的搜索框，或者使用搜索框时需要加入指令进行限制，会增加学习成本
+ * 
+ * 综合:
+ * 依然是使用同一搜索框的策略。
+ * 可以通过在里面添加指令的方式来筛选出不同的搜索类型
+ */
 export let SEARCH_DB: SearchDB
 SEARCH_DB = SearchDB.factory()
+export let SEARCH_DB_img: SearchDB // 图片/路径版本的数据库
+SEARCH_DB_img = SearchDB.factory()
+// export let SEARCH_DB_script: SearchDB // 脚本版本的数据库
+// SEARCH_DB_script = SearchDB.factory()

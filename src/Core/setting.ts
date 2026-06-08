@@ -72,7 +72,7 @@ export const global_setting: {
 
     // 本地的词典/插件管理
     plugins: {
-      name: string,
+      path: string, // 相对于 dict_paths 的路径
       version?: string,
       enabled: boolean,
     }[],
@@ -122,8 +122,9 @@ export const global_setting: {
    */
   api: {
     saveInnerHTML: (el: HTMLElement, content: string) => void
+    isFolder: (relPath: string) => Promise<boolean>
     readFile: (relPath: string) => Promise<string | null>
-    readFolder: (relPath: string) => Promise<string[]>
+    readFolder: (relPath: string, recursion_depth?: number) => Promise<string[]>
     writeFile: (relPath: string, content: string, is_append?: boolean) => Promise<boolean> // 需实现自动创建目录
     deleteFile: (relPath: string) => Promise<boolean>
     // 从配置文件同步的 global config 对象 (注意 app 和 obsidian 版配置文件不同)
@@ -137,7 +138,7 @@ export const global_setting: {
     getInfo: () => Promise<string | null> // 主要用于调试
     notify: (message: string) => Promise<void> // 显式通知用户 (notify notification toast alert alert ...)
     pin: (isPin?: boolean) => Promise<void> // 切换窗口/面板的置顶状态，或拖拽窗口
-    sendText: (text: string) => Promise<void>
+    sendText: (text: string, mode?: 'IMG_MODE') => Promise<void>
     saveToClipboard: (text: string) => Promise<void>
     // 统一的网络请求接口，并简化try/catch
     // 需要注意的是: 有前端版本和后端版本
@@ -158,6 +159,9 @@ export const global_setting: {
     // @param pos 不填表示沿用之前的位置
     app_show: (pos?: 'cursor'|'center', panel_list?: string[]) => Promise<void>,
     app_hide: (panel_list?: string[]) => Promise<void>,
+    // (特殊) 本地资源协议
+    // 最终生成的 URL 类似：https://asset.localhost/path_encode...
+    app_convertFileSrc: (relPath: string) => Promise<string>,
   }
 } = {
   platform: 'app',
@@ -218,6 +222,7 @@ export const global_setting: {
       });
       el.replaceChildren(safeNode);
     },
+    isFolder: async () => { console.error("需实现 api.isFolder 方法"); return false },
     readFile: async () => { console.error("需实现 api.readFile 方法"); return null },
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
@@ -266,5 +271,6 @@ export const global_setting: {
     renderMarkdown: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
     app_show: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_hide: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
+    app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },
   }
 }

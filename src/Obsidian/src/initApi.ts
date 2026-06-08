@@ -70,7 +70,13 @@ export function initApi(plugin: Plugin) {
     }
   }
 
-  global_setting.api.sendText = async (text: string) => {
+  global_setting.api.sendText = async (text: string, mode?: 'IMG_MODE') => {
+    if (mode === 'IMG_MODE') {
+      console.warn("非 App 环境未实现图片的输出功能，敬请期待");
+      void global_setting.api.notify("非 App 环境未实现图片的输出功能，敬请期待");
+      return
+    }
+
     AMPanel.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return
@@ -111,11 +117,36 @@ export function initApi(plugin: Plugin) {
     }
   }
 
+  global_setting.api.isFolder = async (relPath: string): Promise<boolean> => {
+    const plugin = global_setting.other.obsidian_plugin as Plugin | null
+    const app = plugin?.app
+    if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized'); return false }
+
+    // 这里的文件路径有两种策略
+    // - 一是存在库根部 ('/'开头)，直接写就行了
+    // - 二是存在插件目录下 (相对路径)，得加一个 '.obsidian/plugins/<插件名>/' 的前缀
+    const isBasePluginPath = false // TODO 选项
+    const pluginBaseDir = plugin.manifest.dir + '/'
+    const targetPath = isBasePluginPath ? `${pluginBaseDir}/${relPath}` : `${relPath}`
+
+    try {
+      if (!await app.vault.adapter.exists(targetPath)) {
+        return false
+      }
+      await app.vault.adapter.list(targetPath)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   // 快速调试: 
   // app.vault.adapter.exists("Template").then((a) => {console.log("---exists", a)})
   // app.vault.adapter.list("Template").then(a => console.log("---list", a)) // 输出 {files:[], folders:[]} 相对库根的路径
   // !注意: 使用相对路径时，在控制台是相对于库根路径的，而在插件内是相对于插件目录的
-  global_setting.api.readFolder = async (relPath: string): Promise<string[]> => {
+  global_setting.api.readFolder = async (relPath: string, recursion_depth?: number): Promise<string[]> => {
+    if (!recursion_depth) recursion_depth = 0
+
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized'); return [] }
@@ -134,6 +165,7 @@ export function initApi(plugin: Plugin) {
         return []
       }
 
+      // 该文件夹处理
       const listedFiles = await app.vault.adapter.list(targetPath);
       const fileNames = listedFiles.files
         // .map((fullPath: string) => fullPath.split('/').pop())
@@ -141,7 +173,19 @@ export function initApi(plugin: Plugin) {
       const folderNames = listedFiles.folders
         .map((fullPath: string) => fullPath += '/')
         .filter((folderName): folderName is string => !!folderName);
-      return [...fileNames, ...folderNames];
+      let result: string[] = [...fileNames, ...folderNames]
+
+      // 递归处理
+      // (0: 不递归, >0: 最多递归指定层数, <0: 无限递归)
+      if (recursion_depth !== 0) {
+        const nextDepth = recursion_depth < 0 ? -1 : recursion_depth - 1
+        for (const folderPath of listedFiles.folders) {
+          const subItems = await global_setting.api.readFolder(folderPath, nextDepth)
+          result.push(...subItems)
+        }
+      }
+
+      return result
     } catch (error) {
       console.error(`Failed to read folder at path: ${targetPath}`, error);
       return [];
@@ -166,7 +210,7 @@ export function initApi(plugin: Plugin) {
         return null
       }
 
-      const file_content: string = await app.vault.adapter.read(relPath);
+      const file_content: string = await app.vault.adapter.read(targetPath);
       return file_content;
     } catch (error) {
       console.error(`Failed to check file existence at path: ${targetPath}`, error);
@@ -241,13 +285,15 @@ export function initApi(plugin: Plugin) {
 
     // 需要保持一致性，obsidian 专属设置与通用的 global 设置
     global_setting.isDebug = settings.isDebug
-    global_setting.config = settings.config
-
+    global_setting.config = global_setting.config = { ...global_setting.config, ...settings.config };
 
     // 如果没有配置文件则生成一个默认值的配置文件
-    if (!data) {
-      await plugin.saveData(settings)
-    }
+    // if (!data) {
+    //   await plugin.saveData(settings)
+    // }
+    // 无论如何均重新保存一遍。避免在开发更新过程中，添加新的选项
+    await plugin.saveData(settings)
+
     return true
   }
 

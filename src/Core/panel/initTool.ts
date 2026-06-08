@@ -5,7 +5,7 @@ import { type AMContextMenu } from "./contextmenu"
 import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
 import { type PanelItem } from "./PanelItem"
-import { SEARCH_DB } from "./search/SearchDB"
+import { SEARCH_DB, SEARCH_DB_img } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
@@ -68,13 +68,17 @@ export async function initMenuData() {
   await fill_by_folder(global_setting.config.dict_paths)
 
   async function fill_by_folder(folder_path: string) {
-    // 会遍历里面的文件执行 fiil_by_file 的 (TODO 递归执行)
+    // 会遍历里面的文件执行 fiil_by_file 的
+    // 目前限制只递归一次，readFolder 可用参数 `-1` 表示无限递归
     try {
-      const files: string[] = await global_setting.api.readFolder(folder_path)
-      if (!files || files.length === 0) throw new Error("No files found")
-      // 并发处理文件提升性能，但等待所有文件处理结束后再返回
-      // 旧: for (const file_path of files) await fill_by_file(file_path)
-      const promises = files.map(file_path => fill_by_file(file_path))
+      const entries: string[] = await global_setting.api.readFolder(folder_path, 1)
+      if (!entries || entries.length === 0) throw new Error("No files found")
+
+      const promises = entries.map(async (entry_path) => {
+        await fill_by_file(entry_path)
+      })
+
+      // 前面并发处理文件，但等待所有文件处理结束后再返回
       await Promise.all(promises)
     } catch (error) {
       console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
@@ -83,9 +87,14 @@ export async function initMenuData() {
 
   async function fill_by_file(file_path: string) {
     // 文件名和文件扩展名 (文件扩展名和主体名都不一定有)
-    let file_name_short: string // 不加路径和扩展名
-    let file_ext: string
-    const file_name_full = file_path.split(/\/|\\/).pop()??''
+    // file_path                // 文件路径 = 文件夹名 + 文件全名，文件全名 = 文件短名 + 扩展名
+    let file_folder: string     // 文件夹名
+    let file_name_short: string // 文件短名 (不加路径和扩展名, f.a.json -> f.a)
+    let file_ext: string        // 扩展名 (f.a.json -> json)
+    file_folder = file_path.split(/\/|\\/).slice(0, -1).join('/')
+    file_folder = (file_folder == '') ? '' : (file_folder + '/')
+    const file_name_full = file_path.split(/\/|\\/).pop()??'' // 文件全名 (不加路径)
+    const file_path_rel = file_path.replace(global_setting.config.dict_paths, '')
     const file_part = file_name_full.split('.')
     if (file_part.length < 2) {
       file_name_short = file_name_full
@@ -95,35 +104,33 @@ export async function initMenuData() {
       file_name_short = file_part.slice(0, -1).join('.')
       file_ext = file_part[file_part.length - 1].toLowerCase()
     }
+    if (!['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
+      return // 排除无关文件
+    }
 
     // 插件是否已开启
     let isFound = false
     let isEnable = false
     for (const plugin of global_setting.config.plugins) {
-      if (plugin.name !== file_name_full) continue
+      if (plugin.path !== file_path_rel) continue
       isFound = true
       if (plugin.enabled) isEnable = true
       break
     }
     if (!isFound) {
       global_setting.config.plugins.push({
-        name: file_name_full,
+        path: file_path_rel,
         enabled: false
       })
       global_setting.api.saveConfig()
-      return
     }
     if (!isEnable) return
 
     // 文件内容
     let file_content: string|null = ''
-    if (['toml', 'csv', 'txt', 'json', 'yaml', 'yml', 'js'].includes(file_ext)) {
-      file_content = await global_setting.api.readFile(file_path)
-      if (typeof file_content !== 'string') {
-        throw new Error("Invalid file content format")
-      }
-    } else {// 无关文件
-      return
+    file_content = await global_setting.api.readFile(file_path)
+    if (typeof file_content !== 'string') {
+      throw new Error("Invalid file content format")
     }
 
     // 分发各种扩展名/特定文件名 // TODO 存在顺序问题
@@ -131,6 +138,8 @@ export async function initMenuData() {
       void fill_by_toml(file_content, file_name_short)
     } else if (file_ext === 'csv' || file_ext === 'txt') {
       void fill_by_csv(file_content, file_name_short)
+    } else if (file_name_full.endsWith('.img.json')) {
+      void fill_by_img_json(file_content, file_name_short, file_folder)
     } else if (file_ext === 'json') {
       void fill_by_json(file_content, file_name_short)
     } else if (file_ext === 'yaml' || file_ext === 'yml') {
@@ -248,6 +257,41 @@ export async function initMenuData() {
 
     // 面板项 —— toolbar 部分
     myToolbar.append_data([panelItem])
+  }
+
+  /** 图片词典
+   * 
+   * 与 fill_by_json 类似，设计区别在于:
+   * 
+   * - 其是自动根据文件夹生成的缓存速查表
+   * - 其目标均为图片路径，输出时会去黏贴图片内容
+   * - 会进入单独的数据库。
+   *   并不需要文字结果和图片结果混杂在一起，在输出的场景中，都是会非常明确要输出文本还是图片的。
+   *   搜索命令其实也同理。
+   * 
+   * 实现区别在于:
+   * 
+   * - 使用 SEARCH_DB_img，其余全部一样
+   */
+  async function fill_by_img_json(file_content: string, file_name_short: string, file_folder: string) {
+    // 解析
+    let jsonData: any
+    try {
+      jsonData = JSON.parse(file_content)
+    } catch (error) {
+      console.error("Parse error:", error)
+      return
+    }
+
+    // 搜索建议部分
+    let records: {key: string, value: string, name?: string}[] = jsonData.map((item: any) => {
+      return {
+        key: file_name_short.replace('.img', '') + "/ " + item["keyword"],
+        name: item["keyword"],
+        value: file_folder + item["path"],
+      }
+    })
+    SEARCH_DB_img.add_data_by_json(records, file_name_short)
   }
 
   // #endregion

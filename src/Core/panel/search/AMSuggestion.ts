@@ -1,5 +1,5 @@
 import { global_setting } from "../../setting"
-import { SEARCH_DB } from "./SearchDB"
+import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
 import { global_el } from "../index"
 import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
 
@@ -47,9 +47,9 @@ export class AMSuggestion {
     }[] = []
 
     // input事件 - 输入
-    el_input.addEventListener('input', (ev) => {
+    el_input.addEventListener('input', async (ev) => {
       const target = ev.target as HTMLInputElement
-      search_result = this.search(el_suggestion, target.value)
+      search_result = await this.search(el_suggestion, target.value)
 
       // 可选: 重置选择项为0 (如果采取不自动应用建议项的策略则不需要重置)
       const el_items = el_suggestion.querySelectorAll(":scope>div.item")
@@ -124,10 +124,12 @@ export class AMSuggestion {
 
   /** 更新虚拟聚焦项 (选中项)
    * @param flag
-   * - 空，使用当前的currentFocus值
-   * - '0'，选中第一项
-   * - 'up'，选中上一项 (可循环选择)
-   * - 'down'，选中下一项 (可循环选择)
+   *   - 空，使用当前的currentFocus值
+   *   - '0'，选中第一项
+   *   - 'up'，选中上一项 (可循环选择)
+   *   - 'down'，选中下一项 (可循环选择)
+   * 
+   * @bug input 后会有两个事件: 搜索和 vFoucs_update
    */
   private vFocus_update(list: NodeListOf<Element>, flag?: 'up'|'down'|'0'|'clean') {
     if (flag === '0') this.currentFocus = 0
@@ -158,8 +160,19 @@ export class AMSuggestion {
   // #endregion
 
   /** 搜索并显示建议项 */
-  search(el_suggestion: HTMLElement, query: string): {key: string, value: string}[] {
+  async search(el_suggestion: HTMLElement, query: string): Promise<{key: string, value: string}[]> {
     if (el_suggestion == null) return []
+
+    // 图片/路径搜索
+    if (query.endsWith('.jpg') || query.endsWith('.png') || query.endsWith('.gif')) {
+      el_suggestion.classList.add('img-mode')
+      return await this.search_img(el_suggestion, query.slice(0, -4))
+    } else if (query.startsWith(' ')) {
+      el_suggestion.classList.add('img-mode')
+      return await this.search_img(el_suggestion, query.trimStart())
+    } else {
+      el_suggestion.classList.remove('img-mode')
+    }
 
     let result: {key: string, value: string}[] = SEARCH_DB.query(query)
 
@@ -206,6 +219,67 @@ export class AMSuggestion {
           void global_setting.api.sendText(item.value)
           this.panel_hide()
         }
+      }
+    }
+
+    return result
+  }
+
+  /** 搜索并显示建议项 —— 图片版/路径版
+   * (使用空格前缀进行区分)
+   */
+  private async search_img(el_suggestion: HTMLElement, query: string): Promise<{key: string, value: string}[]> {
+    let result: {key: string, value: string}[] = SEARCH_DB_img.query(query)
+
+    // 数量检查
+    if (result.length === 0) {
+      this.panel_hide()
+      return []
+    }
+    // if (result.length == 50) {} // 达到上限
+
+    // 添加到建议列表
+    this.panel_show()
+    let alt_key_index = 0
+    for (const item of result) {
+      // alt_key_key
+      let alt_key_key: string = ''
+      if (alt_key_index < 9) {
+        alt_key_key = (alt_key_index + 1).toString()
+      } else if (alt_key_index == 9) {
+        alt_key_key = "0"
+      } else if (alt_key_index < 36) {
+        alt_key_key = String.fromCharCode(97 + alt_key_index - 10)
+      }
+      alt_key_index++
+
+      let img_src = item.value
+      if (global_setting.platform === 'app') {
+        img_src = await global_setting.other.app_convertFileSrc(img_src)
+      }
+
+      const div = document.createElement('div'); el_suggestion.appendChild(div); div.classList.add('item');
+        div.setAttribute('data-altkey', alt_key_key);
+      const div_img = document.createElement('img'); div.appendChild(div_img); div_img.classList.add('img')
+        div_img.src = img_src
+        div_img.alt = item.value
+      // const div_value = document.createElement('div'); div.appendChild(div_value); div_value.classList.add('value')
+      //   div_value.textContent = item.value
+      const div_key = document.createElement('div'); div.appendChild(div_key); div_key.classList.add('key')
+        div_key.textContent = item.key
+      div.title = item.key + '\n\n' + item.value
+
+      // 给每个搜索项绑定事件 vs 全局监听点击建议项事件
+      // 改为后者似乎收益非常有限，就不改了
+      // 真正性能瓶颈还是每次搜索后的 DOM 重建，数量限制机制
+      div.onclick = async () => {
+        // 一定是图片
+        // if (item.value.startsWith('@am-script: ')) {}
+        // else if (item.value.endsWith('.jpg') || item.value.endsWith('.png') || item.value.endsWith('.gif')) {}
+        // else {}
+
+        global_setting.api.sendText(item.value, 'IMG_MODE')
+        this.panel_hide()
       }
     }
 
