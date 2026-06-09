@@ -1,8 +1,8 @@
 export default {
     metadata: {
         id: 'anymenu-example-page2link',
-        name: '示例-获取该页面的 Markdown 链接',
-        version: '1.0.0',
+        name: '示例-获取页面的 md 链接',
+        version: '1.0.1',
         min_app_version: '1.1.0',
         author: 'LincZero, Copilot Cluade Opus 4.6',
         description: '获取浏览器/文档环境下当前标签页标题和链接，生成 Markdown 链接。使用: 选中浏览器中的url，或选中 "<alt> http..." 格式的文本',
