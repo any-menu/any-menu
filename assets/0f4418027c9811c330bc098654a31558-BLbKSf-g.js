@@ -1,1 +1,0 @@
-const s="/any-menu/assets/PixPin_2025-10-04_09-45-58-DIH6bSxu.gif",a="/any-menu/assets/PixPin_2025-10-04_09-38-24-DQvFy5fT.gif",i="/any-menu/assets/0f4418027c9811c330bc098654a31558-i8BxEdJS.gif";export{s as _,a,i as b};
