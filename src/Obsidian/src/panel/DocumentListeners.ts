@@ -58,6 +58,7 @@ export class DocumentListeners {
     this.plugin.registerDomEvent(activeDocument, 'contextmenu', this.onContextMenu);
     this.plugin.registerDomEvent(activeDocument, 'dblclick', this.onDoubleClick);
     this.plugin.registerDomEvent(activeDocument, 'keydown', this.onKeyDown);
+    this.plugin.registerDomEvent(activeDocument, 'keyup', this.onKeyUp);
     this.plugin.registerDomEvent(activeDocument, 'mousemove', this.onMouseMove);
     this.plugin.registerDomEvent(activeDocument, 'mouseup', this.onMouseUp);
     this.plugin.registerDomEvent(activeDocument, 'mousedown', this.onMouseDown);
@@ -81,13 +82,28 @@ export class DocumentListeners {
     this.isKeyboardSelection = true; this.isMouseSelecting = false;
     this.isMouseDown = false;
 
+    // 按 Esc，无论是否在面板上按，都隐藏
     if (ev.key === 'Escape') {
       AMPanel.panel_hide([])
+      return
     }
 
     // 继续选择，不管
-    if (ev.shiftKey == true) {
-      return
+    if (ev.shiftKey == true) return
+    // 面板上工作，不管
+    if (!(ev.target instanceof Element)) return
+    if (ev.target.matches('.am-panel *')) return
+    AMPanel.panel_hide([])
+  }
+
+  /** 键盘抬起事件 */
+  onKeyUp = (ev: KeyboardEvent) => {
+    // this.isKeyboardSelection = true; this.isMouseSelecting = false; // 注释，只记录该松开行为的上一个操作
+    this.isMouseDown = false;
+
+    if (ev.key === 'Shift') {
+      // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
+      if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
   }
 
@@ -103,6 +119,9 @@ export class DocumentListeners {
     this.isKeyboardSelection = false; this.isMouseSelecting = true;
     this.isMouseDown = true;
 
+    // 继续选择，不管 (alt连选)
+    if (ev.altKey == true && ev.button === 0) return
+    // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
     AMPanel.panel_hide([])
@@ -113,12 +132,12 @@ export class DocumentListeners {
    * 我们还监听文档以捕获编辑器之外的鼠标释放
    */
   onMouseUp = async (_event: MouseEvent) => {
-    this.isKeyboardSelection = false; this.isMouseSelecting = true;
+    // this.isKeyboardSelection = false; this.isMouseSelecting = true; // 注释，只记录该松开行为的上一个操作
     this.isMouseDown = false;
 
     if (!global_setting.config.auto_show_toolbar_on_select) return
     if (!this.previewSelection) return
-    // 超时是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
+    // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
     if (this.isMouseSelecting) window.setTimeout(() => void this.showPanel(), 10);
 
     this.isMouseSelecting = false;
@@ -148,6 +167,8 @@ export class DocumentListeners {
 
   /**
    * 在预览模式下显示文本工具栏以供选择
+   * 
+   * 无选择内容则不工作
    * 
    * 注意: 和手动显示不同:
    * - 在字符的上方显示
