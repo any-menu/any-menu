@@ -120,11 +120,7 @@ mindmap
 
 ![](./docs/assets/PixPin_2026-06-09_14-13-14.gif)
 
-(old version)
-
-![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
-
-App版可以在任何文本环境下使用:
+App版可以在任何文本环境下使用: (旧版截图)
 
 ![](./docs/assets/PixPin_2025-10-04_09-38-24.gif)
 
