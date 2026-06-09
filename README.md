@@ -120,6 +120,10 @@ After configuring the dictionary, you can use it as follows:
 
 Quick Input Template:
 
+![](./docs/assets/PixPin_2026-06-09_14-13-14.gif)
+
+(old version)
+
 ![](./docs/assets/PixPin_2025-10-04_09-45-58.gif)
 
 The app version can be used in any text environment:
