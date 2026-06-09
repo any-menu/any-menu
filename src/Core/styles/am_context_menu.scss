@@ -62,6 +62,12 @@
       margin-right: 10px;
     }
 
+    // 避免单行过长
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap; // 也可以根据需求修改成换行模式
+    text-overflow: ellipsis;
+
     // 悬浮和虚拟聚焦
     &:hover {
       background-color: var(--ab-tab-root-hv-color);

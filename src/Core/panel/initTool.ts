@@ -238,7 +238,8 @@ export async function initMenuData() {
     // 解析，脚本部分
     const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
     const panelItem: PanelItem = {
-      label: file_name_short,
+      // label 也可以用 file_name_short 备选。但由于组织名问题，file_name_short 可能会很长
+      label: plugin.metadata.name ?? plugin.metadata.id,
       icon: plugin.metadata.icon,
       callback: plugin.run,
       onCreateItem_callback: plugin.onCreateItem ?? undefined,

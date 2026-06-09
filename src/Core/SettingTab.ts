@@ -174,7 +174,8 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         name: t('Is downloaded'),
         callback: (el: HTMLElement, item: any) => {
           const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
-          const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
+          // 组织名问题 // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"，但后者可能会太长，不适合显示使用
+          const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path
           if (local_dict_list.find(d => d.relPath === newFileName)) {
             td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
