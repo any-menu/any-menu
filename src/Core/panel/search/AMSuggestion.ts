@@ -164,7 +164,7 @@ export class AMSuggestion {
     if (el_suggestion == null) return []
 
     // 图片/路径搜索
-    if (query.endsWith('.jpg') || query.endsWith('.png') || query.endsWith('.gif')) {
+    if (query.endsWith('.jpg') || query.endsWith('.jpeg') || query.endsWith('.png') || query.endsWith('.gif')) {
       el_suggestion.classList.add('img-mode')
       return await this.search_img(el_suggestion, query.slice(0, -4))
     } else if (query.startsWith(' ')) {
@@ -275,7 +275,7 @@ export class AMSuggestion {
       div.onclick = async () => {
         // 一定是图片
         // if (item.value.startsWith('@am-script: ')) {}
-        // else if (item.value.endsWith('.jpg') || item.value.endsWith('.png') || item.value.endsWith('.gif')) {}
+        // else if (item.value.endsWith('.jpg' 或 jpeg) || item.value.endsWith('.png') || item.value.endsWith('.gif')) {}
         // else {}
 
         global_setting.api.sendText(item.value, 'IMG_MODE')
