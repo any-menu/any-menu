@@ -180,6 +180,10 @@ mindmap
 
 快捷输入模板:
 
+![](./assets/PixPin_2026-06-09_14-13-14.gif)
+
+(old version)
+
 ![](./assets/PixPin_2025-10-04_09-45-58.gif)
 
 App版可以在任何文本环境下使用:
