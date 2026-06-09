@@ -81,14 +81,30 @@ export const global_setting: {
     auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
 
     // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
-    key_panel: {
-      key1: string,
-      key2: string,
-      key3: string,
-      panel_preset_1: string[], // 建议: 搜索+工具栏+多极菜单。主动唤出的显示项
-      panel_preset_2: string[], // 建议: 搜索+工具栏。自动唤出的显示项
-      panel_preset_3: string[], // 建议: miniEditor / info
-    },
+    panel_preset2: [
+      // 注意位置模式: 若 cursor 失败会自动降级为 mouse
+      // 建议: 搜索+工具栏+多极菜单。主动唤出的显示项
+      {
+        key: string,
+        list: string[],
+        is_focus: boolean,
+        position_mode: 'center'|'cursor'|'mouse',
+      },
+      // 建议: 搜索+工具栏。自动唤出的显示项
+      {
+        key: string,
+        list: string[],
+        is_focus: boolean,
+        position_mode: 'center'|'cursor'|'mouse',
+      },
+      // 建议: miniEditor / info
+      {
+        key: string,
+        list: string[],
+        is_focus: boolean,
+        position_mode: 'center'|'cursor'|'mouse',
+      }
+    ],
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -188,14 +204,29 @@ export const global_setting: {
     context_menu_list: [],
     auto_show_toolbar_on_select: false,
 
-    key_panel: {
-      key1: 'Alt+A',
-      key2: 'Alt+S',
-      key3: 'Alt+D',
-      panel_preset_1: ['search', 'toolbar', 'menu'],
-      panel_preset_2: ['search', 'toolbar'], // ['miniEditor']
-      panel_preset_3: ['info'],
-    },
+    // 这里的2是因为该选项以前是对象，现在改数组避免和以前用户的选项合并导致冲突，不可去除
+    panel_preset2: [
+      {
+        key: 'Alt+A',
+        list: ['search', 'toolbar', 'menu'],
+        is_focus: true,
+        position_mode: 'cursor',
+      },
+      {
+        key: 'Alt+S',
+        list: ['search', 'toolbar'], // ['miniEditor']
+        is_focus: true, // TODO 这里应为 false。
+        // 等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
+        // Obsidian 那边也暂时暂时硬编码了下 false
+        position_mode: 'cursor',
+      },
+      {
+        key: 'Alt+D',
+        list: ['info'],
+        is_focus: true,
+        position_mode: 'cursor',
+      },
+    ],
   },
   config_: {
     is_auto_startup: false,

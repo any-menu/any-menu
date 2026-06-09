@@ -151,6 +151,8 @@ export class AMPanel {
     el.classList.add('am-panel');
   }
 
+  // #region 面板相关
+
   /** 显示面板
    * 
    * TODO 所有参数都应该支持使用 undefined 来表示上次的状态
@@ -235,7 +237,7 @@ export class AMPanel {
     }
 
     if (!list) {
-      list = global_setting.config.key_panel.panel_preset_1
+      list = global_setting.config.panel_preset2[0].list
     }
 
     // 子面板
@@ -327,6 +329,8 @@ export class AMPanel {
     }
   }
 
+  // #endregion
+
   /** 切换面板显示/隐藏状态 */
   static panel_toggle(item: string) {
     // 非自定义
@@ -398,10 +402,16 @@ export class AMPanel {
    * 
    * 条件: 焦点不聚于面板的子组件下 (哪怕聚于没有子组件位置的面板空白处)
    * 
-   * 区别于悬浮穿透，点击穿透要先点击一下隐藏，再点才能穿透
-   * 
-   * 在任意环境中，面板都要隐藏
-   * 而在 App 环境中，还要隐藏窗口
+   * 环境:
+   * - 浏览器环境: 点击该面板以外的地方时，隐藏面板
+   * - App 环境:
+   *   - 点击App窗口以内且该面板以外的地方时
+   *     - (此处负责) 隐藏面板+隐藏窗口
+   *       - 但区别于悬浮穿透，此处的点击穿透要先点击一下隐藏，再点才能穿透
+   *     - (其他地方负责) 悬浮穿透
+   *       - 不过外部做了悬浮穿透后，理论上下面的逻辑处理的情况不会再出现，此处仅安全冗余设计
+   *   - 点击App窗口以外的地方
+   *     - (其他地方负责) 隐藏面板+隐藏窗口
    */
   static visual_listener_mousedown (ev: MouseEvent) {
     if (!global_el.amPanel?.el) return
@@ -438,7 +448,7 @@ export class AMPanel {
    */
   static get_size(list?: string[]): {width: number, height: number} {
     if (!list) {
-      list = global_setting.config.key_panel.panel_preset_1
+      list = global_setting.config.panel_preset2[0].list
     }
 
     // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)

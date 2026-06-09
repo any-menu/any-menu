@@ -10,7 +10,7 @@
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "importHelpers": true,
+    "importHelpers": false,
     "allowSyntheticDefaultImports": true, // 导入markdown-it/plantuml-encoder等cjs模块要加这个
     "isolatedModules": true,
     "strictNullChecks": true,
