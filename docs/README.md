@@ -188,6 +188,10 @@ The app version can be used in any text environment:
 
 ![](./assets/PixPin_2025-10-04_09-38-24.gif)
 
+Can quickly search for and input emoticons:
+
+![](./assets/0f4418027c9811c330bc098654a31558.gif)
+
 You can download and manage online dictionaries/scripts, or you can manually create, manage and customize them.
 
 ![](./assets/cloud_dict.png)
