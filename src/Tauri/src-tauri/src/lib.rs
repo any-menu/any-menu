@@ -91,6 +91,7 @@ pub fn run() {
     // Tauri 主程序
     tauri::Builder::default()
         .manage(uia_sender) // 依赖注入，注入到Tauri State管理
+
         .plugin(log_plugin) // 日志插件
         .plugin(tauri_plugin_http::init()) // HTTP 请求插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
@@ -98,6 +99,7 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .plugin(tauri_plugin_clipboard_manager::init()) // 剪贴板管理插件
         .plugin(tauri_plugin_fs::init()) // 文件系统插件
+
         .setup(|app| {
             let app_handle = app.app_handle();
 
@@ -228,6 +230,7 @@ pub fn run() {
             uia_sender::get_caret, uia_sender::get_caret_debug, // caret 类
             uia::get_screen_size, // size 类
             uia::get_info, // 其他
+            ad_shortcut::emit_callback_next_click,
             text::send, text::clipboard::clipboard_set_text, text::clipboard::clipboard_set_file,
             file::is_folder, file::get_resource_dir, file::get_exe_dir,
             file::read_file, file::read_folder, file::create_file, file::write_file, file::delete_file, // 文件类

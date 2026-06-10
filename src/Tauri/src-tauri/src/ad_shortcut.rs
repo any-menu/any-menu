@@ -29,10 +29,35 @@ use rdev::{
 use enigo::{
     Direction::{Click, Press, Release}, Enigo, Keyboard, Mouse, Settings
 };
-use std::{cell::Cell, sync::{Arc, Mutex}, thread, time::{self, Instant}};
+use std::{
+    cell::Cell,
+    sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}},
+    thread,
+    time::{self, Instant}
+};
 use tauri::Emitter;
 
 use crate::{text, uia};
+
+// #region 监控下次按键行为状态
+
+static FLAG_CALLBACK_NEXT_CLICK: AtomicBool = AtomicBool::new(false);
+
+/** 特殊 - 进入 "唤出非聚焦模式下的窗口" 完成的状态
+ * 
+ * 此时需检测下次用户的键盘和鼠标按下操作，通知前端并退出该状态
+ */
+#[tauri::command]
+pub fn emit_callback_next_click() {
+    FLAG_CALLBACK_NEXT_CLICK.store(true, Ordering::Release);
+}
+
+fn check_callback_next_click(app_handle: &tauri::AppHandle) {
+    FLAG_CALLBACK_NEXT_CLICK.store(false, Ordering::Release);
+    app_handle.emit("on_callback_next_click", "").unwrap();
+}
+
+// #endregion
 
 /** 无法拦截原行为，会阻塞
  * 
@@ -92,11 +117,18 @@ fn start_ad_shortcut2(app_handle: tauri::AppHandle) {
             return Some(event)
         }
 
-        // 先拦截非键盘按键 (鼠标 滚动 按钮等)
+        // 特殊 - 需监听下次的按键按下
+        if FLAG_CALLBACK_NEXT_CLICK.load(Ordering::Acquire) {
+            match event.event_type {
+                EventType::ButtonPress(_) | EventType::KeyPress(_) => {
+                    check_callback_next_click(&app_handle)
+                },
+                _ => {}
+            }
+        }
+
         // 如果到达该段落的后面，则全是键盘按键事件
         match event.event_type {
-            // 键盘事件
-            EventType::KeyPress(_) | EventType::KeyRelease(_) => {}
             // 鼠标按钮事件
             EventType::ButtonPress(_) | EventType::ButtonRelease(_) => {
                 let mut enigo = enigo_instance.lock().unwrap();
@@ -117,6 +149,8 @@ fn start_ad_shortcut2(app_handle: tauri::AppHandle) {
 
                 return Some(event)
             }
+            // 键盘事件。此处先不管，后文再处理
+            EventType::KeyPress(_) | EventType::KeyRelease(_) => {}
             _ => { return Some(event) }
         }
 

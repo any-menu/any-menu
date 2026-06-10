@@ -8,6 +8,9 @@
 import {
   getCurrentWindow, cursorPosition, PhysicalPosition, Window as TauriWindow
 } from '@tauri-apps/api/window'
+import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
+
 import { AMPanel, global_el } from '../../../Core/panel/'
 import { global_setting } from '../../../Core/setting'
 
@@ -171,7 +174,7 @@ function initAutoHide_cursorIgnore() {
   // 进入穿透状态
   async function into_cursor_ignore_state() {
     const appWindow = getCurrentWindow()
-    appWindow.setIgnoreCursorEvents(true); refreshWindowPos(); console.log('进入穿透模式');
+    appWindow.setIgnoreCursorEvents(true); refreshWindowPos(); if (global_setting.isDebug) console.log('进入穿透模式');
     isIgnoring = true;
 
     if (intervalId !== null) clearInterval(intervalId)
@@ -230,7 +233,7 @@ function initAutoHide_cursorIgnore() {
   // 退出穿透状态
   async function exit_cursor_ignore_state() {
     const appWindow = getCurrentWindow()
-    appWindow.setIgnoreCursorEvents(false); refreshWindowPos(); console.log('退出穿透模式');
+    appWindow.setIgnoreCursorEvents(false); refreshWindowPos(); if (global_setting.isDebug) console.log('退出穿透模式');
     isIgnoring = false;
 
     if (intervalId !== null) clearInterval(intervalId)
@@ -238,94 +241,50 @@ function initAutoHide_cursorIgnore() {
   }
 }
 
-/*/** 点击穿透逻辑。点击 #main内的元素不穿透，否则穿透
- * @deprecated 废弃
- *   替代方案: 为 Core 模块实现 app_hide，由 Panel 模块控制，Paenl 穿透事件时进行窗口隐藏
- *   废弃原因: 这里只能检测一个 "矩形减矩形" (#main 减 .am-panel) 的区域
- *     而交于 Panel 检测区域更灵活: "矩形减矩形" 加上 .am-panel 中没有并子面板填充的地方，可检测更复杂的区域
- *
-function _initClickThroughBehavior() {
-  const appWindow = getCurrentWindow()
-  const mainElement = document.querySelector('#main')
+/** 自动隐藏 - (仅非聚焦模式下启用)
+ * 
+ * 由于是非聚焦模式，所以无法自然感知到焦点失去行为，需要额外检测 "伪失焦"
+ * 
+ * "伪失焦" 的触发条件:
+ * 
+ * - 鼠标或键盘按下，同时面板不处于聚焦状态
+ * 
+ * 多平台区别:
+ * 
+ * - 对于浏览器环境，可以使用 AMPanel 上的失焦逻辑判断，此处不处理
+ * - 此处仅处理 App 环境
+ */
+function autoHide_unFocusMode(is_focus: boolean, appWindow: TauriWindow) {
 
-  // 有多种策略实现，最后选用性能最好，实现最简单的策略一。虽然效果不是最佳的
+  if (is_focus) return
+  else return into_unFocusMode()
 
-  // 策略一：监听点击事件 (缺点: 点击的那一下无法穿透，只是能起隐藏窗口的作用)
-  // document.addEventListener('click', (event) => {
-  document.addEventListener('mousedown', (event) => {
-    const target = event.target as Node
-    
-    // b1. 满足所有条件则点击穿透
-    if (!mainElement) {}
-    else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
-      console.log('click through')
-      event.preventDefault()
-      document.body.style.pointerEvents = 'none'
-      appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
-      setTimeout(() => {
-        document.body.style.pointerEvents = 'auto'
-        appWindow.setIgnoreCursorEvents(false)
-      }, 100)
-      hideWindow()
-      return
-    }
-    // b2. 否则不穿透
-    // event.stopPropagation() // 阻止事件冒泡，确保点击窗口内部不会触发隐藏 // 不要阻止，会有按钮和点击事件
-    return
-  })
+  // 进入无聚焦但置顶状态
+  async function into_unFocusMode() {
+    // 1. 等待事件发生和后端回调
+    listen('on_callback_next_click', (_event) => {
+      if (global_setting.isDebug) console.log(' >  特殊 - 退出无聚焦但临时置顶状态')
+      exit_unFocusMode()
+    })
 
-  // // 策略二：监听鼠标移动事件 (缺点: 穿透后就无法再有mouseover事件了，无法恢复不穿透状态)
-  // // document.addEventListener('mousemove', (event) => {
-  // document.addEventListener('mouseover', (event) => {
-  //   const target = event.target as Node
-    
-  //   console.log('mouseover', target)
-    
-  //   // b1. 满足所有条件则点击穿透
-  //   if (!mainElement) {}
-  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
-  //     console.log('through')
-  //     // event.preventDefault()
-  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
-  //     // hideWindow()
-  //     return
-  //   }
-  //   // b2. 否则不穿透
-  //   appWindow.setIgnoreCursorEvents(false)
-  //   return
-  // })
+    // 2. 通知后端
+    void invoke<null|string>("emit_callback_next_click")
+    if (global_setting.isDebug) console.log(" <  特殊 - 进入无聚焦但临时置顶状态")
+  }
 
-  // // 策略三: 策略二 + 定时器重新启用鼠标事件
-  // // 缺点: 可能导致异常频繁刷新。所以可能要用其他方法进一步约束 (有改进空间)
-  // document.addEventListener('mousemove', (event) => {
-  //   const target = event.target as Node
-    
-  //   console.log('mouseover', target)
-    
-  //   // b1. 满足所有条件则点击穿透
-  //   if (!mainElement) {}
-  //   else if (target === mainElement || !mainElement.contains(target)) { // 自己是否包含自己会返回true，要多判断一下
-  //     console.log('through')
-  //     // event.preventDefault()
-  //     appWindow.setIgnoreCursorEvents(true) // 临时开启点击穿透
-  //     setTimeout(() => { // 临时恢复并重新检测
-  //       document.body.style.pointerEvents = 'auto'
-  //       appWindow.setIgnoreCursorEvents(false)
-  //     }, 200)
-  //     // hideWindow()
-  //     return
-  //   }
-  //   // b2. 否则不穿透
-  //   appWindow.setIgnoreCursorEvents(false)
-  //   return
-  // })
-
-  // 策略四：点击事件的基础上去再模拟一个同坐标的点击事件 (需要 rust 后端配合)
-
-  // 策略五：局限于自带的菜单系统
-
-  // 策略六：全局监听鼠标位置 (需要 rust 后端配合)
-}*/
+  // 退出无聚焦但置顶状态
+  async function exit_unFocusMode() {
+    // 窗口聚焦切换，可能发生在点击行为之后
+    window.setTimeout(async () => {
+      // const unlistenFocus = await appWindow.onFocusChanged(async () => { // 监听获得焦点事件
+      const focused = await appWindow.isFocused(); // 查看当前是否聚焦回面板
+      if (focused) {}
+      else {
+        AMPanel.panel_hide()
+      }
+    }, 10);
+  }
+}
 
 // #endregion
 
@@ -508,7 +467,8 @@ export async function showWindow(
   void applyFocusMode()
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse)
+  AMPanel.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse);
+  autoHide_unFocusMode(is_focus, appWindow);
 }
 
 /** 隐藏窗口 */
