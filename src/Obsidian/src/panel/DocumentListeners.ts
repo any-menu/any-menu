@@ -88,8 +88,7 @@ export class DocumentListeners {
       return
     }
 
-    // 继续选择，不管
-    if (ev.shiftKey == true) return
+    // if (ev.shiftKey == true || altKey) return // 目前是选择结束而非过程弹出，故连选过程也先取消
     // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
@@ -101,7 +100,7 @@ export class DocumentListeners {
     // this.isKeyboardSelection = true; this.isMouseSelecting = false; // 注释，只记录该松开行为的上一个操作
     this.isMouseDown = false;
 
-    if (ev.key === 'Shift') {
+    if (ev.key === 'Shift' || ev.key === 'Alt') { // shift+鼠标/键盘，以及alt+鼠标都可以连选
       // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
       if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
@@ -119,8 +118,7 @@ export class DocumentListeners {
     this.isKeyboardSelection = false; this.isMouseSelecting = true;
     this.isMouseDown = true;
 
-    // 继续选择，不管 (alt连选)
-    if (ev.altKey == true && ev.button === 0) return
+    // if (ev.altKey == true && ev.button === 0) return // 目前是选择结束而非过程弹出，故连选过程也先取消
     // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
