@@ -144,10 +144,13 @@ export function initApi() {
         await invoke<null|string>("clipboard_set_file", { path: str })
       }
 
-      hideWindow()
+      // 切换焦点
+      // 虽然隐藏窗口能自动失焦；但窗口有可能处于强制置顶状态，从而无法隐藏，所以还要主动失焦
+      await invoke("release_focus"); hideWindow();
       await new Promise(resolve => setTimeout(resolve, 200)); // 等待一小段时间确保窗口已隐藏且焦点已切换 (复制非纯文本好像时间要久些)
 
-      await invoke("send", { // 通知后端黏贴
+      // 通知后端黏贴
+      await invoke("send", {
           text: "", // 特殊 - 如果文本为空，就会使用当前剪切板项
           method: "clipboard"
       });
@@ -155,11 +158,12 @@ export function initApi() {
       return
     }
 
-    // 非 Tauri 程序中，我们采用了非失焦的方式展开菜单
-    // 但 Tauri 程序中，我们采用了失焦的方式展开菜单
-    // 这里应该多一个判断。不过这里恒为后者
-    hideWindow()
+    // 切换焦点
+    // 虽然隐藏窗口能自动失焦；但窗口有可能处于强制置顶状态，从而无法隐藏，所以还要主动失焦
+    await invoke("release_focus"); hideWindow();
     await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
+
+    // 通知后端黏贴
     await invoke("send", { text: str, method: global_setting.config.send_text_method })
   }
 

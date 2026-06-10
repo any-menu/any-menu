@@ -29,6 +29,7 @@ mod file_config;
 mod uia;
 mod text;
 mod text_c;
+mod window;
 mod other;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -226,7 +227,6 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            other::greet,
             uia_sender::get_caret, uia_sender::get_caret_debug, // caret 类
             uia::get_screen_size, // size 类
             uia::get_info, // 其他
@@ -235,6 +235,8 @@ pub fn run() {
             file::is_folder, file::get_resource_dir, file::get_exe_dir,
             file::read_file, file::read_folder, file::create_file, file::write_file, file::delete_file, // 文件类
             file_toml::toml_read_to_json, file_toml::toml_write_from_json, // 文件类 - toml文件版 & 配置文件版
+            window::release_focus,
+            other::greet,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
