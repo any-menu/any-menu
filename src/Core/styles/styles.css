@@ -796,18 +796,23 @@ div.editable-textarea-textarea {
   background-color: var(--ab-menu-bg-color);
   border-radius: 8px;
   border: 1px solid var(--ab-tab-root-bd-color);
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 0 1px;
 }
 .am-toolbar:empty {
   display: none;
 }
 .am-toolbar .am-toolbar-item {
-  display: inline-block;
+  display: flex;
   vertical-align: top;
   align-items: center;
+  justify-content: center;
+  width: 34px;
   height: 26px;
   padding: 0;
-  margin: 1px 5px;
+  margin: 0;
   position: relative;
   line-height: 100%;
   border-radius: 8px;
@@ -816,12 +821,6 @@ div.editable-textarea-textarea {
 }
 .am-toolbar .am-toolbar-item:hover {
   background-color: var(--ab-tab-root-hv-color) !important;
-}
-.am-toolbar .am-toolbar-item:first-child {
-  margin-left: 4px;
-}
-.am-toolbar .am-toolbar-item:last-child {
-  margin-right: 4px;
 }
 
 .am-icon, .am-icon-auto {

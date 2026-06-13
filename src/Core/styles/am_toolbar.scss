@@ -15,20 +15,24 @@
   border: 1px solid var(--ab-tab-root-bd-color);
   // border: none;
 
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 0 1px;
   &:empty {
     display: none;
   }
 
   // 单行 or 多行
   .am-toolbar-item {
-    display: inline-block;
+    display: flex;
     vertical-align: top; // 关键：强制顶部对齐，忽略基线干扰
     align-items: center;
-    // justify-content: center;
+    justify-content: center;
+    width: 34px;
     height: 26px;
     padding: 0;
-    margin: 1px 5px;
+    margin: 0;
     position: relative;
 
     line-height: 100%;
@@ -40,12 +44,15 @@
       background-color: var(--ab-tab-root-hv-color) !important;
     }
 
-    &:first-child {
-      margin-left: 4px;
-    }
-    &:last-child {
-      margin-right: 4px;
-    }
+    // background-color: darkolivegreen; // 仅用于调试时临时查看
+
+    // 废弃，用 gap 替代，否则换行后第一个边距有问题
+    // &:first-child {
+    //   margin-left: 4px;
+    // }
+    // &:last-child {
+    //   margin-right: 4px;
+    // }
   }
 }
 
