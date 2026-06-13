@@ -206,6 +206,8 @@ export class AMContextMenu {
    *   - li.has-children
    *     - .am-context-menu.sub-menu (ul/div, el_container)
    *       - li
+   * 
+   * TODO 排序机制，目前相同的词典在每次加载后，顺序都不同
    */
   append_data(menuItems: PanelItem[]) {
     if (!this.el) return

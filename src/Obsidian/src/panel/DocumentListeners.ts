@@ -37,9 +37,9 @@ import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 export class DocumentListeners {
 
   public isContextOpening: boolean = false;
-  public isKeyboardSelection: boolean = false;  // 键盘选择状态 (互斥a)
-  public isMouseDown: boolean = false;          // 鼠标按下状态
-  public isMouseSelecting: boolean = false;     // 鼠标选择状态 (互斥a)
+  public isKeyboardSelection: boolean = false;  // 键盘选择状态 (互斥a)，上次的按下键是键盘键
+  public isMouseSelecting: boolean = false;     // 鼠标选择状态 (互斥a)，上次的按下键是鼠标键
+  public isMouseDown: boolean = false;          // 鼠标按下状态 (仅用于标注拖拽行为)
 
 	// 跟踪指针位置，用于放置用户界面元素
 	public pointerX: number = 0;
@@ -58,6 +58,7 @@ export class DocumentListeners {
     this.plugin.registerDomEvent(activeDocument, 'contextmenu', this.onContextMenu);
     this.plugin.registerDomEvent(activeDocument, 'dblclick', this.onDoubleClick);
     this.plugin.registerDomEvent(activeDocument, 'keydown', this.onKeyDown);
+    this.plugin.registerDomEvent(activeDocument, 'keyup', this.onKeyUp);
     this.plugin.registerDomEvent(activeDocument, 'mousemove', this.onMouseMove);
     this.plugin.registerDomEvent(activeDocument, 'mouseup', this.onMouseUp);
     this.plugin.registerDomEvent(activeDocument, 'mousedown', this.onMouseDown);
@@ -68,20 +69,40 @@ export class DocumentListeners {
     this.isContextOpening = true;
   }
 
-  // 通过双击选择
+  /** 通过双击选择 */
   onDoubleClick = async (_event: MouseEvent) => {
-    // possible issue? not always true?
-    this.isMouseSelecting = true;
-    // timeout is because selectionchange event is asynchronous and might not fire before mouseup
-    window.setTimeout(() => void this.renderPreviewTextToolbar(), 10);
+    this.isKeyboardSelection = false; this.isMouseSelecting = true;
+
+    // 选区改变事件是异步的，可能发生在双击行为之后
+    window.setTimeout(() => void this.showPanel(), 10);
   }
 
+  /** 键盘按下事件 */
   onKeyDown = (ev: KeyboardEvent) => {
-    this.isKeyboardSelection = true;
-    this.isMouseSelecting = false;
+    this.isKeyboardSelection = true; this.isMouseSelecting = false;
     this.isMouseDown = false;
+
+    // 按 Esc，无论是否在面板上按，都隐藏
     if (ev.key === 'Escape') {
       AMPanel.panel_hide([])
+      return
+    }
+
+    // if (ev.shiftKey == true || altKey) return // 目前是选择结束而非过程弹出，故连选过程也先取消
+    // 面板上工作，不管
+    if (!(ev.target instanceof Element)) return
+    if (ev.target.matches('.am-panel *')) return
+    AMPanel.panel_hide([])
+  }
+
+  /** 键盘抬起事件 */
+  onKeyUp = (ev: KeyboardEvent) => {
+    // this.isKeyboardSelection = true; this.isMouseSelecting = false; // 注释，只记录该松开行为的上一个操作
+    this.isMouseDown = false;
+
+    if (ev.key === 'Shift' || ev.key === 'Alt') { // shift+鼠标/键盘，以及alt+鼠标都可以连选
+      // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
+      if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
   }
 
@@ -94,22 +115,14 @@ export class DocumentListeners {
     //   if (isToolbar) event.stopPropagation();
     // }
 
-    this.isKeyboardSelection = false;
+    this.isKeyboardSelection = false; this.isMouseSelecting = true;
     this.isMouseDown = true;
 
+    // if (ev.altKey == true && ev.button === 0) return // 目前是选择结束而非过程弹出，故连选过程也先取消
+    // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
     AMPanel.panel_hide([])
-  }
-
-  /** 追踪鼠标位置 */
-  onMouseMove = (event: MouseEvent) => {
-    this.pointerX = event.clientX;
-    this.pointerY = event.clientY;
-    if (this.isMouseDown) {
-      this.isKeyboardSelection = false;
-      this.isMouseSelecting = true;
-    }
   }
 
   /**
@@ -117,14 +130,24 @@ export class DocumentListeners {
    * 我们还监听文档以捕获编辑器之外的鼠标释放
    */
   onMouseUp = async (_event: MouseEvent) => {
+    // this.isKeyboardSelection = false; this.isMouseSelecting = true; // 注释，只记录该松开行为的上一个操作
     this.isMouseDown = false;
 
     if (!global_setting.config.auto_show_toolbar_on_select) return
     if (!this.previewSelection) return
-    // 超时是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
-    if (this.isMouseSelecting) window.setTimeout(() => void this.renderPreviewTextToolbar(), 10);
+    // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
+    if (this.isMouseSelecting) window.setTimeout(() => void this.showPanel(), 10);
 
     this.isMouseSelecting = false;
+  }
+
+  /** 追踪鼠标位置 */
+  onMouseMove = (event: MouseEvent) => {
+    this.pointerX = event.clientX;
+    this.pointerY = event.clientY;
+    if (this.isMouseDown) {
+      this.isKeyboardSelection = false; this.isMouseSelecting = true;
+    }
   }
 
   /**
@@ -143,12 +166,14 @@ export class DocumentListeners {
   /**
    * 在预览模式下显示文本工具栏以供选择
    * 
+   * 无选择内容则不工作
+   * 
    * 注意: 和手动显示不同:
    * - 在字符的上方显示
    * - 必须是非聚焦显示
    * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
    */
-  private async renderPreviewTextToolbar() {
+  private async showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
@@ -158,7 +183,7 @@ export class DocumentListeners {
     void show_panel_auto(this.plugin, editor,
       global_setting.config.panel_preset2[1].list,
       // global_setting.config.panel_preset2[1].is_focus
-      false // TODO 临时，等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
+      false // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
     )
 
     async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[], is_focus?: boolean) {

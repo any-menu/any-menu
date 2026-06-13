@@ -26,9 +26,9 @@
     vertical-align: top; // 关键：强制顶部对齐，忽略基线干扰
     align-items: center;
     // justify-content: center;
-    height: 28px;
+    height: 26px;
     padding: 0;
-    margin: 0 4px;
+    margin: 1px 4px;
     position: relative;
 
     line-height: 100%;
@@ -51,9 +51,9 @@
 
 .am-icon, .am-icon-auto {
   display: inline-flex;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
   box-sizing: border-box;
   position: relative;
 
@@ -65,9 +65,9 @@
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight: 500;
 
-  // 开启则为单一颜色，注释则为hash计算颜色
-  background-color: var(--ab-menu-bg-color) !important;
-  color: currentColor !important;
+  // 开启则为单一颜色，注释时，自动生成的图标将会使用 hash 计算颜色
+  // background-color: var(--ab-menu-bg-color) !important;
+  // color: currentColor !important;
 
   &:hover {
     background-color: var(--ab-tab-root-hv-color) !important;

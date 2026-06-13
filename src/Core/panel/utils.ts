@@ -11,13 +11,6 @@ type TextIconOptions = {
   // fontFamily: string;
   /** 字重 */
   // fontWeight: number | string;
-  /** 自动根据背景色选择黑/白字；也可以手动指定如 "#fff" */
-  textColor: "auto" | string;
-  /** 背景色生成方式 */
-  bgMode: "hsl" | "hex";
-  /** HSL 模式下：饱和度与亮度 */
-  saturation: number; // 0-100
-  lightness: number; // 0-100
   /** 取首字符策略 */
   pick: "grapheme" | "codePoint";
   /** 文本为空时的占位字符 */
@@ -28,51 +21,56 @@ type TextIconOptions = {
    * - 会自动 upperCase
    */
   twoLettersForEnglish: boolean;
+
+  // 弃用，改为外部可选处理
+  // /** 自动根据背景色选择黑/白字；也可以手动指定如 "#fff" */
+  // textColor: "auto" | string;
+  // /** 背景色生成方式 */
+  // bgMode: "hsl" | "hex";
+  // /** HSL 模式下：饱和度与亮度 */
+  // saturation: number; // 0-100
+  // lightness: number; // 0-100
 };
 
 /** 全可选版本的 TextIconOptions */
 type TextIconOptions_arg = {
   size?: number;
-  textColor?: "auto" | string;
-  bgMode?: "hsl" | "hex";
-  saturation?: number; // 0-100
-  lightness?: number; // 0-100
   pick?: "grapheme" | "codePoint";
   twoLettersForEnglish?: boolean;
+
+  // 弃用，改为外部可选处理
+  // textColor?: "auto" | string;
+  // bgMode?: "hsl" | "hex";
+  // saturation?: number; // 0-100
+  // lightness?: number; // 0-100
 };
 
 const textIconOptions_default: TextIconOptions = {
   size: 32,
-  textColor: "auto",
-  bgMode: "hsl",
-  saturation: 65,
-  lightness: 50,
   pick: "grapheme",
   twoLettersForEnglish: false,
+
+  // 弃用，改为外部可选处理
+  // textColor: "auto",
+  // bgMode: "hsl",
+  // saturation: 65,
+  // lightness: 50,
 };
 
 export type TextIconResult = {
   text: string;
   trimmed: string;
   char: string;
-  hash: number;
-  bgColor: string;
-  fgColor: string;
   /** 可直接 innerHTML 的字符串 */
   html: string;
   /** 仅 style="" 的内容 */
   style: string;
-};
 
-/** 生成一个稳定的 32-bit hash（FNV-1a） */
-export function fnv1a32(input: string): number {
-  let hash = 0x811c9dc5; // offset basis
-  for (const ch of input) {
-    hash ^= ch.codePointAt(0)!;
-    hash = (hash + (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24)) >>> 0;
-  }
-  return hash >>> 0;
-}
+  // 弃用，改为外部可选处理
+  // hash: number;
+  // bgColor: string;
+  // fgColor: string;
+};
 
 /** 尝试按 “用户可见字符” (grapheme) 截取首字符（支持 emoji/组合字符） */
 function pickFirstGrapheme(text: string): string {
@@ -91,49 +89,12 @@ function pickFirstGrapheme(text: string): string {
   return Array.from(trimmed)[0] ?? "";
 }
 
-/** 背景色：推荐 HSL，比较均匀且更好看 */
-function hashToHsl(hash: number, saturation = 65, lightness = 50): string {
-  const hue = hash % 360;
-  return `hsl(${hue} ${clamp(saturation, 0, 100)}% ${clamp(lightness, 0, 100)}%)`;
-}
-
-/** 背景色：hash -> #RRGGBB（可选） */
-function hashToHex(hash: number): string {
-  const r = (hash & 0xff0000) >>> 16;
-  const g = (hash & 0x00ff00) >>> 8;
-  const b = (hash & 0x0000ff) >>> 0;
-  return `#${to2(r)}${to2(g)}${to2(b)}`;
-}
-
 function to2(n: number): string {
   return n.toString(16).padStart(2, "0");
 }
 
 function clamp(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, n));
-}
-
-/** 计算背景色的相对亮度，决定用黑/白字（粗略但实用） */
-function pickReadableTextColor(bgColor: string): "#000" | "#fff" {
-  if (bgColor.startsWith("#") && bgColor.length === 7) {
-    const r = parseInt(bgColor.slice(1, 3), 16) / 255;
-    const g = parseInt(bgColor.slice(3, 5), 16) / 255;
-    const b = parseInt(bgColor.slice(5, 7), 16) / 255;
-    const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
-    const R = lin(r),
-      G = lin(g),
-      B = lin(b);
-    const L = 0.2126 * R + 0.7152 * G + 0.0722 * B;
-    return L > 0.5 ? "#000" : "#fff";
-  }
-
-  const m = bgColor.match(/hsl\(\s*\d+(\.\d+)?\s+(\d+(\.\d+)?)%\s+(\d+(\.\d+)?)%\s*\)/i);
-  if (m) {
-    const lightness = parseFloat(m[4]);
-    return lightness >= 55 ? "#000" : "#fff";
-  }
-
-  return "#fff";
 }
 
 /** HTML 属性转义（避免注入） */
@@ -193,11 +154,6 @@ export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIc
         : (Array.from(trimmed)[0] || fallbackChar);
   }
 
-  const hash = fnv1a32(trimmed || fallbackChar);
-
-  const bgColor = o.bgMode === "hex" ? hashToHex(hash) : hashToHsl(hash, o.saturation, o.lightness);
-  const fgColor = o.textColor === "auto" ? pickReadableTextColor(bgColor) : o.textColor;
-
   // 2 个字符时字号稍微小一点，避免挤
   const baseFontSize = Math.floor(o.size * 0.5);
   const fontSize = char.length >= 2 ? Math.floor(baseFontSize * 0.82) : baseFontSize;
@@ -217,14 +173,87 @@ export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIc
       // `border-radius:${o.radius}px`,
       // `font-family:${o.fontFamily}`,
       // `font-weight:${o.fontWeight}`,
-      `background:${bgColor}`,
-      `color:${fgColor}`,
+      // `background:${bgColor}`, // 废弃，此处不处理，外部可选处理 hash 颜色
+      // `color:${fgColor}`,      // 废弃，此处不处理，外部可选处理 hash 颜色
       `font-size:${fontSize}px`,
     ].join(";") + ";";
 
   const html = `<span class="am-icon am-icon-auto" aria-label="${escapeHtml(trimmed || text)}" style="${escapeHtml(style)}">${escapeHtml(char)}</span>`;
 
-  return { text, trimmed, char, hash, bgColor, fgColor, html, style };
+  return { text, trimmed, char, html, style };
+}
+
+/**
+ * 为不同文本分配不同的背景色和文本色 (通过hash)
+ * 
+ * @param text        转 hash 的文本
+ * @param bgColorMode "hex"|"hsl"，颜色模式
+ * @param fgColorMode "auto"|string，自动根据背景色选择黑/白字；也可以手动指定如 "#fff
+ * @param saturation  0-100, 饱和度 (仅hsl模式可用)
+ * @param lightness   0-100, 明度 (仅hsl模式可用)
+ */
+export function textToHashColor(
+  text: string,
+  bgColorMode: "hex"|"hsl" = "hsl",
+  fgColorMode: "auto"|string = "auto",
+  saturation?: number, lightness?: number
+): { color: string, background: string } {
+  const trimmed = (text ?? "").trim();
+  const hash = fnv1a32(trimmed);
+  const bgColor = bgColorMode === "hex" ? hashToHex(hash) : hashToHsl(hash, saturation, lightness);
+  const fgColor = fgColorMode === "auto" ? pickReadableTextColor(bgColor) : fgColorMode;
+
+  return {
+    color: fgColor,
+    background: bgColor
+  }
+
+  /** 生成一个稳定的 32-bit hash（FNV-1a） */
+  function fnv1a32(input: string): number {
+    let hash = 0x811c9dc5; // offset basis
+    for (const ch of input) {
+      hash ^= ch.codePointAt(0)!;
+      hash = (hash + (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24)) >>> 0;
+    }
+    return hash >>> 0;
+  }
+
+  /** 背景色：推荐 HSL，比较均匀且更好看 */
+  function hashToHsl(hash: number, saturation = 65, lightness = 50): string {
+    const hue = hash % 360;
+    return `hsl(${hue} ${clamp(saturation, 0, 100)}% ${clamp(lightness, 0, 100)}%)`;
+  }
+
+  /** 背景色：hash -> #RRGGBB（可选） */
+  function hashToHex(hash: number): string {
+    const r = (hash & 0xff0000) >>> 16;
+    const g = (hash & 0x00ff00) >>> 8;
+    const b = (hash & 0x0000ff) >>> 0;
+    return `#${to2(r)}${to2(g)}${to2(b)}`;
+  }
+
+  /** 计算背景色的相对亮度，决定用黑/白字（粗略但实用） */
+  function pickReadableTextColor(bgColor: string): "#000" | "#fff" {
+    if (bgColor.startsWith("#") && bgColor.length === 7) {
+      const r = parseInt(bgColor.slice(1, 3), 16) / 255;
+      const g = parseInt(bgColor.slice(3, 5), 16) / 255;
+      const b = parseInt(bgColor.slice(5, 7), 16) / 255;
+      const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+      const R = lin(r),
+        G = lin(g),
+        B = lin(b);
+      const L = 0.2126 * R + 0.7152 * G + 0.0722 * B;
+      return L > 0.5 ? "#000" : "#fff";
+    }
+
+    const m = bgColor.match(/hsl\(\s*\d+(\.\d+)?\s+(\d+(\.\d+)?)%\s+(\d+(\.\d+)?)%\s*\)/i);
+    if (m) {
+      const lightness = parseFloat(m[4]);
+      return lightness >= 55 ? "#000" : "#fff";
+    }
+
+    return "#fff";
+  }
 }
 
 // /** 直接创建 DOM 元素（浏览器环境） */

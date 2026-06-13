@@ -7,7 +7,7 @@
 
 该脚本的功能：
 
-- 遍历该文件夹下所有的 .jpg .png .gif 文件，并生成用于索引这些内容的 json 文件。
+- 遍历该文件夹下所有的 .jpg .jpeg .png .gif 文件，并生成用于索引这些内容的 json 文件。
 - 生成的 json 文件会位于该文件夹下，名为 `<文件夹名>.img.json`
 - json 格式为 `{"path": "相对目标路径", "keyword": "文件名(无后缀)"}[]`。最好可以该列表项中每个json为一行，不但可以大大减少行数，还能很方便人类阅读和修改。
 - 脚本除了可以单独使用 node 运行，后续可能还会被简单修改/不修改，用于我项目中的软件指令。而我项目中使用的是 `import ... from ...` 的规范，所以让你生成 es 规范的 js。一是更现代化，二是避免后期混用时修改规范/让规范共存时的设置麻烦。
@@ -18,7 +18,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const IMAGE_EXTENSIONS = new Set(['.jpg', '.png', '.gif']);
+const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif']);
 
 /** 遍历文件夹，返回所有图片文件的路径 */
 async function walkDir(dir) {

@@ -79,7 +79,8 @@ export function init_item(
   if (mode === 'none') {}
   // 仅标题
   else if (mode === 'label') {
-    li.textContent = item.label
+    const label = document.createElement('div'); li.appendChild(label); label.classList.add('am-context-menu-label')
+      label.textContent = item.label
   }
   // 仅图标
   else if (mode === 'icon') {
@@ -126,6 +127,12 @@ export function init_item(
         global_setting.api.saveInnerHTML(span, item.icon);
     }
   }
+
+  // (可选) hash 颜色
+  // const hashColor = textToHashColor(item.label)
+  // li.style.background = hashColor.background
+  // li.style.color = hashColor.color
+
   // #endregion
 
   // 项功能

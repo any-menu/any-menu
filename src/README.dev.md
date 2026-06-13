@@ -36,6 +36,29 @@ pnpm -r publish --access public
 pnpm up -i --latest # 强制列出最新版的包并可选自动升级
 ```
 
+## 目录介绍
+
+- Type    | 插件类型
+- Core    | 核心、跨平台接口 api 预定义
+- Tauri   | 桌面应用版本 App
+- App     | 在线测试/使用
+- Obsidian| Obsidian 插件
+- Script  | 其他可执行脚本工具
+- WebCore | (不一定在) 纯浏览器环境 (非 App) 的子项目的通用逻辑
+- ...     | (不一定在) 可能还有浏览器扩展、 VSCode 扩展等
+
+依赖树：
+
+- Type
+  - Core
+    - Tauri
+    - WebCore
+      - Obsidian
+      - 可能的浏览器扩展、VSCode扩展等
+        (当然，他们不一定在这。
+        一是通用代码会比较少，不放一起也行。
+        二是可能会为了发布方便，而分仓库存放)
+
 ## 插件接口设计
 
 export default 对象 vs export default class

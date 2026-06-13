@@ -753,6 +753,12 @@ div.editable-textarea-textarea {
   top: -4px;
   left: calc(0px + 100%);
 }
+.am-context-menu .am-context-menu-item .am-context-menu-label {
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
 .ab-contextmenu-tooltip {
   position: absolute;
@@ -794,9 +800,9 @@ div.editable-textarea-textarea {
   display: inline-block;
   vertical-align: top;
   align-items: center;
-  height: 28px;
+  height: 26px;
   padding: 0;
-  margin: 0 4px;
+  margin: 1px 4px;
   position: relative;
   line-height: 100%;
   border-radius: 8px;
@@ -815,9 +821,9 @@ div.editable-textarea-textarea {
 
 .am-icon, .am-icon-auto {
   display: inline-flex;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
   box-sizing: border-box;
   position: relative;
   align-items: center;
@@ -829,8 +835,6 @@ div.editable-textarea-textarea {
   border-radius: 8px;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight: 500;
-  background-color: var(--ab-menu-bg-color) !important;
-  color: currentColor !important;
 }
 .am-icon:hover, .am-icon-auto:hover {
   background-color: var(--ab-tab-root-hv-color) !important;

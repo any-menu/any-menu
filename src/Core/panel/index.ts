@@ -329,8 +329,6 @@ export class AMPanel {
     }
   }
 
-  // #endregion
-
   /** 切换面板显示/隐藏状态 */
   static panel_toggle(item: string) {
     // 非自定义
@@ -359,10 +357,37 @@ export class AMPanel {
         target_custom_el.classList.add('am-hide')
       }
     }
-
   }
 
-  // #region 自定义子面板管理
+  /* 拆分面板
+   * 
+   * 注意 App 版本和浏览器版本的实现不同
+   * App 版本拆分会变成多个窗口
+   * 
+   * 拆分会复制子面板到新的面板容器中，复制而非移动。
+   * 所以可能会存在多个子面板在多个面板容器中显示的情况
+   * 
+   * @param list 将哪些面板显示并拆分到新面板中
+   * 
+   * TODO 实现
+   */
+  // static panel_split(list?: string[]) {
+  //   console.error('Not implemented yet')
+  // }
+
+  // 被代替 / 将代替 register_sub_panel
+  //   ? 这里可以管理非自定义面板 (如自带的)，而且语义更清晰
+  // create 和 destory 会创建和销毁 el。而 show 和 hide 会显示和隐藏 el
+  // panel_create() {}
+
+  // 被代替 / 将代替  unregister_sub_panel
+  //   ? 这里可以管理非自定义面板 (如自带的)，而且语义更清晰
+  // create 和 destory 会创建和销毁 el。而 show 和 hide 会显示和隐藏 el
+  // panel_destroy() {}
+
+  // #endregion
+
+  // #region 面板相关2，自定义子面板管理
   
   // 这里的自定义子面板针对的是插件的自定义子面板，固定的那几个子面板不属于
 

@@ -205,6 +205,7 @@ export const global_setting: {
     auto_show_toolbar_on_select: false,
 
     // 这里的2是因为该选项以前是对象，现在改数组避免和以前用户的选项合并导致冲突，不可去除
+    // 注意: 划词弹出模式不受 is_focus 影响，强制为 false
     panel_preset2: [
       {
         key: 'Alt+A',
@@ -215,7 +216,7 @@ export const global_setting: {
       {
         key: 'Alt+S',
         list: ['search', 'toolbar'], // ['miniEditor']
-        is_focus: true, // TODO 这里应为 false。
+        is_focus: true,
         // 等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
         // Obsidian 那边也暂时暂时硬编码了下 false
         position_mode: 'cursor',

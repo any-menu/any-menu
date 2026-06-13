@@ -26,6 +26,8 @@ export class AMToolbar {
    * 旧版中。这里的顺序需要等待所有文件加载完成后，根据已排序好的列表进行初始化，从而控制顺序
    * 新版中。这里使用配置的 order 属性来控制顺序。一是可以动态填充，更快也能工作中插入，二是更简单可控
    * 无 order 属性的则视为 1000，同 order 则根据顺序插入
+   * 
+   * TODO 排序机制，目前相同的词典在每次加载后，顺序都不同
    */
   append_data(toolbarItems: PanelItem[]) {
     // TODO: toolbar 理应支持 alt key，以后再做
