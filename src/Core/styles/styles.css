@@ -543,6 +543,7 @@ div.editable-textarea-textarea {
 /* -------------------------------- 搜索栏 ------------------------------- */
 .am-search {
   position: relative;
+  height: 30px;
   width: 500px;
   display: inline-block;
   box-sizing: border-box;
@@ -552,7 +553,7 @@ div.editable-textarea-textarea {
   border-radius: 8px;
 }
 .am-search input.am-search-input {
-  height: 32px;
+  height: 100%;
   width: 100%;
   box-sizing: border-box;
   padding: 0 12px;
@@ -560,8 +561,12 @@ div.editable-textarea-textarea {
   outline: none;
   color: var(--am-text-color);
   background-color: var(--am-background-color);
+  border: 1px solid var(--am-background-color);
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.am-search input.am-search-input:focus {
+  border-color: var(--am-bright-color);
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */
@@ -578,7 +583,7 @@ div.editable-textarea-textarea {
   position: absolute;
   left: 0;
   right: 0;
-  top: 100%;
+  top: calc(100% + 1px);
   bottom: unset;
   padding: 4px;
   border-radius: 8px;
@@ -1041,15 +1046,17 @@ html, body, #main {
 
 .am-pin {
   position: absolute;
-  top: 5px;
   right: -26px;
 }
 
 .am-pin, .windows-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   margin: 0;
-  width: 24px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   z-index: 101;
   cursor: pointer;
@@ -1057,16 +1064,17 @@ html, body, #main {
   box-shadow: none;
   outline: none;
   background: transparent;
+  border-radius: 8px;
   color: var(--am-text-color);
   opacity: 0.7;
 }
 .am-pin:hover, .windows-pin:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background-color: var(--ab-tab-root-hv-color);
   cursor: pointer;
 }
 
 .windows-pin-active {
-  background: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
 }
 
 .am-pin-active .am-pin > svg, .am-pin-active .windows-pin > svg, .windows-pin-active .am-pin > svg, .windows-pin-active .windows-pin > svg {
