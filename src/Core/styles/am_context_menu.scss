@@ -62,12 +62,6 @@
       margin-right: 10px;
     }
 
-    // 避免单行过长
-    max-width: 200px;
-    overflow: hidden;
-    white-space: nowrap; // 也可以根据需求修改成换行模式
-    text-overflow: ellipsis;
-
     // 悬浮和虚拟聚焦
     &:hover {
       background-color: var(--ab-tab-root-hv-color);
@@ -104,6 +98,14 @@
         top: -4px; // 原 -4px; 为 ul padding，下移是为了项过多时项换列后，能更好地右移，而不是被子菜单或tooltip遮挡
         left: calc(0px + 100%); // 给点偏移美观点，但鼠标移动极慢时会失焦
       }
+    }
+
+    .am-context-menu-label {
+      // 避免单行过长
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap; // 也可以根据需求修改成换行模式
+      text-overflow: ellipsis;
     }
   }
   // input {

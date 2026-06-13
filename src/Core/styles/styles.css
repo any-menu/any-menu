@@ -724,12 +724,6 @@ div.editable-textarea-textarea {
 .am-context-menu .am-context-menu-item .left {
   margin-right: 10px;
 }
-.am-context-menu .am-context-menu-item {
-  max-width: 200px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 .am-context-menu .am-context-menu-item:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
@@ -758,6 +752,12 @@ div.editable-textarea-textarea {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
+}
+.am-context-menu .am-context-menu-item .am-context-menu-label {
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .ab-contextmenu-tooltip {
