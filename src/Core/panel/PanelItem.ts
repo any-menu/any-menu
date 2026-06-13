@@ -126,6 +126,12 @@ export function init_item(
         global_setting.api.saveInnerHTML(span, item.icon);
     }
   }
+
+  // (可选) hash 颜色
+  // const hashColor = textToHashColor(item.label)
+  // li.style.background = hashColor.background
+  // li.style.color = hashColor.color
+
   // #endregion
 
   // 项功能
