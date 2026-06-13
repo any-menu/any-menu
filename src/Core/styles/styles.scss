@@ -164,7 +164,7 @@ html, body, #main {
 
 .am-pin {
   position: absolute;
-  right: -26px; // 自身24px加2px间距
+  right: -32px; // = 自身宽度30px + 加2px间距
 }
 
 .am-pin, .windows-pin {

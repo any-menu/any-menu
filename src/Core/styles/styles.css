@@ -544,7 +544,7 @@ div.editable-textarea-textarea {
 .am-search {
   position: relative;
   height: 30px;
-  width: 500px;
+  width: 506px;
   display: inline-block;
   box-sizing: border-box;
   z-index: 100;
@@ -807,7 +807,7 @@ div.editable-textarea-textarea {
   align-items: center;
   height: 26px;
   padding: 0;
-  margin: 1px 4px;
+  margin: 1px 5px;
   position: relative;
   line-height: 100%;
   border-radius: 8px;
@@ -1046,7 +1046,7 @@ html, body, #main {
 
 .am-pin {
   position: absolute;
-  right: -26px;
+  right: -32px;
 }
 
 .am-pin, .windows-pin {

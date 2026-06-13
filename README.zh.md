@@ -177,6 +177,11 @@ App版可以在任何文本环境下使用: (旧版截图)
 ### TODO 20260613
 
 - [ ] API：允许关闭所有 custom 面板 (非custom面板不关闭)
+- [ ] 折叠和展开 搜索框 (可选: toolbar、contextmenu)
+
+已完成
+
+- [x] 样式对齐下搜索框和 toolbar 的宽度
 
 ### TODO 202605
 

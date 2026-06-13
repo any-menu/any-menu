@@ -5,7 +5,7 @@
   // top: 0; // override by js
   // left: 0; // override by js
   height: 30px;
-  width: 500px;
+  width: 506px; // 与 toolbar 对齐，toolbar 宽度则根据每行图标数确定
   display: inline-block;
   box-sizing: border-box;
   z-index: 100; // 高于多级菜单
