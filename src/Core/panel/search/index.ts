@@ -43,8 +43,23 @@ export class AMSearch {
     this.el_parent = el
     this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search');
     this.el_input = document.createElement('input'); this.el.appendChild(this.el_input); this.el_input.classList.add('am-search-input')
-      this.el_input.type = 'text'; this.el_input.placeholder = 'Search...';
+      this.el_input.type = 'search'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)
+
+    this.el_input.addEventListener('keydown', (ev: KeyboardEvent) => {
+      // 截断并接管主面板默认的 Esc 行为
+      // 顺序补充: 按 esc 时，此处按键 > 此处blur > (面板) 外面按键，且这里监听必聚焦，不用多余的判断逻辑
+      // 
+      // 此处截断并接管是为补充特殊逻辑:
+      // 在输入框聚焦且存在内容时：
+      // - 单 Esc 仅清空输入框。
+      // - 即双 Esc 才可以清空并隐藏面板。
+      if (ev.key === 'Escape' && this.el_input && this.el_input.value.trim() != "") {
+        this.el_input.value = ""
+        ev.preventDefault()
+        ev.stopPropagation()
+      }
+    })
 
     this.amSuggestion = AMSuggestion.factory(this.el_input, this.el)
 

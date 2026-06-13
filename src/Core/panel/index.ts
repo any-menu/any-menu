@@ -75,6 +75,16 @@ let alt_key_flag = false
  * - 脚本面板是静态创建 or 动态创建，静态动态复用方便，适合调色盘和大部分场景。
  *   动态创建更灵活，支持任意数量，但需要考虑如何用完后销毁。
  *   (采用) 当然还有一个思路: 静态容器元素，其子元素是否动态由插件控制
+ * 
+ * ## 特殊 - 输入状态模式
+ * 
+ * 子面板之间可以有互动，而非孤立的。
+ * 
+ * 最常用的一个是输入框是否属于输入状态，其相关的状态包括：
+ * 
+ * - Esc 行为 (是否聚焦并有内容)
+ * - Alt Key 行为
+ * - 方向键行为
  */
 export class AMPanel {
   public el: HTMLElement
@@ -102,7 +112,7 @@ export class AMPanel {
     if (!global_el.amCustom) {
       global_el.amCustom = document.createElement('div'); el.appendChild(global_el.amCustom); global_el.amCustom.classList.add('am-custom-panel')
     }
-    // 可选，置顶按钮
+    // 可选，置顶按钮 (注意创建顺序影响布局)
     {
       AMPin.factory(el)
     }
@@ -455,7 +465,12 @@ export class AMPanel {
       AMPanel.panel_hide()
     }
   }
-  /// ESC隐藏
+  /** ESC隐藏
+   * 
+   * 补充：
+   * 特殊逻辑: 当输入框聚焦且存在内容时，第一个 Esc 行为由 search 子面板戒断并接管。
+   * 仅情况内容而不隐藏面板 (除非两次Esc，一次情况一次退出)
+   */
   static visual_listener_keydown (ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       ev.preventDefault()
