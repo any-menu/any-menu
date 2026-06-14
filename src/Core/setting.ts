@@ -174,7 +174,7 @@ export const global_setting: {
     renderMarkdown: null|((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>),
     // @param pos 不填表示沿用之前的位置
     app_show: (pos?: 'cursor'|'center', panel_list?: string[]) => Promise<void>,
-    app_hide: (panel_list?: string[]) => Promise<void>,
+    app_hide: (panel_list?: string[], forceBlurApp?: boolean) => Promise<void>,
     // (特殊) 本地资源协议
     // 最终生成的 URL 类似：https://asset.localhost/path_encode...
     app_convertFileSrc: (relPath: string) => Promise<string>,

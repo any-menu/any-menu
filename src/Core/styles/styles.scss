@@ -115,11 +115,18 @@ html, body, #main {
   // override by js: left, top, bottom
   z-index: 15; // App 环境用不着，用于其他环境。我 Ob 的左分隔线 index 为14
 
-  // reverse 模式
+  // reverse 模式 (1)
   flex-direction: column;
   &.reverse {
     flex-direction: column-reverse;
   }
+
+  // reverse 模式 (2)
+  // flex-direction: row;
+  // flex-wrap: wrap;
+  // &.reverse {
+  //   flex-wrap: wrap-reverse;
+  // }
 
   // 特殊: 这里的隐藏不使用 display，而使用 visibility
   // 一是在 fixed 场景下响应更快 (不脱离渲染树)
@@ -157,15 +164,17 @@ html, body, #main {
 
 .am-pin {
   position: absolute;
-  top: 5px;
-  right: -26px; // 自身24px加2px间距
+  right: -32px; // = 自身宽度30px + 加2px间距
 }
 
 .am-pin, .windows-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   margin: 0;
-  width: 24px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   padding: 0;
 
   z-index: 101;
@@ -174,17 +183,18 @@ html, body, #main {
   box-shadow: none;
   outline: none;
   background: transparent;
+  border-radius: 8px;
   color: var(--am-text-color);
   opacity: 0.7;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background-color: var(--ab-tab-root-hv-color);
     cursor: pointer;
   }
 }
 
 .windows-pin-active {
-  background: rgba(0, 0, 0, 0.1) !important;
+  background: rgba(0, 0, 0, 0.02) !important;
   // 非 active 是: background: transparent;
 }
 

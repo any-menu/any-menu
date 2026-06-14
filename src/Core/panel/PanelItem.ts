@@ -128,10 +128,16 @@ export function init_item(
     }
   }
 
-  // (可选) hash 颜色
-  // const hashColor = textToHashColor(item.label)
-  // li.style.background = hashColor.background
-  // li.style.color = hashColor.color
+  // if (mode === 'icon') { // (可选) 可以仅应用于图标，也能用于多级菜单
+  //   // (可选1) hash 背景颜色 (注意这里的亮度根据明暗主题又有所不同)
+  //   // const hashColor = textToHashColor(item.label)
+  //   // li.style.background = hashColor.background
+  //   // li.style.color = hashColor.color
+  // 
+  //   // (可选2) hash 文字颜色 (注意这里的亮度根据明暗主题又有所不同)
+  //   const hashColor = textToHashColor(item.label, undefined, undefined, undefined, 75 )
+  //   li.style.color = hashColor.background
+  // }
 
   // #endregion
 

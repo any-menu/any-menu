@@ -191,6 +191,7 @@ export function textToIcon(text: string, opts: TextIconOptions_arg = {}): TextIc
  * @param fgColorMode "auto"|string，自动根据背景色选择黑/白字；也可以手动指定如 "#fff
  * @param saturation  0-100, 饱和度 (仅hsl模式可用)
  * @param lightness   0-100, 明度 (仅hsl模式可用)
+ * @returns 目标文本色和背景色。当然，你也可以使用背景色作为文本色
  */
 export function textToHashColor(
   text: string,
