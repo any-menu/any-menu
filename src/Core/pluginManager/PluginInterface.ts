@@ -4,19 +4,11 @@
 
 import { AMPanel, global_el } from "../panel";
 import { global_setting } from "../setting";
-import type { PluginInterfaceCtx, UrlRequestConfig } from "../../Type";
+import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../Type";
 
-/// 默认的 ctx 模板
-/// 除了 env 的具体内容外，其他借口一般不用变动 (除非要做插件的环境分离/标注)。
-/// env 内容则基本上每次传入前都要更新一遍
-export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
+export const AppCtxDemo: PluginAppCtx = {
   env: {
-    selectedText: undefined,
     platform: global_setting.platform,
-    activeAppName: undefined,
-    activeDocTitle: undefined,
-    activeDocUrl: undefined,
-
     obsidian: global_setting.platform === 'obsidian-plugin' ? {
       plugin: global_setting.other.obsidian_plugin,
       ctx: global_setting.other.obsidian_ctx
@@ -28,11 +20,35 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
     notify: (message: string) => global_setting.api.notify(message),
 
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
-    readFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string) => { // be override
-      return await global_setting.api.readFile(relPath);
+    readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => { // be override
+      // relPath 禁止包含 ../ 等路径穿越
+      if (relPath.includes('../')) {
+        console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+        return null
+      }
+
+      let filePath: string
+      if (basePath === 'CONFIG') {
+        filePath = './dict_config/' + relPath
+      } else { // if (basePath === 'PUBLIC')
+        filePath = global_setting.config.note_paths + relPath
+      }
+      return await global_setting.api.readFile(filePath);
     },
-    writeFile: async (_basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => { // be override
-      return await global_setting.api.writeFile(relPath, content, is_append);
+    writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => { // be override
+      // relPath 禁止包含 ../ 等路径穿越
+      if (relPath.includes('../')) {
+        console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
+        return false
+      }
+
+      let filePath: string
+      if (basePath === 'CONFIG') {
+        filePath = './dict_config/' + relPath
+      } else { // if (basePath === 'PUBLIC')
+        filePath = global_setting.config.note_paths + relPath
+      }
+      return await global_setting.api.writeFile(filePath, content, is_append);
     },
 
     // #region 面板相关
@@ -63,6 +79,18 @@ export const PluginInterfaceCtxDemo: PluginInterfaceCtx = {
   }
 }
 
+/// 默认的 ctx 模板
+/// 除了 env 的具体内容外，其他借口一般不用变动 (除非要做插件的环境分离/标注)。
+/// env 内容则基本上每次传入前都要更新一遍
+export const PluginRunCtxDemo: PluginRunCtx = {
+  env: {
+    selectedText: undefined,
+    activeAppName: undefined,
+    activeDocTitle: undefined,
+    activeDocUrl: undefined,
+  },
+}
+
 export const PluginInterfaceDemo: string = `\
 export default {
   metadata: {
@@ -79,7 +107,9 @@ export default {
     return str.toUpperCase();
   },
 
-  async run(ctx) {},
+  async run(ctx) {
+    console.log('plugin demo test');
+  },
 
   onLoad() {
     console.log('demo: 插件加载完成');

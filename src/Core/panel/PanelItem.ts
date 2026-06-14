@@ -4,7 +4,7 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
-import type { PluginInterfaceCtx } from "../../Type"
+import type { PluginRunCtx } from "../../Type"
 import { PluginManager } from "../pluginManager/PluginManager"
 import { global_setting } from "../../Core/setting"
 
@@ -43,18 +43,19 @@ export type PanelItem = {
    * - 仅 json/yaml/toml 来源支持声明多级菜单，txt 和 js 不支持
    */
   children?: PanelItem[]
+
   /** 
    * 执行该项
    * - 字符串: 输出该字符串，一般用于词典。方便声明demo模板
    * - 函数: 自定义回调，一般用于自定义脚本
    */
-  callback?: string | ((ctx: PluginInterfaceCtx) => Promise<void>)
+  callback?: string | ((ctx: PluginRunCtx) => Promise<void>)
   /**
    * 仅脚本支持的部分
    * 
    * 这里的 string 类型是无效的 (应去掉)，放这里只是为了避免 toml_parse 转该类型时编辑器报错
    */
-  onCreateItem_callback?: string | ((el: HTMLElement, ctx: PluginInterfaceCtx) => void)
+  onCreateItem_callback?: string | ((el: HTMLElement, ctx: PluginRunCtx) => void)
 }
 
 // 用于避免重复请求相同的图标
@@ -162,11 +163,11 @@ export function init_item(
     else {
       const callback = item.callback
       li.addEventListener('click', async () => {
-        const ctx = PluginManager.getPluginContext(item.label)
+        const ctx = PluginManager.getPluginRunCtx(item.label)
         void callback(ctx)
       })
       if (item.onCreateItem_callback && typeof item.onCreateItem_callback !== 'string') {
-        const ctx = PluginManager.getPluginContext(item.label)
+        const ctx = PluginManager.getPluginRunCtx(item.label)
         item.onCreateItem_callback(li, ctx)
       }
     }

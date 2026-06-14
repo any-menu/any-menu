@@ -1,7 +1,7 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import type { PluginInterface, PluginInterfaceCtx } from '../../Type'
-import { PluginInterfaceCtxDemo, PluginInterfaceDemo } from './PluginInterface';
+import type { PluginAppCtx, PluginInterface, PluginRunCtx } from '../../Type'
+import { AppCtxDemo, PluginInterfaceDemo, PluginRunCtxDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
 // 需要开启 tsconfig.json 中的
@@ -84,7 +84,7 @@ export class PluginManager {
 
       // 4. 注册并执行加载事件
       this.plugin_list[plugin.metadata.id] = plugin;
-      plugin.onLoad?.();
+      plugin.onLoad?.(PluginManager.getPluginAppCtx(plugin.metadata.name ?? plugin.metadata.id));
 
       return plugin;
     } catch (error) {
@@ -103,7 +103,7 @@ export class PluginManager {
     if (!result.success) {
       // 提取格式化后的错误信息
       const errorMsg = result.error.issues
-        .map(e => `字段 '${e.path.join('.')}' ${e.message}`)
+        .map((e: any) => `字段 '${e.path.join('.')}' ${e.message}`)
         .join('; ');
       throw new Error(`Plugin validate error: #${rawPlugin?.metadata?.id} ${errorMsg}`);
     }
@@ -137,60 +137,34 @@ export class PluginManager {
     return true;                    // 当前版本 = 最小版本
   }
 
+  /** 插件加载时的 ctx 环境获取
+   * @param label 插件名，仅日志打印时使用，标注来源
+   */
+  static getPluginAppCtx(label?: string): PluginAppCtx {
+    return {
+      ...AppCtxDemo,
+      api: {
+        ...AppCtxDemo.api,
+        notify: async (message: string) => {
+          await global_setting.api.notify((label ?? 'unknown') + ': ' + message)
+        },
+      }
+    }
+  }
+
   /** 插件运行时的 ctx 环境获取
    * @param label 插件名，仅日志打印时使用，标注来源
    */
-  static getPluginContext(label?: string): PluginInterfaceCtx {
-    const ctx = {
+  static getPluginRunCtx(_label?: string): PluginRunCtx {
+    return {
+      ...PluginRunCtxDemo,
       env: {
-        platform: global_setting.platform,
         selectedText: global_setting.state.selectedText,
         activeAppName: global_setting.state.activeAppName || undefined,
         activeDocTitle: global_setting.state.activeDocTitle,
         activeDocUrl: global_setting.state.activeDocUrl,
-        obsidian:  global_setting.platform === 'obsidian-plugin' ? {
-          plugin: global_setting.other.obsidian_plugin,
-          ctx: global_setting.other.obsidian_ctx
-        } : undefined,
       },
-      api: {
-        ...PluginInterfaceCtxDemo.api,
-        notify: async (message: string) => {
-          await global_setting.api.notify((label ?? 'unknown') + ': ' + message)
-        },
-        readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => {
-          // relPath 禁止包含 ../ 等路径穿越
-          if (relPath.includes('../')) {
-            console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-            return null
-          }
-
-          let filePath: string
-          if (basePath === 'CONFIG') {
-            filePath = './dict_config/' + relPath
-          } else { // if (basePath === 'PUBLIC')
-            filePath = global_setting.config.note_paths + relPath
-          }
-          return await global_setting.api.readFile(filePath);
-        },
-        writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => {
-          // relPath 禁止包含 ../ 等路径穿越
-          if (relPath.includes('../')) {
-            console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-            return false
-          }
-
-          let filePath: string
-          if (basePath === 'CONFIG') {
-            filePath = './dict_config/' + relPath
-          } else { // if (basePath === 'PUBLIC')
-            filePath = global_setting.config.note_paths + relPath
-          }
-          return await global_setting.api.writeFile(filePath, content, is_append);
-        }
-      }
     }
-    return ctx
   }
 
   // #region 插件 CSS 注入与移除
@@ -326,11 +300,14 @@ export class PluginManager {
     // 插件 - 加载 + 验证
     const plugin = await loader.loadPlugin('PluginInterfaceDemo', PluginInterfaceDemo);
 
-    // 插件 - 调用常规接口
-    if (plugin.process) {
-      const result = await plugin.process('demo: hello world' as never);
-      if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
-    }
+    // 插件 - 调用常规接口 (旧)
+    // if (plugin.process) {
+    //   const result = await plugin.process('demo: hello world' as never);
+    //   if (global_setting.isDebug) console.log(result); // "HELLO WORLD"
+    // }
+
+    // 插件 - 调用常规接口 (新)
+    plugin.run(PluginManager.getPluginRunCtx('plugin demo'))
 
     // 插件 - 卸载
     if (plugin.onUnload) plugin.onUnload();

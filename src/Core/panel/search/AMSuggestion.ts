@@ -212,7 +212,7 @@ export class AMSuggestion {
         // el_input.value = '' // 弃用，让 input hide 再 show 时清空内容
         if (item.value.startsWith('@am-script: ')) {
           const script_id = item.value.substring('@am-script: '.length)
-          PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginContext(item.key))
+          PLUGIN_MANAGER.plugin_list[script_id]?.run(PluginManager.getPluginRunCtx(item.key))
           this.panel_hide()
         }
         else {

@@ -35,16 +35,16 @@ export interface PluginInterface {
     css?: string;
   };
 
-  /**
+  /*
    * 旧版接口
    * @deprecated 没有 ctx 环境，未来将废弃，请使用 `run` 接口代替
-   */
-  process?: (str?: string) => Promise<void | string>;
+   *
+  process?: (str?: string) => Promise<void | string>;*/
 
   /**
    * 主入口，点击或选择时触发
    */
-  run: (ctx: PluginInterfaceCtx) => Promise<void>;
+  run: (runCtx: PluginRunCtx) => Promise<void>;
 
   /*
    * 算了，感觉还是直接 callback 给按钮对象让绑定比较方便。
@@ -77,7 +77,7 @@ export interface PluginInterface {
    *   - 只有 run 的 ctx 才会有这些运行时信息。
    *   TODO 这个问题获取后续可以完善。提供一个 api 让插件在非 run 函数内也能 get 一些运行期信息
    */
-  onCreateItem?: (el: HTMLElement, ctx: PluginInterfaceCtx) => void;
+  onCreateItem?: (el: HTMLElement, ctx: PluginRunCtx) => void;
 
   /**
    * 插件加载时调用
@@ -85,7 +85,7 @@ export interface PluginInterface {
    *   目前没什么用，应该给他一个 ctx，这样可以加载时就进行注册面板等操作
    *   不过目前还是提倡在 run 内判断首次运行时注册，避免软件启用时就做一大堆操作
    */
-  onLoad?: () => void;
+  onLoad?: (appCtx: PluginAppCtx) => void;
 
   /**
    * 插件卸载时调用
@@ -94,13 +94,11 @@ export interface PluginInterface {
 }
 
 /** 插件运行时上下文 */
-export interface PluginInterfaceCtx {
+export interface PluginRunCtx {
   /** 环境信息 */
   env: {
     /** 当前选中文本 */
     selectedText?: string;
-    /** 当前平台 */
-    platform: 'app' | 'obsidian-plugin' | string;
     /** 当前激活的应用/窗口名称 */
     activeAppName?: string;
     /** 当前文档/页面标题（如浏览器页面标题、Obsidian 笔记名等） */
@@ -113,17 +111,28 @@ export interface PluginInterfaceCtx {
      */
     activeDocUrl?: string;
 
-    /** 仅 Obsidian 环境拥有 */
-    obsidian?: {
-        plugin: any;
-        ctx: any;
-    };
-
     // TODO: 更多环境
     // - miniEditorText?: string;
     // - historySelected (用来连续复制，或模型连续提供上下文时使用)
     // - 当前选中类型 (文件/图片/文字等...)
-  }
+  },
+}
+
+/** 插件全局上下文
+ * 
+ * 主要是仅 get 方法、静态的、任何插件任何情景中，这部分的上下文不变
+ */
+export interface PluginAppCtx {
+  env: {
+    /** 当前平台 */
+    platform: 'app' | 'obsidian-plugin' | string;
+    /** 仅 Obsidian 环境拥有 */
+    obsidian?: {
+      plugin: any; // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
+      // app, 略，plugin.app 获取就好
+      ctx: any;
+    };
+  },
   /** API 接口 */
   api: {
     /**
@@ -220,7 +229,7 @@ export interface PluginInterfaceCtx {
     // 
     // 话说这里要弄权限管理不，如上面那些带风险的接口
     // 然后没有权限的插件调用这些接口时，就会 NOTICE方式提示用户某插件需要，并引导用户自行开启
-  }
+  };
 }
 
 /**
@@ -237,7 +246,6 @@ export interface UrlRequestConfig {
   onChunk?: (chunk: string) => void;  // 每个 SSE chunk 的回调
   onDone?: () => void;                // 流结束回调
 }
-
 /**
  * 统一响应接口
  */

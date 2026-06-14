@@ -9,7 +9,7 @@ import { PanelItem } from '@/Core/panel/PanelItem'
 import { AMContextMenu } from "@/Core/panel/contextmenu"
 import { root_menu } from "@/Core/panel/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
-import { PluginInterfaceCtxDemo } from '@/Core/pluginManager/PluginInterface'
+import { PluginRunCtxDemo } from '@/Core/pluginManager/PluginInterface'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -86,7 +86,7 @@ export class ABContextMenu_Ob extends AMContextMenu {
                 editor.replaceSelection(item.callback as string)
               }
             })
-            else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as any)(PluginInterfaceCtxDemo) })
+            else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as any)(PluginRunCtxDemo) })
           }
 
           // 菜单项说明
