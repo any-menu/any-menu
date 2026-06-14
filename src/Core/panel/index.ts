@@ -293,13 +293,20 @@ export class AMPanel {
 
   /** 隐藏面板
    * 
+   * 注: 置顶时不会隐藏，而是进行主动失焦 (不含 App 版本实现)
+   * 
    * @param list 要隐藏的子面板列表
    *   - 有参数: 容器不隐藏，只隐藏列表中的那几个子面板
    *   - 空列表: 容器隐藏，子面板不隐藏 (方便下次显示容器时保留子面板显示状态)
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
   static panel_hide(list?: string[]) {
-    if (global_setting.state.isPin) return
+    // 置顶状态不隐藏，但会尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
+    // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
+    if (global_setting.state.isPin) {
+      global_el.amPanel?.el.blur()
+      return
+    }
 
     // 主面板
     const el_panel = global_el.amPanel?.el
@@ -456,7 +463,7 @@ export class AMPanel {
     if (global_setting.platform == 'app') {
       // 前者不包括 .am-panel (允许不规则区域)，后者包括 .widnows-pin，后者也可以写成 `matches('.windows-pin, .windows-pin *')`
       if (ev.target.matches('.am-panel *') || ev.target.closest('.windows-pin')) return
-      global_setting.other.app_hide()
+      global_setting.other.app_hide(undefined, true)
     }
     // obsidian 插件版本
     else {
@@ -474,7 +481,12 @@ export class AMPanel {
   static visual_listener_keydown (ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       ev.preventDefault()
-      AMPanel.panel_hide()
+      if (global_setting.platform == 'app') {
+        global_setting.other.app_hide(undefined, true)
+      }
+      else {
+        AMPanel.panel_hide()
+      }
       return
     }
   }

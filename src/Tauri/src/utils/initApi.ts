@@ -145,8 +145,7 @@ export function initApi() {
       }
 
       // 切换焦点
-      // 虽然隐藏窗口能自动失焦；但窗口有可能处于强制置顶状态，从而无法隐藏，所以还要主动失焦
-      await invoke("release_focus"); hideWindow();
+      hideWindow(undefined, true);
       await new Promise(resolve => setTimeout(resolve, 200)); // 等待一小段时间确保窗口已隐藏且焦点已切换 (复制非纯文本好像时间要久些)
 
       // 通知后端黏贴
@@ -159,8 +158,7 @@ export function initApi() {
     }
 
     // 切换焦点
-    // 虽然隐藏窗口能自动失焦；但窗口有可能处于强制置顶状态，从而无法隐藏，所以还要主动失焦
-    await invoke("release_focus"); hideWindow();
+    hideWindow(undefined, true);
     await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
 
     // 通知后端黏贴

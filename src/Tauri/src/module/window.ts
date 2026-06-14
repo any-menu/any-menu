@@ -471,9 +471,26 @@ export async function showWindow(
   autoHide_unFocusMode(is_focus, appWindow);
 }
 
-/** 隐藏窗口 */
-export async function hideWindow(list?: string[]) {
-  if (global_setting.state.isPin) return // 置顶状态
+/** 隐藏窗口
+ * 
+ * @param forceBlurApp
+ *   为什么要用:
+ *   虽然隐藏窗口能自动失焦；但窗口有可能处于强制置顶状态，从而无法隐藏，所以还要主动失焦
+ * 
+ *   为什么不自动用: 
+ *   目前 App 主动失焦的实现是模拟 Alt+Esc。
+ *   如果这里是由于窗口切换焦点而导致了 hideWindow 事件，
+ *   这里再进行一次主动失焦，会导致外部窗口而非该应用窗口的失焦点。
+ *   
+ *   使用场景：
+ *   当主动隐藏窗口时使用，被动隐藏窗口不要用
+ */
+export async function hideWindow(list?: string[], forceBlurApp: boolean = false) {
+  if (global_setting.state.isPin) { // 置顶状态
+    if (forceBlurApp) await invoke("release_focus"); 
+    return
+  }
+
   AMPanel.panel_hide(list) // 隐藏面板&失焦面板
 
   if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉
