@@ -1,3 +1,4 @@
+import type { MetadataCache } from '../Type';
 import { t } from './locales/helper';
 import { global_setting } from './setting';
 import { RepoAPI } from './webApi'
@@ -300,6 +301,16 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   async function getDictData_and_showData(mode: 'table'|'card' = 'card') {
     const data = await getDictData()
     if (!data) return
+
+    // 缓存的加载过的插件信息
+    const path = global_setting.config.dict_paths + 'cache_plugin_meta'
+    let plugins_cache: Record<string, MetadataCache> = {}
+    try {
+      const content = await global_setting.api.readFile(path)
+      if (content) plugins_cache = JSON.parse(content)
+    } catch {}
+
+    // 定义如何显示数据
     const data_header = [
       {
         name: t('Name'),
@@ -357,7 +368,24 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
             }
           }
         },
-      }
+      },
+
+      // (可选) 一些缓存元数据的显示
+      // 注意: 由于加载插件完成可能晚于该面板创建，信息可能落后
+      {
+        name: 'Version',
+        callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (ret) el.innerText = ret.version
+        }
+      },
+      {
+        name: 'Description',
+        callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (ret) el.innerText = ret.description ?? ""
+        }
+      },
     ]
     if (mode === 'card') json2card(dataview, data, data_header)
     else json2table(dataview, data, data_header)

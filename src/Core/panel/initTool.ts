@@ -80,6 +80,8 @@ export async function initMenuData() {
 
       // 前面并发处理文件，但等待所有文件处理结束后再返回
       await Promise.all(promises)
+
+      void PLUGIN_MANAGER.cachePluginMeta()
     } catch (error) {
       console.warn("Failed to read directory:", error) // 初始时还没词典可能为空
     }
@@ -145,7 +147,7 @@ export async function initMenuData() {
     } else if (file_ext === 'yaml' || file_ext === 'yml') {
       void fill_by_yaml(file_content, file_name_short)
     } else if (file_ext === 'js') {
-      void fill_by_js(file_content, file_name_short)
+      void fill_by_js(file_content, file_name_short, file_path)
     } else { // 无关文件
       console.error('Unreadable, file type:', file_ext)
     }
@@ -247,9 +249,9 @@ export async function initMenuData() {
     ])
   }
 
-  async function fill_by_js(file_content: string, file_name_short: string) {
+  async function fill_by_js(file_content: string, file_name_short: string, file_path: string) {
     // 解析，脚本部分
-    const plugin = await PLUGIN_MANAGER.loadPlugin(file_name_short, file_content)
+    const plugin = await PLUGIN_MANAGER.loadPlugin(file_path, file_content)
     const panelItem: PanelItem = {
       // label 也可以用 file_name_short 备选。但由于组织名问题，file_name_short 可能会很长
       label: plugin.metadata.name ?? plugin.metadata.id,

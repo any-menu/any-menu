@@ -265,7 +265,9 @@ export interface UrlResponseData {
 }
 
 /**
- * 面板上的功能项的定义，同时也是 toml 扩展名内容的格式
+ * 面板上的功能项的定义
+ * 
+ * 同时也是 toml 扩展名内容的格式
  * 
  * ## 作为面板上的功能项
  * 
@@ -342,4 +344,18 @@ export interface PanelItem {
     * 废弃
     */
   // onCreateItem_callback?: string | PluginInterface_onCreateItem
+}
+
+/** 加载过的插件的元数据缓存
+ * (基本同 PluginInterface.metadata, icon 和 css 不要)
+ * 
+ * 同时也是 cache_plugin_meta 文件内容的格式
+ */
+export interface MetadataCache {
+  id: string;
+  version: string;
+  min_app_version: string;
+  name?: string;
+  author?: string;
+  description?: string;
 }

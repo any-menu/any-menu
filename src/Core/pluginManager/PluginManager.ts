@@ -1,6 +1,6 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
-import type { PluginAppCtx, PluginInterface, PluginRunCtx } from '../../Type'
+import type { MetadataCache, PluginAppCtx, PluginInterface, PluginRunCtx } from '../../Type'
 import { AppCtxDemo, PluginInterfaceDemo, PluginRunCtxDemo } from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
@@ -35,6 +35,10 @@ const PluginSchema = z.object({
 export class PluginManager {  
   // 存储所有已加载的插件。可在此通过id搜索插件以供调用
   plugin_list: Record<string, PluginInterface> = {};
+  // 通过路径搜索已加载的插件
+  // 注意插件配置面板的显示快于加载完插件的时间，所以在第一次使用时，这通常是无效的
+  // 并且这里主要是为了缓存元信息，后面会持久化到缓存文件中的
+  plugin_list2: Record<string, MetadataCache> = {};
   // dict_list: Record<string, PluginInterface> = {};
 
   static factory() {
@@ -44,8 +48,8 @@ export class PluginManager {
     if (global_setting.isDebug) console.log('>>> PluginManager initialized'); // 验证单例
   }
 
-  // @param file_name_short 仅用于失败时打印，无其他作用
-  async loadPlugin(file_name_short: string, scriptContent: string): Promise<PluginInterface> {
+  // @param file_path 仅用于失败时打印，无其他作用
+  async loadPlugin(file_path: string, scriptContent: string): Promise<PluginInterface> {
     let blobUrl: string | null = null;
     try {
       // 1. Import 脚本
@@ -66,7 +70,7 @@ export class PluginManager {
       //   获取 export default 导出的对象
       let rawPlugin = module.default;
       if (!rawPlugin) {
-        throw new Error('Plugin script must export a default object, #' + file_name_short);
+        throw new Error('Plugin script must export a default object, path:' + file_path);
       }
 
       // 2. 验证插件格式
@@ -91,11 +95,13 @@ export class PluginManager {
 
       // 5. 注册并执行加载事件
       this.plugin_list[plugin.metadata.id] = plugin;
+      const { icon, css, ...rest } = plugin.metadata;
+      this.plugin_list2[file_path] = rest
       plugin.onLoad?.();
 
       return plugin;
     } catch (error) {
-      throw new Error('Plugin load error, #' + file_name_short, { cause: error });
+      throw new Error('Plugin load error, path:' + file_path, { cause: error });
     } finally {
       // 清理内存，防止内存泄漏
       if (blobUrl) {
@@ -172,6 +178,24 @@ export class PluginManager {
         activeDocUrl: global_setting.state.activeDocUrl,
       },
     }
+  }
+
+  /** 缓存加载过的插件的信息 */
+  async cachePluginMeta() {
+    // TODO 这里不要用 dict_paths，配置中应该还要加个专门的 "缓存路径"
+
+    // 之前的缓存
+    const path = global_setting.config.dict_paths + 'cache_plugin_meta'
+    let old_obj: Record<string, MetadataCache> = {}
+    try {
+      const content = await global_setting.api.readFile(path)
+      if (content) old_obj = JSON.parse(content)
+    } catch {}
+
+    // 更新缓存
+    global_setting.api.writeFile(global_setting.config.dict_paths + 'cache_plugin_meta',
+      JSON.stringify({...old_obj, ...this.plugin_list2})
+    )
   }
 
   // #region 插件 CSS 注入与移除
@@ -251,6 +275,7 @@ export class PluginManager {
       const plugin = fn() as PluginInterface;
       this.loadPlugin_validatePlugin2(plugin); // 验证接口，错误则抛出错误
       this.plugin_list[plugin.metadata.id] = plugin;
+      this.plugin_list2[...]...
 
       // 加载脚本
       plugin.onLoad?.()
