@@ -7,7 +7,10 @@
 > [!WARNING]
 > BREAKECHANGE
 > 
-> 重构了插件 api，分离了 appCtx 和 runCtx。所有插件失效，均需要重新开发和下载
+> 重构了插件 api，所有老插件不适用于新软件/插件，均需要重新开发和下载
+> 
+> 具体: 分离了 appCtx 和 runCtx。
+> toml 格式内容修改，重新定义了每个项的类型和内容
 
 - feat
 - enhance

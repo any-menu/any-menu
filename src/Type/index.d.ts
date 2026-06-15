@@ -260,3 +260,83 @@ export interface UrlResponseData {
   originalResponse: any; // 原始响应对象，用于调试
   // 可能还有 arrayBuffer headers json status text
 }
+
+/**
+ * 面板上的功能项的定义，同时也是 toml 扩展名内容的格式
+ * 
+ * ## 作为面板上的功能项
+ * 
+ * 统一将不同的来源整合成相同的结果。来源可能是:
+ * - 各种词典 (json / yaml / toml)。TODO json/yaml 未支持，需支持一下
+ *   - md 类型 (txt一定是md类型 (纯文本类型也行，目前不区分这两))
+ *   - command_ob 类型，会转义为执行 ob 命令
+ * - 插件 (js)
+ * - 注意 csv / txt 不走这里，不会仅面板显示，只走数据库
+ */
+export interface PanelItem {
+  /// 显示名。众多别名/匹配名中的主名称
+  label: string
+  /** 详见 PluginInterface.metadata.icon 注释，此处的 string 使用前记得 DOMPurify 处理 */
+  icon?: string
+  /**
+   * 现用法:
+   * 在字典中表示 callback 的类型
+   * 
+   * 旧用法:
+   * 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)。
+   * 话说如果不包含用例，像ob环境，直接渲染岂不是更好?
+   */
+  detail?: string
+
+  /// 匹配名，显示名的多个别名、匹配增强名、拼音等
+  /// (不是id)
+  key?: string
+  /** 用于控制其项的排序，越小越靠前，默认为 1000 */
+  order?: number
+  /** 
+   * 多级菜单中的子菜单项
+   * - 目前仅菜单栏支持多级菜单，工具栏不支持
+   * - 仅 json/yaml/toml 来源支持声明多级菜单，txt 和 js 不支持
+   */
+  children?: PanelItem[]
+
+  // output_string 与 plugin 互斥，有且仅有一个，另一个为未定义
+  // 通常分别为 toml 和 js 定义的面板功能项
+
+  /**
+   * exec_type
+   * exec_content 根据 exec_type 的不同，表示不同，exec_type 为:
+   * - script     | 则 content 为脚本 id。可选通过 id 找到脚本并执行其 run 方法。
+   *                但一般情况下会有 plugin 的冗余字段存在，用那个更好。
+   * - string     | 输出对应文本
+   * - md         | 同 string, 只是声明这是个 md 内容 (即可选使用 md 渲染的方式预览内容)
+   * - path       | 输出对应 path/url 的文件 (一般是图片路径，通过剪切板黏贴出来)
+   * - command_ob | 仅 obsidian 环境生效，执行 obsidian 命令
+   * 
+   * 补充: 旧版会使用 detail 来表示 command_ob；
+   * 旧版会使用搜索框的特殊标识来表示图片/文件路径
+   */
+  type?: "script"|"string"|"md"|"path"|"command_ob"|"folder"
+  content?: string
+
+  // (仅插件创建的项才有，词典等其他方式创建时这里是未定义)
+  plugin?: PluginInterface
+
+  // 下面内容均为废弃项
+  /*
+    * 执行该项
+    * - 字符串: 输出该字符串，一般用于词典。方便声明demo模板
+    * - 函数: 自定义回调，一般用于自定义脚本
+    * 
+    * 废弃，且没有 string 类型的可能
+    */
+  // callback?: string | PluginInterface_run
+  /*
+    * 仅脚本支持的部分
+    * 
+    * 这里的 string 类型是无效的 (应去掉)，放这里只是为了避免 toml_parse 转该类型时编辑器报错
+    * 
+    * 废弃
+    */
+  // onCreateItem_callback?: string | PluginInterface_onCreateItem
+}

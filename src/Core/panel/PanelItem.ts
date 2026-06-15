@@ -4,59 +4,11 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
-import type { PluginRunCtx } from "../../Type"
-import { PluginManager } from "../pluginManager/PluginManager"
+import type { PanelItem } from "../../Type"
+import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { global_setting } from "../../Core/setting"
 
 import { textToIcon } from "./utils"
-
-/** 面板上的项
- * 
- * 统一将不同的来源整合成相同的结果。来源可能是:
- * - 各种词典 (json / yaml / toml)。TODO json/yaml 未支持，需支持一下
- *   - md 类型 (txt一定是md类型 (纯文本类型也行，目前不区分这两))
- *   - command_ob 类型，会转义为执行 ob 命令
- * - 插件 (js)
- * - 注意 csv / txt 不走这里，不会仅面板显示，只走数据库
- */
-export type PanelItem = {
-  /// 显示名。众多别名中的主名称
-  label: string
-  /** 详见 PluginInterface.metadata.icon 注释，此处的 string 使用前记得 DOMPurify 处理 */
-  icon?: string
-  /// 匹配名，显示名的多个别名、匹配增强名、拼音等
-  key?: string
-  /**
-   * 现用法:
-   * 在字典中表示 callback 的类型
-   * 
-   * 旧用法:
-   * 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)。
-   * 话说如果不包含用例，像ob环境，直接渲染岂不是更好?
-   */
-  detail?: string
-  /** 用于控制其项的排序，越小越靠前，默认为 1000 */
-  order?: number
-  /** 
-   * 多级菜单中的子菜单项
-   * - 目前仅菜单栏支持多级菜单，工具栏不支持
-   * - 仅 json/yaml/toml 来源支持声明多级菜单，txt 和 js 不支持
-   */
-  children?: PanelItem[]
-
-  /** 
-   * 执行该项
-   * - 字符串: 输出该字符串，一般用于词典。方便声明demo模板
-   * - 函数: 自定义回调，一般用于自定义脚本
-   */
-  callback?: string | ((ctx: PluginRunCtx) => Promise<void>)
-  /**
-   * 仅脚本支持的部分
-   * 
-   * 这里的 string 类型是无效的 (应去掉)，放这里只是为了避免 toml_parse 转该类型时编辑器报错
-   */
-  onCreateItem_callback?: string | ((el: HTMLElement, ctx: PluginRunCtx) => void)
-}
 
 // 用于避免重复请求相同的图标
 const lucideIconCache = new Map();
@@ -143,48 +95,64 @@ export function init_item(
   // #endregion
 
   // 项功能
-  if (item.callback != undefined) {
+  if (item.content != undefined) { // 排除 "文件夹项"
     li.addEventListener('mousedown', (event) => {
       event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
     })
+
     // b1. obsidian 专用命令
-    if (item.detail == "command_ob") {
+    if (item.type === "command_ob") {
       li.addEventListener('click', async () => {
-        global_setting.other.obsidian_run_command?.(item.callback as string); p_this.panel_hide();
+        if (!item.content) return
+        global_setting.other.obsidian_run_command?.(item.content); p_this.panel_hide();
       })
     }
-    // b2. 输出 item.callback 文本到当前光标位置
-    else if (typeof item.callback === 'string') {
+    // b2. 输出纯文本
+    else if (item.type === 'string' || item.type === "md") {
       li.addEventListener('click', async () => {
-        await global_setting.api.sendText(item.callback as string); p_this.panel_hide();
+        if (!item.content) return
+        await global_setting.api.sendText(item.content); p_this.panel_hide();
       })
     }
-    // b3. 自定义命令
-    else {
-      const callback = item.callback
+    // b3. 输出 path 对应的文件
+    else if (item.type === 'path') {
       li.addEventListener('click', async () => {
-        const ctx = PluginManager.getPluginRunCtx(item.label)
-        void callback(ctx)
+        if (!item.content) return
+        await global_setting.api.sendText(item.content, 'IMG_MODE'); p_this.panel_hide();
       })
-      if (item.onCreateItem_callback && typeof item.onCreateItem_callback !== 'string') {
-        const ctx = PluginManager.getPluginRunCtx(item.label)
-        item.onCreateItem_callback(li, ctx)
+    }
+    // b4. 脚本
+    else if (item.type === 'script') {
+      const plugin = item.plugin ??
+        item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
+      if (plugin) {
+        li.addEventListener('click', async () => {
+          const ctx = PluginManager.getPluginRunCtx(item.label)
+          void plugin.run(ctx)
+        })
+        if (plugin.onCreateItem) {
+          const ctx = PluginManager.getPluginRunCtx(item.label)
+          plugin.onCreateItem(li, ctx)
+        }
       }
+    }
+    // b5. 其他类型 (一般是未定义 / 文件夹)
+    else {
+      // console.error('未知的项类型:', item.type)
     }
   }
 
   // 项说明
-  if (item.detail) {
+  if (item.type && ["md", "path"].includes(item.type) && item.content) {
     let tooltip: HTMLElement|undefined = undefined
     li.onmouseenter = () => {
-      if (item.detail == "command_ob") return // 命令flag, 不显示
-
-      // 先清空 li 中可能存在的 tooltip，避免重复创建和内存泄露
+      // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)
       const existingTooltip = li.querySelector('.ab-contextmenu-tooltip')
       if (existingTooltip) {
         li.removeChild(existingTooltip)
       }
 
+      // 创建 tooltip
       tooltip = document.createElement('div'); li.appendChild(tooltip);
       tooltip.classList.add('ab-contextmenu-tooltip')
       // 旧版写法，position: fixed。现在改为了absolute 定位
@@ -194,13 +162,14 @@ export function init_item(
       //   left: ${domRect.right + 1}px;
       // `)
 
-      if (item.detail == "md") { // 一个flag, 表示渲染显示
-        if (typeof item.callback == "string") {
-          void global_setting.other.renderMarkdown?.(item.callback, tooltip)
+      if (item.type === "md") { // 一个flag, 表示渲染显示
+        if (item.content) {
+          void global_setting.other.renderMarkdown?.(item.content, tooltip)
         }
-      } else {
+      }
+      else if (item.type === "path") { // TODO 这里仅 url 支持，否则会有权限问题
         const img = document.createElement('img'); tooltip.appendChild(img);
-          img.setAttribute('src', item.detail as string);
+          img.setAttribute('src', item.content ?? "");
           img.classList.add('tooltip-image');
       }
     }

@@ -1,5 +1,6 @@
-import { global_setting } from "../../../Core/setting"
-import { init_item, type PanelItem } from "../PanelItem"
+import type { PanelItem } from "../../../Type";
+import { global_setting } from "../../setting"
+import { init_item } from "../PanelItem"
 
 export class AMToolbar {
   public el_parent: HTMLElement;

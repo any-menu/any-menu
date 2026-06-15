@@ -1,10 +1,10 @@
 /** 依赖于搜索框和多级菜单 */
 
+import { type PanelItem } from "../../Type"
 import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
 import { type AMToolbar } from "./toolbar"
 import { global_setting } from "../setting"
-import { type PanelItem } from "./PanelItem"
 import { SEARCH_DB, SEARCH_DB_img } from "./search/SearchDB"
 import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
 import { toml_parse } from "./contextmenu/demo"
@@ -198,24 +198,34 @@ export async function initMenuData() {
     SEARCH_DB.add_data_by_json(records, file_name_short)
   }
 
+  interface PanelItem2 extends PanelItem { // 一是用于兼容旧版 api 的 PanelItem，二是消除不可序列化的字段
+    callback?: string // 旧版的 content
+    plugin: undefined
+    children?: PanelItem2[]
+  }
+
   async function fill_by_toml(file_content: string, file_name_short: string) {
-    // 解析
-    let menu_items: PanelItem[] = []
+    // 解析1
+    let menu_items: PanelItem2[] = []
     try {
-      menu_items = toml_parse(file_content)["categories"] as PanelItem[]
+      menu_items = toml_parse(file_content)["categories"] as unknown as PanelItem2[]
     } catch (error) {
       console.error("Parse error:", error)
       return
     }
 
-    // 搜索建议部分
+    // 解析2, 搜索建议部分
     const records: {key: string, value: string, name?: string}[] = []
-    function recursive(items: PanelItem[]) {
+    function recursive(items: PanelItem2[]) { // 递归遍历
       for (const item of items) {
-        if (item.callback && typeof item.callback === 'string') {
+        // 适配旧版 api
+        if (!item.content) item.content = item.callback
+        if (!item.type && item.detail == "command_ob") item.type = item.detail
+
+        if (typeof item.content === 'string') {
           records.push({
             key: item.key ?? item.label,
-            value: item.callback,
+            value: item.content,
             name: item.key ?? undefined,
           })
         }
@@ -241,8 +251,11 @@ export async function initMenuData() {
       // label 也可以用 file_name_short 备选。但由于组织名问题，file_name_short 可能会很长
       label: plugin.metadata.name ?? plugin.metadata.id,
       icon: plugin.metadata.icon,
-      callback: plugin.run,
-      onCreateItem_callback: plugin.onCreateItem ?? undefined,
+      type: "script",
+      content: plugin.metadata.id,
+      plugin,
+      // callback: plugin.run,
+      // onCreateItem_callback: plugin.onCreateItem ?? undefined,
     }
 
     // 搜索建议部分

@@ -28,6 +28,7 @@
  * 菜单有预创建 (性能优) 和动态创建两种，也可以综合 —— 部分动态内容
  */
 
+import type { PanelItem } from "../../../Type"
 import { global_setting } from "../../setting"
 import { input_suggestion } from "./suggestion_old"
 import { global_el } from "../index"
@@ -35,7 +36,7 @@ import { global_el } from "../index"
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
 
-import { init_item, type PanelItem } from "../PanelItem"
+import { init_item } from "../PanelItem"
 
 // 多级菜单
 type MENU_NODE = {

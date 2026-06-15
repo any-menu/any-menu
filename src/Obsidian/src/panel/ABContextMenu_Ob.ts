@@ -5,11 +5,12 @@ import {
   TFile,
 } from 'obsidian'
 
-import { PanelItem } from '@/Core/panel/PanelItem'
+import { PanelItem } from '@/Type'
 import { AMContextMenu } from "@/Core/panel/contextmenu"
 import { root_menu } from "@/Core/panel/contextmenu/demo"
 import { global_setting } from '@/Core/setting'
 import { PluginRunCtxDemo } from '@/Core/pluginManager/PluginInterface'
+import { PLUGIN_MANAGER, PluginManager } from '@/Core/pluginManager/PluginManager'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -51,14 +52,15 @@ export class ABContextMenu_Ob extends AMContextMenu {
   /// 支持obsidian原生菜单
   /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
   /// 并支持 command_ob 类型
-  override append_data(menuItems: PanelItem[]) {
+  override append_data(menuItems2: PanelItem[]) {
+    const menuItems: PanelItem[] = menuItems2
     // 预创建菜单版本
     if (this.el) return super.append_data(menuItems)
 
     if (this.target === 'editor' || this.target === 'editor-menu') {
       const plugin = this.plugin
       plugin.registerEvent(
-        plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
+        plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
           addMenuItems(menu, menuItems, editor)
         })
       )
@@ -67,52 +69,91 @@ export class ABContextMenu_Ob extends AMContextMenu {
     }
 
     // 递归添加菜单项
+    // TODO 此处废弃，等待重构
     function addMenuItems(menu: Menu, menuItems: PanelItem[], editor: Editor) {
       for (const item of menuItems) {
         menu.addItem((menuItem: MenuItem) => {
+
           // 菜单项标题
           menuItem.setTitle(item.label)
           
           // 菜单项图标
           if (item.icon) menuItem.setIcon(item.icon)
 
-          // 菜单项功能
-          if (item.callback != undefined) {
-            if (typeof item.callback === 'string') menuItem.onClick(() => {
-              if (item.detail == "command_ob") {
-                global_setting.other.obsidian_run_command?.(item.callback as string)
-                return
-              } else {
-                editor.replaceSelection(item.callback as string)
+          // 项功能 (修改自 PanelItem.ts init_item)
+          if (item.content != undefined) {
+            // b1. obsidian 专用命令
+            if (item.type === "command_ob") {
+              menuItem.onClick(async () => {
+                if (!item.content) return
+                global_setting.other.obsidian_run_command?.(item.content); //p_this.panel_hide();
+              })
+            }
+            // b2. 输出纯文本
+            else if (item.type === 'string' || item.type === "md") {
+              menuItem.onClick(async () => {
+                if (!item.content) return
+                await global_setting.api.sendText(item.content); //p_this.panel_hide();
+              })
+            }
+            // b3. 输出 path 对应的文件
+            else if (item.type === 'path') {
+              menuItem.onClick(async () => {
+                if (!item.content) return
+                await global_setting.api.sendText(item.content, 'IMG_MODE'); //p_this.panel_hide();
+              })
+            }
+            // b4. 脚本
+            else if (item.type === 'script') {
+              const plugin = item.plugin ??
+                item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
+              if (plugin) {
+                menuItem.onClick(async () => {
+                  const ctx = PluginManager.getPluginRunCtx(item.label)
+                  void plugin.run(ctx)
+                })
+                if (plugin.onCreateItem) {
+                  const ctx = PluginManager.getPluginRunCtx(item.label)
+                  // plugin.onCreateItem(li, ctx)
+                }
               }
-            })
-            else if (typeof item.callback === 'function') menuItem.onClick(() => { (item.callback as any)(PluginRunCtxDemo) })
+            }
+            // b5. 其他类型 (一般是未定义 / 文件夹)
+            else {
+              // console.error('未知的项类型:', item.type)
+            }
           }
 
-          // 菜单项说明
-          let tooltip: HTMLElement|undefined = undefined
+          // 菜单项说明 (修改自 PanelItem.ts init_item)
           // @ts-ignore
           const dom = menu.dom
-          if (item.detail && dom) {
+          if (dom && item.type && ["md", "path"].includes(item.type) && item.content) {
+            let tooltip: HTMLElement|undefined = undefined
             menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
-              if (item.detail == "command_ob") return // 命令flag, 不显示
+              // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)
+              const existingTooltip = dom.querySelector('.ab-contextmenu-tooltip')
+              if (existingTooltip) {
+                dom.removeChild(existingTooltip)
+              }
+
+              // 创建 tooltip
               tooltip = document.createElement('div'); dom.appendChild(tooltip);
               tooltip.addClass('ab-contextmenu-tooltip')
-              const domRect = dom.getBoundingClientRect()
-              tooltip.setAttr('style', `
-                top: ${domRect.top + 1}px;
-                left: ${domRect.right + 1}px;
-              `)
-              // top: ${evt.clientY + 10}px;
-              // left: ${evt.clientX + 10}px;
+              // 旧版写法，position: fixed。现在改为了absolute 定位
+              // const domRect = li.getBoundingClientRect()
+              // tooltip.setAttribute('style', `
+              //   top: ${domRect.top + 1}px;
+              //   left: ${domRect.right + 1}px;
+              // `)
 
-              if (item.detail == "md") { // 一个flag
-                if (typeof item.callback == "string") {
-                  void global_setting.other.renderMarkdown?.(item.callback, tooltip)
+              if (item.type === "md") { // 一个flag, 表示渲染显示
+                if (item.content) {
+                  void global_setting.other.renderMarkdown?.(item.content, tooltip)
                 }
-              } else {
+              }
+              else if (item.type === "path") { // TODO 这里仅 url 支持，否则会有权限问题
                 const img = document.createElement('img'); tooltip.appendChild(img);
-                  img.setAttribute('src', item.detail as string);
+                  img.setAttribute('src', item.content ?? "");
                   img.classList.add('tooltip-image');
               }
             })

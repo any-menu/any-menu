@@ -1,4 +1,4 @@
-import { PanelItem } from "../PanelItem"
+import type { PanelItem } from "../../../Type"
 
 export { parse as toml_parse, stringify as toml_stringify } from "smol-toml"
 
@@ -15,8 +15,8 @@ export const root_menu_demo: PanelItem[] = [
   {
     label: 'list', children: [
       { label: '列表转表格',
-        detail: 'md', // 'https://cdn.pkmer.cn/images/202508241625503.png!pkmer', // 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
-        callback: 
+        type: 'md', // 'https://cdn.pkmer.cn/images/202508241625503.png!pkmer', // 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
+        content: 
 `[table]
 
 - 1
@@ -27,7 +27,7 @@ export const root_menu_demo: PanelItem[] = [
   - 5
     - 6
     - 7\n\n` },
-      { label: '列表转目录', detail: 'md', callback: `[dir]
+      { label: '列表转目录', type: 'md', content: `[dir]
 
 - vue-demo/
   - build/， 项目构建(webpack)相关代码
@@ -52,8 +52,8 @@ export const root_menu_demo: PanelItem[] = [
   {
     label: 'mindmap', children: [
       { label: 'node',
-        detail: 'md', // 'https://cdn.pkmer.cn/images/202508241625515.png!pkmer',
-        callback: `[nodes]
+        type: 'md', // 'https://cdn.pkmer.cn/images/202508241625515.png!pkmer',
+        content: `[nodes]
 
 - a
   - b
@@ -61,7 +61,7 @@ export const root_menu_demo: PanelItem[] = [
   - d
     - e
     - f\n\n` },
-      { label: 'plantuml mindmap', detail: 'md', callback: `[mindmap]
+      { label: 'plantuml mindmap', type: 'md', content: `[mindmap]
 
 - a
   - b
@@ -69,7 +69,7 @@ export const root_menu_demo: PanelItem[] = [
   - d
     - e
     - f\n\n` },
-      { label: 'pumlWBS', detail: 'md', callback: `[list2pumlWBS]
+      { label: 'pumlWBS', type: 'md', content: `[list2pumlWBS]
 
 - vue-demo/
   - build/
@@ -87,7 +87,7 @@ export const root_menu_demo: PanelItem[] = [
     - main.js
   - static/
   - test/\n\n` },
-      { label: 'mermaid', detail: 'md', callback: `[mermaid]
+      { label: 'mermaid', type: 'md', content: `[mermaid]
 
 - 树结构
   - 基本术语
@@ -100,7 +100,7 @@ export const root_menu_demo: PanelItem[] = [
   - 二叉树
     - 分支1
     - 分支2\n\n` },
-      { label: 'mermaid mindmap', detail: 'md', callback: `[listroot(root((mindmap)))|list2mindmap]
+      { label: 'mermaid mindmap', type: 'md', content: `[listroot(root((mindmap)))|list2mindmap]
 
 - Origins
   - Long history
@@ -117,7 +117,7 @@ export const root_menu_demo: PanelItem[] = [
 - Tools
   - Pen and paper
   - Mermaid\n\n` },
-      { label: 'markmap', detail: 'md', callback: `[list2markmap]
+      { label: 'markmap', type: 'md', content: `[list2markmap]
 
 - Links
   - [Website](https://markmap.js.org/)
@@ -139,7 +139,7 @@ export const root_menu_demo: PanelItem[] = [
   // table
   {
     label: 'table', children: [
-      { label: '列表转表格', detail: 'md', callback: 
+      { label: '列表转表格', type: 'md', content: 
 `[table]
 
 - 1
@@ -150,7 +150,7 @@ export const root_menu_demo: PanelItem[] = [
   - 5
     - 6
     - 7\n\n` },
-      { label: '合并表格', detail: 'md', callback: 
+      { label: '合并表格', type: 'md', content: 
 `[exTable]
 
 |*A*| a | < |
@@ -158,34 +158,28 @@ export const root_menu_demo: PanelItem[] = [
 | ^ | 2 | 3 |\n\n` },
     ]
   },
-  // heading
-  {
-    label: 'heading', children: [
-      { label: '标题转表格', detail: 'md', callback: async () => console.warn('执行了操作2.2.1') },
-    ]
-  },
   // callout
   {
     label: 'callout', children: [
-      { label: 'note', detail: 'md', callback: `> [!note]\n> \n> Note demo.\n\n` },
-      { label: 'warning', detail: 'md', callback: `> [!warning]\n> \n> Warning demo.\n\n` },
-      { label: 'tip', detail: 'md', callback: `> [!tip]\n> \n> Tip demo.\n\n` },
-      { label: 'note_complex', detail: 'md', callback: `> [!note]+ title\n> Note demo.\n\n` },
+      { label: 'note', type: 'md', content: `> [!note]\n> \n> Note demo.\n\n` },
+      { label: 'warning', type: 'md', content: `> [!warning]\n> \n> Warning demo.\n\n` },
+      { label: 'tip', type: 'md', content: `> [!tip]\n> \n> Tip demo.\n\n` },
+      { label: 'note_complex', type: 'md', content: `> [!note]+ title\n> Note demo.\n\n` },
     ]
   },
   // mdit container
   {
     label: 'mdit container', children: [
-      { label: 'note', detail: 'md', callback: `:::note\n\nNote demo.\n\n:::\n\n` },
-      { label: 'warning', detail: 'md', callback: `:::warning\n\nWarning demo.\n\n:::\n\n` },
-      { label: 'tip', detail: 'md', callback: `:::tip\n\nTip demo.\n\n:::\n\n` },
-      { label: 'note_complex', detail: 'md', callback: `:::note+ title\n\nNote demo.\n\n:::\n\n` },
+      { label: 'note', type: 'md', content: `:::note\n\nNote demo.\n\n:::\n\n` },
+      { label: 'warning', type: 'md', content: `:::warning\n\nWarning demo.\n\n:::\n\n` },
+      { label: 'tip', type: 'md', content: `:::tip\n\nTip demo.\n\n:::\n\n` },
+      { label: 'note_complex', type: 'md', content: `:::note+ title\n\nNote demo.\n\n:::\n\n` },
     ]
   },
   // two layout
   {
     label: 'two layout', children: [
-      { label: 'col', detail: 'md', callback: `:::col
+      { label: 'col', type: 'md', content: `:::col
 
 @col
 
@@ -200,7 +194,7 @@ text2
 text3
 
 :::\n\n` },
-      { label: 'tabs', detail: 'md', callback: `:::tabs
+      { label: 'tabs', type: 'md', content: `:::tabs
 
 @tab title1
 
