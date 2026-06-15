@@ -27,3 +27,4 @@ dist-ssr
 /src-tauri/am-user.toml
 /src-tauri/dict/
 /src-tauri/notes/
+/src-tauri/cache/

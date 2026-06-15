@@ -18,6 +18,10 @@ export function initApi(plugin: Plugin) {
   
   global_setting.platform = 'obsidian-plugin'
 
+  // obsidian 的某些默认配置有所不同
+  const obConfigDir = plugin.app.vault.configDir; // 不一定 '.obsidian'，ob 设置 > 文件与链接 > 高级 > 切换设置文件夹可以设置
+  global_setting.config.cache_paths = `${obConfigDir}/plugins/any-menu/cache/`
+
   // 语言环境
   // obsidian 强制为 'auto' 类型，不允许在设置中手动指定语言类型
   // if (global_setting.config.language == 'auto') { // 触发时机有问题
@@ -409,7 +413,7 @@ export function initApi(plugin: Plugin) {
       if (conf.isParseJson) {
         try {
           json = response.json;
-        } catch (_) {
+        } catch {
           json = null;
         }
       }
@@ -435,5 +439,4 @@ export function initApi(plugin: Plugin) {
     console.warn("obsidian 版需要 plugin 和 editor 上下文，应使用 getCursorInfo() 代替")
     return { x: -1, y: -1 }
   }
-
 }

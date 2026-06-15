@@ -185,7 +185,7 @@ export class PluginManager {
     // TODO 这里不要用 dict_paths，配置中应该还要加个专门的 "缓存路径"
 
     // 之前的缓存
-    const path = global_setting.config.dict_paths + 'cache_plugin_meta'
+    const path = global_setting.config.cache_paths + 'cache_plugin_meta'
     let old_obj: Record<string, MetadataCache> = {}
     try {
       const content = await global_setting.api.readFile(path)
@@ -193,7 +193,7 @@ export class PluginManager {
     } catch {}
 
     // 更新缓存
-    global_setting.api.writeFile(global_setting.config.dict_paths + 'cache_plugin_meta',
+    global_setting.api.writeFile(global_setting.config.cache_paths + 'cache_plugin_meta',
       JSON.stringify({...old_obj, ...this.plugin_list2})
     )
   }

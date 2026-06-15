@@ -51,6 +51,8 @@ export const global_setting: {
     dict_paths: string,
     // 记录笔记的基础路径
     note_paths: string,
+    // 缓存临时数据的路径 (Obsidian 和 App 版本中默认值不同)
+    cache_paths: string,
     /** 发送文本的方式。
      * 'keyboard'|'clipboard'|'auto'
      * enigo/keyboard为模拟键盘输入，clipboard为复制到剪贴板,
@@ -193,8 +195,9 @@ export const global_setting: {
 
     server_port: 41667,
     dict_online_source: 'github',
-    dict_paths: './dict/',  // obsidian 用户可能比较熟悉于 Template 文件夹
-    note_paths: './notes/', // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    dict_paths: './dict/',    // obsidian 用户可能比较熟悉于 './Template/' 路径
+    note_paths: './notes/',   // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    cache_paths: './cache/',  // 在 obsidian 版本中，这里的默认值会是 './.obsidian/plugins/any-menu/cache/'
     send_text_method: 'clipboard',
     app_black_list: ['- Obsidian '],
     app_ad_shortcut: true,
