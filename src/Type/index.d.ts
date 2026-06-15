@@ -6,7 +6,10 @@
  */
 
 /** 插件必须实现的接口 */
-export interface PluginInterface {
+export class PluginInterface {
+  /** 插件加载时会自动填充，方便插件访问 */
+  app: PluginAppCtx
+
   /** 元数据 */
   metadata: {
     /** 唯一标识符 */
@@ -85,7 +88,7 @@ export interface PluginInterface {
    *   目前没什么用，应该给他一个 ctx，这样可以加载时就进行注册面板等操作
    *   不过目前还是提倡在 run 内判断首次运行时注册，避免软件启用时就做一大堆操作
    */
-  onLoad?: (appCtx: PluginAppCtx) => void;
+  onLoad?: () => void;
 
   /**
    * 插件卸载时调用

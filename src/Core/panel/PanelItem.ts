@@ -143,7 +143,9 @@ export function init_item(
   }
 
   // 项说明
-  if (item.type && ["md", "path"].includes(item.type) && item.content) {
+  if (item.type && ["md", "path"].includes(item.type) && item.content &&
+    !(item.type === "md" && global_setting.platform === "app") // app 暂不支持 md tooltip
+  ) {
     let tooltip: HTMLElement|undefined = undefined
     li.onmouseenter = () => {
       // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)

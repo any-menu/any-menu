@@ -76,15 +76,22 @@ export class PluginManager {
       if (typeof rawPlugin === 'function') {
         rawPlugin = new rawPlugin();
       }
-      // 再验证
       const plugin = this.loadPlugin_validatePlugin(rawPlugin);
+
+      // 3. 为插件注入属性
+      // 插件实例可以通过 this.app 方便访问
+      const appContext = PluginManager.getPluginAppCtx(plugin.metadata.name ?? plugin.metadata.id);
+      if (plugin.app === undefined) {
+        plugin.app = appContext;
+      }
+      // 如果插件继承自 BasePlugin，建议将 app 设为只读或使用 setter
       
-      // 3. 注入插件 CSS
+      // 4. 获取插件 CSS 注入软件
       PluginManager.injectPluginCss(plugin);
 
-      // 4. 注册并执行加载事件
+      // 5. 注册并执行加载事件
       this.plugin_list[plugin.metadata.id] = plugin;
-      plugin.onLoad?.(PluginManager.getPluginAppCtx(plugin.metadata.name ?? plugin.metadata.id));
+      plugin.onLoad?.();
 
       return plugin;
     } catch (error) {
@@ -145,7 +152,7 @@ export class PluginManager {
       ...AppCtxDemo,
       api: {
         ...AppCtxDemo.api,
-        notify: async (message: string) => {
+        notify: async (message: string) => { // 强制消息显示插件名，确定来源
           await global_setting.api.notify((label ?? 'unknown') + ': ' + message)
         },
       }

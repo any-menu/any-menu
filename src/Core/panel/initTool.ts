@@ -220,7 +220,10 @@ export async function initMenuData() {
       for (const item of items) {
         // 适配旧版 api
         if (!item.content) item.content = item.callback
-        if (!item.type && item.detail == "command_ob") item.type = item.detail
+        if (!item.type) {
+          if (item.detail == "command_ob") item.type = "command_ob"
+          else if (item.children) item.type = "folder"
+        }
 
         if (typeof item.content === 'string') {
           records.push({
