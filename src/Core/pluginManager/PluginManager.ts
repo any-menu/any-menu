@@ -84,7 +84,7 @@ export class PluginManager {
 
       // 3. 为插件注入属性
       // 插件实例可以通过 this.app 方便访问
-      const appContext = PluginManager.getPluginAppCtx(plugin.metadata.name ?? plugin.metadata.id);
+      const appContext = PluginManager.getPluginAppCtx(plugin);
       if (plugin.app === undefined) {
         plugin.app = appContext;
       }
@@ -151,21 +151,33 @@ export class PluginManager {
   }
 
   /** 插件加载时的 ctx 环境获取
+   * 
+   * 调用时机/次数: 对与同一个插件会且只会调用一次
+   * 
    * @param label 插件名，仅日志打印时使用，标注来源
    */
-  static getPluginAppCtx(label?: string): PluginAppCtx {
+  static getPluginAppCtx(plugin: PluginInterface): PluginAppCtx {
+    const label = plugin.metadata.name ?? plugin.metadata.id
+
     return {
-      ...AppCtxDemo,
+      env: {
+        ...AppCtxDemo.env,
+        pluginName: label,
+        pluginId: plugin.metadata.id,
+      },
       api: {
         ...AppCtxDemo.api,
         notify: async (message: string) => { // 强制消息显示插件名，确定来源
-          await global_setting.api.notify((label ?? 'unknown') + ': ' + message)
+          await global_setting.api.notify(label + ': ' + message)
         },
       }
     }
   }
 
   /** 插件运行时的 ctx 环境获取
+   * 
+   * 调用时机/次数: 每次执行插件的指令时调用一次
+   * 
    * @param label 插件名，仅日志打印时使用，标注来源
    */
   static getPluginRunCtx(_label?: string): PluginRunCtx {

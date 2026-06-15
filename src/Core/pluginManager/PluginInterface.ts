@@ -13,42 +13,104 @@ export const AppCtxDemo: PluginAppCtx = {
       plugin: global_setting.other.obsidian_plugin,
       ctx: global_setting.other.obsidian_ctx
     } : undefined,
+    pluginName: '<will be override>', // will be override, 会变为插件名
+    pluginId: '<will be override>',   // will be override, 会变为插件id
   },
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.panel_hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
-    notify: (message: string) => global_setting.api.notify(message),
+    notify: (message: string) => global_setting.api.notify(message), // will be override, 强制使其输出时显示插件名
 
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
-    readFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string) => { // be override
-      // relPath 禁止包含 ../ 等路径穿越
-      if (relPath.includes('../')) {
-        console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-        return null
+    async readFile(path?: {
+      relPath: string,
+      basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+    }) {
+      let targetPath = ''
+      const fail_return = null // 方便 readFile 和 writeFile 复用
+      {
+        // 路径参数1 - 默认值
+        if (!path) {
+          path = {
+            relPath: this.env.pluginId,
+            basePath: 'CACHE',
+          }
+        }
+
+        // 路径参数2 - 路径安全检查
+        if (path.relPath.includes('../') || path.relPath.includes('..\\')) {
+          console.warn('拒绝访问包含 ../ 的路径穿越请求:', path.relPath)
+          return fail_return
+        }
+
+        // 路径参数3 - 非法路径检查 (前7个是除 `/\` 外的文件名非法路径，后面的是控制字符)
+        if (/[:*?"<>|\x00-\x1f\x7f]/.test(path.relPath)) {
+          console.warn('插件id包含非法字符:', path.relPath)
+          return fail_return
+        }
+
+        // 路径参数4 - 基础路径 & 拼接
+        switch(path.basePath) {
+          case "CONFIG":
+            targetPath = './dict_config/' + path.relPath
+            break
+          case "PUBLIC":
+            targetPath = global_setting.config.note_paths + path.relPath
+            break
+          default: // 包括默认值 "CACHE"
+            targetPath = global_setting.config.cache_paths + path.relPath
+            break
+        }
       }
 
-      let filePath: string
-      if (basePath === 'CONFIG') {
-        filePath = './dict_config/' + relPath
-      } else { // if (basePath === 'PUBLIC')
-        filePath = global_setting.config.note_paths + relPath
-      }
-      return await global_setting.api.readFile(filePath);
+      return await global_setting.api.readFile(targetPath);
     },
-    writeFile: async (basePath: 'CONFIG'|'PUBLIC', relPath: string, content: string, is_append?: boolean | undefined) => { // be override
-      // relPath 禁止包含 ../ 等路径穿越
-      if (relPath.includes('../')) {
-        console.warn('拒绝访问包含 ../ 的路径穿越请求:', relPath)
-        return false
+    async writeFile (
+      content: string,
+      path?: {
+        relPath: string,
+        basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+      },
+      is_append?: boolean | undefined,
+    ) {
+      let targetPath = ''
+      const fail_return = false // 方便 readFile 和 writeFile 复用
+      {
+        // 路径参数1 - 默认值
+        if (!path) {
+          path = {
+            relPath: this.env.pluginId,
+            basePath: 'CACHE',
+          }
+        }
+
+        // 路径参数2 - 路径安全检查
+        if (path.relPath.includes('../') || path.relPath.includes('..\\')) {
+          console.warn('拒绝访问包含 ../ 的路径穿越请求:', path.relPath)
+          return fail_return
+        }
+
+        // 路径参数3 - 非法路径检查 (前7个是除 `/\` 外的文件名非法路径，后面的是控制字符)
+        if (/[:*?"<>|\x00-\x1f\x7f]/.test(path.relPath)) {
+          console.warn('插件id包含非法字符:', path.relPath)
+          return fail_return
+        }
+
+        // 路径参数4 - 基础路径 & 拼接
+        switch(path.basePath) {
+          case "CONFIG":
+            targetPath = './dict_config/' + path.relPath
+            break
+          case "PUBLIC":
+            targetPath = global_setting.config.note_paths + path.relPath
+            break
+          default: // 包括默认值 "CACHE"
+            targetPath = global_setting.config.cache_paths + path.relPath
+            break
+        }
       }
 
-      let filePath: string
-      if (basePath === 'CONFIG') {
-        filePath = './dict_config/' + relPath
-      } else { // if (basePath === 'PUBLIC')
-        filePath = global_setting.config.note_paths + relPath
-      }
-      return await global_setting.api.writeFile(filePath, content, is_append);
+      return await global_setting.api.writeFile(targetPath, content, is_append);
     },
 
     // #region 面板相关

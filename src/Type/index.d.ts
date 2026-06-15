@@ -135,6 +135,8 @@ export interface PluginAppCtx {
       // app, 略，plugin.app 获取就好
       ctx: any;
     };
+    pluginName: string;
+    pluginId: string;
   },
   /** API 接口 */
   api: {
@@ -160,16 +162,22 @@ export interface PluginAppCtx {
 
     /**
      * 读文件（低~高风险）
-     * @param basePath 基础路径标识，`CONFIG` 表示配置目录，`PUBLIC` 表示公共目录
+     * @param basePath 基础路径标识
+     *   - `CONFIG` | 表示配置目录
+     *   - `PUBLIC` | 表示公共资源目录
+     *   - `CACHE`  | (default) 表示缓存目录
      * @param relPath  相对路径，禁止包含 `../` 等路径穿越
      * 
      * TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
      */
-    readFile: (basePath: 'CONFIG' | 'PUBLIC', relPath: string) => Promise<string | null>;
+    readFile: (path?: {
+      relPath: string,
+      basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+    }) => Promise<string | null>;
 
     /**
      * 写文件（低~高风险）
-     * @param basePath  基础路径标识
+     * @param basePath  基础路径标识 (详见 readFile 函数说明)
      * @param relPath   相对路径，禁止包含 `../` 等路径穿越
      * @param content   文件内容
      * @param is_append 是否追加写入
@@ -177,10 +185,12 @@ export interface PluginAppCtx {
      * TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
      */
     writeFile: (
-      basePath: 'CONFIG' | 'PUBLIC',
-      relPath: string,
       content: string,
-      is_append?: boolean
+      path?: {
+        relPath: string,
+        basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+      },
+      is_append?: boolean,
     ) => Promise<boolean>;
 
     // #region 面板相关
