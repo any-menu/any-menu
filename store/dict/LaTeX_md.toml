@@ -6,8 +6,8 @@ label = "数据矩阵"
 [[categories.children]]
 label = "矩阵"
 key = "matrix 矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{matrix}
 1 & 4 & 7\\
@@ -20,8 +20,8 @@ $$
 [[categories.children]]
 label = "方括号矩阵"
 key = "bmatrix 方括号矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{bmatrix}
 1 & 4 & 7\\
@@ -34,8 +34,8 @@ $$
 [[categories.children]]
 label = "圆括号矩阵"
 key = "pmatrix 圆括号矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{pmatrix}
 1 & 4 & 7\\
@@ -48,8 +48,8 @@ $$
 [[categories.children]]
 label = "单竖线矩阵"
 key = "vmatrix 单竖线矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{vmatrix}
 1 & 4 & 7\\
@@ -62,8 +62,8 @@ $$
 [[categories.children]]
 label = "双竖线矩阵"
 key = "Vmatrix 双竖线矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{Vmatrix}
 1 & 4 & 7\\
@@ -76,8 +76,8 @@ $$
 [[categories.children]]
 label = "左单括号矩阵"
 key = "matrix 左单括号矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \left\{\begin{matrix}
 1 & 4 & 7\\
@@ -90,8 +90,8 @@ $$
 [[categories.children]]
 label = "右单括号矩阵"
 key = "matrix 右单括号矩阵"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \left.\begin{matrix}
 1 & 4 & 7\\
@@ -104,8 +104,8 @@ $$
 [[categories.children]]
 label = "条件等式"
 key = "cases 条件等式"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{cases}
 y<0 & \text{ if } x<0 \\
@@ -118,8 +118,8 @@ $$
 [[categories.children]]
 label = "多行对齐等式"
 key = "cases 多行对齐等式"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 \begin{align*}
 11 & 22 \\

@@ -6,50 +6,50 @@ label = "Input Field"
 [[categories.children]]
 label = "date"
 key = "date 日期1"
-detail = "md"
-callback = '`INPUT[date:exampleProperty]`'
+type = "md"
+content = '`INPUT[date:exampleProperty]`'
 
 [[categories.children]]
 label = "datePicker"
 key = "datePicker 日期2"
-detail = "md"
-callback = '`INPUT[datePicker:exampleProperty]`'
+type = "md"
+content = '`INPUT[datePicker:exampleProperty]`'
 
 [[categories.children]]
 label = "dateTime"
 key = "dateTime 日期+时间"
-detail = "md"
-callback = '`INPUT[dateTime:exampleProperty]`'
+type = "md"
+content = '`INPUT[dateTime:exampleProperty]`'
 
 [[categories.children]]
 label = "time"
 key = "time 时间"
-detail = "md"
-callback = '`INPUT[time:exampleProperty]`'
+type = "md"
+content = '`INPUT[time:exampleProperty]`'
 
 [[categories.children]]
 label = "number"
 key = "number 单行数字输入"
-detail = "md"
-callback = '`INPUT[number:exampleProperty]`'
+type = "md"
+content = '`INPUT[number:exampleProperty]`'
 
 [[categories.children]]
 label = "text"
 key = "text 单行文本框"
-detail = "md"
-callback = '`INPUT[text:exampleProperty]`'
+type = "md"
+content = '`INPUT[text:exampleProperty]`'
 
 [[categories.children]]
 label = "textArea"
 key = "textArea 多行文本框"
-detail = "md"
-callback = '`INPUT[textArea:exampleProperty]`'
+type = "md"
+content = '`INPUT[textArea:exampleProperty]`'
 
 [[categories.children]]
 label = "editor"
 key = "editor Markdown编辑框"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[editor:exampleProperty]
 ```
@@ -58,8 +58,8 @@ INPUT[editor:exampleProperty]
 [[categories.children]]
 label = "imageListSuggester"
 key = "imageListSuggester 选择图片"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[imageListSuggester(optionQuery("")):exampleProperty]
 ```
@@ -68,32 +68,32 @@ INPUT[imageListSuggester(optionQuery("")):exampleProperty]
 [[categories.children]]
 label = "imageSuggester"
 key = "imageSuggester 选择图片"
-detail = "md"
-callback = '`INPUT[imageSuggester(optionQuery("")):exampleProperty]`'
+type = "md"
+content = '`INPUT[imageSuggester(optionQuery("")):exampleProperty]`'
 
 [[categories.children]]
 label = "inlineList"
 key = "inlineList 添加到列表"
-detail = "md"
-callback = '`INPUT[inlineList:exampleProperty]`'
+type = "md"
+content = '`INPUT[inlineList:exampleProperty]`'
 
 [[categories.children]]
 label = "inlineListSuggester"
 key = "inlineListSuggester 从建议项添加到列表"
-detail = "md"
-callback = '`INPUT[inlineListSuggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
+type = "md"
+content = '`INPUT[inlineListSuggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
 
 [[categories.children]]
 label = "inlineSelect"
 key = "inlineSelect 从建议项添加到列表"
-detail = "md"
-callback = '`INPUT[inlineSelect(option(apple), option(banana), option(lemon)):exampleProperty]`'
+type = "md"
+content = '`INPUT[inlineSelect(option(apple), option(banana), option(lemon)):exampleProperty]`'
 
 [[categories.children]]
 label = "list"
 key = "list"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[list:exampleProperty]
 ```
@@ -102,8 +102,8 @@ INPUT[list:exampleProperty]
 [[categories.children]]
 label = "listSuggester"
 key = "listSuggester"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[listSuggester(option(apple), option(banana), option(lemon)):exampleProperty]
 ```
@@ -112,14 +112,14 @@ INPUT[listSuggester(option(apple), option(banana), option(lemon)):examplePropert
 [[categories.children]]
 label = "suggester"
 key = "suggester 从建议项选择"
-detail = "md"
-callback = '`INPUT[suggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
+type = "md"
+content = '`INPUT[suggester(option(apple), option(banana), option(lemon)):exampleProperty]`'
 
 [[categories.children]]
 label = "select"
 key = "select 单选框"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[select(option(apple), option(banana), option(lemon)):exampleProperty]
 ```
@@ -128,8 +128,8 @@ INPUT[select(option(apple), option(banana), option(lemon)):exampleProperty]
 [[categories.children]]
 label = "multiSelect"
 key = "multiSelect 多选框"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[multiSelect(option(apple), option(banana), option(lemon)):exampleProperty]
 ```
@@ -138,14 +138,14 @@ INPUT[multiSelect(option(apple), option(banana), option(lemon)):exampleProperty]
 [[categories.children]]
 label = "slider"
 key = "slider 进度条"
-detail = "md"
-callback = '`INPUT[slider(addLabels):exampleProperty]`'
+type = "md"
+content = '`INPUT[slider(addLabels):exampleProperty]`'
 
 [[categories.children]]
 label = "progressBar"
 key = "progressBar 进度条"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind
 INPUT[progressBar:exampleProperty]
 ```
@@ -154,8 +154,8 @@ INPUT[progressBar:exampleProperty]
 [[categories.children]]
 label = "toggle"
 key = "toggle 开关"
-detail = "md"
-callback = '`INPUT[toggle:exampleProperty]`'
+type = "md"
+content = '`INPUT[toggle:exampleProperty]`'
 
 [[categories]]
 label = "View Field"
@@ -163,37 +163,37 @@ label = "View Field"
 [[categories.children]]
 label = "Image"
 key = "Image"
-detail = "md"
-callback = '`VIEW[{imageExampleProperty}][image]`'
+type = "md"
+content = '`VIEW[{imageExampleProperty}][image]`'
 
 [[categories.children]]
 label = "Link"
 key = "Link"
-detail = "md"
-callback = '`VIEW[{linkExampleProperty}][link]`'
+type = "md"
+content = '`VIEW[{linkExampleProperty}][link]`'
 
 [[categories.children]]
 label = "Markdown"
 key = "Markdown"
-detail = "md"
-callback = '`VIEW[**some markdown** {markdownExampleProperty}][text(renderMarkdown)]`'
+type = "md"
+content = '`VIEW[**some markdown** {markdownExampleProperty}][text(renderMarkdown)]`'
 
 [[categories.children]]
 label = "Math"
 key = "Math"
-detail = "md"
-callback = '`VIEW[{mathExampleProperty} + 2][math]`'
+type = "md"
+content = '`VIEW[{mathExampleProperty} + 2][math]`'
 
 [[categories.children]]
 label = "Text"
 key = "Text"
-detail = "md"
-callback = '`VIEW[some text {textExampleProperty}][text]`'
+type = "md"
+content = '`VIEW[some text {textExampleProperty}][text]`'
 
 [[categories]]
 label = "Inline Button"
-detail = "md"
-callback = '`BUTTON[example-id]`'
+type = "md"
+content = '`BUTTON[example-id]`'
 
 [[categories]]
 label = "Button"
@@ -201,8 +201,8 @@ label = "Button"
 [[categories.children]]
 label = "Default Button"
 key = "default_button"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```meta-bind-button
 label: This is a button
 icon: ""
@@ -222,7 +222,7 @@ actions: []
 label = "Open Button Builder"
 key = "Button builder"
 detail = "command_ob"
-callback = 'obsidian-meta-bind-plugin:open-button-builder'
+content = 'obsidian-meta-bind-plugin:open-button-builder'
 
 [[categories]]
 label = "More Commands"
@@ -231,22 +231,22 @@ label = "More Commands"
 label = "Copy Command ID"
 key = "Copy Command ID"
 detail = "command_ob"
-callback = 'obsidian-meta-bind-plugin:copy-command-id'
+content = 'obsidian-meta-bind-plugin:copy-command-id'
 
 [[categories.children]]
 label = "Open docs"
 key = "Open docs"
 detail = "command_ob"
-callback = 'obsidian-meta-bind-plugin:open-docs'
+content = 'obsidian-meta-bind-plugin:open-docs'
 
 [[categories.children]]
 label = "Open help"
 key = "Open help"
 detail = "command_ob"
-callback = 'obsidian-meta-bind-plugin:open-help'
+content = 'obsidian-meta-bind-plugin:open-help'
 
 [[categories.children]]
 label = "Open playground"
 key = "Open playground"
 detail = "command_ob"
-callback = 'obsidian-meta-bind-plugin:open-playground'
+content = 'obsidian-meta-bind-plugin:open-playground'

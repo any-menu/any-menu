@@ -11,8 +11,8 @@ label = "list"
 [[categories.children]]
 label = "列表转表格"
 key = "列表转表格 list2table"
-detail = "md" # "https://cdn.pkmer.cn/images/202508241625503.png!pkmer" # 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
-callback = """
+type = "md" # "https://cdn.pkmer.cn/images/202508241625503.png!pkmer" # 'https://github.com/any-block/any-block/blob/main/docs/assets/list2table3.png',
+content = """
 [table]
 
 - 1
@@ -29,8 +29,8 @@ callback = """
 [[categories.children]]
 label = "列表转目录"
 key = "列表转目录 dir"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [dir]
 
 - vue-demo/
@@ -62,8 +62,8 @@ label = "mindmap"
 [[categories.children]]
 label = "node"
 key = "node 思维导图 节点图"
-detail = "md" # "https://cdn.pkmer.cn/images/202508241625515.png!pkmer"
-callback = """
+type = "md" # "https://cdn.pkmer.cn/images/202508241625515.png!pkmer"
+content = """
 [nodes]
 
 - a
@@ -78,8 +78,8 @@ callback = """
 [[categories.children]]
 label = "plantuml mindmap"
 key = "plantuml mindmap 思维导图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [mindmap]
 
 - a
@@ -94,8 +94,8 @@ callback = """
 [[categories.children]]
 label = "pumlWBS"
 key = "key 思维导图 结构分解图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2pumlWBS]
 
 - vue-demo/
@@ -120,8 +120,8 @@ callback = """
 [[categories.children]]
 label = "mermaid"
 key = "mermaid 思维导图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [mermaid]
 
 - 树结构
@@ -141,8 +141,8 @@ callback = """
 [[categories.children]]
 label = "mermaid mindmap"
 key = "mermaid mindmap 思维导图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [listroot(root((mindmap)))|list2mindmap]
 
 - Origins
@@ -166,8 +166,8 @@ callback = """
 [[categories.children]]
 label = "markmap"
 key = "markmap 思维导图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2markmap]
 
 - Links
@@ -197,8 +197,8 @@ label = "table"
 [[categories.children]]
 label = "列表转表格"
 key = "列表转表格 list2table table"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [table]
 
 - 1
@@ -215,8 +215,8 @@ callback = """
 [[categories.children]]
 label = "合并表格"
 key = "合并表格 exTable"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [exTable]
 
 |*A*| a | < |
@@ -234,7 +234,7 @@ label = "heading"
 # [[categories.children]]
 # label = "标题转表格"
 # # 注意：TOML 不支持函数，这里可以用字符串标识或留空
-# callback = "console.warn('执行了操作2.2.1')"
+# content = "console.warn('执行了操作2.2.1')"
 
 # ============================================================
 # Two Layout 分类
@@ -245,8 +245,8 @@ label = "two layout"
 [[categories.children]]
 label = "col"
 key = "col 分栏 分列"
-detail = "md"
-callback = """
+type = "md"
+content = """
 :::col
 
 @col
@@ -268,8 +268,8 @@ text3
 [[categories.children]]
 label = "tabs"
 key = "tabs 标签页 选项卡"
-detail = "md"
-callback = """
+type = "md"
+content = """
 :::tabs
 
 @tab title1
