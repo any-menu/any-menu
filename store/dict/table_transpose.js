@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-table-transpose',
         name: '表格转置',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'Copilot',
         description: '将选中的 markdown 表格进行转置（行列互换）',
         icon: 'lucide-table-2'
@@ -65,6 +65,6 @@ export default {
             }
         }
 
-        ctx.api.sendText(outputLines.join('\n') + '\n');
+        this.app.api.sendText(outputLines.join('\n') + '\n');
     }
 }

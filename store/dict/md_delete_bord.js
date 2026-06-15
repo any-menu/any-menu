@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-md-delete-bord',
         name: 'md_去除加粗样式',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         // 取自 'lucide-bold' + 删除线 with 遮罩
         icon: `\
@@ -46,6 +46,6 @@ export default {
         }
         str = lines.join('\n')
 
-        ctx.api.sendText(str)
+        this.app.api.sendText(str)
     }
 }

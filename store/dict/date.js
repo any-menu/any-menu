@@ -2,14 +2,14 @@ export default {
     metadata: {
         id: 'anymenu-date',
         name: '日期',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         description: '输出当前日期 (ISO 8601 格式 + 当前时区)',
         icon: 'lucide-calendar'
     },
 
-    async run(ctx) {
+    async run(_ctx) {
         // ------- UTC 时间戳版本，带毫秒 (备用)
         // const currentDate = new Date();
         // const dateString = currentDate.toISOString();
@@ -19,6 +19,6 @@ export default {
         const dateString = new Date().toLocaleString('sv-SE').replace(' ', 'T');
 
         // 输出
-        ctx.api.sendText(dateString);
+        this.app.api.sendText(dateString);
     }
 }

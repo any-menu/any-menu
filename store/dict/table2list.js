@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-table2list',
         name: 'table2list',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'Copilot',
         description: '将 markdown 表格转换为 markdown 列表。每行第一个单元格为顶层列表项，其余单元格为二级列表项',
         icon: 'lucide-list'
@@ -12,7 +12,7 @@ export default {
     async run(ctx) {
         const str = ctx.env.selectedText
         if (!str) {
-            ctx.api.notify('请先选中 markdown 表格文本');
+            this.app.api.notify('请先选中 markdown 表格文本');
             return;
         }
 
@@ -23,7 +23,7 @@ export default {
         const dataLines = lines.filter(line => !/^\s*\|(?:\s*:?-+:?\s*\|)+\s*$/.test(line));
 
         if (dataLines.length === 0) {
-            ctx.api.notify('未找到有效的表格行');
+            this.app.api.notify('未找到有效的表格行');
             return;
         }
 
@@ -48,6 +48,6 @@ export default {
             }
         }
 
-        ctx.api.sendText(result);
+        this.app.api.sendText(result);
     }
 }

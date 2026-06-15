@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-md-delete-link',
         name: 'md_去除链接样式',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         icon: 'lucide-link-2-off'
 //         icon: `\
@@ -34,6 +34,6 @@ export default {
         }
         str = lines.join('\n')
 
-        ctx.api.sendText(str)
+        this.app.api.sendText(str)
     }
 }

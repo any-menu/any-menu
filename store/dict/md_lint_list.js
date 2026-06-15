@@ -46,8 +46,8 @@ export default {
     metadata: {
         id: 'anymenu-md-lint-list',
         name: 'md_规范化列表风格',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero', // co-author: Claude Sonnet 4.6
         description: '规范化 Markdown 无序列表的标记符号、间距和缩进风格',
         icon: `lucide-list-check`
@@ -96,6 +96,6 @@ export default {
             return `${newIndent}${LIST_MARKER}${markerSpaceStr}${content}`
         })
 
-        ctx.api.sendText(result.join('\n'))
+        this.app.api.sendText(result.join('\n'))
     }
 }

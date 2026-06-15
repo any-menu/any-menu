@@ -1,5 +1,4 @@
 let cache_color = 'red';
-let cache_ctx = null
 let cache_el = null
 let cache_el_am_icon = null
 
@@ -7,8 +6,8 @@ export default {
     metadata: {
         id: 'anymenu-md-color',
         name: 'md文字色',
-        version: '1.0.1',
-        min_app_version: '1.1.11',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         icon: 'lucide-baseline'
         // 备用:
@@ -29,12 +28,10 @@ export default {
     },
 
     onUnload() {
-        if (cache_ctx) cache_ctx.api.unregisterSubPanel('md-color-panel')
+        this.app.api.unregisterSubPanel('md-color-panel')
     },
 
     async run(ctx) {
-        if (!cache_ctx) cache_ctx = ctx
-
         const str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
@@ -55,26 +52,24 @@ export default {
                 // 没有 color 属性，追加
                 style = `color:${cache_color};${style}`;
             }
-            ctx.api.sendText(`<span style="${style}">${newStr}</span>`);
+            this.app.api.sendText(`<span style="${style}">${newStr}</span>`);
         } else {
-            ctx.api.sendText(`<span style="color:${cache_color}">${str}</span>`);
+            this.app.api.sendText(`<span style="color:${cache_color}">${str}</span>`);
         }
     },
 
-    onCreateItem(el, ctx) {
-        if (!cache_ctx) cache_ctx = ctx
-
+    onCreateItem(el) {
         // 右键点击时可以选择颜色
         el.addEventListener('mousedown', (e) => {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
                 cache_el = buildPanel()
-                ctx.api.registerSubPanel({ id: 'md-color-panel', el: cache_el })
+                this.app.api.registerSubPanel({ id: 'md-color-panel', el: cache_el })
             }
 
             // 切换到当前面板
-            ctx.api.hidePanel(['menu'])
-            ctx.api.showPanel(['md-color-panel'])
+            this.app.api.hidePanel(['menu'])
+            this.app.api.showPanel(['md-color-panel'])
 
             e.preventDefault()
             e.stopPropagation()

@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-md-delete-line',
         name: 'md_去除水平分割线',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         // modi from: icon: 'lucide-minus'
         icon: `\
@@ -50,6 +50,6 @@ export default {
         }
 
         str = result.join('\n');
-        ctx.api.sendText(str)
+        this.app.api.sendText(str)
     }
 }
