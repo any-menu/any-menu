@@ -78,6 +78,7 @@ Both need to be consistent. Enter 0 to disable this service. If you have not ins
   'Name': 'Name',
   'Author': 'Author',
   'Description': 'Description',
+  'Version': 'Version',
   'Is enabled': 'Enabled',
   'Is downloaded': 'Downloaded',
   'Enabled': 'Enabled',

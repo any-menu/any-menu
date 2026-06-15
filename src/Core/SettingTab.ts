@@ -311,10 +311,16 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     } catch {}
 
     // 定义如何显示数据
-    const data_header = [
+    const data_header: {
+      name: string,
+      callback: (el: HTMLElement, item: any) => boolean
+    }[] = [
       {
         name: t('Name'),
-        callback: (el: HTMLElement, item: any) => el.innerText = item.path.split('/').pop() || item.path,
+        callback: (el: HTMLElement, item: any) => {
+          el.innerText = item.path.split('/').pop() || item.path
+          return true
+        },
       },
       // {
       //   name: t('Path'),
@@ -340,6 +346,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
               void getDictData_and_showData()
             })
           }
+          return true
         }
       },
       {
@@ -367,23 +374,28 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
               td5_btn.textContent = t('Disabled'); td5_btn.setAttribute('color', 'gray');
             }
           }
+          return true
         },
       },
 
       // (可选) 一些缓存元数据的显示
       // 注意: 由于加载插件完成可能晚于该面板创建，信息可能落后
       {
-        name: 'Version',
+        name: t('Version'),
         callback: (el: HTMLElement, item: any) => {
           const ret: MetadataCache|undefined = plugins_cache[item.path]
-          if (ret) el.innerText = ret.version
+          if (!ret) return false
+          el.innerText = ret.version
+          return true
         }
       },
       {
-        name: 'Description',
+        name: t('Description'),
         callback: (el: HTMLElement, item: any) => {
           const ret: MetadataCache|undefined = plugins_cache[item.path]
-          if (ret) el.innerText = ret.description ?? ""
+          if (!ret || !ret.description) return false
+          el.innerText = ret.description
+          return true
         }
       },
     ]
@@ -1043,7 +1055,7 @@ function json2table(
   container: HTMLElement, data: any[],
   data_header: {
     name: string,
-    callback: (el: HTMLElement, item:any) => void
+    callback: (el: HTMLElement, item:any) => boolean
   }[]
 ) {
   container.innerHTML = ''
@@ -1074,7 +1086,7 @@ function json2card(
   container: HTMLElement, data: any[],
   data_header: {
     name: string,
-    callback: (el: HTMLElement, item:any) => void
+    callback: (el: HTMLElement, item:any) => boolean
   }[]
 ) {
   container.innerHTML = ''
@@ -1088,9 +1100,11 @@ function json2card(
     for(const header_item of data_header) {
       const card_item = document.createElement('div'); card.appendChild(card_item);
       const card_item1 = document.createElement('span'); card_item.appendChild(card_item1);
-        card_item.innerText = header_item.name + ': '
+        
       const card_item2 = document.createElement('span'); card_item.appendChild(card_item2);
-        header_item.callback(card_item2, item);
+        const ret = header_item.callback(card_item2, item);
+      
+      if (ret && header_item.name != t('Description')) card_item1.innerText = header_item.name + ': '
     }
   })
 }
