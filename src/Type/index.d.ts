@@ -6,9 +6,15 @@
  */
 
 /** 插件必须实现的接口 */
-export class PluginInterface {
-  /** 插件加载时会自动填充，方便插件访问 */
-  app: PluginAppCtx
+export interface PluginInterface {
+  /* 
+   * 该成员存在，当不放类型里
+   * 
+   * 插件加载时会自动填充，方便插件访问。
+   * 亦同 onLoad 方法给的那个参数，不使用这个也没有问题。
+   * 这个只是方便使用的语法糖而已
+   */
+  // app: PluginAppCtx
 
   /** 元数据 */
   metadata: {
@@ -75,20 +81,18 @@ export class PluginInterface {
    * 面板中该脚本的项被创建时调用
    * 
    * @version 1.1.11 新增
-   * @param ctx 注意与 run 的 ctx 类型虽然相同，但传递时机是不同的。
-   *   - 这里的 ctx 在初始化时就有的，因此会缺失一些运行时信息，如选中文本、当前页面标题等。
-   *   - 只有 run 的 ctx 才会有这些运行时信息。
-   *   TODO 这个问题获取后续可以完善。提供一个 api 让插件在非 run 函数内也能 get 一些运行期信息
+   * 
+   * TODO 可以移至 AppCtx 中的 registerEvent 方法里，然后这里保留为语法糖
+   *   本质上 run 和 onCreateItem 都可以通过 registerEvent 方法进行声明
    */
   onCreateItem?: (el: HTMLElement, ctx: PluginRunCtx) => void;
 
   /**
    * 插件加载时调用
-   * TODO
-   *   目前没什么用，应该给他一个 ctx，这样可以加载时就进行注册面板等操作
-   *   不过目前还是提倡在 run 内判断首次运行时注册，避免软件启用时就做一大堆操作
+   * 
+   * @param app 全局上下文
    */
-  onLoad?: () => void;
+  onLoad?: (app: PluginAppCtx) => void;
 
   /**
    * 插件卸载时调用
@@ -192,6 +196,11 @@ export interface PluginAppCtx {
       },
       is_append?: boolean,
     ) => Promise<boolean>;
+
+    // TODO event 还可以完善: 语法糖 (双击、右击)
+    // 补充: onCreateItem 是 registerEvent 的语法糖，run 其实又是 onCreateItem 的语法糖
+    //   如果你的任务相对简单，可以直接使用这两个语法糖
+    // registerEvent: (event: 'createItem'|'run') => Promise<void>
 
     // #region 面板相关
 

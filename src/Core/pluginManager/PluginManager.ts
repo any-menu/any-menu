@@ -28,6 +28,7 @@ const PluginSchema = z.object({
   metadata: PluginMetadataSchema,
   process: z.function().optional(), 
   run: z.function(),
+  onCreateItem: z.function().optional(),
   onLoad: z.function().optional(),
   onUnload: z.function().optional(),
 });
@@ -88,11 +89,10 @@ export class PluginManager {
       // 3. 为插件注入属性
       // 插件实例可以通过 this.app 方便访问
       const appContext = PluginManager.getPluginAppCtx(plugin);
-      if (plugin.app === undefined) {
-        plugin.app = appContext;
+      if ((plugin as any).app === undefined) {
+        ;(plugin as any).app = appContext;
       }
-      // 如果插件继承自 BasePlugin，建议将 app 设为只读或使用 setter
-      
+
       // 4. 获取插件 CSS 注入软件
       PluginManager.injectPluginCss(plugin);
 
@@ -100,7 +100,7 @@ export class PluginManager {
       this.plugin_list[plugin.metadata.id] = plugin;
       const { icon, css, ...rest } = plugin.metadata;
       this.plugin_list2[file_path] = rest
-      plugin.onLoad?.();
+      plugin.onLoad?.(appContext);
 
       return plugin;
     } catch (error) {
