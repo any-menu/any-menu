@@ -55,7 +55,10 @@ function buildPanel(app) {
         btnSave.className = 'btn'
         btnSave.dataset.altKey = '1'
         btnSave.onclick = async () => {
-            const ret = await app.api.writeFile('PUBLIC', folderPath.value + fileName.value, `## ${titleName.value}\n\n${contentEl.value}\n\n`, true)
+            const ret = await app.api.writeFile(`## ${titleName.value}\n\n${contentEl.value}\n\n`, true, {
+                relPath: folderPath.value + fileName.value,
+                basePath: 'NOTE', 
+            })
             if (ret) {
                 app.api.notify('保存成功')
             } else {

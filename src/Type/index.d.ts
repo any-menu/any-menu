@@ -172,7 +172,7 @@ export interface PluginAppCtx {
      */
     readFile: (path?: {
       relPath: string,
-      basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+      basePath?: 'CACHE' | 'NOTE' | 'DICT'
     }) => Promise<string | null>;
 
     /**
@@ -188,7 +188,7 @@ export interface PluginAppCtx {
       content: string,
       path?: {
         relPath: string,
-        basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+        basePath?: 'CACHE' | 'NOTE' | 'DICT'
       },
       is_append?: boolean,
     ) => Promise<boolean>;

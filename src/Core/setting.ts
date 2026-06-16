@@ -47,6 +47,8 @@ export const global_setting: {
     server_port: number,
     // 在线词库来源 'gitee'|'github'
     dict_online_source: 'gitee'|'github',
+    // 配置路径。此处不启用，硬编码，app 使用 am-user.toml，obsidian 使用插件文件夹的 data.json
+    // config_paths: string,
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
     // 记录笔记的基础路径
@@ -196,7 +198,7 @@ export const global_setting: {
     server_port: 41667,
     dict_online_source: 'github',
     dict_paths: './dict/',    // obsidian 用户可能比较熟悉于 './Template/' 路径
-    note_paths: './notes/',   // 备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    note_paths: './notes/',   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     cache_paths: './cache/',  // 在 obsidian 版本中，这里的默认值会是 './.obsidian/plugins/any-menu/cache/'
     send_text_method: 'clipboard',
     app_black_list: ['- Obsidian '],

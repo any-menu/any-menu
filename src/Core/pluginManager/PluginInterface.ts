@@ -24,7 +24,7 @@ export const AppCtxDemo: PluginAppCtx = {
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
     async readFile(path?: {
       relPath: string,
-      basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+      basePath?: 'CACHE' | 'NOTE' | 'DICT'
     }) {
       let targetPath = ''
       const fail_return = null // 方便 readFile 和 writeFile 复用
@@ -51,10 +51,10 @@ export const AppCtxDemo: PluginAppCtx = {
 
         // 路径参数4 - 基础路径 & 拼接
         switch(path.basePath) {
-          case "CONFIG":
-            targetPath = './dict_config/' + path.relPath
+          case "DICT":
+            targetPath = global_setting.config.dict_paths + path.relPath
             break
-          case "PUBLIC":
+          case "NOTE":
             targetPath = global_setting.config.note_paths + path.relPath
             break
           default: // 包括默认值 "CACHE"
@@ -69,7 +69,7 @@ export const AppCtxDemo: PluginAppCtx = {
       content: string,
       path?: {
         relPath: string,
-        basePath?: 'CONFIG' | 'PUBLIC' | 'CACHE'
+        basePath?: 'CACHE' | 'NOTE' | 'DICT'
       },
       is_append?: boolean | undefined,
     ) {
@@ -98,10 +98,10 @@ export const AppCtxDemo: PluginAppCtx = {
 
         // 路径参数4 - 基础路径 & 拼接
         switch(path.basePath) {
-          case "CONFIG":
-            targetPath = './dict_config/' + path.relPath
+          case "DICT":
+            targetPath = global_setting.config.dict_paths + path.relPath
             break
-          case "PUBLIC":
+          case "NOTE":
             targetPath = global_setting.config.note_paths + path.relPath
             break
           default: // 包括默认值 "CACHE"
