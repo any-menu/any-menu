@@ -193,9 +193,17 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
         name: t('Is downloaded'),
         callback: (el: HTMLElement, item: any) => {
           const td4_btn = document.createElement('button'); el.appendChild(td4_btn); td4_btn.classList.add('btn');
-          // 组织名问题 // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"，但后者可能会太长，不适合显示使用
-          const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path
-          if (local_dict_list.find(d => d.relPath === newFileName)) {
+          // 组织名问题
+          // 旧逻辑 (弃用): "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"，但后者可能会太长，不适合显示使用
+          //   const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path
+          // 新逻辑: 直接使用多级目录
+          const split_num = (item.path as string).split('/')
+          if (split_num.length > 2) {
+            console.error("非法的路径名:", item.path)
+            return false
+          }
+          const newPath = (item.path as string).includes('/') ? `${(item.path as string)}.js` : item.path
+          if (local_dict_list.find(d => d.relPath === newPath)) {
             td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
           } else {
             td4_btn.textContent = t('Download'); td4_btn.setAttribute('color', 'gray');
@@ -204,13 +212,13 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
             td4_btn.textContent = t('Downloading');
             const color = td4_btn.getAttribute('color')
             if (color === 'green') { // 已下载，需要卸载
-              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${newFileName}`).then(success => {
+              global_setting.api.deleteFile(`${global_setting.config.dict_paths}${newPath}`).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Uninstalled failed'); td4_btn.setAttribute('color', 'green');
                   return
                 }
                 td4_btn.textContent = t('Uninstalled'); td4_btn.setAttribute('color', 'gray');
-                const index = local_dict_list.findIndex(d => d.relPath === newFileName)
+                const index = local_dict_list.findIndex(d => d.relPath === newPath)
                 if (index >= 0) {
                   local_dict_list.splice(index, 1)
                   local_dict_list_onChange()
@@ -226,8 +234,8 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                   }
                   td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
                   local_dict_list.push({
-                    path: `${global_setting.config.dict_paths}${newFileName}`,
-                    relPath: newFileName,
+                    path: `${global_setting.config.dict_paths}${newPath}`,
+                    relPath: newPath,
                     isDownloaded: true, isEnabled: true,
                   });
                   local_dict_list_onChange();
@@ -235,15 +243,15 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
                 return
               }
               // dict 路径
-              api.getFile_fromStorePath_and_writeFile(newFileName).then(success => {
+              api.getFile_fromStorePath_and_writeFile(newPath).then(success => {
                 if (!success) {
                   td4_btn.textContent = t('Download failed'); td4_btn.setAttribute('color', 'red');
                   return
                 }
                 td4_btn.textContent = t('Downloaded'); td4_btn.setAttribute('color', 'green');
                 local_dict_list.push({
-                  path: `${global_setting.config.dict_paths}${newFileName}`,
-                  relPath: newFileName,
+                  path: `${global_setting.config.dict_paths}${newPath}`,
+                  relPath: newPath,
                   isDownloaded: true, isEnabled: true
                 })
                 local_dict_list_onChange()
@@ -346,13 +354,10 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
       {
         name: t('Path'),
         callback: (el: HTMLElement, item: any) => {
-          el.innerText = item.path.split('/').pop() || item.path
+          el.innerText = (item.relPath as string)
           return true
         },
       },
-      // {
-      //   name: t('Path'),
-      // },
 
       // (可选) 一些缓存元数据的显示
       // 注意: 由于加载插件完成可能晚于该面板创建，信息可能落后

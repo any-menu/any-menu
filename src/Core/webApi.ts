@@ -215,14 +215,19 @@ export class RepoAPI {
 
   /**
    * 下载 GitHub repo latest release 的 main.js 并写入本地
-   * @param repoPath 格式: "owner/repo"，写入文件名为 "owner-repo.js"
+   * @param repoPath 
+   *   格式: "owner/repo"
+   *   组织名问题
+  *    旧逻辑 (弃用): "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"，但后者可能会太长，不适合显示使用
+  *      const newFileName = (item.path as string).includes('/') ? `${(item.path as string).replace('/', '-')}.js` : item.path
+  *    新逻辑: 直接使用多级目录
    */
   static async getFile_fromRelease_and_writeFile(repoPath: string): Promise<boolean> {
     const text = await this.getFile_fromRelease(repoPath);
     if (text === null) return false;
 
-    const fileName = `${repoPath.replace('/', '-')}.js`; // "any-menu/example-plugin-vue" -> "any-menu-example-plugin-vue.js"
-    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${fileName}`, text);
+    const newPath = `${repoPath}.js`;
+    return await global_setting.api.writeFile(`${global_setting.config.dict_paths}${newPath}`, text);
   }
 
   // #endregion
