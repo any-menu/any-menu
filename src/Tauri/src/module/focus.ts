@@ -160,13 +160,14 @@ export function setupAppChangeListener() {
   })
 }
 
+let last_isInBlacklist: boolean = true // 初始未注册快捷键，视为初始在黑名单 app 上
 /**
  * 根据当前激活的应用，动态管理全局快捷键
  * @param {string | null} appName - 当前激活的应用名称 (来自 Rust)
  */
 async function updateShortcuts(appName: string) {
   // 检查是否在黑名单内
-  let isInBlacklist = false
+  let isInBlacklist: boolean = false
   for (const app_block of global_setting.config.app_black_list) {
     if (appName.includes(app_block)) {
       isInBlacklist = true
@@ -175,25 +176,31 @@ async function updateShortcuts(appName: string) {
   }
 
   // 动态注册或注销全局快捷键
-  try {
-    const is_shortcut_registered1 = await isRegistered(PRESET_1.key) as boolean
-    const is_shortcut_registered2 = await isRegistered(PRESET_2.key) as boolean
-    const is_shortcut_registered3 = await isRegistered(PRESET_3.key) as boolean
+  // b1. 黑->黑 或 白->白，不管，避免频繁调用某些命令
+  if (isInBlacklist == last_isInBlacklist) {}
+  // b2. 白->黑 或 黑->白
+  else {
+    last_isInBlacklist = isInBlacklist
+    try {
+      const is_shortcut_registered1 = await isRegistered(PRESET_1.key) as boolean
+      const is_shortcut_registered2 = await isRegistered(PRESET_2.key) as boolean
+      const is_shortcut_registered3 = await isRegistered(PRESET_3.key) as boolean
 
-    // 在黑名单 (不应注册快捷键)，如果快捷键已注册，则取消注册
-    if (isInBlacklist) {
-      if (is_shortcut_registered1) await unregister(PRESET_1.key)
-      if (is_shortcut_registered2) await unregister(PRESET_2.key)
-      if (is_shortcut_registered3) await unregister(PRESET_3.key)
+      // 在黑名单 (不应注册快捷键)，如果快捷键已注册，则取消注册
+      if (isInBlacklist) {
+        if (is_shortcut_registered1) await unregister(PRESET_1.key)
+        if (is_shortcut_registered2) await unregister(PRESET_2.key)
+        if (is_shortcut_registered3) await unregister(PRESET_3.key)
+      }
+      // 不在黑名单 (应注册快捷键)，如果快捷键未注册，则注册它
+      else {
+        if (!is_shortcut_registered1) { void SHORTCUT_1_EVENT() }
+        if (!is_shortcut_registered2) { void SHORTCUT_2_EVENT() }
+        if (!is_shortcut_registered3) { void SHORTCUT_3_EVENT() }
+      }
+    } catch (err) {
+      console.error('Failed to update shortcut state:', err)
     }
-    // 不在黑名单 (应注册快捷键)，如果快捷键未注册，则注册它
-    else {
-      if (!is_shortcut_registered1) { void SHORTCUT_1_EVENT() }
-      if (!is_shortcut_registered2) { void SHORTCUT_2_EVENT() }
-      if (!is_shortcut_registered3) { void SHORTCUT_3_EVENT() }
-    }
-  } catch (err) {
-    console.error('Failed to update shortcut state:', err)
   }
 }
 
