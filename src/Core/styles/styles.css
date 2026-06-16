@@ -1260,7 +1260,8 @@ table.dataview-table .btn {
 }
 .dataview-card .card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 6px;
   border: solid 1px var(--ab-tab-root-bd-color);
   padding: 10px;
@@ -1269,8 +1270,26 @@ table.dataview-table .btn {
 .dataview-card .card:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.dataview-card .btn {
+.dataview-card .card > div {
+  font-size: 15px;
+  line-height: 24px;
+  width: 100%;
+}
+.dataview-card .card > div.name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+}
+.dataview-card .card > div.uninstall, .dataview-card .card > div.isenabled, .dataview-card .card > div.isdownload {
+  width: auto;
+  margin-top: auto;
+}
+.dataview-card .card > div.uninstall, .dataview-card .card > div.isdownload {
+  margin-left: auto;
+}
+.dataview-card .card .btn {
   float: right;
+  height: 24px;
 }
 
 .dataview-table .btn, .dataview-card .btn {

@@ -410,7 +410,8 @@ table.dataview-table {
   gap: 9px;
   .card {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
 
     gap: 6px;
     border: solid 1px var(--ab-tab-root-bd-color);
@@ -420,9 +421,29 @@ table.dataview-table {
     &:hover {
       background-color: var(--ab-tab-root-hv-color);
     }
-  }
-  .btn {
-    float: right;
+
+    >div {
+      font-size: 15px;
+      line-height: 24px;
+      width: 100%;
+    }
+    >div.name {
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 26px;
+    }
+    >div.uninstall, >div.isenabled, >div.isdownload {
+      width: auto;
+      margin-top: auto;
+    }
+    >div.uninstall, >div.isdownload {
+      margin-left: auto;
+    }
+
+    .btn {
+      float: right;
+      height: 24px;
+    }
   }
 }
 

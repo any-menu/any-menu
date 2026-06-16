@@ -95,8 +95,8 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'web-dict'); tab_content.setAttribute('index', 'web-dict');
 
-  // 自动刷新
-  tab_nav.addEventListener('click', () => void getDictData_and_showData())
+  // 自动刷新 // 暂禁用，避免频繁请求导致被网络拒绝 (有自己的服务器后可以开回来)
+  // tab_nav.addEventListener('click', () => void getDictData_and_showData())
 
   // 基础容器
   const container = document.createElement('div'); tab_content.appendChild(container);
@@ -138,11 +138,24 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
     }
 
     const api = new RepoAPI()
-    const data_header = [
+    const data_header: {
+      name: string,
+      callback: (el: HTMLElement, item: any) => boolean
+    }[] = [
       ...(global_setting.isDebug ? [{
         name: t('Id'),
-        callback: (el: HTMLElement, item: any) => el.innerText = item.id,
+        callback: (el: HTMLElement, item: any) => {
+          el.innerText = item.id
+          return true
+        }
       }] : []),
+      {
+        name: t('Name'),
+        callback: (el: HTMLElement, item: any) => {
+          el.innerText = item.name
+          return true
+        }
+      },
       {
         name: t('Path'),
         callback: (el: HTMLElement, item: any) => {
@@ -157,19 +170,24 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
           else {
             a.href = `${api.blobUrl()}store/dict/${item.path}`
           }
+          return true
         }
       },
       {
-        name: t('Name'),
-        callback: (el: HTMLElement, item: any) => el.innerText = item.name
-      },
-      {
         name: t('Author'),
-        callback: (el: HTMLElement, item: any) => el.innerText = item.author ?? ''
+        callback: (el: HTMLElement, item: any) => {
+          if (!item.author) return false
+          el.innerText = item.author
+          return true
+        }
       },
       {
         name: t('Description'),
-        callback: (el: HTMLElement, item: any) => el.innerText = item.description ?? ''
+        callback: (el: HTMLElement, item: any) => {
+          if (!item.description) return false
+          el.innerText = item.description
+          return true
+        }
       },
       {
         name: t('Is downloaded'),
@@ -232,6 +250,7 @@ async function initSettingTab_webDict(tab_nav_container: HTMLElement, tab_conten
               })
             }
           }
+          return true
         }
       },
       // {
@@ -325,6 +344,37 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
       // {
       //   name: t('Path'),
       // },
+
+      // (可选) 一些缓存元数据的显示
+      // 注意: 由于加载插件完成可能晚于该面板创建，信息可能落后
+      {
+        name: t('Author'),
+        callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (!ret || !ret.author) return false
+          el.innerText = ret.author
+          return true
+        }
+      },
+      {
+        name: t('Version'),
+        callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (!ret) return false
+          el.innerText = ret.version
+          return true
+        }
+      },
+      {
+        name: t('Description'),
+        callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (!ret || !ret.description) return false
+          el.innerText = ret.description
+          return true
+        }
+      },
+
       {
         name: t('Uninstall'),
         callback: (el: HTMLElement, item: any) => {
@@ -376,27 +426,6 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
           }
           return true
         },
-      },
-
-      // (可选) 一些缓存元数据的显示
-      // 注意: 由于加载插件完成可能晚于该面板创建，信息可能落后
-      {
-        name: t('Version'),
-        callback: (el: HTMLElement, item: any) => {
-          const ret: MetadataCache|undefined = plugins_cache[item.path]
-          if (!ret) return false
-          el.innerText = ret.version
-          return true
-        }
-      },
-      {
-        name: t('Description'),
-        callback: (el: HTMLElement, item: any) => {
-          const ret: MetadataCache|undefined = plugins_cache[item.path]
-          if (!ret || !ret.description) return false
-          el.innerText = ret.description
-          return true
-        }
       },
     ]
     if (mode === 'card') json2card(dataview, data, data_header)
@@ -1099,12 +1128,20 @@ function json2card(
     const card = document.createElement('div'); div.appendChild(card); card.classList.add('card');
     for(const header_item of data_header) {
       const card_item = document.createElement('div'); card.appendChild(card_item);
+
       const card_item1 = document.createElement('span'); card_item.appendChild(card_item1);
         
       const card_item2 = document.createElement('span'); card_item.appendChild(card_item2);
         const ret = header_item.callback(card_item2, item);
-      
-      if (ret && header_item.name != t('Description')) card_item1.innerText = header_item.name + ': '
+
+      if (ret) {
+        if (header_item.name == t('Description')) {}
+        else if (header_item.name == t('Name')) { card_item.classList.add('name') }
+        else if (header_item.name == t('Uninstall')) { card_item.classList.add('uninstall') }
+        else if (header_item.name == t('Is enabled')) { card_item.classList.add('isenabled') }
+        else if (header_item.name == t('Is downloaded')) { card_item.classList.add('isdownload') }
+        else { card_item1.innerText = header_item.name + ': ' }
+      }
     }
   })
 }
