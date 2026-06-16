@@ -1,7 +1,10 @@
 // 定义插件必须实现的接口
 import { global_setting } from '../setting';
 import type { MetadataCache, PluginAppCtx, PluginInterface, PluginRunCtx } from '../../Type'
-import { AppCtxDemo, PluginInterfaceDemo, PluginRunCtxDemo } from './PluginInterface';
+import {
+  AppCtxDemo, appCtxDemo_createFunctions,
+  PluginInterfaceDemo, PluginRunCtxDemo
+} from './PluginInterface';
 import { z } from 'zod'; // 运行时验证库
 
 // 需要开启 tsconfig.json 中的
@@ -167,9 +170,7 @@ export class PluginManager {
       },
       api: {
         ...AppCtxDemo.api,
-        notify: async (message: string) => { // 强制消息显示插件名，确定来源
-          await global_setting.api.notify(label + ': ' + message)
-        },
+        ...appCtxDemo_createFunctions(label, plugin.metadata.id),
       }
     }
   }

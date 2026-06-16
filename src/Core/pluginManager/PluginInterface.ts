@@ -1,5 +1,5 @@
 /**
- * 如果你是脚本开发者，那么你需要要阅读这个文件即可
+ * 如果你是脚本开发者，那么你需要要阅读 ../../Type 中的类型即可
  */
 
 import { AMPanel, global_el } from "../panel";
@@ -19,9 +19,57 @@ export const AppCtxDemo: PluginAppCtx = {
   api: {
     sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.panel_hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
-    notify: (message: string) => global_setting.api.notify(message), // will be override, 强制使其输出时显示插件名
+
+    // will be override, 强制使其输出时显示插件名
+    notify: () => {
+      console.error('will be override')
+      return ''
+    },
 
     urlRequest: (conf: UrlRequestConfig) => global_setting.api.urlRequest(conf),
+    async readFile() {
+      console.error('will be override')
+      return ''
+    },
+    async writeFile() {
+      console.error('will be override')
+      return false
+    },
+
+    // #region 面板相关
+    hidePanel: (list?: string[]) => {
+      AMPanel.panel_hide(list)
+      if (list == undefined && global_setting.platform === 'app') {
+        global_setting.other.app_hide(list)
+      }
+    },
+    showPanel: (list?: string[], position?: 'center'|'cursor') => {
+      if (global_setting.platform === 'app') {
+        global_setting.other.app_show(position, list)
+      } else {
+        if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
+        AMPanel.panel_show(undefined, list)
+      }
+    },
+    togglePanel: (item: string) => {
+      AMPanel.panel_toggle(item)
+    },
+    registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
+      global_el.amPanel?.register_sub_panel(options.id, options.el);
+    },
+    unregisterSubPanel: (id: string) => {
+      global_el.amPanel?.unregister_sub_panel(id);
+    }
+    // #endregion
+  }
+}
+export function appCtxDemo_createFunctions(id: string, name: string) {
+  return {
+    // 强制消息显示插件名，确定来源
+    notify: async (message: string) => {
+      await global_setting.api.notify(name + ': ' + message)
+    },
+    // 默认路径使用插件id生成
     async readFile(path?: {
       relPath: string,
       basePath?: 'CACHE' | 'NOTE' | 'DICT'
@@ -32,7 +80,7 @@ export const AppCtxDemo: PluginAppCtx = {
         // 路径参数1 - 默认值
         if (!path) {
           path = {
-            relPath: this.env.pluginId,
+            relPath: id,
             basePath: 'CACHE',
           }
         }
@@ -65,6 +113,7 @@ export const AppCtxDemo: PluginAppCtx = {
 
       return await global_setting.api.readFile(targetPath);
     },
+    // 默认路径使用插件id生成
     async writeFile (
       content: string,
       path?: {
@@ -79,7 +128,7 @@ export const AppCtxDemo: PluginAppCtx = {
         // 路径参数1 - 默认值
         if (!path) {
           path = {
-            relPath: this.env.pluginId,
+            relPath: id,
             basePath: 'CACHE',
           }
         }
@@ -112,32 +161,6 @@ export const AppCtxDemo: PluginAppCtx = {
 
       return await global_setting.api.writeFile(targetPath, content, is_append);
     },
-
-    // #region 面板相关
-    hidePanel: (list?: string[]) => {
-      AMPanel.panel_hide(list)
-      if (list == undefined && global_setting.platform === 'app') {
-        global_setting.other.app_hide(list)
-      }
-    },
-    showPanel: (list?: string[], position?: 'center'|'cursor') => {
-      if (global_setting.platform === 'app') {
-        global_setting.other.app_show(position, list)
-      } else {
-        if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
-        AMPanel.panel_show(undefined, list)
-      }
-    },
-    togglePanel: (item: string) => {
-      AMPanel.panel_toggle(item)
-    },
-    registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
-      global_el.amPanel?.register_sub_panel(options.id, options.el);
-    },
-    unregisterSubPanel: (id: string) => {
-      global_el.amPanel?.unregister_sub_panel(id);
-    }
-    // #endregion
   }
 }
 
