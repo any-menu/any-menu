@@ -10,11 +10,11 @@ export interface PluginInterface {
   /* 
    * 该成员存在，当不放类型里
    * 
-   * 插件加载时会自动填充，方便插件访问。
+   * 不要赋值。插件加载时会自动填充，方便插件访问。
    * 亦同 onLoad 方法给的那个参数，不使用这个也没有问题。
    * 这个只是方便使用的语法糖而已
    */
-  // app: PluginAppCtx
+  app?: PluginAppCtx
 
   /** 元数据 */
   metadata: {

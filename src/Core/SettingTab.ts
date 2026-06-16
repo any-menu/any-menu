@@ -337,6 +337,15 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
       {
         name: t('Name'),
         callback: (el: HTMLElement, item: any) => {
+          const ret: MetadataCache|undefined = plugins_cache[item.path]
+          if (!ret) return false
+          el.innerText = ret.name ?? ret.id
+          return true
+        },
+      },
+      {
+        name: t('Path'),
+        callback: (el: HTMLElement, item: any) => {
           el.innerText = item.path.split('/').pop() || item.path
           return true
         },
@@ -1124,23 +1133,28 @@ function json2card(
     div.classList.add('dataview-card');
 
   // 卡片
+  // 结构:
+  // - card
+  //   - card_item * n
+  //     - card_span
+  //     - card_content
   data.forEach(item => {
     const card = document.createElement('div'); div.appendChild(card); card.classList.add('card');
     for(const header_item of data_header) {
-      const card_item = document.createElement('div'); card.appendChild(card_item);
-
-      const card_item1 = document.createElement('span'); card_item.appendChild(card_item1);
-        
-      const card_item2 = document.createElement('span'); card_item.appendChild(card_item2);
-        const ret = header_item.callback(card_item2, item);
+      const card_content = document.createElement('span')
+        const ret: boolean = header_item.callback(card_content, item);
 
       if (ret) {
-        if (header_item.name == t('Description')) {}
-        else if (header_item.name == t('Name')) { card_item.classList.add('name') }
+        const card_item = document.createElement('div'); card.appendChild(card_item);
+        const card_span = document.createElement('span'); card_item.appendChild(card_span);
+        card_item.appendChild(card_content);
+
+        if (header_item.name == t('Name')) { card_item.classList.add('name') }
         else if (header_item.name == t('Uninstall')) { card_item.classList.add('uninstall') }
         else if (header_item.name == t('Is enabled')) { card_item.classList.add('isenabled') }
         else if (header_item.name == t('Is downloaded')) { card_item.classList.add('isdownload') }
-        else { card_item1.innerText = header_item.name + ': ' }
+        else if (header_item.name == t('Description')) {}
+        else { card_span.innerText = header_item.name + ': ' }
       }
     }
   })

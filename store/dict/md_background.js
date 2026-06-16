@@ -62,7 +62,6 @@ export default {
         // 这里的样式处理应该移到主逻辑而非插件中?
         // 有可能是工具栏项 (.am-toolbar-item) 或多级菜单项 (am-context-menu-item)
         const el_am_icon = el.querySelector(':scope.am-toolbar-item > .am-icon')
-        console.log('md-bg onCreateItem', el, el_am_icon)
         if (el_am_icon) {
             cache_el_am_icon = el_am_icon;
             el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', cache_color);
