@@ -39,7 +39,7 @@ export default {
         if (ctx.env.activeDocTitle) {
             title = ctx.env.activeDocTitle
         } else {
-            title = ctx.env.activeAppName.split(' - ')[0].split(' — ')[0] // 以 " - " 或 " — " 分割，取第一个部分作为标题
+            title = (ctx.env.activeAppName ?? "").split(' - ')[0].split(' — ')[0] // 以 " - " 或 " — " 分割，取第一个部分作为标题
             // 优化
             title = cleanTitle(title)
         }

@@ -186,7 +186,7 @@ export class PluginManager {
       ...PluginRunCtxDemo,
       env: {
         selectedText: global_setting.state.selectedText,
-        activeAppName: global_setting.state.activeAppName || undefined,
+        activeAppName: global_setting.state.activeAppName,
         activeDocTitle: global_setting.state.activeDocTitle,
         activeDocUrl: global_setting.state.activeDocUrl,
       },

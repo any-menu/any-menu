@@ -107,6 +107,7 @@ export function setupAppChangeListener() {
       let is_update_selectedText = false
       if (clipboard_selectedText_html && clipboard_selectedText_html.length > 0
         // 一些应用的显示是前端，但不需要html/md格式，需以纯文本方式获取选中文本
+        && global_setting.state.activeAppName
         && global_setting.state.activeAppName != "QQ" // QQ 默认多人的聊天记录会被html+body框住
         && !global_setting.state.activeAppName.endsWith(" - Visual Studio Code")
         && !global_setting.state.activeAppName.includes(" - Obsidian ") // 裸url链接会变成 a 标签
