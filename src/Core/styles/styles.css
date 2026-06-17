@@ -1042,6 +1042,12 @@ html, body, #main {
 #main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
   -webkit-app-region: drag;
 }
+#main > .am-panel .am-search-input:-moz-placeholder {
+  -webkit-app-region: drag;
+}
+#main > .am-panel .am-search-input:placeholder-shown {
+  -webkit-app-region: drag;
+}
 
 .am-pin {
   position: absolute;

@@ -153,6 +153,8 @@ html, body, #main {
 }
 
 /* -------------------------------- 面板置顶按钮 ------------------------- */
+
+// 拖拽窗口部分
 // 仅在 App 环境中，允许通过按钮拖动窗口
 #main>.am-panel {
   .am-pin, .windows-pin {
@@ -160,6 +162,13 @@ html, body, #main {
       -webkit-app-region: drag; // 允许在桌面应用环境中，使用按钮拖动窗口
     }
   }
+
+  // 注意得设置占位符，才能不借js判断内容是否为空
+  .am-search-input:placeholder-shown {
+    -webkit-app-region: drag;
+  }
+
+  // toolbar 其实也可以设置，但是与右键行为冲突了，故没设置
 }
 
 .am-pin {
