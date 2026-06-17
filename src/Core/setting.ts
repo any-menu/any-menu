@@ -79,13 +79,6 @@ export const global_setting: {
     app_black_list: string[],
     // app是否使用高级快捷键，TODO 未起作用
     app_ad_shortcut: boolean,
-
-    // 本地的词典/插件管理
-    plugins: {
-      path: string, // 相对于 dict_paths 的路径
-      version?: string,
-      enabled: boolean,
-    }[],
     toolbar_list: string[],
     context_menu_list: string[],
     auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
@@ -116,13 +109,18 @@ export const global_setting: {
       }
     ],
   },
+  // 外观相关的配置
   config_style: {
-    // 外观
-    // 大部分不在配置中，而是使用类似 obsidian style setting 之类的策略
     theme: string,
     darkmode: 'light'|'dark'|'auto',
-    variables: {},
+    variables: {}, // 大部分不在配置中，使用类似 obsidian style setting 之类的策略
   },
+  // 本地的词典/插件管理配置
+  config_plugins: {
+    path: string, // 相对于 dict_paths 的路径
+    version?: string,
+    enabled: boolean,
+  }[],
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
     is_auto_startup: boolean, // 是否开机自启
@@ -218,7 +216,6 @@ export const global_setting: {
     app_black_list: ['- Obsidian '],
     app_ad_shortcut: true,
 
-    plugins: [],
     toolbar_list: [],
     context_menu_list: [],
     auto_show_toolbar_on_select: false,
@@ -253,6 +250,7 @@ export const global_setting: {
     darkmode: 'auto',
     variables: {},
   },
+  config_plugins: [],
   config_: {
     is_auto_startup: false,
     pinyin_method: 'pinyin',
@@ -284,69 +282,45 @@ export const global_setting: {
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
     loadConfig: async (): Promise<boolean|string> => {
-      let file_path: string = ''
-      let file_content: string|null = null
-      let file_config: object
-
-      // ------- 文件1 --------
-
-      // 读取配置文件
-      file_path = global_setting.config.config_paths + 'config.json'
-      try {
-        const result = await global_setting.api.readFile(file_path)
-        if (typeof result !== 'string') {
-          throw new Error("Invalid file content format")
-        }
-        file_content = result
-      } catch (error) {
-        console.warn("没配置文件，将自动生成一个")
-        file_content = null
-      }
-      // 解析，并应用配置文件
-      if (file_content) {
+      const loadConfig_ = async (file_path: string): Promise<false|object> => {
+        let file_content: string|null = null
+        // 读取配置文件
         try {
-          const new_config = JSON.parse(file_content)
-          if (!new_config || typeof new_config !== 'object') {
-            throw new Error("Invalid config format")
+          const result = await global_setting.api.readFile(file_path)
+          if (typeof result !== 'string') {
+            throw new Error("Invalid file content format")
           }
-          file_config = new_config
+          file_content = result
         } catch (error) {
-          console.error('配置解析失败，请检查格式是否正确', error)
-          return false
+          console.warn("没配置文件，将自动生成一个")
+          file_content = null
         }
-        Object.assign(global_setting.config, file_config)
-      }
-
-      // ------- 文件2 --------
-
-      // 读取配置文件
-      file_path = global_setting.config.config_paths + 'config_style.json'
-      try {
-        const result = await global_setting.api.readFile(file_path)
-        if (typeof result !== 'string') {
-          throw new Error("Invalid file content format")
-        }
-        file_content = result
-      } catch (error) {
-        console.warn("没配置文件，将自动生成一个")
-        file_content = null
-      }
-      // 解析，并应用配置文件
-      if (file_content) {
-        try {
-          const new_config = JSON.parse(file_content)
-          if (!new_config || typeof new_config !== 'object') {
-            throw new Error("Invalid config format")
+        // 解析，并应用配置文件
+        if (file_content) {
+          try {
+            const new_config = JSON.parse(file_content)
+            if (!new_config || typeof new_config !== 'object') {
+              throw new Error("Invalid config format")
+            }
+            return new_config
+          } catch (error) {
+            console.error('配置解析失败，请检查格式是否正确', error)
+            return false
           }
-          file_config = new_config
-        } catch (error) {
-          console.error('配置解析失败，请检查格式是否正确', error)
-          return false
         }
-        Object.assign(global_setting.config_style, file_config)
+        return {}
       }
 
-      // ----------------------
+      // 并行读取三个配置文件
+      const [ret1, ret2, ret3] = await Promise.all([
+        loadConfig_(global_setting.config.config_paths + 'config.json'),
+        loadConfig_(global_setting.config.config_paths + 'config_style.json'),
+        loadConfig_(global_setting.config.config_paths + 'config_plugins.json')
+      ]);
+      // 应用配置
+      if (ret1) Object.assign(global_setting.config, ret1);
+      if (ret2) Object.assign(global_setting.config_style, ret2);
+      if (ret3) Object.assign(global_setting.config_plugins, ret3);
 
       // TODO 设置更新后，可以动态更新一些页面信息
       //   暂时不支持这点，许多设置必须要重启后才能生效
@@ -365,6 +339,10 @@ export const global_setting: {
       // ------- 文件2 --------
       file_path = global_setting.config.config_paths + 'config_style.json'
       void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config_style, undefined, 2))
+
+      // ------- 文件3 --------
+      file_path = global_setting.config.config_paths + 'config_plugins.json'
+      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config_plugins, undefined, 2))
 
       return true
     },
