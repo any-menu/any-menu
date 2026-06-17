@@ -120,10 +120,9 @@ pub fn write_file(path: &str, content: &str, isappend: bool) -> bool {
     }
 
     // 写入文件
-    log::info!("模式判断, {:?}", isappend);
+    log::info!("写入模式判断, 是否追加: {:?}", isappend);
     let result = if isappend {
         // 追加模式
-        log::info!("追加模式");
         fs::OpenOptions::new()
             .create(true) // 如果文件不存在则创建
             .append(true)
@@ -131,7 +130,6 @@ pub fn write_file(path: &str, content: &str, isappend: bool) -> bool {
             .and_then(|mut file| file.write_all(content.as_bytes()))
     } else {
         // 覆盖模式（fs::write 的行为）
-        log::info!("覆盖模式");
         fs::write(file_path, content)
     };
 

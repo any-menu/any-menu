@@ -77,7 +77,7 @@
 		"name": "Alert块/Callout块",
 		"description": "GFM Alert / Obsidian Callout / MarkdownIt GFM",
 		"author": "LincZero",
-		"version": "1.0.0 话说版本应该不放这，而是参考ob插件的做法放仓库里。\n且后续可能要区分各种词典和脚本，不要放一起"
+		"version": "1.0.0"
 	},
 	{
 		"id": "anymenu-AnyBlock",
