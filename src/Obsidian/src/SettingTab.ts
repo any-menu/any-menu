@@ -16,20 +16,6 @@ import { global_setting } from "@/Core/setting";
 import { t } from "@/Core/locales/helper";
 // import { API } from "@/Core/webApi";
 
-// 配置结构和默认值
-export interface AMSettingInterface {
-  config: typeof global_setting.config
-  isDebug: typeof global_setting.isDebug
-}
-// 需要与 global_setting 保持同步，这里另外定义是为了
-// 1. 类型约束
-// 2. 二次封装简化 (去除不可配置项/不让用户配置的部分)
-// 一般来说 saveSettings (保存配置文件时) 会自动保证一致性
-export const AM_SETTINGS_DEFAULT: AMSettingInterface = {
-  config: global_setting.config,
-  isDebug: global_setting.isDebug,
-}
-
 export class AMSettingTab extends PluginSettingTab {
   isInitialized = false
 
@@ -48,7 +34,7 @@ export class AMSettingTab extends PluginSettingTab {
     const tab_root = activeDocument.createElement('div'); containerEl.appendChild(tab_root); tab_root.classList.add('tab-root');
 
     const { tab_nav_container, tab_content_container } = initSettingTab_1(tab_root)
-    initSettingTab_obConfigFile(tab_nav_container, tab_content_container)
+    // initSettingTab_obConfigFile(tab_nav_container, tab_content_container)
     initSettingTab_2(tab_nav_container, tab_content_container)
 
     tab_root.createEl('button',
@@ -102,7 +88,7 @@ export class AMSettingTab extends PluginSettingTab {
  * - 二是使用 global_setting.api.readFile() 直接读取 data.json 的文本内容
  *   该方案的一个缺点是: 插件的文件夹名是可以改变的
  */
-function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+/*function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = activeDocument.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config file');
   const tab_content = activeDocument.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -152,4 +138,4 @@ function initSettingTab_obConfigFile(tab_nav_container: HTMLElement, tab_content
       return
     }
   }
-}
+}*/

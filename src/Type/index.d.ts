@@ -105,18 +105,18 @@ export interface PluginRunCtx {
   /** 环境信息 */
   env: {
     /** 当前选中文本 */
-    selectedText?: string;
+    selectedText?: string
     /** 当前激活的应用/窗口名称 */
-    activeAppName?: string;
+    activeAppName?: string
     /** 当前文档/页面标题（如浏览器页面标题、Obsidian 笔记名等） */
-    activeDocTitle?: string;
+    activeDocTitle?: string
     /**
      * 当前文档/页面链接（如浏览器页面 URL、Obsidian 笔记路径等）
      *
      * 目前只支持 Obsidian 环境，App (Tauri) 环境暂未支持
      *   App 端很难获取，UIA 有可能可以但也很麻烦，不一定能拿到
      */
-    activeDocUrl?: string;
+    activeDocUrl?: string
 
     // TODO: 更多环境
     // - miniEditorText?: string;

@@ -47,8 +47,14 @@ export const global_setting: {
     server_port: number,
     // 在线词库来源 'gitee'|'github'
     dict_online_source: 'gitee'|'github',
-    // 配置路径。此处不启用，硬编码，app 使用 am-user.toml，obsidian 使用插件文件夹的 data.json
-    // config_paths: string,
+    // 配置路径。
+    // 注意主配置文件不走这个路径，这个配置路径仅针对于副配置
+    // 主配置:
+    // - app:       使用 am-user.toml
+    // - obsidian:  使用插件文件夹的 data.json
+    // 
+    // 注意: 不要自指
+    config_paths: string,
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
     // 记录笔记的基础路径
@@ -109,6 +115,13 @@ export const global_setting: {
         position_mode: 'center'|'cursor'|'mouse',
       }
     ],
+  },
+  config_style: {
+    // 外观
+    // 大部分不在配置中，而是使用类似 obsidian style setting 之类的策略
+    theme: string,
+    darkmode: 'light'|'dark'|'auto',
+    variables: {},
   },
   // 非配置文件的配置，可能未实现仅占位，可能非持续久化的
   config_: {
@@ -197,9 +210,10 @@ export const global_setting: {
 
     server_port: 41667,
     dict_online_source: 'github',
-    dict_paths: './dict/',    // obsidian 用户可能比较熟悉于 './Template/' 路径
+    config_paths: './config/',// 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/config/'
+    dict_paths: './dict/',    // 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/dict/'
     note_paths: './notes/',   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
-    cache_paths: './cache/',  // 在 obsidian 版本中，这里的默认值会是 './.obsidian/plugins/any-menu/cache/'
+    cache_paths: './cache/',  // 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/cache/'
     send_text_method: 'clipboard',
     app_black_list: ['- Obsidian '],
     app_ad_shortcut: true,
@@ -209,7 +223,7 @@ export const global_setting: {
     context_menu_list: [],
     auto_show_toolbar_on_select: false,
 
-    // 这里的2是因为该选项以前是对象，现在改数组避免和以前用户的选项合并导致冲突，不可去除
+    // 这里的2是历史遗留问题。因为该选项以前是对象，现在改数组后避免和以前用户的选项合并导致冲突
     // 注意: 划词弹出模式不受 is_focus 影响，强制为 false
     panel_preset2: [
       {
@@ -233,6 +247,11 @@ export const global_setting: {
         position_mode: 'cursor',
       },
     ],
+  },
+  config_style: {
+    theme: 'default',
+    darkmode: 'auto',
+    variables: {},
   },
   config_: {
     is_auto_startup: false,
@@ -264,8 +283,91 @@ export const global_setting: {
     readFolder: async () => { console.error("需实现 api.readFolder 方法"); return [] },
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
-    loadConfig: async () => { console.error("需实现 api.readConfig 方法"); return false },
-    saveConfig: async () => { console.error("需实现 api.writeConfig 方法"); return false },
+    loadConfig: async (): Promise<boolean|string> => {
+      let file_path: string = ''
+      let file_content: string|null = null
+      let file_config: object
+
+      // ------- 文件1 --------
+
+      // 读取配置文件
+      file_path = global_setting.config.config_paths + 'config.json'
+      try {
+        const result = await global_setting.api.readFile(file_path)
+        if (typeof result !== 'string') {
+          throw new Error("Invalid file content format")
+        }
+        file_content = result
+      } catch (error) {
+        console.warn("没配置文件，将自动生成一个")
+        file_content = null
+      }
+      // 解析，并应用配置文件
+      if (file_content) {
+        try {
+          const new_config = JSON.parse(file_content)
+          if (!new_config || typeof new_config !== 'object') {
+            throw new Error("Invalid config format")
+          }
+          file_config = new_config
+        } catch (error) {
+          console.error('配置解析失败，请检查格式是否正确', error)
+          return false
+        }
+        Object.assign(global_setting.config, file_config)
+      }
+
+      // ------- 文件2 --------
+
+      // 读取配置文件
+      file_path = global_setting.config.config_paths + 'config_style.json'
+      try {
+        const result = await global_setting.api.readFile(file_path)
+        if (typeof result !== 'string') {
+          throw new Error("Invalid file content format")
+        }
+        file_content = result
+      } catch (error) {
+        console.warn("没配置文件，将自动生成一个")
+        file_content = null
+      }
+      // 解析，并应用配置文件
+      if (file_content) {
+        try {
+          const new_config = JSON.parse(file_content)
+          if (!new_config || typeof new_config !== 'object') {
+            throw new Error("Invalid config format")
+          }
+          file_config = new_config
+        } catch (error) {
+          console.error('配置解析失败，请检查格式是否正确', error)
+          return false
+        }
+        Object.assign(global_setting.config_style, file_config)
+      }
+
+      // ----------------------
+
+      // TODO 设置更新后，可以动态更新一些页面信息
+      //   暂时不支持这点，许多设置必须要重启后才能生效
+      // 无论如何均重新保存一遍。避免在开发更新过程中，添加新的选项
+      await global_setting.api.saveConfig()
+
+      return true
+    },
+    saveConfig: async (): Promise<boolean> => {
+      let file_path: string
+
+      // ------- 文件1 --------
+      file_path = global_setting.config.config_paths + 'config.json'
+      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config, undefined, 2))
+
+      // ------- 文件2 --------
+      file_path = global_setting.config.config_paths + 'config_style.json'
+      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config_style, undefined, 2))
+
+      return true
+    },
     getCursorXY: async () => { console.error("需实现 api.getCursorXY 方法"); return { x: -1, y: -1 } },
     getScreenSize: async () => { console.error("需实现 api.getScreenSize 方法"); return { width: -1, height: -1 } },
     getInfo: async () => { console.error("需实现 api.getInfo 方法"); return null },

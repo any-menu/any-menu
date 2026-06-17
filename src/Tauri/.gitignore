@@ -28,3 +28,4 @@ dist-ssr
 /src-tauri/dict/
 /src-tauri/notes/
 /src-tauri/cache/
+/src-tauri/config/

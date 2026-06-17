@@ -38,13 +38,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   await init() // 保证先读取配置再初始化别的
 
   const { tab_nav_container, tab_content_container } = initSettingTab_1(el as HTMLElement)
-  initSettingTab_configFile(tab_nav_container, tab_content_container)
+  // initSettingTab_configFile(tab_nav_container, tab_content_container)
   // initSettingTab_pluginManager(tab_nav_container, tab_content_container)
   initSettingTab_2(tab_nav_container, tab_content_container)
 })
 
 /// 配置文件
-function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+/*function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config file');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -73,7 +73,7 @@ function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_c
   const save_btn = document.createElement('button'); tab_content.appendChild(save_btn); save_btn.classList.add('btn-2', 'absolute');
     save_btn.textContent = t('Save config'); save_btn.setAttribute('style', 'position: absolute; bottom: 16px; right: 30px;');
   save_btn.onclick = () => save_config_from_string(textarea.value, textarea)
-}
+}*/
 
 /*/// 插件管理器
 function initSettingTab_pluginManager(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {

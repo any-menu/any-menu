@@ -2,7 +2,7 @@ import type { UrlRequestConfig, UrlResponse } from '../../../Type'
 import { global_setting } from '../../../Core/setting'
 import { global_el } from '../../../Core/panel'
 import { hideWindow, showWindow } from '../module/window'
-import { toml_parse } from '../../../Core/panel/contextmenu/demo'
+// import { toml_parse } from '../../../Core/panel/contextmenu/demo'
 
 // 注意 api/window 里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 // convertFileSrc 需要 tauri.confi.json 中的 security 中的一些修改
@@ -18,15 +18,21 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 export function initApi() {
   global_setting.platform = 'app'
 
-  // 语言环境
-  // 使用浏览器原生 API
-  // 也可以改为调用 Tauri Windows 接口处理 'auto' 类型
-  const userLocale = navigator.language // 例如: 'zh-CN', 'en-US', 'ja-JP'
-  const mainLanguage = userLocale.split('-')[0]; // 'zh', 'en', 'ja'
-  if (global_setting.config.language == 'auto') {
-    global_setting.state.language = mainLanguage
-  } else {
-    global_setting.state.language = global_setting.config.language
+  // app 版本的某些默认配置有所不同
+  {
+    // 语言环境
+    // 使用浏览器原生 API
+    // 也可以改为调用 Tauri Windows 接口处理 'auto' 类型
+    const userLocale = navigator.language // 例如: 'zh-CN', 'en-US', 'ja-JP'
+    const mainLanguage = userLocale.split('-')[0]; // 'zh', 'en', 'ja'
+    if (global_setting.config.language == 'auto') {
+      global_setting.state.language = mainLanguage
+    } else {
+      global_setting.state.language = global_setting.config.language
+    }
+
+    // 自动明暗
+    // 略 TODO
   }
 
   global_setting.api.getCursorXY = async () => {
@@ -250,6 +256,7 @@ export function initApi() {
     return assetPath
   }
 
+  /* 旧版-读写配置，废弃。新版统一了 app 和 obsidian 版本的逻辑
   const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
 
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
@@ -314,6 +321,7 @@ export function initApi() {
     })
     return true
   }
+  */
 
   // 后端为 Tauri 时使用
   // 参考: https://v2.tauri.app/zh-cn/plugin/http-client/ https://v2.tauri.app/zh-cn/reference/javascript/http/
@@ -433,9 +441,10 @@ export function initApi() {
   global_setting.other.app_hide = hideWindow
 }
 
+// 旧，废弃
 // 这样的toml配置会有注释，如果用 global_setting.config 转toml则没注释
 // 会自动与 global_setting.config 合并
-const DEFAULT_TOML = `\
+/*const DEFAULT_TOML = `\
 [config]
 language = "English"        # 语言 'auto'|'English'|'中文'|string
 
@@ -486,3 +495,4 @@ context_menu_list = []
 
 auto_show_toolbar_on_select = false
 `
+*/
