@@ -256,6 +256,12 @@ html, body, #main {
 .am-custom-panel {
   overflow-y: auto;
   max-height: 100%;
+  >div {
+    background: var(--ab-menu-bg-color);
+    border: 1px solid var(--ab-tab-root-bd-color);
+    border-radius: 8px;
+    padding: 10px;
+  }
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
@@ -269,7 +275,7 @@ html, body, #main {
   }
 }
 
-.tab-root {
+.am-config {
   padding: 0px;
   position: relative;
   width: 100%;
@@ -490,7 +496,7 @@ table.dataview-table {
 
 /* -------------------------------- 配置页面配置项 ------------------------ */
 
-.tab-root .setting-item {
+.am-config .setting-item {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -670,7 +676,7 @@ table.dataview-table {
 
 /* -------------------------------- Obsidian 专用 ----------------------- */
 
-.am-ob-setting-btn { // 也会受到 .tab-root button 影响
+.am-ob-setting-btn { // 也会受到 .tab-root/.am-config button 影响
   position: absolute;
   bottom: 12px;
   z-index: 4;

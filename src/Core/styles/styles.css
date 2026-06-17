@@ -1124,6 +1124,12 @@ html, body, #main {
   overflow-y: auto;
   max-height: 100%;
 }
+.am-custom-panel > div {
+  background: var(--ab-menu-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+  padding: 10px;
+}
 
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root-parent {
@@ -1134,7 +1140,7 @@ html, body, #main {
   border-radius: 8px;
 }
 
-.tab-root {
+.am-config {
   padding: 0px;
   position: relative;
   width: 100%;
@@ -1143,32 +1149,32 @@ html, body, #main {
   background-color: var(--ab-tab-root-bg-color);
   color: var(--ab-tab-root-tx-color);
 }
-.tab-root * {
+.am-config * {
   box-sizing: border-box;
 }
-.tab-root .tab-nav-container {
+.am-config .tab-nav-container {
   display: flex;
   height: 32px;
   line-height: 32px;
   background-color: var(--ab-tab-root-bd-color);
 }
-.tab-root .tab-nav-container > div {
+.am-config .tab-nav-container > div {
   display: inline-block;
   padding: 0 12px;
   cursor: pointer;
   background-color: var(--ab-tab-root-bd-color);
 }
-.tab-root .tab-nav-container > div.active {
+.am-config .tab-nav-container > div.active {
   border-bottom: none;
   background-color: var(--ab-tab-root-bg-color);
 }
-.tab-root .tab-nav-container > div {
+.am-config .tab-nav-container > div {
   border-radius: 6px 6px 0 0;
 }
-.tab-root .tab-nav-container > div:first-child {
+.am-config .tab-nav-container > div:first-child {
   border-radius: 0 6px 0 0;
 }
-.tab-root .tab-content-container {
+.am-config .tab-content-container {
   position: absolute;
   top: 32px;
   bottom: 0;
@@ -1177,7 +1183,7 @@ html, body, #main {
   background-color: var(--ab-tab-root-bg-color);
   color: var(--ab-tab-root-tx-color);
 }
-.tab-root .tab-content-container > div {
+.am-config .tab-content-container > div {
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -1186,14 +1192,14 @@ html, body, #main {
   background-color: var(--ab-tab-root-bg-color);
   display: none;
 }
-.tab-root .tab-content-container > div.active {
+.am-config .tab-content-container > div.active {
   display: block;
 }
-.tab-root div:has(> textarea) {
+.am-config div:has(> textarea) {
   position: relative;
   height: 100%;
 }
-.tab-root div:has(> textarea) textarea {
+.am-config div:has(> textarea) textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -1211,25 +1217,25 @@ html, body, #main {
   outline: none;
   box-shadow: none;
 }
-.tab-root div:has(> textarea) textarea.no-save {
+.am-config div:has(> textarea) textarea.no-save {
   border-left: 1px solid orange;
 }
-.tab-root div:has(> textarea) textarea.error-save {
+.am-config div:has(> textarea) textarea.error-save {
   border-left: 1px solid red;
 }
-.tab-root .setting-buttons {
+.am-config .setting-buttons {
   position: absolute;
   height: 28px;
   right: 16px;
   bottom: 16px;
   opacity: 0.85;
 }
-.tab-root .setting-buttons button {
+.am-config .setting-buttons button {
   border-radius: 8px;
   padding: 2px 18px;
   margin-left: 10px;
 }
-.tab-root details {
+.am-config details {
   white-space: normal;
 }
 
@@ -1326,7 +1332,7 @@ table.dataview-table .btn {
 }
 
 /* -------------------------------- 配置页面配置项 ------------------------ */
-.tab-root .setting-item {
+.am-config .setting-item {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1338,29 +1344,29 @@ table.dataview-table .btn {
   border-radius: 12px;
   background: none;
 }
-.tab-root .setting-item .setting-item-info {
+.am-config .setting-item .setting-item-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.tab-root .setting-item .setting-item-info .setting-item-name {
+.am-config .setting-item .setting-item-info .setting-item-name {
   font-weight: 500;
   margin-bottom: 2px;
 }
-.tab-root .setting-item .setting-item-info .setting-item-desc {
+.am-config .setting-item .setting-item-info .setting-item-desc {
   font-size: 0.9em;
   margin-top: 4px;
   opacity: 0.8;
 }
-.tab-root .setting-item .setting-item-control {
+.am-config .setting-item .setting-item-control {
   margin-top: 4px;
 }
-.tab-root .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
-.tab-root .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
+.am-config .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
+.am-config .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.tab-root .setting-item .setting-item-control .setting-item-text {
+.am-config .setting-item .setting-item-control .setting-item-text {
   padding: 4px 8px;
   border-radius: 6px;
   border: 0.5px solid var(--ab-tab-root-bd-color);
@@ -1369,7 +1375,7 @@ table.dataview-table .btn {
   background-color: var(--pre-background-color);
   color: var(--am-text-color);
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle {
+.am-config .setting-item .setting-item-control .setting-item-toggle {
   display: inline-block;
   width: 40px;
   height: 20px;
@@ -1378,14 +1384,14 @@ table.dataview-table .btn {
   position: relative;
   cursor: pointer;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle input {
+.am-config .setting-item .setting-item-control .setting-item-toggle input {
   opacity: 0;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle::after {
+.am-config .setting-item .setting-item-control .setting-item-toggle::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -1396,13 +1402,13 @@ table.dataview-table .btn {
   background-color: white;
   transition: all 0.25s ease;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle.is-enabled {
+.am-config .setting-item .setting-item-control .setting-item-toggle.is-enabled {
   background-color: var(--am-bright-color);
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle.is-enabled::after {
+.am-config .setting-item .setting-item-control .setting-item-toggle.is-enabled::after {
   left: 22px;
 }
-.tab-root .setting-item .setting-item-control .setting-item-select {
+.am-config .setting-item .setting-item-control .setting-item-select {
   padding: 4px 8px;
   border-radius: 6px;
   border: 0.5px solid var(--ab-tab-root-bd-color);
@@ -1411,7 +1417,7 @@ table.dataview-table .btn {
   background-color: var(--pre-background-color);
   color: var(--am-text-color);
 }
-.tab-root .setting-item .setting-item-heading {
+.am-config .setting-item .setting-item-heading {
   flex-basis: 100%;
   display: flex;
   align-items: center;
@@ -1420,7 +1426,7 @@ table.dataview-table .btn {
   cursor: pointer;
   font-size: 22px;
 }
-.tab-root .setting-item .setting-item-heading .collapse-btn {
+.am-config .setting-item .setting-item-heading .collapse-btn {
   display: inline-flex;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -1428,7 +1434,7 @@ table.dataview-table .btn {
   height: 7px;
   margin-left: 10px;
 }
-.tab-root .setting-item .setting-item-heading .collapse-btn::after {
+.am-config .setting-item .setting-item-heading .collapse-btn::after {
   content: "";
   display: block;
   box-sizing: border-box;
@@ -1440,14 +1446,14 @@ table.dataview-table .btn {
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(45deg) translate(-1px, 0px);
 }
-.tab-root .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
+.am-config .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
   transform: rotate(-45deg) translate(-2px, 0px);
 }
-.tab-root .setting-item .setting-item-heading:hover .collapse-btn::after {
+.am-config .setting-item .setting-item-heading:hover .collapse-btn::after {
   color: var(--am-bright-color);
   border-color: var(--am-bright-color);
 }
-.tab-root .setting-item .setting-item-divider {
+.am-config .setting-item .setting-item-divider {
   flex-basis: 100%;
   width: 100%;
   height: 1px;

@@ -113,14 +113,14 @@ export async function initMenuData() {
     // 插件是否已开启
     let isFound = false
     let isEnable = false
-    for (const plugin of global_setting.config.plugins) {
+    for (const plugin of global_setting.config_plugins) {
       if (plugin.path !== file_path_rel) continue
       isFound = true
       if (plugin.enabled) isEnable = true
       break
     }
     if (!isFound) {
-      global_setting.config.plugins.push({
+      global_setting.config_plugins.push({
         path: file_path_rel,
         enabled: false
       })

@@ -16,7 +16,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   // el.innerHTML = ''
   // local_dict_list.length = 0
 
-  el.classList.add('tab-root')
+  el.classList.add('tab-root', 'am-config')
   const tab_nav_container = document.createElement('div'); el.appendChild(tab_nav_container); tab_nav_container.classList.add('tab-nav-container');
   const tab_content_container = document.createElement('div'); el.appendChild(tab_content_container); tab_content_container.classList.add('tab-content-container');
 
@@ -27,6 +27,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   void initSettingTab_webDict(tab_nav_container, tab_content_container)
   void initSettingTab_toolbar(tab_nav_container, tab_content_container)
   void initSettingTab_contextMenu(tab_nav_container, tab_content_container)
+  // void initSettingTab_style(tab_nav_container, tab_content_container)
   void initSettingTab_configUI(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
@@ -417,13 +418,13 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
         name: t('Is enabled'),
         callback: (el: HTMLElement, item: any) => {
           const td5_btn = document.createElement('button'); el.appendChild(td5_btn); td5_btn.classList.add('btn');
-          const ret_ = global_setting.config.plugins.find(p => p.path === item.relPath)
+          const ret_ = global_setting.config_plugins.find(p => p.path === item.relPath)
           const ret = ret_ ?? {
             path: item.relPath,
             enabled: false
           }
           if (!ret_) {
-            global_setting.config.plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
+            global_setting.config_plugins.push(ret); // global_setting.api.saveConfig(); 应执行，但在循环中，末尾再执行
           }
           if (ret.enabled) {
             td5_btn.textContent = t('Enabled'); td5_btn.setAttribute('color', 'green');
@@ -847,10 +848,9 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
   tab_nav.setAttribute('index', 'setting-ui'); tab_content.setAttribute('index', 'setting-ui');
 
   // 自动刷新
-  tab_nav.addEventListener('click', () => void init(tab_content))
-
+  tab_nav.addEventListener('click', () => init(tab_content))
   // 首次刷新
-  init(tab_content)
+  // init(tab_content)
 
   function init(tab_content: HTMLElement) {
     tab_content.innerHTML = ''
