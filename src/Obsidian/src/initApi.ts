@@ -33,14 +33,13 @@ export function initApi(plugin: Plugin) {
     global_setting.state.language = getLanguage()
 
     // 明暗模式
-    const darkmode = global_setting.config_style.darkmode as 'light'|'dark'|'auto'
-    if (darkmode === 'dark') {
-      global_setting.state.isDark = true
-    } else if (darkmode === 'light') {
-      global_setting.state.isDark = false
-    } else {
-      global_setting.state.isDark = activeDocument.body.classList.contains('theme-dark')
+    global_setting.api.getSystemIsDark = () => {
+      return activeDocument.body.classList.contains('theme-dark')
     }
+    const darkmode = global_setting.config_style.darkmode as 'light'|'dark'|'auto'
+    if (darkmode === 'dark') global_setting.state.isDark = true
+    else if (darkmode === 'light') global_setting.state.isDark = false
+    else global_setting.state.isDark = global_setting.api.getSystemIsDark() as boolean
   }
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {

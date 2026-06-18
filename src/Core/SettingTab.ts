@@ -27,7 +27,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   void initSettingTab_webDict(tab_nav_container, tab_content_container)
   void initSettingTab_toolbar(tab_nav_container, tab_content_container)
   void initSettingTab_contextMenu(tab_nav_container, tab_content_container)
-  // void initSettingTab_style(tab_nav_container, tab_content_container)
+  void initSettingTab_style(tab_nav_container, tab_content_container)
   void initSettingTab_configUI(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
@@ -835,6 +835,115 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
     return { el_row, el_row_name } // 返回 el_row_name 方便聚焦
   }
   // #endregion
+}
+
+/** 自定义外观
+ * 
+ * ~~本质上是修改一个 custom.css 文件，内容主要是 css 变量的定义。
+ * 效果与直接修改文件也是一样的。
+ * 这里本质上是读取 css 文件，并可视化所有/带标识的 css 变量，让用户可视化设置~~
+ * 
+ * 策略参考:
+ * 类似于 obsidian style setting 的策略。
+ * https://github.com/obsidian-community/obsidian-style-settings。
+ * 不过这里的是在 css 的顶部写 yaml，我这里直接暂时先硬编码了。
+ */
+function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = '外观';
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'custom-style'); tab_content.setAttribute('index', 'custom-style');
+
+  // 自动刷新。但注意这可能会覆盖未保存的状态
+  tab_nav.addEventListener('click', () => init(tab_content))
+  // 首次刷新
+  // init(tab_content)
+
+  function init(tab_content: HTMLElement) {
+    tab_content.innerHTML = ''
+    const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = '可视化修改 custom.css 文件，直接修改该 css 文件也是一样的';
+
+    // 特殊 - 主题名/明暗模式，会给 html 一个属性/class标识
+    new SettingItem(tab_content)
+      .setName('主题')
+      .setDesc('暂时使用纯文本标识，等以后主题系统支持了再改成下拉框')
+      .addText(text => text
+        .setValue(global_setting.config_style.theme)
+        .onChange(async (value) => {
+          document.documentElement.setAttribute('data-am-theme', value);
+
+          global_setting.config_style.theme = value;
+          await global_setting.api.saveConfig();
+        })
+      )
+    const isDark_by_auto = global_setting.api.getSystemIsDark()
+    new SettingItem(tab_content)
+      .setName('明暗模式')
+      .setDesc('当前检测到的环境明暗为: ' + (isDark_by_auto ? "Dark" : "Light"))
+      .addDropdown(dropdown => {
+        dropdown.addOption('auto', 'Auto')
+        dropdown.addOption('light', 'Light')
+        dropdown.addOption('dark', 'Dark')
+        dropdown.setValue(global_setting.config_style.darkmode)
+        dropdown.onChange(async (value: 'light'|'dark'|'auto') => {
+          // 应用明暗模式到 html 元素 // TODO 未完全，有多个窗口
+          document.documentElement.classList.toggle('theme-light', value === 'light');
+          document.documentElement.classList.toggle('theme-dark', value === 'dark');
+          if (value === 'auto') {
+            // TODO 这里查询一下并设置刷新
+            document.documentElement.classList.remove('theme-light', 'theme-dark');
+          }
+
+          global_setting.config_style.darkmode = value
+          if (value === 'light') global_setting.state.isDark = false
+          else if (value === 'dark') global_setting.state.isDark = true
+          else global_setting.state.isDark = isDark_by_auto
+          await global_setting.api.saveConfig()
+
+          init(tab_content) // 后面的 css 变量设置依托于明暗模式，所以该设置要刷新设置面板
+        })
+      })
+
+    // 各种 css 变量
+    // 各种 css 变量 - 可视化所有以 --am- 开头的变量，支持颜色、尺寸等
+    // 为每个变量生成合适的控件
+    new SettingItem(tab_content)
+      .setHeading('CSS 变量便携编辑模块')
+    const p_css = document.createElement('p'); tab_content.appendChild(p_css);
+      p_css.innerText ='(该模块开发中，暂不可用)'
+
+    const variables = global_setting.state.isDark ?
+      global_setting.config_style.variables.dark :
+      global_setting.config_style.variables.light
+    for (const item of variables) {
+      const setting = new SettingItem(tab_content)
+        .setName(item.name ?? item.varName)
+        // .setDesc(`当前值: ${varValue}`);
+
+      // 判断是否为颜色值（以 # 开头的 3/6/8 位十六进制 或 rgb/rgba）
+      const isColor = /^(#[0-9a-fA-F]{3,8}|rgb|rgba|hsl|hsla)/.test(item.value);
+      '--am-bright-color'
+      if (isColor) {
+        // 颜色选择器
+        setting.addColorPicker(colorPicker => {
+          colorPicker.setValue(item.value)
+            .onChange(async (value) => {
+              item.value = value;
+              await global_setting.api.saveConfig();
+            });
+        });
+      } else {
+        // 普通文本输入
+        setting.addText(text => {
+          text.setValue(item.value)
+            .onChange(async (value) => {
+              item.value = value;
+              await global_setting.api.saveConfig();
+            });
+        });
+      }
+    }
+  }
 }
 
 /** 可视化配置

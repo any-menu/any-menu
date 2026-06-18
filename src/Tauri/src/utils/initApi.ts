@@ -32,15 +32,13 @@ export function initApi() {
     }
 
     // 明暗模式
-    const darkmode = global_setting.config_style.darkmode
-    if (darkmode === 'dark') {
-      global_setting.state.isDark = true
-    } else if (darkmode === 'light') {
-      global_setting.state.isDark = false
-    } else {
-      const darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)')
-      global_setting.state.isDark = darkModeMedia.matches
+    global_setting.api.getSystemIsDark = () => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
+    const darkmode = global_setting.config_style.darkmode
+    if (darkmode === 'dark') global_setting.state.isDark = true
+    else if (darkmode === 'light') global_setting.state.isDark = false
+    else global_setting.state.isDark = global_setting.api.getSystemIsDark()
   }
 
   global_setting.api.getCursorXY = async () => {

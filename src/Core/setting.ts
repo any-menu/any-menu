@@ -113,7 +113,17 @@ export const global_setting: {
   config_style: {
     theme: string,
     darkmode: 'light'|'dark'|'auto',
-    variables: Record<string, string>,
+    // TODO
+    //   这里的设计还是不对，后面应该弄一个独立的文件可视化编辑模块出来
+    //   处理包括普通配置和css变量配置的东西
+    // 
+    //   当然。独立存储 css 覆盖文件，以及更改 css 是两种不同的做法。
+    //     为了更好地更新主题，也为了更好恢复默认值，和更少的破坏，一般是前者。
+    //   前者的缺点是耦合，且要在面板加载后覆盖掉前者。
+    variables: {
+      dark: { varName: string, name?: string, value: string }[],
+      light: { varName: string, name?: string, value: string }[],
+    },
   },
   // 本地的词典/插件管理配置
   config_plugins: {
@@ -181,6 +191,7 @@ export const global_setting: {
     // { "url": "https://gitee.com/*" },
     // { "url": "https://api.gitee.com/*" },
     urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>
+    getSystemIsDark: () => boolean // 没有 dark 标识则默认是 light，不存在无法检测出的情况
   },
   /** 通常是 any|null 类型，特有环境临时存的东西，部分环境使用而部分环境用不着 */
   other: {
@@ -250,6 +261,28 @@ export const global_setting: {
     theme: 'default',
     darkmode: 'auto',
     variables: {
+      dark: [
+        { varName: '--ab-tab-root-bg-color', value: '#0d1117' },
+        { varName: '--ab-tab-root-bd-color', value: '#34343f' },
+        { varName: '--ab-tab-root-hv-color', value: '#363639' },
+        { varName: '--ab-tab-root-tx-color', value: '#9e9e9e' },
+        { varName: '--ab-bright-color', value: 'orange' },
+        { varName: '--pre-background-color', value: '#1b1b1b' },
+
+        { varName: '--ab-menu-bg-color', value: '#1B1B1B' },
+        { varName: '--ab-menu-text-color', value: '#CCCCCC' },
+      ],
+      light: [
+        { varName: '--ab-tab-root-bg-color', value: '#ffffff' },
+        { varName: '--ab-tab-root-bd-color', value: '#e0e0e0' },
+        { varName: '--ab-tab-root-hv-color', value: '#d7d7d7' },
+        { varName: '--ab-tab-root-tx-color', value: '#5c5c5c' },
+        { varName: '--ab-bright-color', value: 'orange' },
+        { varName: '--pre-background-color', value: '#ffffff' },
+
+        { varName: '--ab-menu-bg-color', value: '#ffffff' },
+        { varName: '--ab-menu-text-color', value: '#000000' },
+      ],
     },
   },
   config_plugins: [],
@@ -333,19 +366,24 @@ export const global_setting: {
       return true
     },
     saveConfig: async (): Promise<boolean> => {
-      let file_path: string
+      const saveConfig_ = async(file_path: string, target_obj: object): Promise<void> => {
+        let newStr: string
+        if (Array.isArray(target_obj)) {
+          newStr = '[\n' + target_obj.map(item => JSON.stringify(item)).join(',\n') + '\n]'
+        }
+        else {
+          newStr = JSON.stringify(target_obj, undefined, 2)
+        }
+        void global_setting.api.writeFile(file_path, newStr)
+      }
 
-      // ------- 文件1 --------
-      file_path = global_setting.config.config_paths + 'config.json'
-      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config, undefined, 2))
-
-      // ------- 文件2 --------
-      file_path = global_setting.config.config_paths + 'config_style.json'
-      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config_style, undefined, 2))
-
-      // ------- 文件3 --------
-      file_path = global_setting.config.config_paths + 'config_plugins.json'
-      void global_setting.api.writeFile(file_path, JSON.stringify(global_setting.config_plugins, undefined, 2))
+      // 并行写入三个配置文件
+      void saveConfig_(global_setting.config.config_paths + 'config.json',
+        global_setting.config)
+      void saveConfig_(global_setting.config.config_paths + 'config_style.json',
+        global_setting.config_style)
+      void saveConfig_(global_setting.config.config_paths + 'config_plugins.json',
+        global_setting.config_plugins)
 
       return true
     },
@@ -383,6 +421,7 @@ export const global_setting: {
       }
     },
     urlRequest: async () => { console.error("需实现 api.urlRequest 方法"); return null },
+    getSystemIsDark: () => { console.error("需实现 api.getSystemIsDark 方法"); return false },
   },
   other: {
     obsidian_plugin: null,
