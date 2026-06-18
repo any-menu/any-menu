@@ -7,11 +7,11 @@
  * 这样方便规范重载的 global_setting.api.saveConfig 行为
  */
 
-import { t } from '../../Core/locales/helper'
-import { toml_parse } from '../../Core/panel/contextmenu/demo'
+// import { t } from '../../Core/locales/helper'
+// import { toml_parse } from '../../Core/panel/contextmenu/demo'
 // import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
 import { global_setting } from '../../Core/setting'
-import { initSettingTab_1, initSettingTab_2 } from '../../Core/SettingTab'
+import { initSettingTab_1, initSettingTab_2 } from '../../Core/settingPanel/SettingTab'
 import { initApi } from './utils/initApi'
 
 initApi()
@@ -28,8 +28,6 @@ async function init() {
 
 // #endregion
 
-const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
-
 // 前端模块
 window.addEventListener("DOMContentLoaded", async () => {
   const el = document.querySelector("#am-config");
@@ -43,8 +41,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   initSettingTab_2(tab_nav_container, tab_content_container)
 })
 
+/* 旧版-读写配置，废弃。新版统一了 app 和 obsidian 版本的逻辑
+const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
+
 /// 配置文件
-/*function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+function initSettingTab_configFile(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
     tab_nav.textContent = t('Config file');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
@@ -119,7 +120,7 @@ function initSettingTab_pluginManager(tab_nav_container: HTMLElement, tab_conten
  * 基于带注释/空白的语法树（token/trivia-aware AST）做最小文本编辑（minimal textual edits）
  * 也就是说不把整个文件重新序列化替换，而是解析出能保留注释/空白的信息结构，定位到要改动的 key/value 的文本片段，仅替换或插入那一小段文本，保持其他内容（注释、顺序、换行、缩进）原封不动
  */
-function save_config_from_string(new_str: string, textarea?: HTMLTextAreaElement) {
+/*function save_config_from_string(new_str: string, textarea?: HTMLTextAreaElement) {
   try {
     // 解析新配置文件
     const new_config = toml_parse(new_str)['config']
@@ -143,4 +144,4 @@ function save_config_from_string(new_str: string, textarea?: HTMLTextAreaElement
     textarea?.classList.remove('no-save'); textarea?.classList.add('error-save');
     console.error('配置保存失败，请检查格式是否正确', error)
   }
-}
+}*/

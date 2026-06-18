@@ -1,7 +1,7 @@
-import type { MetadataCache } from '../Type';
-import { t } from './locales/helper';
-import { global_setting } from './setting';
-import { RepoAPI } from './webApi'
+import type { MetadataCache } from '../../Type';
+import { t } from '../locales/helper';
+import { global_setting } from '../setting';
+import { RepoAPI } from '../webApi'
 import { SettingItem } from './SettingItem';
 
 // import { Pane } from 'tweakpane'; // 约为Ob插件版本增添270KB，有些大，不要了
@@ -923,7 +923,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
         dropdown.addOption('light', 'Light')
         dropdown.addOption('dark', 'Dark')
         dropdown.setValue(global_setting.config_style.darkmode)
-        dropdown.onChange(async (value: 'light'|'dark'|'auto') => {
+        dropdown.onChange(async (value) => {
           // 应用明暗模式到 html 元素 // TODO 未完全，有多个窗口
           document.documentElement.classList.toggle('theme-light', value === 'light');
           document.documentElement.classList.toggle('theme-dark', value === 'dark');
@@ -932,7 +932,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
             document.documentElement.classList.remove('theme-light', 'theme-dark');
           }
 
-          global_setting.config_style.darkmode = value
+          global_setting.config_style.darkmode = value as 'light'|'dark'|'auto'
           if (value === 'light') global_setting.state.isDark = false
           else if (value === 'dark') global_setting.state.isDark = true
           else global_setting.state.isDark = isDark_by_auto

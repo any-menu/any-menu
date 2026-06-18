@@ -11,7 +11,7 @@
  */
 
 import { App, PluginSettingTab, Notice, type Plugin } from "obsidian"
-import { initSettingTab_1, initSettingTab_2 } from "@/Core/SettingTab"
+import { initSettingTab_1, initSettingTab_2 } from "@/Core/settingPanel/SettingTab"
 import { t } from "@/Core/locales/helper";
 // import { API } from "@/Core/webApi";
 
