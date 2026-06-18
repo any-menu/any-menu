@@ -1188,6 +1188,7 @@ html, body, #main {
   height: 100%;
   overflow: auto;
   padding: 8px;
+  padding-bottom: 58px;
   white-space: pre-wrap;
   background-color: var(--ab-tab-root-bg-color);
   display: none;
@@ -1195,11 +1196,16 @@ html, body, #main {
 .am-config .tab-content-container > div.active {
   display: block;
 }
-.am-config div:has(> textarea) {
-  position: relative;
+.am-config .tab-content-container > div[index=setting-modi-files] {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  padding-bottom: 8px;
 }
-.am-config div:has(> textarea) textarea {
+.am-config .tab-content-container > div[index=setting-modi-files] span {
+  height: 30px;
+}
+.am-config .tab-content-container > div[index=setting-modi-files] textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -1217,10 +1223,10 @@ html, body, #main {
   outline: none;
   box-shadow: none;
 }
-.am-config div:has(> textarea) textarea.no-save {
+.am-config .tab-content-container > div[index=setting-modi-files] textarea.no-save {
   border-left: 1px solid orange;
 }
-.am-config div:has(> textarea) textarea.error-save {
+.am-config .tab-content-container > div[index=setting-modi-files] textarea.error-save {
   border-left: 1px solid red;
 }
 .am-config .setting-buttons {

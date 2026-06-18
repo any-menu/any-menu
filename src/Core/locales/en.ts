@@ -24,6 +24,13 @@ For more instructions and tutorials:
   'Menu2': `Menu customization. You can customize the order, which files to enable, etc.
 \nIf not configured, the enabled class JSON files will be used by default`,
 
+  'Appearance': 'Appearance',
+  'Theme': 'Theme',
+  'LightDarkMode': 'Light or dark mode',
+
+  'Modi config files': 'Modi config files',
+  'Modi by text': 'Modi by text',
+
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   // 暂无
 

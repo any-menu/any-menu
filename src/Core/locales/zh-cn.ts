@@ -24,6 +24,13 @@ export default {
   'Menu2': `菜单自定义。可自定义顺序、启用哪些文件等
 \n如果未配置，则默认会使用已启用的类 json 文件`,
 
+  'Appearance': '外观',
+  'Theme': '主题',
+  'LightDarkMode': '明暗模式',
+
+  'Modi config files': '编辑配置文件',
+  'Modi by text': '文本方式编辑对应配置',
+
   // App 专属设置 (app 的非用户友好设置，直接编辑配置文件)
   // 暂无
 

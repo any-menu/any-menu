@@ -100,6 +100,12 @@ export class SettingItem {
     return this;
   }
 
+  addTextArea(callback: (text: SettingItemTextArea) => void) {
+    const text = new SettingItemTextArea(this.el_control);
+    callback(text);
+    return this;
+  }
+
   addToggle(callback: (toggle: SettingItemToggle) => void) {
     const toggle = new SettingItemToggle(this.el_control);
     callback(toggle);
@@ -123,7 +129,6 @@ export class SettingItem {
   // }
   // addSearch
   // addComponent
-  // addTextArea
   // addProgressBar
   // addSlider
   // addMomentFormat
@@ -138,7 +143,7 @@ abstract class SettingItemAbs {
 }
 
 /// 设置项 - 文本输入框
-class SettingItemText extends SettingItemAbs {
+export class SettingItemText extends SettingItemAbs {
   el: HTMLInputElement
 
   constructor(parent_el: HTMLElement) {
@@ -167,8 +172,31 @@ class SettingItemText extends SettingItemAbs {
   }
 }
 
+/// 设置项 - 多行文本输入框
+export class SettingItemTextArea extends SettingItemAbs {
+  el: HTMLTextAreaElement
+
+  constructor(parent_el: HTMLElement) {
+    super(parent_el)
+    this.el = document.createElement('textarea'); parent_el.appendChild(this.el);
+      this.el.classList.add('setting-item-textarea');
+  }
+
+  setValue(value: string) {
+    this.el.value = value;
+    return this
+  }
+
+  onChange(callback: (value: string, el: HTMLTextAreaElement) => void) {
+    this.el.addEventListener('change', () => {
+      callback(this.el.value, this.el);
+    });
+    return this
+  }
+}
+
 /// 设置项 - 切换开关
-class SettingItemToggle extends SettingItemAbs {
+export class SettingItemToggle extends SettingItemAbs {
   el: HTMLElement
   el_input: HTMLInputElement
 
@@ -211,7 +239,7 @@ class SettingItemToggle extends SettingItemAbs {
 }
 
 /// 设置项 - 下拉选择框
-class SettingItemSelect extends SettingItemAbs {
+export class SettingItemSelect extends SettingItemAbs {
   el: HTMLSelectElement
 
   constructor(parent_el: HTMLElement) {
@@ -250,7 +278,7 @@ class SettingItemSelect extends SettingItemAbs {
 }
 
 /// 设置项 - 颜色拾取器
-class SettingItemColorPicker extends SettingItemAbs {
+export class SettingItemColorPicker extends SettingItemAbs {
   el: HTMLInputElement
 
   constructor(parent_el: HTMLElement) {

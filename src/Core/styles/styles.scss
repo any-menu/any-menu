@@ -330,6 +330,7 @@ html, body, #main {
       overflow: auto;
 
       padding: 8px;
+      padding-bottom: 58px; // 避免底部内容被按钮组遮挡
       white-space: pre-wrap;
       background-color: var(--ab-tab-root-bg-color);
 
@@ -338,38 +339,43 @@ html, body, #main {
         display: block;
       }
     }
-  }
 
-  // textarea页 (toml editor)
-  div:has(>textarea) { // textarea parent
-    position: relative;
-    height: 100%;
-    textarea {
-      box-sizing: border-box;
-      display: block;
-      width: 100%;
+    // textarea页 (toml editor)
+    >div[index=setting-modi-files] {
+      display: flex;
+      flex-direction: column;
       height: 100%;
+      padding-bottom: 8px; // 这个页面不用预留位置避免按钮遮挡
+      span {
+        height: 30px;
+      }
+      textarea {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        height: 100%;
 
-      font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
-      font-size: 14px;
-      line-height: 20px;
-      padding: 8px;
-      // border: 1px solid var(--ab-tab-root-bd-color);
-      // border-radius: 4px;  
-      background-color: var(--pre-background-color);
-      color: var(--am-text-color);
-      resize: none;
-      border: none;
-      border-left: 1px solid #00000000;
-      border-radius: 8px;
-      outline: none;
-      box-shadow: none;
-    }
-    textarea.no-save {
-      border-left: 1px solid orange;
-    }
-    textarea.error-save {
-      border-left: 1px solid red;
+        font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
+        font-size: 14px;
+        line-height: 20px;
+        padding: 8px;
+        // border: 1px solid var(--ab-tab-root-bd-color);
+        // border-radius: 4px;  
+        background-color: var(--pre-background-color);
+        color: var(--am-text-color);
+        resize: none;
+        border: none;
+        border-left: 1px solid #00000000;
+        border-radius: 8px;
+        outline: none;
+        box-shadow: none;
+      }
+      textarea.no-save {
+        border-left: 1px solid orange;
+      }
+      textarea.error-save {
+        border-left: 1px solid red;
+      }
     }
   }
 

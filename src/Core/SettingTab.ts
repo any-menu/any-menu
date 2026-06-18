@@ -29,6 +29,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   void initSettingTab_contextMenu(tab_nav_container, tab_content_container)
   void initSettingTab_style(tab_nav_container, tab_content_container)
   void initSettingTab_configUI(tab_nav_container, tab_content_container)
+  void initSettingTab_modiByText(tab_nav_container, tab_content_container)
 
   return { tab_nav_container, tab_content_container}
 }
@@ -309,7 +310,13 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
   const span = document.createElement('span'); container.appendChild(span); span.textContent = `未加载，请手动点击刷新按钮重试`; // 文字提醒状态
   const dataview = document.createElement('div'); container.appendChild(dataview); dataview.classList.add('am-hide'); // 数据展示
   {
-    const buttons = document.createElement('div'); container.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    const buttons = document.createElement('div'); tab_content.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
+      text_modi_btn.textContent = t('Modi by text')
+      text_modi_btn.onclick = async () => {
+        void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config_plugins.json',
+          global_setting.config_plugins)
+      }
     const dataview_mode_btn = document.createElement('button'); buttons.appendChild(dataview_mode_btn);
       dataview_mode_btn.textContent = t('Change dataview mode')
       dataview_mode_btn.onclick = async () => {
@@ -499,6 +506,16 @@ function initSettingTab_toolbar(tab_nav_container: HTMLElement, tab_content_cont
   // 自动刷新。但注意这可能会覆盖未保存的状态
   tab_nav.addEventListener('click', fn_refresh)
 
+  {
+    const buttons = document.createElement('div'); tab_content.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
+      text_modi_btn.textContent = t('Modi by text')
+      text_modi_btn.onclick = async () => {
+        void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config.json',
+          global_setting.config)
+      }
+  }
+
   const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = t('Toolbar2');
 
   // #region 修改 toolbar 的 GUI。将修改同步回配置对象和文件
@@ -672,6 +689,16 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
 
   // 自动刷新。但注意这可能会覆盖未保存的状态
   tab_nav.addEventListener('click', fn_refresh)
+
+  {
+    const buttons = document.createElement('div'); tab_content.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+    const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
+      text_modi_btn.textContent = t('Modi by text')
+      text_modi_btn.onclick = async () => {
+        void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config.json',
+          global_setting.config)
+      }
+  }
 
   const p = document.createElement('div'); tab_content.appendChild(p); p.textContent = t('Menu2');
 
@@ -850,7 +877,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
  */
 function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = '外观';
+    tab_nav.textContent = t('Appearance');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'custom-style'); tab_content.setAttribute('index', 'custom-style');
 
@@ -861,11 +888,22 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
 
   function init(tab_content: HTMLElement) {
     tab_content.innerHTML = ''
+
+    {
+      const buttons = document.createElement('div'); tab_content.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+      const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
+        text_modi_btn.textContent = t('Modi by text')
+        text_modi_btn.onclick = async () => {
+          void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config_style.json',
+            global_setting.config_style)
+        }
+    }
+
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = '可视化修改 custom.css 文件，直接修改该 css 文件也是一样的';
 
     // 特殊 - 主题名/明暗模式，会给 html 一个属性/class标识
     new SettingItem(tab_content)
-      .setName('主题')
+      .setName(t('Theme'))
       .setDesc('暂时使用纯文本标识，等以后主题系统支持了再改成下拉框')
       .addText(text => text
         .setValue(global_setting.config_style.theme)
@@ -878,7 +916,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
       )
     const isDark_by_auto = global_setting.api.getSystemIsDark()
     new SettingItem(tab_content)
-      .setName('明暗模式')
+      .setName(t('LightDarkMode'))
       .setDesc('当前检测到的环境明暗为: ' + (isDark_by_auto ? "Dark" : "Light"))
       .addDropdown(dropdown => {
         dropdown.addOption('auto', 'Auto')
@@ -963,6 +1001,17 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
 
   function init(tab_content: HTMLElement) {
     tab_content.innerHTML = ''
+
+    {
+      const buttons = document.createElement('div'); tab_content.appendChild(buttons); buttons.classList.add('setting-buttons') // 按钮组
+      const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
+        text_modi_btn.textContent = t('Modi by text')
+        text_modi_btn.onclick = async () => {
+          void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config.json',
+            global_setting.config)
+        }
+    }
+
     const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
 
     // #region 字典配置
@@ -1160,6 +1209,73 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
     }
 
     // #endregion
+  }
+}
+
+/** 文本方式直接修改配置文件
+ */
+function initSettingTab_modiByText(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
+  const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
+    tab_nav.textContent = t('Modi config files');
+  const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
+  tab_nav.setAttribute('index', 'setting-modi-files'); tab_content.setAttribute('index', 'setting-modi-files');
+
+  initSettingTab_modiByText_el = tab_nav
+  
+  if (initSettingTab_modiByText_span) return
+  initSettingTab_modiByText_span = document.createElement('span'); tab_content.appendChild(initSettingTab_modiByText_span);
+    initSettingTab_modiByText_span.innerText = 'There are currently no files.'
+
+  if (initSettingTab_modiByText_textarea) return
+  initSettingTab_modiByText_textarea = document.createElement('textarea'); tab_content.appendChild(initSettingTab_modiByText_textarea);
+}
+let initSettingTab_modiByText_el: HTMLElement|undefined
+let initSettingTab_modiByText_span: HTMLElement|undefined
+let initSettingTab_modiByText_textarea: HTMLTextAreaElement|undefined
+/**
+ * 纯文本方式编辑配置文件
+ * @param file_path 要修改的文件
+ * @param bindObj 可选让该文件绑定一个对象 (必须是对象)，以实时更新
+ */
+async function initSettingTab_modiByText_refresh(file_path: string, bindObj?: object) {
+  if (!initSettingTab_modiByText_el) return
+  if (!initSettingTab_modiByText_span) return
+  if (!initSettingTab_modiByText_textarea) return
+  const textarea = initSettingTab_modiByText_textarea
+
+  initSettingTab_modiByText_el.click()
+  initSettingTab_modiByText_span.innerText = file_path
+  textarea.value = 'Loading...'
+
+  const file_content: string|null = await global_setting.api.readFile(file_path)
+  if (!file_content) {
+    textarea.value = 'Error: Load config failed'
+    return
+  }
+
+  textarea.value = file_content
+  textarea.oninput = async (_) => {
+    textarea.classList.add('no-save'); textarea.classList.remove('error-save');
+  }
+  textarea.onchange = async (_) => { // onchange 互斥，避免重复调用此函数
+    if (!textarea) return
+    const value = textarea.value
+
+    // 检测是否为合法 json 格式
+    // (风险: 这里仅做 json 格式检查，不作更具体的检查，很可能会被误改)
+    if (file_path.endsWith('.json') || bindObj) {
+      try {
+        const obj = JSON.parse(value)
+        bindObj = obj
+      } catch (e) {
+        textarea.classList.remove('no-save'); textarea.classList.add('error-save');
+        console.error('Save config error: invalid json format', e)
+        return
+      }
+    }
+
+    textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
+    await global_setting.api.writeFile(file_content, value)
   }
 }
 
