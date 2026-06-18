@@ -113,7 +113,7 @@ export const global_setting: {
   config_style: {
     theme: string,
     darkmode: 'light'|'dark'|'auto',
-    variables: {}, // 大部分不在配置中，使用类似 obsidian style setting 之类的策略
+    variables: Record<string, string>,
   },
   // 本地的词典/插件管理配置
   config_plugins: {
@@ -130,6 +130,7 @@ export const global_setting: {
   // 运行时状态
   state: {
     language: 'en'|'zh'|'zh-TW'|string // 语言 (字典语言标志: 本地化语言名转标志, 不存在语言转en，自动选择转实际语言)
+    isDark: boolean, // 明暗模式
     isPin: boolean, // 置顶面板和子面板 (主要用于debug，避免面板在调试过程中失焦而隐藏)
     editor_engine: 'codeblock'|'cm', // mini 编辑器渲染引擎 (可运行中切换)
     selectedText?: string, // 当前选中的文本 (每次展开菜单时更新)
@@ -248,7 +249,8 @@ export const global_setting: {
   config_style: {
     theme: 'default',
     darkmode: 'auto',
-    variables: {},
+    variables: {
+    },
   },
   config_plugins: [],
   config_: {
@@ -258,6 +260,7 @@ export const global_setting: {
   },
   state: {
     language: 'en',
+    isDark: false,
     isPin: false,
     editor_engine: 'codeblock',
     selectedText: undefined,

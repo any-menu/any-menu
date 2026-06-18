@@ -31,8 +31,16 @@ export function initApi() {
       global_setting.state.language = global_setting.config.language
     }
 
-    // 自动明暗
-    // 略 TODO
+    // 明暗模式
+    const darkmode = global_setting.config_style.darkmode
+    if (darkmode === 'dark') {
+      global_setting.state.isDark = true
+    } else if (darkmode === 'light') {
+      global_setting.state.isDark = false
+    } else {
+      const darkModeMedia = window.matchMedia('(prefers-color-scheme: dark)')
+      global_setting.state.isDark = darkModeMedia.matches
+    }
   }
 
   global_setting.api.getCursorXY = async () => {

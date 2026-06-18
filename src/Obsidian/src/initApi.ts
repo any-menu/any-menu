@@ -4,8 +4,10 @@ import {
   type Plugin,
   Notice,
 } from 'obsidian'
-import { RequestUrlParam, requestUrl } from 'obsidian'
-import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
+import {
+  RequestUrlParam, requestUrl,
+  getLanguage // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
+} from 'obsidian'
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/setting'
 import { AMPanel, global_el } from '@/Core/panel';
@@ -30,8 +32,15 @@ export function initApi(plugin: Plugin) {
     // if (global_setting.config.language == 'auto') { // 触发时机有问题
     global_setting.state.language = getLanguage()
 
-    // 自动明暗
-    // 略 TODO
+    // 明暗模式
+    const darkmode = global_setting.config_style.darkmode as 'light'|'dark'|'auto'
+    if (darkmode === 'dark') {
+      global_setting.state.isDark = true
+    } else if (darkmode === 'light') {
+      global_setting.state.isDark = false
+    } else {
+      global_setting.state.isDark = activeDocument.body.classList.contains('theme-dark')
+    }
   }
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
