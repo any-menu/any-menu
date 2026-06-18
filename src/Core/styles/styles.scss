@@ -595,6 +595,24 @@ table.dataview-table {
       background-color: var(--pre-background-color);
       color: var(--am-text-color);
     }
+
+    // 颜色拾取
+    // 移除 color input 的默认外框
+    input[type=color]::-webkit-color-swatch-wrapper,
+    input[type=color]::-webkit-color-swatch {
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
+    .setting-item-color-picker {
+      padding: 0;
+      margin: 0;
+      border: solid 2px var(--ab-tab-root-bd-color);
+
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+    }
   }
 
   .setting-item-heading {

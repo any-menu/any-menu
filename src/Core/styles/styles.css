@@ -1417,6 +1417,20 @@ table.dataview-table .btn {
   background-color: var(--pre-background-color);
   color: var(--am-text-color);
 }
+.am-config .setting-item .setting-item-control input[type=color]::-webkit-color-swatch-wrapper,
+.am-config .setting-item .setting-item-control input[type=color]::-webkit-color-swatch {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+.am-config .setting-item .setting-item-control .setting-item-color-picker {
+  padding: 0;
+  margin: 0;
+  border: solid 2px var(--ab-tab-root-bd-color);
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+}
 .am-config .setting-item .setting-item-heading {
   flex-basis: 100%;
   display: flex;

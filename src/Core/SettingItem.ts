@@ -112,13 +112,18 @@ export class SettingItem {
     return this;
   }
 
+  addColorPicker(callback: (picker: SettingItemColorPicker) => void) {
+    const picker = new SettingItemColorPicker(this.el_control);
+    callback(picker);
+    return this;
+  }
+
   // addButton(callback: () => void) {
   //   return this;
   // }
   // addSearch
   // addComponent
   // addTextArea
-  // addColorPicker
   // addProgressBar
   // addSlider
   // addMomentFormat
@@ -128,11 +133,16 @@ export class SettingItem {
 
 export type Setting = SettingItem
 
+abstract class SettingItemAbs {
+  constructor(_parent_el: HTMLElement) {}
+}
+
 /// 设置项 - 文本输入框
-class SettingItemText {
+class SettingItemText extends SettingItemAbs {
   el: HTMLInputElement
 
   constructor(parent_el: HTMLElement) {
+    super(parent_el)
     this.el = document.createElement('input'); parent_el.appendChild(this.el);
       this.el.classList.add('setting-item-text');
       this.el.type = 'text';
@@ -158,11 +168,12 @@ class SettingItemText {
 }
 
 /// 设置项 - 切换开关
-class SettingItemToggle {
+class SettingItemToggle extends SettingItemAbs {
   el: HTMLElement
   el_input: HTMLInputElement
 
   constructor(parent_el: HTMLElement) {
+    super(parent_el)
     this.el = document.createElement('label'); parent_el.appendChild(this.el);
       this.el.classList.add('setting-item-toggle');
     this.el_input = document.createElement('input'); this.el.appendChild(this.el_input);
@@ -200,10 +211,11 @@ class SettingItemToggle {
 }
 
 /// 设置项 - 下拉选择框
-class SettingItemSelect {
+class SettingItemSelect extends SettingItemAbs {
   el: HTMLSelectElement
 
   constructor(parent_el: HTMLElement) {
+    super(parent_el)
     this.el = document.createElement('select'); parent_el.appendChild(this.el);
       this.el.classList.add('setting-item-select');
   }
@@ -222,6 +234,29 @@ class SettingItemSelect {
     opt.value = value;
     opt.textContent = label;
     this.el.appendChild(opt);
+  }
+
+  setValue(value: string) {
+    this.el.value = value;
+    return this
+  }
+
+  onChange(callback: (value: string, el: HTMLElement) => void) {
+    this.el.addEventListener('change', () => {
+      callback(this.el.value, this.el);
+    });
+    return this
+  }
+}
+
+/// 设置项 - 颜色拾取器
+class SettingItemColorPicker extends SettingItemAbs {
+  el: HTMLInputElement
+
+  constructor(parent_el: HTMLElement) {
+    super(parent_el)
+    this.el = document.createElement('input'); parent_el.appendChild(this.el);
+      this.el.type = 'color'; this.el.classList.add('setting-item-color-picker');
   }
 
   setValue(value: string) {
