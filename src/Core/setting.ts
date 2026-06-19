@@ -121,9 +121,8 @@ export const global_setting: {
     //     为了更好地更新主题，也为了更好恢复默认值，和更少的破坏，一般是前者。
     //   前者的缺点是耦合，且要在面板加载后覆盖掉前者。
     variables: {
-      dark: { varName: string, name?: string, value: string }[],
-      light: { varName: string, name?: string, value: string }[],
-    },
+      varName: string, name?: string, value: string, darkValue?: string
+    }[],
   },
   // 本地的词典/插件管理配置
   config_plugins: {
@@ -260,30 +259,17 @@ export const global_setting: {
   config_style: {
     theme: 'default',
     darkmode: 'auto',
-    variables: {
-      dark: [
-        { varName: '--ab-tab-root-bg-color', value: '#0d1117' },
-        { varName: '--ab-tab-root-bd-color', value: '#34343f' },
-        { varName: '--ab-tab-root-hv-color', value: '#363639' },
-        { varName: '--ab-tab-root-tx-color', value: '#9e9e9e' },
-        { varName: '--ab-bright-color', value: 'orange' },
-        { varName: '--pre-background-color', value: '#1b1b1b' },
+    variables: [
+      { varName: '--ab-tab-root-bg-color', value: '#ffffff', darkValue: '#0d1117' },
+      { varName: '--ab-tab-root-bd-color', value: '#e0e0e0', darkValue: '#34343f' },
+      { varName: '--ab-tab-root-hv-color', value: '#d7d7d7', darkValue: '#363639' },
+      { varName: '--ab-tab-root-tx-color', value: '#5c5c5c', darkValue: '#9e9e9e' },
+      { varName: '--ab-bright-color',      value: 'orange' },
+      { varName: '--pre-background-color', value: '#ffffff', darkValue: '#1b1b1b' },
 
-        { varName: '--ab-menu-bg-color', value: '#1B1B1B' },
-        { varName: '--ab-menu-text-color', value: '#CCCCCC' },
-      ],
-      light: [
-        { varName: '--ab-tab-root-bg-color', value: '#ffffff' },
-        { varName: '--ab-tab-root-bd-color', value: '#e0e0e0' },
-        { varName: '--ab-tab-root-hv-color', value: '#d7d7d7' },
-        { varName: '--ab-tab-root-tx-color', value: '#5c5c5c' },
-        { varName: '--ab-bright-color', value: 'orange' },
-        { varName: '--pre-background-color', value: '#ffffff' },
-
-        { varName: '--ab-menu-bg-color', value: '#ffffff' },
-        { varName: '--ab-menu-text-color', value: '#000000' },
-      ],
-    },
+      { varName: '--ab-menu-bg-color',     value: '#ffffff', darkValue: '#1B1B1B' },
+      { varName: '--ab-menu-text-color',   value: '#000000', darkValue: '#CCCCCC' },
+    ],
   },
   config_plugins: [],
   config_: {

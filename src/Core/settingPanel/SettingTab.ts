@@ -950,9 +950,8 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
     const p_css = document.createElement('p'); tab_content.appendChild(p_css);
       p_css.innerText ='(该模块开发中，暂不可用)'
 
-    const variables = global_setting.state.isDark ?
-      global_setting.config_style.variables.dark :
-      global_setting.config_style.variables.light
+    const isDark = global_setting.state.isDark
+    const variables = global_setting.config_style.variables
     for (const item of variables) {
       const setting = new SettingItem(tab_content)
         .setName(item.name ?? item.varName)
@@ -963,22 +962,24 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
       '--am-bright-color'
       if (isColor) {
         // 颜色选择器
-        setting.addColorPicker(colorPicker => {
-          colorPicker.setValue(item.value)
-            .onChange(async (value) => {
-              item.value = value;
-              await global_setting.api.saveConfig();
-            });
-        });
+        setting.addColorPicker(colorPicker => colorPicker
+          .setValue((isDark && item.darkValue) ? item.darkValue : item.value)
+          .onChange(async (value) => {
+            if (isDark && item.darkValue) item.darkValue = value
+            else item.value = value
+            await global_setting.api.saveConfig()
+          })
+        )
       } else {
         // 普通文本输入
-        setting.addText(text => {
-          text.setValue(item.value)
-            .onChange(async (value) => {
-              item.value = value;
-              await global_setting.api.saveConfig();
-            });
-        });
+        setting.addText(text => text
+          .setValue((isDark && item.darkValue) ? item.darkValue : item.value)
+          .onChange(async (value) => {
+            if (isDark && item.darkValue) item.darkValue = value
+            else item.value = value
+            await global_setting.api.saveConfig()
+          })
+        )
       }
     }
   }
