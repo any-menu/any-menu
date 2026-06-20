@@ -127,7 +127,7 @@ export class AMSettingTab extends PluginSettingTab {
         config: typeof global_setting.config,
         isDebug: boolean
       }
-      global_setting.config = obj.config
+      Object.assign(global_setting.config, obj.config)
       global_setting.isDebug = obj.isDebug
       await global_setting.api.saveConfig()
     } catch (e) {

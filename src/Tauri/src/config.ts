@@ -135,7 +135,7 @@ function initSettingTab_pluginManager(tab_nav_container: HTMLElement, tab_conten
     }
 
     // 应用新配置文件 // TODO 可以动态更新一些页面信息 (暂时通过告知用户设置后需要重启来实现)
-    global_setting.config = {...global_setting.config, ...new_config}
+    Object.assign(global_setting.confi, new_config)
 
     // 告知用户应用成功
     textarea?.classList.remove('no-save', 'error-save')

@@ -269,7 +269,7 @@ export function initApi() {
     // 后续内容也可以用 
     // ```
     // invoke("toml_read_to_json", {...})`
-    // global_setting.config = ...
+    // Object.assign(global_setting.config, ...)
     // ```
     // 来代替
     // 不过这里还要支持纯文本编辑配置文件，所以就使用前端解析方案了
@@ -308,7 +308,7 @@ export function initApi() {
         throw new Error("Invalid config format")
       }
       // TODO 可以动态更新一些页面信息 (暂时通过告知用户设置后需要重启来实现)
-      global_setting.config = {...global_setting.config, ...new_config}
+      Object.assign(global_setting.config, new_config)
     } catch (error) {
       console.error('配置解析失败，请检查格式是否正确', error)
       return ''

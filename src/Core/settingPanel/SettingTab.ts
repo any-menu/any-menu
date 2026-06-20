@@ -34,7 +34,7 @@ export function initSettingTab_1(el: HTMLElement): { tab_nav_container: HTMLElem
   return { tab_nav_container, tab_content_container}
 }
 
-/// 标签栏切换 (需要最后执行)
+/** 标签栏切换 (需要最后执行) */
 export function initSettingTab_2(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   for (const nav of tab_nav_container.querySelectorAll('div.item')) {
     const index: string|null = nav.getAttribute('index')

@@ -3,6 +3,8 @@
  * 链式调用式设计
  * 
  * 用法类似 Obsidian 的 GUI 配置
+ * 
+ * TODO 添加容器管理所有设置项，以支持设置项搜索功能
  */
 export class SettingItem {
   el: HTMLElement
