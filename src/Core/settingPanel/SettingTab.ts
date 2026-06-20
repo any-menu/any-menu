@@ -1260,26 +1260,34 @@ async function initSettingTab_modiByText_refresh(file_path: string, bindObj?: ob
   initSettingTab_modiByText_span.innerText = file_path
   textarea.value = 'Loading...'
 
-  const file_content: string|null = await global_setting.api.readFile(file_path)
+  // 当前配置所对应的正确的配置文件内容 (会自动更新)
+  let file_content: string|null = await global_setting.api.readFile(file_path)
   if (!file_content) {
     textarea.value = 'Error: Load config failed'
     return
   }
 
+  // 使用 onXXX 互斥绑定法，避免绑定方法
+  // 注意: 需要检测用户 A改为B再改回A 的事件，以消除 no-save class
   textarea.value = file_content
   textarea.oninput = async (_) => {
-    textarea.classList.add('no-save'); textarea.classList.remove('error-save');
+    const value = textarea.value
+    if (value === file_content) {
+      textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
+    } else {
+      textarea.classList.add('no-save'); textarea.classList.remove('error-save');
+    }
   }
-  textarea.onchange = async (_) => { // onchange 互斥，避免重复调用此函数
-    if (!textarea) return
+  textarea.onchange = async (_) => {
+  // textarea.onblur = async (_) => {
     const value = textarea.value
 
     // 检测是否为合法 json 格式
     // (风险: 这里仅做 json 格式检查，不作更具体的检查，很可能会被误改)
-    if (file_path.endsWith('.json') || bindObj) {
+    if (bindObj) { // file_path.endsWith('.json') || 
       try {
         const obj = JSON.parse(value)
-        bindObj = obj
+        Object.assign(bindObj, obj)
       } catch (e) {
         textarea.classList.remove('no-save'); textarea.classList.add('error-save');
         console.error('Save config error: invalid json format', e)
@@ -1288,7 +1296,8 @@ async function initSettingTab_modiByText_refresh(file_path: string, bindObj?: ob
     }
 
     textarea.classList.remove('no-save'); textarea.classList.remove('error-save');
-    await global_setting.api.writeFile(file_content, value)
+    file_content = value;
+    await global_setting.api.writeFile(file_path, value)
   }
 }
 
