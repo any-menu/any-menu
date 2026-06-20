@@ -877,7 +877,7 @@ function initSettingTab_contextMenu(tab_nav_container: HTMLElement, tab_content_
  */
 function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_container: HTMLElement) {
   const tab_nav = document.createElement('div'); tab_nav_container.appendChild(tab_nav); tab_nav.classList.add('item');
-    tab_nav.textContent = t('Appearance');
+    tab_nav.textContent = t('Style variables');
   const tab_content = document.createElement('div'); tab_content_container.appendChild(tab_content); tab_content.classList.add('item');
   tab_nav.setAttribute('index', 'custom-style'); tab_content.setAttribute('index', 'custom-style');
 
@@ -894,23 +894,26 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
       const text_modi_btn = document.createElement('button'); buttons.appendChild(text_modi_btn);
         text_modi_btn.textContent = t('Modi by text')
         text_modi_btn.onclick = async () => {
-          void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config_style.json',
-            global_setting.config_style)
+          void initSettingTab_modiByText_refresh(global_setting.config.config_paths + 'config_css_vars.json',
+            global_setting.config_css_vars)
         }
     }
 
-    const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = '可视化修改 custom.css 文件，直接修改该 css 文件也是一样的';
+    // #region 外观配置
+
+    new SettingItem(tab_content)
+      .setHeading(t('Appearance'))
 
     // 特殊 - 主题名/明暗模式，会给 html 一个属性/class标识
     new SettingItem(tab_content)
       .setName(t('Theme'))
       .setDesc('暂时使用纯文本标识，等以后主题系统支持了再改成下拉框')
       .addText(text => text
-        .setValue(global_setting.config_style.theme)
+        .setValue(global_setting.config.theme)
         .onChange(async (value) => {
           document.documentElement.setAttribute('data-am-theme', value);
 
-          global_setting.config_style.theme = value;
+          global_setting.config.theme = value;
           await global_setting.api.saveConfig();
         })
       )
@@ -922,7 +925,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
         dropdown.addOption('auto', 'Auto')
         dropdown.addOption('light', 'Light')
         dropdown.addOption('dark', 'Dark')
-        dropdown.setValue(global_setting.config_style.darkmode)
+        dropdown.setValue(global_setting.config.darkmode)
         dropdown.onChange(async (value) => {
           // 应用明暗模式到 html 元素 // TODO 未完全，有多个窗口
           document.documentElement.classList.toggle('theme-light', value === 'light');
@@ -932,7 +935,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
             document.documentElement.classList.remove('theme-light', 'theme-dark');
           }
 
-          global_setting.config_style.darkmode = value as 'light'|'dark'|'auto'
+          global_setting.config.darkmode = value as 'light'|'dark'|'auto'
           if (value === 'light') global_setting.state.isDark = false
           else if (value === 'dark') global_setting.state.isDark = true
           else global_setting.state.isDark = isDark_by_auto
@@ -942,16 +945,24 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
         })
       })
 
+    // #endregion
+
     // 各种 css 变量
     // 各种 css 变量 - 可视化所有以 --am- 开头的变量，支持颜色、尺寸等
     // 为每个变量生成合适的控件
     new SettingItem(tab_content)
       .setHeading('CSS 变量便携编辑模块')
-    const p_css = document.createElement('p'); tab_content.appendChild(p_css);
-      p_css.innerText ='(该模块开发中，暂不可用)'
+
+    new SettingItem(tab_content)
+      .setDesc('(该模块开发中，暂不可用)')
+
+    new SettingItem(tab_content)
+      .setDesc('可视化修改 css 变量。\
+直接修改 config_css_vars.json 文件也是一样的。\n\
+避免直接修改 css 文件，避免 css 文件更新后覆盖配置。')
 
     const isDark = global_setting.state.isDark
-    const variables = global_setting.config_style.variables
+    const variables = global_setting.config_css_vars
     for (const item of variables) {
       const setting = new SettingItem(tab_content)
         .setName(item.name ?? item.varName)
@@ -1013,7 +1024,8 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
         }
     }
 
-    const el_p = document.createElement('div'); tab_content.appendChild(el_p); el_p.textContent = t('Config2');
+    new SettingItem(tab_content)
+      .setDesc(t('Config2'))
 
     // #region 字典配置
 

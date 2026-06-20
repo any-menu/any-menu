@@ -108,22 +108,22 @@ export const global_setting: {
         position_mode: 'center'|'cursor'|'mouse',
       }
     ],
-  },
-  // 外观相关的配置
-  config_style: {
+
     theme: string,
     darkmode: 'light'|'dark'|'auto',
-    // TODO
-    //   这里的设计还是不对，后面应该弄一个独立的文件可视化编辑模块出来
-    //   处理包括普通配置和css变量配置的东西
-    // 
-    //   当然。独立存储 css 覆盖文件，以及更改 css 是两种不同的做法。
-    //     为了更好地更新主题，也为了更好恢复默认值，和更少的破坏，一般是前者。
-    //   前者的缺点是耦合，且要在面板加载后覆盖掉前者。
-    variables: {
-      varName: string, name?: string, value: string, darkValue?: string
-    }[],
   },
+  // 外观相关的配置
+  // css variables
+  // TODO
+  //   这里的设计可能还是不对，后面应该弄一个独立的文件可视化编辑模块出来
+  //   处理包括普通配置和css变量配置的东西
+  // 
+  //   当然。独立存储 css 覆盖文件，以及更改 css 是两种不同的做法。
+  //     为了更好地更新主题，也为了更好恢复默认值，和更少的破坏，一般是前者。
+  //   前者的缺点是耦合，且要在面板加载后覆盖掉前者。
+  config_css_vars: {
+    varName: string, name?: string, value: string, darkValue?: string
+  }[],
   // 本地的词典/插件管理配置
   config_plugins: {
     path: string, // 相对于 dict_paths 的路径
@@ -255,22 +255,22 @@ export const global_setting: {
         position_mode: 'cursor',
       },
     ],
-  },
-  config_style: {
+
+    
     theme: 'default',
     darkmode: 'auto',
-    variables: [
-      { varName: '--ab-tab-root-bg-color', value: '#ffffff', darkValue: '#0d1117' },
-      { varName: '--ab-tab-root-bd-color', value: '#e0e0e0', darkValue: '#34343f' },
-      { varName: '--ab-tab-root-hv-color', value: '#d7d7d7', darkValue: '#363639' },
-      { varName: '--ab-tab-root-tx-color', value: '#5c5c5c', darkValue: '#9e9e9e' },
-      { varName: '--ab-bright-color',      value: 'orange' },
-      { varName: '--pre-background-color', value: '#ffffff', darkValue: '#1b1b1b' },
-
-      { varName: '--ab-menu-bg-color',     value: '#ffffff', darkValue: '#1B1B1B' },
-      { varName: '--ab-menu-text-color',   value: '#000000', darkValue: '#CCCCCC' },
-    ],
   },
+  config_css_vars: [
+    { varName: '--ab-tab-root-bg-color', value: '#ffffff', darkValue: '#0d1117' },
+    { varName: '--ab-tab-root-bd-color', value: '#e0e0e0', darkValue: '#34343f' },
+    { varName: '--ab-tab-root-hv-color', value: '#d7d7d7', darkValue: '#363639' },
+    { varName: '--ab-tab-root-tx-color', value: '#5c5c5c', darkValue: '#9e9e9e' },
+    { varName: '--ab-bright-color',      value: 'orange' },
+    { varName: '--pre-background-color', value: '#ffffff', darkValue: '#1b1b1b' },
+
+    { varName: '--ab-menu-bg-color',     value: '#ffffff', darkValue: '#1B1B1B' },
+    { varName: '--ab-menu-text-color',   value: '#000000', darkValue: '#CCCCCC' },
+  ],
   config_plugins: [],
   config_: {
     is_auto_startup: false,
@@ -336,12 +336,12 @@ export const global_setting: {
       // 并行读取三个配置文件
       const [ret1, ret2, ret3] = await Promise.all([
         loadConfig_(global_setting.config.config_paths + 'config.json'),
-        loadConfig_(global_setting.config.config_paths + 'config_style.json'),
+        loadConfig_(global_setting.config.config_paths + 'config_css_vars.json'),
         loadConfig_(global_setting.config.config_paths + 'config_plugins.json')
       ]);
       // 应用配置
       if (ret1) Object.assign(global_setting.config, ret1);
-      if (ret2) Object.assign(global_setting.config_style, ret2);
+      if (ret2) Object.assign(global_setting.config_css_vars, ret2);
       if (ret3) Object.assign(global_setting.config_plugins, ret3);
 
       // TODO 设置更新后，可以动态更新一些页面信息
@@ -366,8 +366,8 @@ export const global_setting: {
       // 并行写入三个配置文件
       void saveConfig_(global_setting.config.config_paths + 'config.json',
         global_setting.config)
-      void saveConfig_(global_setting.config.config_paths + 'config_style.json',
-        global_setting.config_style)
+      void saveConfig_(global_setting.config.config_paths + 'config_css_vars.json',
+        global_setting.config_css_vars)
       void saveConfig_(global_setting.config.config_paths + 'config_plugins.json',
         global_setting.config_plugins)
 

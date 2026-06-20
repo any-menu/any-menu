@@ -24,9 +24,7 @@ export default {
   'Menu2': `菜单自定义。可自定义顺序、启用哪些文件等
 \n如果未配置，则默认会使用已启用的类 json 文件`,
 
-  'Appearance': '外观',
-  'Theme': '主题',
-  'LightDarkMode': '明暗模式',
+  'Style variables': '样式变量',
 
   'Modi config files': '编辑配置文件',
   'Modi by text': '文本方式编辑对应配置',
@@ -72,6 +70,10 @@ export default {
   'Server port2': '对于App版本是开启的HTTP服务端口，对于非App版本则是要访问的端口。\n\
 两者需一致。填0表示不开启该项服务。若没安装本地App版本，则此项也无效。',
   'Reload plugin': '重启插件',
+
+  'Appearance': '外观',
+  'Theme': '主题',
+  'LightDarkMode': '明暗模式',
 
   'App config': 'App 配置',
   'Send text method': '发送文本方式',

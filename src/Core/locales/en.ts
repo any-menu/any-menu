@@ -24,9 +24,7 @@ For more instructions and tutorials:
   'Menu2': `Menu customization. You can customize the order, which files to enable, etc.
 \nIf not configured, the enabled class JSON files will be used by default`,
 
-  'Appearance': 'Appearance',
-  'Theme': 'Theme',
-  'LightDarkMode': 'Light or dark mode',
+  'Style variables': 'Style variables',
 
   'Modi config files': 'Modi config files',
   'Modi by text': 'Modi by text',
@@ -72,6 +70,10 @@ You can also save the dictionary in the plugin file, such as `./.obsidian/plugin
   'Server port2': 'For the App version, it is the port for the HTTP service; for the plugin version, it is the port to access.\n\
 Both need to be consistent. Enter 0 to disable this service. If you have not installed the local App version, this item is also invalid.',
   'Reload plugin': 'Reload plugin',
+
+  'Appearance': 'Appearance',
+  'Theme': 'Theme',
+  'LightDarkMode': 'Light or dark mode',
 
   'App config': 'App Config',
   'Send text method': 'Send text method',
