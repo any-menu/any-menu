@@ -1,6 +1,9 @@
 import type { UrlRequestConfig, UrlResponse } from '../Type'
 import DOMPurify from 'dompurify';
 
+/** 全局设置
+ * 会设置 set, get 方法，请使用 Object.assign 的方式修改对象而非直接赋值
+ */
 export const global_setting: {
   platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
   isDebug: boolean,
@@ -419,3 +422,44 @@ export const global_setting: {
     app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },
   }
 }
+
+// 此处实现: 设置时额外进行其他动作 + 保持 config 可干净地JSON序列化的特征
+
+/*const key_isDark = Symbol('isDark');
+Object.defineProperty(global_setting.state, 'isDark', {
+  get() {
+    return this[key_isDark];
+  },
+  set(newValue) {
+    document.documentElement.classList.toggle('theme-dark', newValue);
+    document.documentElement.classList.toggle('theme-light', !newValue);
+    this[key_isDark] = newValue;
+  },
+  enumerable: true, // 自身会出现在序列化结果中
+  configurable: true,
+})*/
+
+// 可自动处理 state.isDark、html class 管理
+const key_darkmode = Symbol('darkmode');
+Object.defineProperty(global_setting.config, 'darkmode', {
+  get() {
+    return this[key_darkmode];
+  },
+  set(darkmode) {
+    // config 管理
+    this[key_darkmode] = darkmode;
+
+    // state 管理
+    let isDark: boolean
+    if (darkmode === 'dark') isDark = true
+    else if (darkmode === 'light') isDark = false
+    else isDark = global_setting.api.getSystemIsDark()
+    global_setting.state.isDark = isDark
+
+    // class 管理
+    document.documentElement.classList.toggle('theme-dark', isDark);
+    document.documentElement.classList.toggle('theme-light', !isDark);
+  },
+  enumerable: true, // 自身会出现在序列化结果中
+  configurable: true,
+})

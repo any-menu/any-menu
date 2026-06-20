@@ -12,7 +12,7 @@ export default {
   <li>仓库: https://github.com/any-menu/any-menu</li>
   <li>文档: https://any-menu.github.io/any-menu/</li>
 </ul>
-!!! 注意: 当前设置面板修改过后，作为插件使用时需要重启插件，使用软件版时需要重启软件，才能生效
+!!! 注意: 当前设置面板的大部分设置，修改后需要重启才能生效 (作为插件使用时需重启插件，使用软件版时需重启软件)
 `,
   'Local dict': '本地词典',
   'Online dict': '在线词典',

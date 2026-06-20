@@ -951,12 +951,11 @@ div.editable-textarea-textarea {
   background-color: var(--am-background-color);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --am-text-color: #1E1E1E;
-    --am-background-color: #f6f6f6;
-  }
+:root.theme-light {
+  --am-text-color: #1E1E1E;
+  --am-background-color: #f6f6f6;
 }
+
 :root {
   --ab-tab-root-bg-color: #0d1117;
   --ab-tab-root-bd-color: #34343f;
@@ -972,17 +971,16 @@ div.editable-textarea-textarea {
   --ab-width-outer: 100%;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --ab-tab-root-bg-color: #ffffff;
-    --ab-tab-root-bd-color: #e0e0e0;
-    --ab-tab-root-hv-color: #d7d7d7;
-    --ab-tab-root-tx-color: #5c5c5c;
-    --pre-background-color: #f2f2f2;
-    --ab-menu-bg-color: #ffffff;
-    --ab-menu-text-color: #000000;
-  }
+:root.theme-light {
+  --ab-tab-root-bg-color: #ffffff;
+  --ab-tab-root-bd-color: #e0e0e0;
+  --ab-tab-root-hv-color: #d7d7d7;
+  --ab-tab-root-tx-color: #5c5c5c;
+  --pre-background-color: #f2f2f2;
+  --ab-menu-bg-color: #ffffff;
+  --ab-menu-text-color: #000000;
 }
+
 html, body, #main, #am-config {
   margin: 0;
   padding: 0;

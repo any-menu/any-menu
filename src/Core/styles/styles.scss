@@ -16,6 +16,8 @@
 
 // #region color var
 
+// @media (prefers-color-scheme: light) { // 系统颜色 (旧版)
+
 :root {
   --am-bright-color: #23A8F2;
   --am-text-color: #f6f6f6;
@@ -23,11 +25,9 @@
   color: var(--am-text-color);
   background-color: var(--am-background-color);
 }
-@media (prefers-color-scheme: light) { // 系统颜色
-  :root {
-    --am-text-color: #1E1E1E; // #0f0f0f;
-    --am-background-color: #f6f6f6;
-  }
+:root.theme-light {
+  --am-text-color: #1E1E1E; // #0f0f0f;
+  --am-background-color: #f6f6f6;
 }
 
 :root {
@@ -48,18 +48,16 @@
   --ab-width-inner: 100%;
   --ab-width-outer: 100%;
 }
-@media (prefers-color-scheme: light) {
-  :root {
-    --ab-tab-root-bg-color: #ffffff;  // #ffffff;
-    --ab-tab-root-bd-color: #e0e0e0;  // #e0e0e0;
-    --ab-tab-root-hv-color: #d7d7d7;  // #D7D7D7 hover
-    --ab-tab-root-tx-color: #5c5c5c;  // blackc
+:root.theme-light {
+  --ab-tab-root-bg-color: #ffffff;  // #ffffff;
+  --ab-tab-root-bd-color: #e0e0e0;  // #e0e0e0;
+  --ab-tab-root-hv-color: #d7d7d7;  // #D7D7D7 hover
+  --ab-tab-root-tx-color: #5c5c5c;  // blackc
 
-    --pre-background-color: #f2f2f2;
+  --pre-background-color: #f2f2f2;
 
-    --ab-menu-bg-color: #ffffff;
-    --ab-menu-text-color: #000000;
-  }
+  --ab-menu-bg-color: #ffffff;
+  --ab-menu-text-color: #000000;
 }
 
 // color: #f6f6f6;

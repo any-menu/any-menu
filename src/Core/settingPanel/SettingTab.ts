@@ -927,18 +927,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
         dropdown.addOption('dark', 'Dark')
         dropdown.setValue(global_setting.config.darkmode)
         dropdown.onChange(async (value) => {
-          // 应用明暗模式到 html 元素 // TODO 未完全，有多个窗口
-          document.documentElement.classList.toggle('theme-light', value === 'light');
-          document.documentElement.classList.toggle('theme-dark', value === 'dark');
-          if (value === 'auto') {
-            // TODO 这里查询一下并设置刷新
-            document.documentElement.classList.remove('theme-light', 'theme-dark');
-          }
-
           global_setting.config.darkmode = value as 'light'|'dark'|'auto'
-          if (value === 'light') global_setting.state.isDark = false
-          else if (value === 'dark') global_setting.state.isDark = true
-          else global_setting.state.isDark = isDark_by_auto
           await global_setting.api.saveConfig()
 
           init(tab_content) // 后面的 css 变量设置依托于明暗模式，所以该设置要刷新设置面板
