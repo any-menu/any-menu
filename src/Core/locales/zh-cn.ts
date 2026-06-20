@@ -74,6 +74,7 @@ export default {
   'Appearance': '外观',
   'Theme': '主题',
   'LightDarkMode': '明暗模式',
+  'LightDarkMode2': '当前检测到的系统明暗环境为: ',
 
   'App config': 'App 配置',
   'Send text method': '发送文本方式',

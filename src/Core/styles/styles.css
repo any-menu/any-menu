@@ -951,7 +951,7 @@ div.editable-textarea-textarea {
   background-color: var(--am-background-color);
 }
 
-:root.theme-light {
+:root.am-theme-light {
   --am-text-color: #1E1E1E;
   --am-background-color: #f6f6f6;
 }
@@ -971,7 +971,7 @@ div.editable-textarea-textarea {
   --ab-width-outer: 100%;
 }
 
-:root.theme-light {
+:root.am-theme-light {
   --ab-tab-root-bg-color: #ffffff;
   --ab-tab-root-bd-color: #e0e0e0;
   --ab-tab-root-hv-color: #d7d7d7;
@@ -1238,6 +1238,9 @@ html, body, #main {
   border-radius: 8px;
   padding: 2px 18px;
   margin-left: 10px;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid var(--ab-tab-root-bd-color);
 }
 .am-config details {
   white-space: normal;
@@ -1479,26 +1482,39 @@ table.dataview-table .btn {
   background-color: var(--ab-tab-root-bd-color);
 }
 
-/* -------------------------------- 黑暗主题滚动条样式 -------------------- */
-@media (prefers-color-scheme: dark) {
+/* -------------------------------- 滚动条样式 ------------------------ */
+:root {
   /* 适用于 Webkit 内核的浏览器 (Chrome, Safari, Edge 等) */
-  ::-webkit-scrollbar {
-    width: 12px; /* 滚动条整体宽度 */
-    height: 12px; /* 对于水平滚动条的高度 */
-  }
-  ::-webkit-scrollbar-track {
-    background: #202324; /* 滚动条轨道背景色 */
-    border-radius: 6px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: #4a4d4f; /* 滚动条滑块颜色 */
-    border-radius: 6px; /* 滑块圆角 */
-    border: 3px solid #202324; /* 在滑块周围创建边框，看起来像内边距 */
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #5a5e60; /* 鼠标悬停时滑块的颜色 */
-  }
 }
+:root ::-webkit-scrollbar {
+  width: 12px; /* 滚动条整体宽度 */
+  height: 12px; /* 对于水平滚动条的高度 */
+}
+:root ::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background: var(--scroll-bg);
+}
+:root ::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  border: 3px solid var(--scroll-bg);
+  background-color: var(--scroll-main);
+}
+:root ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-hover);
+}
+
+:root.am-theme-dark {
+  --scroll-bg: #151517; /* 滚动条轨道背景色 */
+  --scroll-main: #3c3c3d; /* 滚动条滑块颜色 */
+  --scroll-hover: #545557; /* 滚动条滑块悬浮颜色 */
+}
+
+:root.am-theme-light {
+  --scroll-bg: #f0f0f0;
+  --scroll-main: #858585;
+  --scroll-hover: #858585;
+}
+
 /* -------------------------------- Obsidian 专用 ----------------------- */
 .am-ob-setting-btn {
   position: absolute;
@@ -1538,13 +1554,12 @@ table.dataview-table .btn {
   border-color: #396cd8;
   background-color: #e8e8e8;
 }
-@media (prefers-color-scheme: dark) {
-  #main a:hover, #am-config a:hover {
-    color: #24c8db;
-  }
-  #main button:active, #am-config button:active {
-    background-color: rgba(15, 15, 15, 0.4117647059);
-  }
+
+:root.am-theme-dark #main a:hover, :root.am-theme-dark #am-config a:hover {
+  color: #24c8db;
+}
+:root.am-theme-dark #main button:active, :root.am-theme-dark #am-config button:active {
+  background-color: rgba(15, 15, 15, 0.4117647059);
 }
 
 /* -------------------------------- 默认并废弃 --------------------------- */

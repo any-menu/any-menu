@@ -920,7 +920,7 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
     const isDark_by_auto = global_setting.api.getSystemIsDark()
     new SettingItem(tab_content)
       .setName(t('LightDarkMode'))
-      .setDesc('当前检测到的环境明暗为: ' + (isDark_by_auto ? "Dark" : "Light"))
+      .setDesc(t('LightDarkMode2') + (isDark_by_auto ? "Dark" : "Light"))
       .addDropdown(dropdown => {
         dropdown.addOption('auto', 'Auto')
         dropdown.addOption('light', 'Light')

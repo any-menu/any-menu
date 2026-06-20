@@ -456,9 +456,9 @@ Object.defineProperty(global_setting.config, 'darkmode', {
     else isDark = global_setting.api.getSystemIsDark()
     global_setting.state.isDark = isDark
 
-    // class 管理
-    document.documentElement.classList.toggle('theme-dark', isDark);
-    document.documentElement.classList.toggle('theme-light', !isDark);
+    // class 管理。只影响组件，前缀避免浏览器环境中和页面主题冲突
+    document.documentElement.classList.toggle('am-theme-dark', isDark);
+    document.documentElement.classList.toggle('am-theme-light', !isDark);
   },
   enumerable: true, // 自身会出现在序列化结果中
   configurable: true,

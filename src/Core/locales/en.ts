@@ -74,6 +74,7 @@ Both need to be consistent. Enter 0 to disable this service. If you have not ins
   'Appearance': 'Appearance',
   'Theme': 'Theme',
   'LightDarkMode': 'Light or dark mode',
+  'LightDarkMode2': 'The currently detected light-dark environment of the system is: ',
 
   'App config': 'App Config',
   'Send text method': 'Send text method',
