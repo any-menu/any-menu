@@ -548,8 +548,8 @@ div.editable-textarea-textarea {
   display: inline-block;
   box-sizing: border-box;
   z-index: 100;
-  color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  color: var(--am-pre-text-color);
+  background: transparent;
   border-radius: 8px;
 }
 .am-search input.am-search-input {
@@ -559,14 +559,13 @@ div.editable-textarea-textarea {
   padding: 0 12px;
   border: none;
   outline: none;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
-  border: 1px solid var(--am-background-color);
+  color: var(--am-pre-text-color);
+  background: var(--am-pre-bg-color);
+  border: 1px solid var(--am-pre-bd-color);
   border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 .am-search input.am-search-input:focus {
-  border-color: var(--am-bright-color);
+  border-color: var(--am-pre-bd-hlcolor);
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */
@@ -587,7 +586,7 @@ div.editable-textarea-textarea {
   bottom: unset;
   padding: 4px;
   border-radius: 8px;
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-pre-bg-color);
   opacity: 0.98;
   border: 1px solid var(--ab-tab-root-bd-color);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -704,7 +703,7 @@ div.editable-textarea-textarea {
   grid-template-rows: repeat(10, auto);
   gap: 0 0;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -793,7 +792,7 @@ div.editable-textarea-textarea {
   min-height: 32px;
   max-width: 506px;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-bg-color);
   border-radius: 8px;
   border: 1px solid var(--ab-tab-root-bd-color);
   display: flex;
@@ -944,41 +943,42 @@ div.editable-textarea-textarea {
 }
 
 :root {
-  --am-bright-color: #23A8F2;
   --am-text-color: #f6f6f6;
-  --am-background-color: #2f2f2f;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
+  --am-bg-color: #1B1B1B;
+  --am-bd-color: #34343f;
+  --am-pre-text-color: #e3e3e3;
+  --am-pre-bg-color: #282828;
+  --am-pre-bd-color: #383839;
+  --am-pre-bd-hlcolor: #0078d7;
+  --ab-tab-root-tx-color: #9e9e9e;
+  --ab-tab-root-bg-color: #0d1117;
+  --ab-tab-root-bd-color: #34343f;
+  --ab-tab-root-hv-color: #363639;
+  --am-bright-color: #23A8F2;
+  --am-bright-bg-color: #4a89dc;
+  --ab-width-inner: 100%;
+  --ab-width-outer: 100%;
+  --ab-table-border-width: 1px;
+  --ab-table-border-color: #363636;
 }
 
 :root.am-theme-light {
   --am-text-color: #1E1E1E;
-  --am-background-color: #f6f6f6;
-}
-
-:root {
-  --ab-tab-root-bg-color: #0d1117;
-  --ab-tab-root-bd-color: #34343f;
-  --ab-tab-root-hv-color: #363639;
-  --ab-tab-root-tx-color: #9e9e9e;
-  --ab-bright-color: orange;
-  --pre-background-color: #1b1b1b;
-  --ab-menu-bg-color: #1B1B1B;
-  --ab-menu-text-color: #CCCCCC;
-  --ab-table-border-width: 1px;
-  --ab-table-border-color: #363636;
-  --ab-width-inner: 100%;
-  --ab-width-outer: 100%;
-}
-
-:root.am-theme-light {
+  --am-bg-color: #f6f6f6;
+  --am-bd-color: #e0e0e0;
+  --am-pre-text-color: #3b3b3b;
+  --am-pre-bg-color: #ffffff;
+  --am-pre-bd-color: #e5e5e5;
+  --am-pre-bd-hlcolor: #005eb5;
+  --ab-tab-root-tx-color: #5c5c5c;
   --ab-tab-root-bg-color: #ffffff;
   --ab-tab-root-bd-color: #e0e0e0;
   --ab-tab-root-hv-color: #d7d7d7;
-  --ab-tab-root-tx-color: #5c5c5c;
-  --pre-background-color: #f2f2f2;
-  --ab-menu-bg-color: #ffffff;
-  --ab-menu-text-color: #000000;
+}
+
+html {
+  color: var(--am-text-color);
+  background-color: var(--am-bg-color);
 }
 
 html, body, #main, #am-config {
@@ -1068,18 +1068,23 @@ html, body, #main {
   outline: none;
   background: transparent;
   border-radius: 8px;
+  background: var(--am-bg-color);
   color: var(--am-text-color);
-  opacity: 0.7;
+  opacity: 0.3;
 }
 .am-pin:hover, .windows-pin:hover {
-  background-color: var(--ab-tab-root-hv-color);
+  background: var(--ab-tab-root-hv-color);
+  opacity: 1;
   cursor: pointer;
 }
 
 .windows-pin-active {
-  background: rgba(0, 0, 0, 0.02) !important;
+  background: rgba(128, 128, 128, 0.02) !important;
 }
 
+.am-pin-active .am-pin, .windows-pin-active .am-pin {
+  opacity: 1;
+}
 .am-pin-active .am-pin > svg, .am-pin-active .windows-pin > svg, .windows-pin-active .am-pin > svg, .windows-pin-active .windows-pin > svg {
   stroke: var(--am-bright-color);
 }
@@ -1093,7 +1098,7 @@ html, body, #main {
   padding: 0;
   height: 250px;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-bg-color);
   z-index: 10;
   flex-direction: column;
 }
@@ -1123,7 +1128,7 @@ html, body, #main {
   max-height: 100%;
 }
 .am-custom-panel > div {
-  background: var(--ab-menu-bg-color);
+  background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
   padding: 10px;
@@ -1212,7 +1217,8 @@ html, body, #main {
   font-size: 14px;
   line-height: 20px;
   padding: 8px;
-  background-color: var(--pre-background-color);
+  border: 1px solid var(--am-pre-bd-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
   resize: none;
   border: none;
@@ -1233,6 +1239,7 @@ html, body, #main {
   right: 16px;
   bottom: 16px;
   opacity: 0.85;
+  z-index: 2;
 }
 .am-config .setting-buttons button {
   border-radius: 8px;
@@ -1379,7 +1386,7 @@ table.dataview-table .btn {
   border: 0.5px solid var(--ab-tab-root-bd-color);
   outline: none;
   box-shadow: none;
-  background-color: var(--pre-background-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
 }
 .am-config .setting-item .setting-item-control .setting-item-toggle {
@@ -1421,7 +1428,7 @@ table.dataview-table .btn {
   border: 0.5px solid var(--ab-tab-root-bd-color);
   outline: none;
   box-shadow: none;
-  background-color: var(--pre-background-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
 }
 .am-config .setting-item .setting-item-control input[type=color]::-webkit-color-swatch-wrapper,

@@ -303,21 +303,21 @@ export default {
         css: `
 .translate-root {
   padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px;
-  background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
+  background: var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
   .translate-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
-    select { flex:1; min-width:0; padding:2px 4px; background:var(--ab-menu-bg-color); color:CurrentColor; border-radius:4px; }
+    select { flex:1; min-width:0; padding:2px 4px; background:var(--am-bg-color); color:CurrentColor; border-radius:4px; }
     .translate-arrow { flex-shrink:0; }
   }
   .translate-label-src { margin-top:4px; }
-  .translate-content { background:var(--am-background-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
+  .translate-content { background:var(--am-bg-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
     font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
   }
   .translate-content-src { min-height:40px; max-height:120px; }
   .translate-content-dst { max-height:120px; user-select:text; }
   .translate-btnbar {
     display:flex; gap:6px;
-    button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
+    button { background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
   }
 }
 `

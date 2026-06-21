@@ -954,8 +954,11 @@ function initSettingTab_style(tab_nav_container: HTMLElement, tab_content_contai
     const variables = global_setting.config_css_vars
     for (const item of variables) {
       const setting = new SettingItem(tab_content)
-        .setName(item.name ?? item.varName)
-        // .setDesc(`当前值: ${varValue}`);
+      if (item.name) {
+        setting.setName(item.name).setDesc(item.varName)
+      } else {
+        setting.setDesc(item.varName)
+      }
 
       // 判断是否为颜色值（以 # 开头的 3/6/8 位十六进制 或 rgb/rgba）
       const isColor = /^(#[0-9a-fA-F]{3,8}|rgb|rgba|hsl|hsla)/.test(item.value);

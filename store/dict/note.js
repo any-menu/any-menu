@@ -134,19 +134,19 @@ export default {
         css: `
 .note-root {
   padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px;
-  background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
+  background: var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
   .note-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
-    > * { flex:1; min-width:0; padding:4px 8px; background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:CurrentColor; border-radius:4px; }
+    > * { flex:1; min-width:0; padding:4px 8px; background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:CurrentColor; border-radius:4px; }
   }
   .note-content {
-    background:var(--am-background-color); color:currentColor; outline:none; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
+    background:var(--am-bg-color); color:currentColor; outline:none; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
     font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
     height:190px;
   }
   .note-btnbar {
     display:flex; gap:6px;
-    button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
+    button { background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
   }
 }
 .show-altkey .note-root .note-btnbar button.btn::after {

@@ -10,7 +10,7 @@
   max-width: 506px; // = 14*36宽 + 2边框。一行整数个图标会比较整齐，此处一行14个
 
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-bg-color);
   border-radius: 8px;
   border: 1px solid var(--ab-tab-root-bd-color);
   // border: none;
@@ -39,6 +39,10 @@
     border-radius: 8px;
     white-space: nowrap;
     cursor: pointer;
+
+    // (可选) 按钮风格
+    // background: var(--am-bright-bg-color);
+    // color: var(--am-text-color);
 
     &:hover {
       background-color: var(--ab-tab-root-hv-color) !important;
@@ -73,7 +77,7 @@
   font-weight: 500;
 
   // 开启则为单一颜色，注释时，自动生成的图标将会使用 hash 计算颜色
-  // background-color: var(--ab-menu-bg-color) !important;
+  // background-color: var(--am-bg-color) !important;
   // color: currentColor !important;
 
   &:hover {
