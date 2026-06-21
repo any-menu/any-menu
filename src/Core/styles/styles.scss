@@ -163,6 +163,14 @@ html, body, #main {
   }
 }
 
+// 特殊-合并相邻边框
+.am-panel>div {
+  margin-bottom: -1px; 
+}
+.am-panel.reverse>div {
+  margin-top: -1px;
+}
+
 /* -------------------------------- 面板置顶按钮 ------------------------- */
 
 // 拖拽窗口部分
@@ -276,7 +284,7 @@ html, body, #main {
     background: var(--am-bg-color);
     border: 1px solid var(--ab-tab-root-bd-color);
     border-radius: 8px;
-    padding: 10px;
+    // padding: 10px;
   }
 }
 

@@ -1036,6 +1036,14 @@ html, body, #main {
   display: block;
 }
 
+.am-panel > div {
+  margin-bottom: -1px;
+}
+
+.am-panel.reverse > div {
+  margin-top: -1px;
+}
+
 /* -------------------------------- 面板置顶按钮 ------------------------- */
 #main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
   -webkit-app-region: drag;
@@ -1131,7 +1139,6 @@ html, body, #main {
   background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
-  padding: 10px;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
