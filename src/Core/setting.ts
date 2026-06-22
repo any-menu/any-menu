@@ -207,6 +207,9 @@ export const global_setting: {
     // (特殊) 本地资源协议
     // 最终生成的 URL 类似：https://asset.localhost/path_encode...
     app_convertFileSrc: (relPath: string) => Promise<string>,
+    // (特殊) 用于 Tauri 多窗口资源同步
+    app_onChange: () => Promise<void>,
+    app_offChange: () => Promise<void>,
   }
 } = {
   platform: 'app',

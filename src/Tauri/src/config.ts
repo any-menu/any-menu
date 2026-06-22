@@ -16,6 +16,38 @@ import { initApi } from './utils/initApi'
 
 initApi()
 
+/** Synchronizer 同步器
+ * 
+ * ## 应用环境
+ * 
+ * Tauri 环境专用
+ * 
+ * 用于多窗口的多线程环境下，同步多个前端环境和后端
+ * 
+ * ## 细节
+ * 
+ * 分一个主同步器和多个副同步器？还是全部同步器使用相同的逻辑？
+ * 
+ * 
+ * 
+ * 
+
+
+
+
+ * 
+ * ## 主要同步内容
+ * 
+ * - gloabl_setting 对象
+ *   (包括配置、状态等，还有同步过程中触发的一些 setter 方法)
+ */
+function sync_all() {
+
+}
+function sync_auto_listen() {
+
+}
+
 // #region 启动时阅读配置文件
 
 let is_init = false
