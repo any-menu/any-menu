@@ -1,4 +1,9 @@
-/** Tauri 多窗口配置与状态同步器 (Synchronizer) */
+/** Tauri 多窗口配置与状态同步器 (Synchronizer)
+ * 
+ * 不过目前好像和 AMState 有一点点冲突，感觉可以合并
+ * 
+ * @co-author: deepseek-v4
+ */
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -7,7 +12,7 @@ use std::{
     path::PathBuf,
     sync::Mutex,
 };
-use tauri::{AppHandle, Manager, State};
+use tauri::{Emitter, EventTarget, Manager, State};
 
 // ---------- 数据结构 ----------
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,14 +29,14 @@ pub struct AppState {
 
 /// 命令: 获取当前设置（可能为 null）
 #[tauri::command]
-fn get_global_setting(state: State<'_, AppState>) -> Option<GlobalSetting> {
+pub fn get_global_setting(state: State<'_, AppState>) -> Option<GlobalSetting> {
     let setting = state.setting.lock().ok()?;
     setting.clone() // 如果是 None，则返回 None
 }
 
 /// 命令: 广播设置变更
 #[tauri::command]
-fn broadcast_global_setting(
+pub fn broadcast_global_setting(
     window: tauri::Window,
     state: State<'_, AppState>,
     setting: GlobalSetting,
@@ -51,28 +56,30 @@ fn broadcast_global_setting(
         .map_err(|e| format!("写入文件失败: {}", e))?;
 
     // 3. 向除当前窗口外的所有窗口广播事件
+    // 旧: (非Tauri2) for (win_label, win) in app_handle.windows() {
     let label = window.label().to_string();
-    let app_handle = window.app_handle();
-    for (win_label, win) in app_handle.windows() {
-        if win_label != label {
-            win.emit("global-setting-updated", &setting)
-                .unwrap_or_else(|e| {
-                    eprintln!("[WindowSync] 向窗口 {} 发送事件失败: {}", win_label, e);
-                });
-        }
-    }
+    window
+        .app_handle()
+        .emit_filter("global-setting-updated", &setting, |target: &EventTarget| {
+            match target {
+                EventTarget::WebviewWindow { label: t_label } => t_label != &label,
+                // 若还有 EventTarget::Webview 等，可根据需要决定是否发送，这里只处理窗口
+                _ => false,
+            }
+        })
+        .map_err(|e| format!("广播事件失败: {}", e))?;
 
     Ok(())
 }
 
 // ---------- 初始化：尝试从磁盘加载，但初始仍为 None ----------
-fn load_persisted_setting(path: &PathBuf) -> Option<GlobalSetting> {
+/*fn load_persisted_setting(path: &PathBuf) -> Option<GlobalSetting> {
     fs::read_to_string(path)
         .ok()
         .and_then(|content| serde_json::from_str(&content).ok())
-}
+}*/
 
-fn main() {
+/*fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let mut file_path = app
@@ -104,4 +111,4 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("应用程序运行失败");
-}
+}*/

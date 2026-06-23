@@ -300,7 +300,7 @@ export const global_setting: {
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
     loadConfig: async (): Promise<boolean|string> => {
-      const loadConfig_ = async (file_path: string): Promise<false|object> => {
+      const loadConfig_ = async (file_path: string, bindObj?: object): Promise<false|object> => {
         let file_content: string|null = null
         // 读取配置文件
         try {
@@ -314,31 +314,31 @@ export const global_setting: {
           file_content = null
         }
         // 解析，并应用配置文件
-        if (file_content) {
-          try {
-            const new_config = JSON.parse(file_content)
-            if (!new_config || typeof new_config !== 'object') {
-              throw new Error("Invalid config format")
-            }
-            return new_config
-          } catch (error) {
-            console.error('配置解析失败，请检查格式是否正确', error)
-            return false
+        if (!file_content) return {}
+        try {
+          const new_config: object = JSON.parse(file_content)
+          if (!new_config || typeof new_config !== 'object') {
+            throw new Error("Invalid config format")
           }
+          if (bindObj) {
+            Object.assign(bindObj, new_config)
+          }
+          return new_config
+        } catch (error) {
+          console.error('配置解析失败，请检查格式是否正确', error)
+          return false
         }
-        return {}
       }
 
-      // 并行读取三个配置文件
-      const [ret1, ret2, ret3] = await Promise.all([
-        loadConfig_(global_setting.config.config_paths + 'config.json'),
-        loadConfig_(global_setting.config.config_paths + 'config_css_vars.json'),
-        loadConfig_(global_setting.config.config_paths + 'config_plugins.json')
+      // 并行读取三个配置文件，并尝试更新配置对象
+      await Promise.all([
+        loadConfig_(global_setting.config.config_paths + 'config.json',
+          global_setting.config),
+        loadConfig_(global_setting.config.config_paths + 'config_css_vars.json',
+          global_setting.config_css_vars),
+        loadConfig_(global_setting.config.config_paths + 'config_plugins.json',
+          global_setting.config_plugins),
       ]);
-      // 应用配置
-      if (ret1) Object.assign(global_setting.config, ret1);
-      if (ret2) Object.assign(global_setting.config_css_vars, ret2);
-      if (ret3) Object.assign(global_setting.config_plugins, ret3);
 
       // TODO 设置更新后，可以动态更新一些页面信息
       //   暂时不支持这点，许多设置必须要重启后才能生效
@@ -413,6 +413,8 @@ export const global_setting: {
     app_show: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_hide: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },
+    app_onChange: async (): Promise<void> => { console.warn("非app环境不支持此操作，或未定义") },
+    app_offChange: async (): Promise<void> => { console.warn("非app环境不支持此操作，或未定义") },
   }
 }
 
