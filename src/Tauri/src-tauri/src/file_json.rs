@@ -102,7 +102,25 @@ pub async fn get_all_json_config() -> AppConfig {
 
 /// 写入单个 JSON 文件（带 pretty 格式化）
 async fn write_json_file(path: &str, value: &Json) {
-    let content = serde_json::to_string_pretty(value).expect("序列化 JSON 失败");
+    // JSON 转文本 (带特殊规则)
+    let content = match value {
+        // b1. 对数组类型采用特殊格式化：元素紧凑序列化，每元素独立一行，末尾不加逗号
+        serde_json::Value::Array(arr) => {
+            let mut s = String::from("[\n");
+            for (i, item) in arr.iter().enumerate() {
+                let item_str =
+                    serde_json::to_string(item).expect("序列化数组元素失败");
+                s.push_str(&item_str);
+                if i < arr.len() - 1 {
+                    s.push_str(",\n");
+                }
+            }
+            s.push_str("\n]");
+            s
+        }
+        // b2. 非数组使用标准 pretty 格式化
+        _ => serde_json::to_string_pretty(value).expect("序列化 JSON 失败"),
+    };
 
     // 确保父目录存在（递归创建）
     if let Some(parent) = std::path::Path::new(path).parent() {
@@ -167,8 +185,7 @@ pub fn init_all_json_config() {
         .expect("CONFIG 已经初始化过");
 }
 // 与前端的 global_setting 部分一致 (方便复制黏贴同步前后端的默认配置)
-fn default_app_config() -> AppConfig {
-    AppConfig {
+fn default_app_config() -> AppConfig { AppConfig {
     config: json!({
         "language": "auto",
 
@@ -211,12 +228,30 @@ fn default_app_config() -> AppConfig {
             "position_mode": "cursor",
         },
         ],
-
         
         "theme": "default",
         "darkmode": "auto",
     }),
-    config_css_vars: json!{[]},
     config_plugins: json!{[]},
-    }
-}
+    config_css_vars: json!{[
+        { "varName":"--am-text-color",        "value":"#1E1E1E", "darkValue":"#f6f6f6", "name":"文本色" },
+        { "varName":"--am-bg-color",          "value":"#f6f6f6", "darkValue":"#2f2f2f", "name":"背景色" },
+        { "varName":"--am-bd-color",          "value":"#e0e0e0", "darkValue":"#34343f", "name":"边框色" },
+
+        { "varName":"--am-pre-text-color",    "value":"#5c5c5c", "darkValue":"#e3e3e3", "name":"文本框文本色" },
+        { "varName":"--am-pre-bg-color",      "value":"#ffffff", "darkValue":"#282828", "name":"文本框背景色" },
+        { "varName":"--am-pre-bd-color",      "value":"#e5e5e5", "darkValue":"#383839", "name":"文本框边框色" },
+        { "varName":"--am-pre-bg-hlcolor",    "value":"#005eb5", "darkValue":"#0078d7", "name":"文本框边框高亮色" },
+
+        { "varName":"--am-bright-color",      "value":"#23A8F2", "darkValue":"#23A8F2", "name":"文本高亮色" },
+        { "varName":"--am-bright-bg-color",   "value":"#4a89dc", "darkValue":"#4a89dc", "name":"背景高亮色" },
+
+        { "varName":"--ab-tab-root-tx-color", "value":"#5c5c5c", "darkValue":"#9e9e9e", "name":"标签栏文本色" },
+        { "varName":"--ab-tab-root-bg-color", "value":"#ffffff", "darkValue":"#0d1117", "name":"标签栏背景色" },
+        { "varName":"--ab-tab-root-bd-color", "value":"#e0e0e0", "darkValue":"#34343f", "name":"标签栏边框色" },
+        { "varName":"--ab-tab-root-hv-color", "value":"#d7d7d7", "darkValue":"#363639", "name":"标签栏悬停色" },
+
+      //{ "varName":"--ab-menu-text-color",   "value":"#000000", "darkValue":"#CCCCCC", "name":"文本色" },
+      //{ "varName":"--ab-menu-bg-color",     "value":"#ffffff", "darkValue":"#1B1B1B", "name":"背景色" },
+    ]},   
+}}

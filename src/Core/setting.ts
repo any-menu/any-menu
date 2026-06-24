@@ -418,25 +418,25 @@ export const global_setting: {
 
 // TODO 这里如果更新扩展了，新默认值应该会和用户的老配置冲突
 global_setting.config_css_vars = [
-  { varName:'--am-text-color',        value:'#1E1E1E', darkValue:'#f6f6f6', name:'文本色' },
-  { varName:'--am-bg-color',          value:'#f6f6f6', darkValue:'#2f2f2f', name:'背景色' },
-  { varName:'--am-bd-color',          value:'#e0e0e0', darkValue:'#34343f', name:'边框色' },
+  { varName:"--am-text-color",        value:"#1E1E1E", darkValue:"#f6f6f6", name:"文本色" },
+  { varName:"--am-bg-color",          value:"#f6f6f6", darkValue:"#2f2f2f", name:"背景色" },
+  { varName:"--am-bd-color",          value:"#e0e0e0", darkValue:"#34343f", name:"边框色" },
 
-  { varName:'--am-pre-text-color',    value:'#5c5c5c', darkValue:'#e3e3e3', name:'文本框文本色' },
-  { varName:'--am-pre-bg-color',      value:'#ffffff', darkValue:'#282828', name:'文本框背景色' }, // input select textarea 等
-  { varName:'--am-pre-bd-color',      value:'#e5e5e5', darkValue:'#383839', name:'文本框边框色' },
-  { varName:'--am-pre-bg-hlcolor',    value:'#005eb5', darkValue:'#0078d7', name:'文本框边框高亮色' },
+  { varName:"--am-pre-text-color",    value:"#5c5c5c", darkValue:"#e3e3e3", name:"文本框文本色" },
+  { varName:"--am-pre-bg-color",      value:"#ffffff", darkValue:"#282828", name:"文本框背景色" },
+  { varName:"--am-pre-bd-color",      value:"#e5e5e5", darkValue:"#383839", name:"文本框边框色" },
+  { varName:"--am-pre-bg-hlcolor",    value:"#005eb5", darkValue:"#0078d7", name:"文本框边框高亮色" },
 
-  { varName:'--am-bright-color',      value:'#23A8F2', darkValue:'#23A8F2', name:'文本高亮色' },
-  { varName:'--am-bright-bg-color',   value:'#4a89dc', darkValue:'#4a89dc', name:'背景高亮色' },
+  { varName:"--am-bright-color",      value:"#23A8F2", darkValue:"#23A8F2", name:"文本高亮色" },
+  { varName:"--am-bright-bg-color",   value:"#4a89dc", darkValue:"#4a89dc", name:"背景高亮色" },
 
-  { varName:'--ab-tab-root-tx-color', value:'#5c5c5c', darkValue:'#9e9e9e', name:'标签栏文本色' },
-  { varName:'--ab-tab-root-bg-color', value:'#ffffff', darkValue:'#0d1117', name:'标签栏背景色' },
-  { varName:'--ab-tab-root-bd-color', value:'#e0e0e0', darkValue:'#34343f', name:'标签栏边框色' },
-  { varName:'--ab-tab-root-hv-color', value:'#d7d7d7', darkValue:'#363639', name:'标签栏悬停色' },
+  { varName:"--ab-tab-root-tx-color", value:"#5c5c5c", darkValue:"#9e9e9e", name:"标签栏文本色" },
+  { varName:"--ab-tab-root-bg-color", value:"#ffffff", darkValue:"#0d1117", name:"标签栏背景色" },
+  { varName:"--ab-tab-root-bd-color", value:"#e0e0e0", darkValue:"#34343f", name:"标签栏边框色" },
+  { varName:"--ab-tab-root-hv-color", value:"#d7d7d7", darkValue:"#363639", name:"标签栏悬停色" },
 
-//{ varName:'--ab-menu-text-color',   value:'#000000', darkValue:'#CCCCCC', name:'文本色' },
-//{ varName:'--ab-menu-bg-color',     value:'#ffffff', darkValue:'#1B1B1B', name:'背景色' },
+//{ varName:"--ab-menu-text-color",   value:"#000000", darkValue:"#CCCCCC", name:"文本色" },
+//{ varName:"--ab-menu-bg-color",     value:"#ffffff", darkValue:"#1B1B1B", name:"背景色" },
 ]
 
 // 此处实现: 设置时额外进行其他动作 + 保持 config 可干净地JSON序列化的特征
