@@ -28,6 +28,13 @@ fn shallow_merge(target: &mut Json, source: &Json) -> bool {
         }
         // 不都是 Object（包含数组、字符串、数字等其他类型），直接整体覆盖
         _ => {
+            // 如果 source 是空数组，则保持原样，不覆盖
+            if let Json::Array(arr) = source {
+                if arr.is_empty() {
+                    return true;
+                }
+            }
+            // 否则整体覆盖为 source
             *target = source.clone();
         }
     }
@@ -74,8 +81,8 @@ pub async fn read_all_json_config() -> AppConfig {
     let plugins_path = format!("{}config_plugins.json", CONFIG_PATH);
     let (res1, res2, res3) = tokio::join!(
         read_json_file(&config_path),
-        read_json_file(&css_vars_path),
         read_json_file(&plugins_path),
+        read_json_file(&css_vars_path),
     );
 
     // 2. 获取写锁，合并数据
@@ -84,8 +91,8 @@ pub async fn read_all_json_config() -> AppConfig {
         let mut guard = config_lock.write().unwrap();
         let app_config = &mut *guard;
         let _r1 = res1.map_or(false, |j| shallow_merge(&mut app_config.config, &j));
-        let _r2 = res2.map_or(false, |j| shallow_merge(&mut app_config.config_css_vars, &j));
-        let _r3 = res3.map_or(false, |j| shallow_merge(&mut app_config.config_plugins, &j));
+        let _r2 = res2.map_or(false, |j| shallow_merge(&mut app_config.config_plugins, &j));
+        let _r3 = res3.map_or(false, |j| shallow_merge(&mut app_config.config_css_vars, &j));
     } // 释放写锁
 
     // 3. 无论如何均重新保存一遍（避免开发过程中新增的选项丢失）
