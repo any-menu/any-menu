@@ -57,6 +57,7 @@ export const global_setting: {
     // - obsidian:  使用插件文件夹的 data.json
     // 
     // 注意: 不要自指
+    // TODO App 版本可以考虑放C盘，使软件更新后更易于复用
     config_paths: string,
     // 词库路径列表。在debug模式下不使用这个路径，而是硬编码
     dict_paths: string,
@@ -87,6 +88,8 @@ export const global_setting: {
     auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
 
     // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
+    // 这里的2是历史遗留问题。因为该选项以前是对象，现在改数组后避免和以前用户的选项合并导致冲突
+    // 注意: 划词弹出模式不受 is_focus 影响，强制为 false
     panel_preset2: [
       // 注意位置模式: 若 cursor 失败会自动降级为 mouse
       // 建议: 搜索+工具栏+多极菜单。主动唤出的显示项
@@ -216,56 +219,50 @@ export const global_setting: {
   isDebug: false,
   focusStrategy: true,
   config: {
-    language: 'auto',
+    "language": "auto",
 
-    pinyin_index: true,
-    pinyin_first_index: true,
-    search_engine: 'reverse',
-    search_limit: 500,
+    "pinyin_index": true,
+    "pinyin_first_index": true,
+    "search_engine": "reverse",
+    "search_limit": 500,
 
-    server_port: 41667,
-    dict_online_source: 'github',
-    // TODO App 版本可以考虑放C盘，使软件更新后更易于复用
-    config_paths: './config/',// 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/config/'
-    dict_paths: './dict/',    // 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/dict/'
-    note_paths: './notes/',   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
-    cache_paths: './cache/',  // 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/cache/'
-    send_text_method: 'clipboard',
-    app_black_list: ['- Obsidian '],
-    app_ad_shortcut: true,
+    "server_port": 41667,
+    "dict_online_source": "github",
+    "config_paths": "./config/",// 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/config/"
+    "dict_paths": "./dict/",    // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/dict/"
+    "note_paths": "./notes/",   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+    "cache_paths": "./cache/",  // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/cache/"
+    "send_text_method": "clipboard",
+    "app_black_list": ["- Obsidian "],
+    "app_ad_shortcut": true,
 
-    toolbar_list: [],
-    context_menu_list: [],
-    auto_show_toolbar_on_select: false,
+    "toolbar_list": [],
+    "context_menu_list": [],
+    "auto_show_toolbar_on_select": false,
 
-    // 这里的2是历史遗留问题。因为该选项以前是对象，现在改数组后避免和以前用户的选项合并导致冲突
-    // 注意: 划词弹出模式不受 is_focus 影响，强制为 false
-    panel_preset2: [
+    "panel_preset2": [
       {
-        key: 'Alt+A',
-        list: ['search', 'toolbar', 'menu'],
-        is_focus: true,
-        position_mode: 'cursor',
+        "key": "Alt+A",
+        "list": ["search", "toolbar", "menu"],
+        "is_focus": true,
+        "position_mode": "cursor",
       },
       {
-        key: 'Alt+S',
-        list: ['search', 'toolbar'], // ['miniEditor']
-        is_focus: true,
-        // 等解决了 App 版本的非 focus 模式下，点击外部面板不会自动消失的 bug 再换回来
-        // Obsidian 那边也暂时暂时硬编码了下 false
-        position_mode: 'cursor',
+        "key": "Alt+S",
+        "list": ["search", "toolbar"], // ["miniEditor"]
+        "is_focus": true,
+        "position_mode": "cursor",
       },
       {
-        key: 'Alt+D',
-        list: ['info'],
-        is_focus: true,
-        position_mode: 'cursor',
+        "key": "Alt+D",
+        "list": ["info"],
+        "is_focus": true,
+        "position_mode": "cursor",
       },
     ],
 
-    
-    theme: 'default',
-    darkmode: 'auto',
+    "theme": "default",
+    "darkmode": "auto",
   },
   config_css_vars: [], // 其初始定义放置于末尾
   config_plugins: [],

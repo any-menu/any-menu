@@ -260,16 +260,17 @@ export function initApi() {
   }
 
   // 读写配置 (新版) - 多窗口多线程同步版
-  const old_loadConfig = global_setting.api.loadConfig
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
-    const ret: Promise<boolean> = invoke('read_all_json_config')
-    // return old_loadConfig() // 仅临时，这里会被上一条覆盖前面
-    return ret
+    const ret: object = await invoke('read_all_json_config')
+    Object.assign(global_setting, ret)
+    return true
   }
-  const old_saveConfig = global_setting.api.saveConfig
   global_setting.api.saveConfig = async (): Promise<boolean> => {
-    const ret: Promise<boolean> = invoke('write_all_json_config')
-    // return old_saveConfig() // 仅临时
+    const ret: boolean = await invoke('write_all_json_config', { obj: {
+      config: global_setting.config,
+      config_plugins: global_setting.config_plugins,
+      config_css_vars: global_setting.config_css_vars,
+    }})
     return ret
   }
 

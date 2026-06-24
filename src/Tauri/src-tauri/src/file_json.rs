@@ -2,7 +2,7 @@
  * 文件读写 - json 文件版 & json 配置文件版
  */
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value as Json};
+use serde_json::{Map, Value as Json, json};
 use std::sync::{OnceLock, RwLock};
 use tokio::fs;
 
@@ -17,29 +17,21 @@ pub struct AppConfig {
 }
 static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
 
-/// 初始化全局配置（应在程序启动时调用一次）
-pub fn init_all_json_config() {
-    let app_config = AppConfig {
-        config: Json::Object(Map::new()),
-        config_css_vars: Json::Object(Map::new()),
-        config_plugins: Json::Object(Map::new()),
-    };
-    CONFIG
-        .set(RwLock::new(app_config))
-        .expect("CONFIG 已经初始化过");
-}
-
 /// 浅合并 JSON 对象到目标 (对应 ts Object.assign)
 fn shallow_merge(target: &mut Json, source: &Json) -> bool {
-    if let (Json::Object(t), Json::Object(s)) = (target, source) {
-        for (k, v) in s {
-            t.insert(k.clone(), v.clone());
+    match (&mut *target, source) {
+        // 都是 Object，进行浅合并：将 source 的所有键值对插入（或覆盖）到 target
+        (Json::Object(t), Json::Object(s)) => {
+            for (k, v) in s {
+                t.insert(k.clone(), v.clone());
+            }
         }
-        true
-    } else {
-        eprintln!("源配置或目标配置不都是Object");
-        false
+        // 不都是 Object（包含数组、字符串、数字等其他类型），直接整体覆盖
+        _ => {
+            *target = source.clone();
+        }
     }
+    true
 }
 
 /// 内部获取配置快照
@@ -97,7 +89,7 @@ pub async fn read_all_json_config() -> AppConfig {
     } // 释放写锁
 
     // 3. 无论如何均重新保存一遍（避免开发过程中新增的选项丢失）
-    write_all_json_config().await;
+    write_all_json_config(None).await;
 
     get_all_json_config_internal()
 }
@@ -128,17 +120,30 @@ async fn write_json_file(path: &str, value: &Json) {
 
 /// 保存全部三个配置文件（对应 saveConfig）
 #[tauri::command]
-pub async fn write_all_json_config() -> bool {
-    // 1. 获取读锁，克隆数据后立即释放锁
-    let (config_data, css_vars_data, plugins_data) = {
-        let guard = CONFIG.get().expect("CONFIG 未初始化").read().unwrap();
-        let app = &*guard;
+pub async fn write_all_json_config(obj: Option<AppConfig>) -> bool {
+    // 1. 准备要写入的数据
+    let (config_data, css_vars_data, plugins_data) = if let Some(new_obj) = obj {
+        // 有新配置：获取写锁，在原位浅合并，然后克隆数据，释放锁
+        let mut guard = CONFIG.get().expect("CONFIG 未初始化").write().unwrap();
+        let app = &mut *guard; // 锁会自动释放
+        shallow_merge(&mut app.config, &new_obj.config);
+        shallow_merge(&mut app.config_css_vars, &new_obj.config_css_vars);
+        shallow_merge(&mut app.config_plugins, &new_obj.config_plugins);
         (
             app.config.clone(),
             app.config_css_vars.clone(),
             app.config_plugins.clone(),
         )
-    }; // 锁在此处释放
+    } else {
+        // 无新配置：获取读锁，直接克隆（原逻辑）
+        let guard = CONFIG.get().expect("CONFIG 未初始化").read().unwrap();
+        let app = &*guard; // 锁会自动释放
+        (
+            app.config.clone(),
+            app.config_css_vars.clone(),
+            app.config_plugins.clone(),
+        )
+    };
 
     let config_path = format!("{}config.json", CONFIG_PATH);
     let css_vars_path = format!("{}config_css_vars.json", CONFIG_PATH);
@@ -152,4 +157,66 @@ pub async fn write_all_json_config() -> bool {
     );
 
     true
+}
+
+/// 初始化全局配置（应在程序启动时调用一次）
+pub fn init_all_json_config() {
+    let app_config = default_app_config();
+    CONFIG
+        .set(RwLock::new(app_config))
+        .expect("CONFIG 已经初始化过");
+}
+// 与前端的 global_setting 部分一致 (方便复制黏贴同步前后端的默认配置)
+fn default_app_config() -> AppConfig {
+    AppConfig {
+    config: json!({
+        "language": "auto",
+
+        "pinyin_index": true,
+        "pinyin_first_index": true,
+        "search_engine": "reverse",
+        "search_limit": 500,
+
+        "server_port": 41667,
+        "dict_online_source": "github",
+        "config_paths": "./config/",// 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/config/"
+        "dict_paths": "./dict/",    // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/dict/"
+        "note_paths": "./notes/",   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
+        "cache_paths": "./cache/",  // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/cache/"
+        "send_text_method": "clipboard",
+        "app_black_list": ["- Obsidian "],
+        "app_ad_shortcut": true,
+
+        "toolbar_list": [],
+        "context_menu_list": [],
+        "auto_show_toolbar_on_select": false,
+
+        "panel_preset2": [
+        {
+            "key": "Alt+A",
+            "list": ["search", "toolbar", "menu"],
+            "is_focus": true,
+            "position_mode": "cursor",
+        },
+        {
+            "key": "Alt+S",
+            "list": ["search", "toolbar"], // ["miniEditor"]
+            "is_focus": true,
+            "position_mode": "cursor",
+        },
+        {
+            "key": "Alt+D",
+            "list": ["info"],
+            "is_focus": true,
+            "position_mode": "cursor",
+        },
+        ],
+
+        
+        "theme": "default",
+        "darkmode": "auto",
+    }),
+    config_css_vars: json!{[]},
+    config_plugins: json!{[]},
+    }
 }
