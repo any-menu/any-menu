@@ -259,7 +259,21 @@ export function initApi() {
     return assetPath
   }
 
-  /* 旧版-读写配置，废弃。新版统一了 app 和 obsidian 版本的逻辑
+  // 读写配置 (新版) - 多窗口多线程同步版
+  const old_loadConfig = global_setting.api.loadConfig
+  global_setting.api.loadConfig = async (): Promise<boolean|string> => {
+    const ret: Promise<boolean> = invoke('read_all_json_config')
+    // return old_loadConfig() // 仅临时，这里会被上一条覆盖前面
+    return ret
+  }
+  const old_saveConfig = global_setting.api.saveConfig
+  global_setting.api.saveConfig = async (): Promise<boolean> => {
+    const ret: Promise<boolean> = invoke('write_all_json_config')
+    // return old_saveConfig() // 仅临时
+    return ret
+  }
+
+  /* 读写配置 (旧版,废弃) - 新版更统一 app 和 obsidian 版本的逻辑和统一配置文件，且对于 app 版本支持了多窗口多线程同步
   const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
 
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {

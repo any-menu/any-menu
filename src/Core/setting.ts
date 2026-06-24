@@ -225,6 +225,7 @@ export const global_setting: {
 
     server_port: 41667,
     dict_online_source: 'github',
+    // TODO App 版本可以考虑放C盘，使软件更新后更易于复用
     config_paths: './config/',// 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/config/'
     dict_paths: './dict/',    // 在 obsidian 版本中，这里的默认值会是 './<.obsidian>/plugins/any-menu/dict/'
     note_paths: './notes/',   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
@@ -300,7 +301,7 @@ export const global_setting: {
     writeFile: async () => { console.error("需实现 api.writeFile 方法"); return false },
     deleteFile: async () => { console.error("需实现 api.deleteFile 方法"); return false },
     loadConfig: async (): Promise<boolean|string> => {
-      const loadConfig_ = async (file_path: string, bindObj?: object): Promise<false|object> => {
+      const loadConfig_ = async (file_path: string, bindObj?: object): Promise<boolean> => {
         let file_content: string|null = null
         // 读取配置文件
         try {
@@ -314,7 +315,7 @@ export const global_setting: {
           file_content = null
         }
         // 解析，并应用配置文件
-        if (!file_content) return {}
+        if (!file_content) return false
         try {
           const new_config: object = JSON.parse(file_content)
           if (!new_config || typeof new_config !== 'object') {
@@ -323,7 +324,7 @@ export const global_setting: {
           if (bindObj) {
             Object.assign(bindObj, new_config)
           }
-          return new_config
+          return true
         } catch (error) {
           console.error('配置解析失败，请检查格式是否正确', error)
           return false
@@ -331,7 +332,7 @@ export const global_setting: {
       }
 
       // 并行读取三个配置文件，并尝试更新配置对象
-      await Promise.all([
+      const [ret1, ret2, ret3] = await Promise.all([
         loadConfig_(global_setting.config.config_paths + 'config.json',
           global_setting.config),
         loadConfig_(global_setting.config.config_paths + 'config_css_vars.json',
@@ -343,9 +344,9 @@ export const global_setting: {
       // TODO 设置更新后，可以动态更新一些页面信息
       //   暂时不支持这点，许多设置必须要重启后才能生效
       // 无论如何均重新保存一遍。避免在开发更新过程中，添加新的选项
-      await global_setting.api.saveConfig()
+      const ret4 = await global_setting.api.saveConfig()
 
-      return true
+      return ret1 && ret2 && ret3 && ret4
     },
     saveConfig: async (): Promise<boolean> => {
       const saveConfig_ = async(file_path: string, target_obj: object): Promise<void> => {

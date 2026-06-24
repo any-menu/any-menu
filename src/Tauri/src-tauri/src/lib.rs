@@ -25,6 +25,7 @@ mod http_server;
 // 自定义包 - 仅命令
 mod file;
 mod file_toml;
+mod file_json;
 mod file_config;
 mod uia;
 mod text;
@@ -36,6 +37,7 @@ mod other;
 pub fn run() {
     // 配置文件模块
     let _ = file_config::init_config();
+    let _ = file_json::init_all_json_config();
 
     // 日志插件
     let log_plugin = {
@@ -234,6 +236,7 @@ pub fn run() {
             text::send, text::clipboard::clipboard_set_text, text::clipboard::clipboard_set_file,
             file::is_folder, file::get_resource_dir, file::get_exe_dir,
             file::read_file, file::read_folder, file::create_file, file::write_file, file::delete_file, // 文件类
+            file_json::read_all_json_config, file_json::write_all_json_config, file_json::get_all_json_config, // 文件类 - toml文件版 & 配置文件版
             file_toml::toml_read_to_json, file_toml::toml_write_from_json, // 文件类 - toml文件版 & 配置文件版
             window::release_focus,
             other::greet,
