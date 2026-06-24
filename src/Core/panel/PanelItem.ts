@@ -14,7 +14,9 @@ import { textToIcon } from "./utils"
 const lucideIconCache = new Map();
 
 /** 项的通用逻辑 (工具栏、菜单栏等复用)
- * @param p_this AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法
+ * @param p_this
+ *   ~~AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法~~
+ *   废弃。现在不再要 hide 子面板，且 sendText 会定义在全局 api 中，且 hide 的是整体面板。
  * @param mode 如何填充 li 内容
  * - icon:       用 item.icon
  * - label:      用 item.label
@@ -22,7 +24,7 @@ const lucideIconCache = new Map();
  * - icon-label: (未实现) 同时填充 icon+label
  */
 export function init_item(
-  p_this: any,
+  _p_this: any,
   li: HTMLElement,
   item: PanelItem,
   mode: 'icon' | 'label' | 'none' = 'label'
@@ -104,21 +106,21 @@ export function init_item(
     if (item.type === "command_ob") {
       li.addEventListener('click', async () => {
         if (!item.content) return
-        global_setting.other.obsidian_run_command?.(item.content); p_this.panel_hide();
+        global_setting.other.obsidian_run_command?.(item.content);
       })
     }
     // b2. 输出纯文本
     else if (item.type === 'string' || item.type === "md") {
       li.addEventListener('click', async () => {
         if (!item.content) return
-        await global_setting.api.sendText(item.content); p_this.panel_hide();
+        await global_setting.api.sendText(item.content);
       })
     }
     // b3. 输出 path 对应的文件
     else if (item.type === 'path') {
       li.addEventListener('click', async () => {
         if (!item.content) return
-        await global_setting.api.sendText(item.content, 'IMG_MODE'); p_this.panel_hide();
+        await global_setting.api.sendText(item.content, 'IMG_MODE');
       })
     }
     // b4. 脚本

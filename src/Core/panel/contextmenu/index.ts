@@ -257,6 +257,7 @@ export class AMContextMenu {
           sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
 
         // 根据 order 插入节点，并重置 alt_key_key (仅根节点)
+        // TODO 同 order 根据名字排序
         if (is_root) {
           const order = item.order ?? 1000; li.dataset.order = order.toString();
           let inserted = false; // 若为 true，表示已插入到某个节点的前面
