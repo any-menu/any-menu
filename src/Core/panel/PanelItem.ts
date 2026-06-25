@@ -10,10 +10,45 @@ import { global_setting } from "../../Core/setting"
 
 import { textToIcon } from "./utils"
 
-// 用于避免重复请求相同的图标
-const lucideIconCache = new Map();
+// #region 图标缓存。用于避免重复请求相同的图标
+
+const lucideIconCache = new Map<string, string>();
+
+let initLucideCachePromise: Promise<void> | null = null; // 并发安全
+/** 确保缓存只初始化一次 */
+async function ensureLucideCacheReady(cache: Map<string, string>) {
+  if (!initLucideCachePromise) {
+    // 这里同步赋值，后续并发调用都会拿到同一个 Promise
+    initLucideCachePromise = init_lucideIconCache(cache)
+      .catch((e) => { // 如果初始化失败，重置锁，允许后续重试
+        initLucideCachePromise = null;
+        throw e;
+      });
+  }
+  return initLucideCachePromise;
+}
+
+async function init_lucideIconCache(lucideIconCache: Map<string, string>) {
+  const ret = await global_setting.api.readFile(global_setting.config.cache_paths + 'cache_lucide.json')
+  if (!ret) return
+  
+  const data = JSON.parse(ret)
+  for (const [key, value] of Object.entries(data)) {
+    lucideIconCache.set(key, value as string)
+  }
+}
+
+async function save_lucideIconCache(lucideIconCache: Map<string, string>) {
+  void global_setting.api.writeFile(global_setting.config.cache_paths + 'cache_lucide.json',
+    JSON.stringify(Object.fromEntries(lucideIconCache)))
+}
+
+// #endregion
 
 /** 项的通用逻辑 (工具栏、菜单栏等复用)
+ * 
+ * 注意: 会被并发调用，注意缓存问题
+ * 
  * @param p_this
  *   ~~AMToolbar|AMContextMenu 为了调用 sendText 和 hide 方法~~
  *   废弃。现在不再要 hide 子面板，且 sendText 会定义在全局 api 中，且 hide 的是整体面板。
@@ -45,14 +80,25 @@ export function init_item(
     } else if (item.icon.startsWith("lucide-")) {
       const iconName = item.icon.replace("lucide-", "");
       const iconUrl = `https://unpkg.com/lucide-static@latest/icons/${iconName}.svg`;
-      // 如果缓存中有，直接命中缓存
-      if (lucideIconCache.has(iconName)) {
-        console.log('命中图标缓存', iconName)
-        // 这个容器为了让多种方式生成的图标样式统一
-        const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
-        global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName));
-      } else {
-        // 这个容器为了让多种方式生成的图标样式统一
+
+      ;(async () => {
+        // 缓存文件填充缓存对象 (仅执行一次)
+        try {
+          await ensureLucideCacheReady(lucideIconCache)
+        } catch (e) {
+          console.warn('Lucide 缓存文件初始化失败', e)
+        }
+
+        // 如果缓存中有，直接使用缓存。否则才去请求创建
+        if (lucideIconCache.has(iconName)) {
+          if (global_setting.isDebug) console.log('命中图标缓存', iconName)
+          // 这个容器为了让多种方式生成的图标样式统一
+          const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
+          global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName) ?? "");
+          return
+        }
+
+        // 1. 这个容器为了让多种方式生成的图标样式统一
         const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
 
         // 2. (可选) 在加载完成前，先放置一个占位元素或 Loading SVG
@@ -65,17 +111,18 @@ export function init_item(
               global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
               throw new Error(`Icon ${iconName} not found`);
             }
-            return response.text();
+            return response.text(); // 给下一个 `.then`
           })
           .then(svgText => {
-            lucideIconCache.set(iconName, svgText); // 存入缓存
+            // 存入缓存
+            lucideIconCache.set(iconName, svgText); save_lucideIconCache(lucideIconCache);
             global_setting.api.saveInnerHTML(span, svgText);
           })
           .catch(error => { // 异常则降级处理
             console.warn("Failed to load Lucide icon:", error);
             global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
           });
-      }
+      })();
     } else {
       // 这个容器为了让多种方式生成的图标样式统一
       const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-svg');
