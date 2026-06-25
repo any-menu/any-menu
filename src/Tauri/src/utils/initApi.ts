@@ -1,5 +1,5 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
-import { global_setting, proxy_global_setting } from '../../../Core/setting'
+import { global_setting } from '../../../Core/setting'
 import { global_el } from '../../../Core/panel'
 import { hideWindow, showWindow } from '../module/window'
 // import { toml_parse } from '../../../Core/panel/contextmenu/demo'
@@ -262,9 +262,12 @@ export function initApi() {
 
   // 读写配置 (新版) - 多窗口多线程同步版
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
-    const ret: object = await invoke('read_all_json_config')
-    Object.assign(global_setting, ret)
-    proxy_global_setting()
+    const obj: any = await invoke('read_all_json_config')
+    
+    // 注意，不要直接 Object.assign(global_setting, obj)，只浅拷贝一层，会对如 global_setting.config 的对象重新赋值
+    Object.assign(global_setting.config, obj.config)
+    Object.assign(global_setting.config_plugins, obj.config_plugins)
+    Object.assign(global_setting.config_css_vars, obj.config_css_vars)
     return true
   }
   global_setting.api.saveConfig = async (): Promise<boolean> => {
@@ -276,10 +279,12 @@ export function initApi() {
     return ret
   }
   listen('active-setting-changed', (event) => {
-    const obj = event.payload
+    const obj: any = event.payload
     if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
-      Object.assign(global_setting, obj)
-      proxy_global_setting()
+      // 注意，不要直接 Object.assign(global_setting, obj)，只浅拷贝一层，会对如 global_setting.config 的对象重新赋值
+      Object.assign(global_setting.config, obj.config)
+      Object.assign(global_setting.config_plugins, obj.config_plugins)
+      Object.assign(global_setting.config_css_vars, obj.config_css_vars)
     }
   })
 
