@@ -368,7 +368,7 @@ export interface PanelItem {
 /** 加载过的插件的元数据缓存
  * (基本同 PluginInterface.metadata, icon 和 css 不要)
  * 
- * 同时也是 cache_plugin_meta 文件内容的格式
+ * 同时 `Map<path, MetadataCache>` 也是 cache_plugin_meta.json 文件内容的格式
  */
 export interface MetadataCache {
   id: string;

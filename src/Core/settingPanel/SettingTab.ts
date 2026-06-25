@@ -338,7 +338,7 @@ async function initSettingTab_localDict(tab_nav_container: HTMLElement, tab_cont
     if (!data) return
 
     // 缓存的加载过的插件信息
-    const path = global_setting.config.cache_paths + 'cache_plugin_meta'
+    const path = global_setting.config.cache_paths + 'cache_plugin_meta.json'
     let plugins_cache: Record<string, MetadataCache> = {}
     try {
       const content = await global_setting.api.readFile(path)
