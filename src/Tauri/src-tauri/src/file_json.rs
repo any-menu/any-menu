@@ -11,11 +11,11 @@ const CONFIG_PATH: &str = "./config/"; // TODO App 版本可以考虑放C盘，�
 /// 全局应用配置（支持多线程读取）
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
-    config: Json,
+    pub config: Json,
     config_css_vars: Json,
     config_plugins: Json,
 }
-static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
+pub static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
 
 /// 浅合并 JSON 对象到目标 (对应 ts Object.assign)
 fn shallow_merge(target: &mut Json, source: &Json) -> bool {

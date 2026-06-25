@@ -1,13 +1,14 @@
-/**
+/** (已废弃) 
+ * 
  * 文件读写 - 配置文件版
  */
 
 use serde_json::Value as Json;
 use std::env;
 
-use crate::file_toml;
+// use crate::file_toml;
 
-const CONFIG_PATH: &str = "./am-user.toml"; // TODO 放C盘会更利于软件版本更新时复用
+// const CONFIG_PATH: &str = "./am-user.toml"; // TODO 放C盘会更利于软件版本更新时复用
 
 #[tauri::command]
 fn config_read_to_json() -> Result<Json, String> {

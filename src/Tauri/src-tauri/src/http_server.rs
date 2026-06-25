@@ -15,7 +15,8 @@ use std::net::SocketAddr;
 use tauri::{AppHandle, Emitter};
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::file_config;
+// use crate::file_config;
+use crate::file_json;
 
 // 启动本地 HTTP 服务器
 pub fn start_local_server(app_handle: AppHandle) {
@@ -39,9 +40,15 @@ async fn start_local_server2(app_handle: AppHandle) {
         .with_state(app_handle);
 
     // 绑定本地端口
-    let port: u16 = file_config::config_get(|c| c["config"]["server_port"].as_u64().map(|v| v as u16))
-        .unwrap_or(None)
-        .unwrap_or(41667);
+    // let port: u16 = file_config::config_get(|c| c["config"]["server_port"].as_u64().map(|v| v as u16))
+    //     .unwrap_or(None)
+    //     .unwrap_or(41667);
+    let port: u16 = {
+        let guard = file_json::CONFIG.get().expect("CONFIG 未初始化").read().unwrap();
+        guard.config["server_port"].as_u64()
+            .map(|v| v as u16)
+            .unwrap_or(41667)
+    };
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     log::info!("Listening on {}", addr);

@@ -76,3 +76,28 @@ export default 对象 vs export default class
 
 建议方案：export default class MyPlugin implements PluginInterface
 PluginManager 侧只需在 loadPlugin 中判断：如果 module.default 是 function（即 class），则 new 一下再验证。这样向后兼容对象写法，同时支持 class 写法。
+
+## 多仓库问题
+
+去除辅助的插件和辅助工具仓库，主体仓库有:
+
+- any-menu:          多个版本的项目和发布
+- obsidian-any-menu: obsidian 版本的项目和发布
+                     (从 any-menu 同步, 避免 obsidian 自动审查多余项目的问题)
+- any-menu-pro:      (私有) 临时测试
+
+切换仓库常用命令备注:
+
+```bash
+# 1．查看当前远程地址(确认一下)
+git remote -v
+
+# 2．修改origin的URL为新仓库地址
+# or: git remote set-url origin https://github.com/any-menu/any-menu.git
+# or: git remote set-url origin https://github.com/any-menu/any-menu-pro.git
+git remote add prorepo https://github.com/any-menu/any-menu-pro.git
+
+# 3．推送到新仓库
+# or: git push -u origin main
+git push -u prorepo main
+```
