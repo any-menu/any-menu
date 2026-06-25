@@ -455,27 +455,35 @@ Object.defineProperty(global_setting.state, 'isDark', {
   configurable: true,
 })*/
 
-// 可自动处理 state.isDark、html class 管理
+/** 代理检测 setting 对象的变化并进行额外操作
+ * 
+ * 可自动处理 state.isDark、html class 管理。
+ * 对象变更时可以选择再绑定一次，避免绑定失效
+ */
 const key_darkmode = Symbol('darkmode');
-Object.defineProperty(global_setting.config, 'darkmode', {
-  get() {
-    return this[key_darkmode];
-  },
-  set(darkmode) {
-    // config 管理
-    this[key_darkmode] = darkmode;
+export function proxy_global_setting() {
+  // darkmode
+  Object.defineProperty(global_setting.config, 'darkmode', {
+    get() {
+      return this[key_darkmode];
+    },
+    set(darkmode) {
+      // config 管理
+      this[key_darkmode] = darkmode;
 
-    // state 管理
-    let isDark: boolean
-    if (darkmode === 'dark') isDark = true
-    else if (darkmode === 'light') isDark = false
-    else isDark = global_setting.api.getSystemIsDark()
-    global_setting.state.isDark = isDark
+      // state 管理
+      let isDark: boolean
+      if (darkmode === 'dark') isDark = true
+      else if (darkmode === 'light') isDark = false
+      else isDark = global_setting.api.getSystemIsDark()
+      global_setting.state.isDark = isDark
 
-    // class 管理。只影响组件，前缀避免浏览器环境中和页面主题冲突
-    document.documentElement.classList.toggle('am-theme-dark', isDark);
-    document.documentElement.classList.toggle('am-theme-light', !isDark);
-  },
-  enumerable: true, // 自身会出现在序列化结果中
-  configurable: true,
-})
+      // class 管理。只影响组件，前缀避免浏览器环境中和页面主题冲突
+      document.documentElement.classList.toggle('am-theme-dark', isDark);
+      document.documentElement.classList.toggle('am-theme-light', !isDark);
+    },
+    enumerable: true, // 自身会出现在序列化结果中
+    configurable: true,
+  })
+}
+proxy_global_setting()

@@ -1516,8 +1516,7 @@ table.dataview-table .btn {
 :root ::-webkit-scrollbar-thumb:hover {
   background-color: var(--scroll-hover);
 }
-
-:root.am-theme-dark {
+:root {
   --scroll-bg: #151517; /* 滚动条轨道背景色 */
   --scroll-main: #3c3c3d; /* 滚动条滑块颜色 */
   --scroll-hover: #545557; /* 滚动条滑块悬浮颜色 */

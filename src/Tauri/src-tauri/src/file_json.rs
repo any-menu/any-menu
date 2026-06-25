@@ -1,10 +1,22 @@
 /**
- * 文件读写 - json 文件版 & json 配置文件版
+ * 文件读写 - json 文件版 & json 配置文件版，多窗口多线程同步版
+ * 
+ * 逻辑:
+ * 
+ * - 初始流程:
+ *   - 初始化 -> 读取配置文件并初始化配置对象 (会进行一次配置写入) -> 初始化Tauri应用
+ * - 命令流程:
+ *   - 读取配置 -> 仅直接返回配置对象
+ *   - 写入配置 -> 更新配置对象、广播配置对象变更
  */
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as Json, json};
-use std::sync::{OnceLock, RwLock};
-use tokio::fs;
+use tauri::Emitter;
+use std::sync::{
+    OnceLock, RwLock,
+    atomic::{AtomicBool, Ordering}
+};
+use tokio::{fs, sync::Mutex};
 
 const CONFIG_PATH: &str = "./config/"; // TODO App 版本可以考虑放C盘，使软件更新后更易于复用
 
@@ -15,7 +27,13 @@ pub struct AppConfig {
     config_css_vars: Json,
     config_plugins: Json,
 }
-pub static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new();
+pub static CONFIG: OnceLock<RwLock<AppConfig>> = OnceLock::new(); // AppConfig的对象 (带读写锁)
+
+// #region utils
+
+// 是否已经读取过配置文件并初始化了 (确保仅初始化一次)
+static CONFIG_LOADED: AtomicBool = AtomicBool::new(false); // 只读快速入口
+static INIT_LOCK: Mutex<()> = Mutex::const_new(()); // 互斥锁
 
 /// 浅合并 JSON 对象到目标 (对应 ts Object.assign)
 fn shallow_merge(target: &mut Json, source: &Json) -> bool {
@@ -48,7 +66,7 @@ fn get_all_json_config_internal() -> AppConfig {
     guard.clone() // 利用 Clone trait 复制一份
 }
 
-// ----------------------------------------------------
+// #endregion
 
 /// 读取并解析单个 JSON 文件
 /// 
@@ -73,8 +91,25 @@ async fn read_json_file(path: &str) -> Result<Json, bool> {
 }
 
 /// 读取全部三个配置文件，并应用合并（对应 loadConfig）
-#[tauri::command]
-pub async fn read_all_json_config() -> AppConfig {
+pub async fn read_all_json_config2() -> AppConfig {
+    // 如果 CONFIG 还没被 set，就在这里初始化
+    if CONFIG.get().is_none() {
+        // 这里不用担心并发重复 set，因为我们在互斥锁内
+        CONFIG
+            .set(RwLock::new(default_app_config()))
+            .expect("CONFIG 初始化失败");
+    }
+
+    // 特殊 - 若非运行中首次读取配置文件，直接返回之前读过的内容就行了
+    // (不考虑在非软件中直接编辑配置文件的情况，若用户这样干了，让他重启软件生效)
+    if CONFIG_LOADED.load(Ordering::Acquire) {
+        return get_all_json_config_internal();
+    }
+    let _lock = INIT_LOCK.lock().await;
+    if CONFIG_LOADED.load(Ordering::Acquire) { // 双重检查：可能上一个持有锁的调用已经完成了加载
+        return get_all_json_config_internal();
+    }
+
     // 1. 并行读取文件
     let config_path = format!("{}config.json", CONFIG_PATH);
     let css_vars_path = format!("{}config_css_vars.json", CONFIG_PATH);
@@ -86,7 +121,7 @@ pub async fn read_all_json_config() -> AppConfig {
     );
 
     // 2. 获取写锁，合并数据
-    let config_lock = CONFIG.get().expect("CONFIG 未初始化");
+    let config_lock = CONFIG.get().unwrap(); // 一定初始化过了，unwrap
     {
         let mut guard = config_lock.write().unwrap();
         let app_config = &mut *guard;
@@ -96,15 +131,17 @@ pub async fn read_all_json_config() -> AppConfig {
     } // 释放写锁
 
     // 3. 无论如何均重新保存一遍（避免开发过程中新增的选项丢失）
-    write_all_json_config(None).await;
+    write_all_json_config2(None).await;
+
+    // 标记2
+    CONFIG_LOADED.store(true, Ordering::Release);
 
     get_all_json_config_internal()
 }
 
-/// 从后端获取对应的配置对象 (不重复读)
 #[tauri::command]
-pub async fn get_all_json_config() -> AppConfig {
-    get_all_json_config_internal()
+pub async fn read_all_json_config() -> AppConfig {
+    read_all_json_config2().await
 }
 
 /// 写入单个 JSON 文件（带 pretty 格式化）
@@ -144,8 +181,7 @@ async fn write_json_file(path: &str, value: &Json) {
 }
 
 /// 保存全部三个配置文件（对应 saveConfig）
-#[tauri::command]
-pub async fn write_all_json_config(obj: Option<AppConfig>) -> bool {
+pub async fn write_all_json_config2(obj: Option<AppConfig>) -> bool {
     // 1. 准备要写入的数据
     let (config_data, css_vars_data, plugins_data) = if let Some(new_obj) = obj {
         // 有新配置：获取写锁，在原位浅合并，然后克隆数据，释放锁
@@ -184,12 +220,21 @@ pub async fn write_all_json_config(obj: Option<AppConfig>) -> bool {
     true
 }
 
+#[tauri::command]
+pub async fn write_all_json_config(app_handle: tauri::AppHandle, obj: Option<AppConfig>) -> Result<bool, String> {
+    let ret: bool = write_all_json_config2(obj).await;
+
+    // 广播通知
+    app_handle.emit("active-setting-changed", get_all_json_config_internal()).unwrap();
+
+    Ok(ret)
+}
+
+// #region utils2
+
 /// 初始化全局配置（应在程序启动时调用一次）
-pub fn init_all_json_config() {
-    let app_config = default_app_config();
-    CONFIG
-        .set(RwLock::new(app_config))
-        .expect("CONFIG 已经初始化过");
+pub async fn init_all_json_config() {
+    read_all_json_config2().await;
 }
 // 与前端的 global_setting 部分一致 (方便复制黏贴同步前后端的默认配置)
 fn default_app_config() -> AppConfig { AppConfig {
@@ -262,3 +307,5 @@ fn default_app_config() -> AppConfig { AppConfig {
       //{ "varName":"--ab-menu-bg-color",     "value":"#ffffff", "darkValue":"#1B1B1B", "name":"背景色" },
     ]},   
 }}
+
+// #endregion

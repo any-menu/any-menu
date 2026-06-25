@@ -1,5 +1,5 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
-import { global_setting } from '../../../Core/setting'
+import { global_setting, proxy_global_setting } from '../../../Core/setting'
 import { global_el } from '../../../Core/panel'
 import { hideWindow, showWindow } from '../module/window'
 // import { toml_parse } from '../../../Core/panel/contextmenu/demo'
@@ -7,6 +7,7 @@ import { hideWindow, showWindow } from '../module/window'
 // 注意 api/window 里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 // convertFileSrc 需要 tauri.confi.json 中的 security 中的一些修改
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
+import { listen } from '@tauri-apps/api/event'
 import { resolveResource } from '@tauri-apps/api/path';
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
@@ -263,6 +264,7 @@ export function initApi() {
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
     const ret: object = await invoke('read_all_json_config')
     Object.assign(global_setting, ret)
+    proxy_global_setting()
     return true
   }
   global_setting.api.saveConfig = async (): Promise<boolean> => {
@@ -273,6 +275,13 @@ export function initApi() {
     }})
     return ret
   }
+  listen('active-setting-changed', (event) => {
+    const obj = event.payload
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      Object.assign(global_setting, obj)
+      proxy_global_setting()
+    }
+  })
 
   /* 读写配置 (旧版,废弃) - 新版更统一 app 和 obsidian 版本的逻辑和统一配置文件，且对于 app 版本支持了多窗口多线程同步
   const CONFIG_PATH = './am-user.toml' // TODO 放C盘会更利于软件版本更新时复用
