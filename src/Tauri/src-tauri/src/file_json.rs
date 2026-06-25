@@ -92,14 +92,6 @@ async fn read_json_file(path: &str) -> Result<Json, bool> {
 
 /// 读取全部三个配置文件，并应用合并（对应 loadConfig）
 pub async fn read_all_json_config2() -> AppConfig {
-    // 如果 CONFIG 还没被 set，就在这里初始化
-    if CONFIG.get().is_none() {
-        // 这里不用担心并发重复 set，因为我们在互斥锁内
-        CONFIG
-            .set(RwLock::new(default_app_config()))
-            .expect("CONFIG 初始化失败");
-    }
-
     // 特殊 - 若非运行中首次读取配置文件，直接返回之前读过的内容就行了
     // (不考虑在非软件中直接编辑配置文件的情况，若用户这样干了，让他重启软件生效)
     if CONFIG_LOADED.load(Ordering::Acquire) {
@@ -234,6 +226,13 @@ pub async fn write_all_json_config(app_handle: tauri::AppHandle, obj: Option<App
 
 /// 初始化全局配置（应在程序启动时调用一次）
 pub async fn init_all_json_config() {
+    // 如果 CONFIG 还没被 set，就在这里初始化
+    if CONFIG.get().is_none() {
+        CONFIG
+            .set(RwLock::new(default_app_config()))
+            .expect("CONFIG 初始化失败");
+    }
+
     read_all_json_config2().await;
 }
 // 与前端的 global_setting 部分一致 (方便复制黏贴同步前后端的默认配置)
