@@ -39,8 +39,9 @@ pub async fn run() {
     // 日志插件
     // 两种策略
     // 1. 使用 Tauri log plugin。拥有 webview 转发功能 (虽然现在也不用) 
+    // let log_plugin = mylog::init_log_plugin();
     // 2. 使用 log4rs。拥有: 动态修改日志配置 (目标(终端/文件等)、日志级别)，轮转日志
-    let log_plugin = mylog::get_log_plugin();
+    mylog::init_log4rs();
 
     // 配置文件模块 (阻塞)
     // let _ = file_config::init_config();
@@ -57,7 +58,7 @@ pub async fn run() {
     tauri::Builder::default()
         .manage(uia_sender) // 依赖注入，注入到Tauri State管理
 
-        .plugin(log_plugin) // 日志插件
+        // .plugin(log_plugin) // 日志插件
         .plugin(tauri_plugin_http::init()) // HTTP 请求插件
         .plugin(tauri_plugin_global_shortcut::Builder::new().build()) // 全局快捷键插件
         .plugin(tauri_plugin_opener::init()) // 在用户系统的默认应用程序中打开文件或 URL

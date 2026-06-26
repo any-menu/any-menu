@@ -26,6 +26,7 @@ toml_edit = "0.25.3" # toml 依赖 (保留格式版)
 enigo = "0.6" # 模拟输入
 once_cell = "1.21.3"
 tauri-plugin-log = { version = "2", features = ["colored"] } # 日志插件
+log4rs = "1.4.0" # 高级日志库
 fern = "0.7.1" # 日志高亮
 log = "0.4.28" # 日志门面
 chrono = "0.4.42" # 日期时间
