@@ -81,7 +81,7 @@ pub fn _init_ad_shortcut() {
                 // simulate_keypress(Key::CapsLock); // 模拟 CapsLock 按键（按下和弹起）
             },
             EventType::KeyPress(Key::KeyF) if caps_active => {
-                println!("Caps+F detected!");
+                log::info!("Caps+F detected!");
                 // 这里可以用 tauri::api::process::Command 或 tauri::window.emit 通知前端
             }
             _ => {}
@@ -242,7 +242,7 @@ fn start_ad_shortcut2(app_handle: tauri::AppHandle) {
         Some(event)
     };
     if let Err(error) = grab(callback) {
-        println!("Error: {:?}", error)
+        log::error!("Error: {:?}", error)
     }
 }
 

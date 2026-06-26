@@ -26,7 +26,7 @@ pub fn init_config() -> Result<(), String> {
     // 打印 CWD
     #[cfg(debug_assertions)]
     if let Ok(cwd) = env::current_dir() {
-        println!("CWD: {:?}", cwd);
+        log::info!("CWD: {:?}", cwd);
     }
 
     let json = config_read_to_json()?;
