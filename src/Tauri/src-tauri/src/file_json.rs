@@ -8,6 +8,9 @@
  * - 命令流程:
  *   - 读取配置 -> 仅直接返回配置对象
  *   - 写入配置 -> 更新配置对象、广播配置对象变更
+ * 
+ * 注意该文件在程序中是最早执行的，故无法使用日志系统输出
+ * (除非改动策略，详见 lib.rs 日志插件注释)
  */
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as Json, json};
@@ -76,7 +79,7 @@ async fn read_json_file(path: &str) -> Result<Json, bool> {
     let content = match fs::read_to_string(path).await {
         Ok(s) => s,
         Err(e) => {
-            eprintln!("没配置文件，将自动生成一个: {}", e);
+            log::error!("没配置文件，将自动生成一个: {}", e);
             return Ok(Json::Object(Map::new()));
         }
     };
@@ -84,7 +87,7 @@ async fn read_json_file(path: &str) -> Result<Json, bool> {
     match serde_json::from_str(&content) {
         Ok(v) => Ok(v),
         Err(e) => {
-            eprintln!("配置解析失败，请检查格式是否正确: {}", e);
+            log::error!("配置解析失败，请检查格式是否正确: {}", e);
             Err(false)
         }
     }
@@ -161,14 +164,14 @@ async fn write_json_file(path: &str, value: &Json) {
     // 确保父目录存在（递归创建）
     if let Some(parent) = std::path::Path::new(path).parent() {
         if let Err(e) = tokio::fs::create_dir_all(parent).await {
-            eprintln!("创建目录 {} 失败: {}", parent.display(), e);
+            log::error!("创建目录 {} 失败: {}", parent.display(), e);
             return; // 无法创建目录时放弃写入
         }
     }
 
     // 写入文件
     if let Err(e) = std::fs::write(path, content) {
-        eprintln!("写入配置文件失败 {}: {}", path, e);
+        log::error!("写入配置文件失败 {}: {}", path, e);
     }
 }
 
@@ -208,6 +211,8 @@ pub async fn write_all_json_config2(obj: Option<AppConfig>) -> bool {
         write_json_file(&css_vars_path, &css_vars_data),
         write_json_file(&plugins_path, &plugins_data),
     );
+
+    log::info!("Wrote config files.");
 
     true
 }
