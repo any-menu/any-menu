@@ -3,15 +3,28 @@
   "version": "1.2.2",
   "author": "LincZero",
   "description": "",
+
   "main": "index.js",
+  "types": "index.d.ts",
+  "files": ["dist"],
+  "publishConfig": {
+    "directory": "dist"
+  },
+
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pnpm build_tsc",
+    "build_tsc": "tsc -p tsconfig.json",
+    "obfuscator": "javascript-obfuscator dist --output dist --config obfuscator.config.js",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [],
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.9.2",
+    "javascript-obfuscator": "^5.4.3",
     "node": "^22.20.0",
     "tslib": "^2.8.1"
   },

@@ -16,6 +16,7 @@
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "removeComments": true, // 去掉注释
     "lib": [
       "DOM",
       "ES5",
@@ -25,9 +26,15 @@
       "ES2022",
       "dom.iterable"
     ],
+
+    "declaration": true,
+    "rootDir": "./",
+    "outDir": "./dist",
   },
   "include": [
     "**/*.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "dist", "node_modules"
+  ]
 }
