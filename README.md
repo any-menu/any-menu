@@ -2,7 +2,7 @@
   <img width="128" src="./docs/assets/icon.png">
 </div>
 
-<h1 align="center">AnyMenu</h1>
+<h1 align="center">[WIP] AnyMenu</h1>
 
 <p align="center">
   <strong>A powerful assistant for inputMethod / editor</strong><br>
