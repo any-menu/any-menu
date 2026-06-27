@@ -68,7 +68,7 @@ jobs:
           
           # 文档的克隆、构建、部署。注意 `clone --depth 1` 只拉最近一次提交，减少时间
           # git clone --depth 1 https://github.com/${GITHUB_REPOSITORY}.git # 如果有多个clone项则替换成这个，避免冲突
-          git clone --depth 1 https://github.com/${GITHUB_REPOSITORY}.git temp_repo 
+          git clone --depth 1 https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git temp_repo
 
           # 该仓库为代理仓库，使用链接仓库而非此仓库
           if [ -f temp_repo/agency ]; then
