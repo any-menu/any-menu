@@ -58,7 +58,7 @@ async function save_lucideIconCache(lucideIconCache: Map<string, string>) {
  * - none:       不填充
  * - icon-label: (未实现) 同时填充 icon+label
  */
-export function init_item(
+export async function init_item(
   _p_this: any,
   li: HTMLElement,
   item: PanelItem,
@@ -81,23 +81,22 @@ export function init_item(
       const iconName = item.icon.replace("lucide-", "");
       const iconUrl = `https://unpkg.com/lucide-static@latest/icons/${iconName}.svg`;
 
-      ;(async () => {
-        // 缓存文件填充缓存对象 (仅执行一次)
-        try {
-          await ensureLucideCacheReady(lucideIconCache)
-        } catch (e) {
-          console.warn('Lucide 缓存文件初始化失败', e)
-        }
+      // 缓存文件填充缓存对象 (仅执行一次)
+      try {
+        await ensureLucideCacheReady(lucideIconCache)
+      } catch (e) {
+        console.warn('Lucide 缓存文件初始化失败', e)
+      }
 
-        // 如果缓存中有，直接使用缓存。否则才去请求创建
-        if (lucideIconCache.has(iconName)) {
-          if (global_setting.isDebug) console.log('命中图标缓存', iconName)
-          // 这个容器为了让多种方式生成的图标样式统一
-          const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
-          global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName) ?? "");
-          return
-        }
-
+      // 如果缓存中有，直接使用缓存
+      if (lucideIconCache.has(iconName)) {
+        if (global_setting.isDebug) console.log('命中图标缓存', iconName)
+        // 这个容器为了让多种方式生成的图标样式统一
+        const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
+        global_setting.api.saveInnerHTML(span, lucideIconCache.get(iconName) ?? "");
+      }
+      // 无缓存，则网络请求创建
+      else {
         // 1. 这个容器为了让多种方式生成的图标样式统一
         const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-lucide');
 
@@ -122,7 +121,7 @@ export function init_item(
             console.warn("Failed to load Lucide icon:", error);
             global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html)
           });
-      })();
+        }
     } else {
       // 这个容器为了让多种方式生成的图标样式统一
       const span = document.createElement('span'); li.appendChild(span); span.classList.add('am-icon', 'am-icon-svg');

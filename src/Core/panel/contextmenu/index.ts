@@ -286,7 +286,7 @@ export class AMContextMenu {
         }
 
         // 项的 图标 名字 功能 说明 等
-        init_item(this, li, item, 'label')
+        void init_item(this, li, item, 'label')
 
         // 项的子菜单
         if (item.children) {

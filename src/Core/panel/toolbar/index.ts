@@ -61,6 +61,7 @@ export class AMToolbar {
         const li = document.createElement('div'); li.classList.add('am-toolbar-item');
 
         // 根据 order 插入节点
+        // TODO 同 order 根据名字排序
         const order = item.order ?? 1000; li.dataset.order = order.toString();
         let inserted = false; // 若为 true，表示已插入到某个节点的前面
         for (const child of Array.from(this.el.children) as HTMLElement[]) {
@@ -77,7 +78,7 @@ export class AMToolbar {
         }
 
         // 项的 图标 名字 功能 说明 等
-        init_item(this, li, item, 'icon')
+        void init_item(this, li, item, 'icon')
       })
     }
 
