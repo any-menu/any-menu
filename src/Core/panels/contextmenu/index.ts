@@ -31,12 +31,12 @@
 import type { PanelItem } from "../../../Type"
 import { global_setting } from "../../shared/setting"
 import { input_suggestion } from "./suggestion_old"
-import { global_el } from "../index"
+import { global_el } from "../MulPanel/index"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
 
-import { init_item } from "../PanelItem"
+import { init_item } from "../shared/PanelItem"
 
 // 多级菜单
 type MENU_NODE = {

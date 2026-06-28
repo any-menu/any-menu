@@ -2,17 +2,28 @@
 
 目录
 
-- (面板容器)
-  - panelManager  | 管理多个主面板
-  - index         | 管理多个子面板
+- shared
+  - PanelItem     | 面板中的控件
 - (子面板类)       | 又分核心子面板和脚本自定义子面板。脚本可以控制和监听前者
   - search/       | 搜索栏
   - toolbar/      | 工具栏
   - contextmenu/  | 多级菜单
+- MulPanel
   - pin/          | 置顶和拖拽按钮
-- (共享类)
-  - PanelItem     | 面板项
-  - initTool      | 初始化主面板中的子面板
+  - index         | 管理多个子面板
+
+依赖关系
+
+- shared/
+  - (otherFolders)
+    - MulPanel/
+
+概念
+
+将UI按大小和功能复杂度分为三个级别：
+- 控件 (通常是一个单一的功能元素)
+- 子面板 (即一个UI模块，可包含多个控件)
+- 多面板集 (相当于是窗口，可包含多个子面板)
 
 层级
 

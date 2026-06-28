@@ -1,6 +1,6 @@
 import { global_setting } from "../../shared/setting"
 import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
-import { global_el } from "../index"
+import { global_el } from "../MulPanel/index"
 import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager"
 
 // 建议项

@@ -11,7 +11,7 @@ import {
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 
-import { AMPanel, global_el } from '../../../Core/panels/'
+import { AMPanel, global_el } from '../../../Core/panels/MulPanel'
 import { global_setting } from '../../../Core/shared/setting'
 
 import { setupAppChangeListener } from './focus'

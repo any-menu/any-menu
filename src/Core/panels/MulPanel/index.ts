@@ -19,14 +19,14 @@
  * - 提供一个父层，让各个子组件可以相互通信使用使用共用变量 (如触发 alt_v_state 时是否有建议栏会有不同行为)
  */
 
-export * from './contextmenu/index'
-export * from './search/index'
-import { AMSearch } from './search/index'
-import { AMToolbar } from './toolbar/index'
-import { AMContextMenu } from './contextmenu/index'
-import { AMMiniEditor } from './miniEditor/index'
+import { global_setting } from '../../shared/setting'
+export * from '../contextmenu/index'
+export * from '../search/index'
+import { AMSearch } from '../search/index'
+import { AMToolbar } from '../toolbar/index'
+import { AMContextMenu } from '../contextmenu/index'
+import { AMMiniEditor } from '../miniEditor/index'
 import { AMPin } from './pin/index'
-import { global_setting } from '../shared/setting'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'

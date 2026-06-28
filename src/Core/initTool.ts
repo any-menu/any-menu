@@ -1,13 +1,13 @@
 /** 依赖于搜索框和多级菜单 */
 
-import { type PanelItem } from "../../Type"
-import { global_el } from "."
-import { type AMContextMenu } from "./contextmenu"
-import { type AMToolbar } from "./toolbar"
-import { global_setting } from "../shared/setting"
-import { SEARCH_DB, SEARCH_DB_img } from "./search/SearchDB"
-import { PLUGIN_MANAGER, PluginManager } from "../modules/pluginManager/PluginManager"
-import { toml_parse } from "./contextmenu/demo"
+import { type PanelItem } from "../Type"
+import { global_el } from "./panels/MulPanel"
+import { type AMContextMenu } from "./panels/contextmenu"
+import { type AMToolbar } from "./panels/toolbar"
+import { global_setting } from "./shared/setting"
+import { SEARCH_DB, SEARCH_DB_img } from "./panels/search/SearchDB"
+import { PLUGIN_MANAGER, PluginManager } from "./modules/pluginManager/PluginManager"
+import { toml_parse } from "./panels/contextmenu/demo"
 import * as yaml from 'js-yaml';
 
 /**

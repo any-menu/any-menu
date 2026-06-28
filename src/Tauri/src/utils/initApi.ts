@@ -1,6 +1,6 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
 import { global_setting } from '../../../Core/shared/setting'
-import { global_el } from '../../../Core/panels'
+import { global_el } from '../../../Core/panels/MulPanel'
 import { hideWindow, showWindow } from '../module/window'
 // import { toml_parse } from '../../../Core/panels/contextmenu/demo'
 

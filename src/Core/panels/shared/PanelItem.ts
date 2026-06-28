@@ -4,9 +4,9 @@
  * 用于工具栏、菜单栏等的UI项进行复用
  */
 
-import type { PanelItem } from "../../Type"
-import { PLUGIN_MANAGER, PluginManager } from "../modules/pluginManager/PluginManager"
-import { global_setting } from "../../Core/shared/setting"
+import type { PanelItem } from "../../../Type"
+import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager"
+import { global_setting } from "../../shared/setting"
 
 import { textToIcon } from "./utils"
 

@@ -1,7 +1,7 @@
-import { AMPanel } from "../../../Core/panels"
+import { AMPanel } from "../../../Core/panels/MulPanel"
 // import { ABContextMenu } from "../../../Core/panels/contextmenu"
 // import { AMSearch } from "../../../Core/panels/search"
-import { initMenuData } from "../../../Core/panels/initTool"
+import { initMenuData } from "../../../Core/initTool"
 
 /// 初始化菜单
 export async function initMenu(el: HTMLElement) {

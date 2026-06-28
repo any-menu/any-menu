@@ -1,4 +1,4 @@
-import { global_setting } from "../../shared/setting"
+import { global_setting } from "../../../shared/setting"
 
 export class AMPin {
   static factory(el: HTMLElement) {
