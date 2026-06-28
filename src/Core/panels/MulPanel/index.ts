@@ -27,11 +27,14 @@ import { AMToolbar } from '../toolbar/index'
 import { AMContextMenu } from '../contextmenu/index'
 import { AMMiniEditor } from '../miniEditor/index'
 import { AMPin } from './pin/index'
+import { AMTitlebar } from './titlebar'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
 
 // 单例模式下使用，否则不使用
+// TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
+//   而 App 版本，每个进程中这里应只有一个。
 export const global_el: {
   amPanel: AMPanel | null,
   amSearch: AMSearch | null,
@@ -39,6 +42,7 @@ export const global_el: {
   amContextMenu: AMContextMenu | null,
   amMiniEditor: AMMiniEditor | null,
   amCustom: HTMLElement | null, // 供自定义脚本使用的面板元素
+
   alt_v_state: boolean,  // 虚拟alt状态
 } = {
   amPanel: null,
@@ -47,6 +51,7 @@ export const global_el: {
   amMiniEditor: null,
   amToolbar: null,
   amCustom: null,
+
   alt_v_state: false
 }
 // 按下过 alt+key 组合键。
@@ -91,6 +96,7 @@ export class AMPanel {
 
   /** 单例模式 */
   static factory(el: HTMLElement) {
+    // AMTitlebar.factory(el)
     if (global_el.amPanel) {
       return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
     }

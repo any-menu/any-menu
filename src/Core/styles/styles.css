@@ -936,6 +936,17 @@ div.editable-textarea-textarea {
   height: 16px;
 }
 
+.am-titlebar {
+  height: 30px;
+  background: var(--am-bg-color);
+  color: var(--am-color);
+  border-radius: 8px;
+}
+
+#main > .am-panel .am-titlebar {
+  -webkit-app-region: drag;
+}
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;

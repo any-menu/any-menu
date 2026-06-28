@@ -1,0 +1,14 @@
+/** 标题栏 */
+
+.am-titlebar {
+  height: 30px;
+  background: var(--am-bg-color);
+  color: var(--am-color);
+  border-radius: 8px;
+}
+
+#main>.am-panel {
+  .am-titlebar {
+    -webkit-app-region: drag; // 允许在桌面应用环境中，使用按钮拖动窗口
+  }
+}
