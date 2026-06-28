@@ -6,11 +6,10 @@ import {
 } from 'obsidian'
 
 import { PanelItem } from '@/Type'
-import { AMContextMenu } from "@/Core/panel/contextmenu"
-import { root_menu } from "@/Core/panel/contextmenu/demo"
-import { global_setting } from '@/Core/setting'
-import { PluginRunCtxDemo } from '@/Core/pluginManager/PluginInterface'
-import { PLUGIN_MANAGER, PluginManager } from '@/Core/pluginManager/PluginManager'
+import { AMContextMenu } from "@/Core/panels/contextmenu"
+import { root_menu } from "@/Core/panels/contextmenu/demo"
+import { global_setting } from '@/Core/shared/setting'
+import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
 
 /**
  * 用于obsidian原菜单上的追加。

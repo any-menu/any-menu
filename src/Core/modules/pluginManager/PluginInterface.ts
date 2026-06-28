@@ -2,9 +2,9 @@
  * 如果你是脚本开发者，那么你需要要阅读 ../../Type 中的类型即可
  */
 
-import { AMPanel, global_el } from "../panel";
-import { global_setting } from "../setting";
-import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../Type";
+import { AMPanel, global_el } from "../../panels";
+import { global_setting } from "../../shared/setting";
+import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../../Type";
 
 export const AppCtxDemo: PluginAppCtx = {
   env: {

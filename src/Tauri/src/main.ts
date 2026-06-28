@@ -1,6 +1,6 @@
 /** 主面板相关 */
 
-import { global_setting } from '../../Core/setting'
+import { global_setting } from '../../Core/shared/setting'
 import { initApi } from './utils/initApi'
 import { invoke } from "@tauri-apps/api/core"
 
@@ -55,7 +55,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // #endregion
 
-import { initMenu } from './panel'
+import { initMenu } from './panels'
 
 // 前端模块
 window.addEventListener("DOMContentLoaded", async () => {

@@ -1,4 +1,4 @@
-import type { UrlRequestConfig, UrlResponse } from '../Type'
+import type { UrlRequestConfig, UrlResponse } from '../../Type'
 import DOMPurify from 'dompurify';
 
 /** 全局设置

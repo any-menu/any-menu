@@ -1,4 +1,4 @@
-import { global_setting } from "../../../Core/setting"
+import { global_setting } from "../../../Core/shared/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
 import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { EditableBlock_Code } from "@editableblock/code/dist/EditableBlock_Code/src/" // [!code hl]

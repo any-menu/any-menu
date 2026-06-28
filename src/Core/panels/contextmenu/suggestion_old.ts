@@ -1,4 +1,4 @@
-import { global_setting } from "../../setting";
+import { global_setting } from "../../shared/setting";
 
 /** 装饰 - 输入框建议
  * 

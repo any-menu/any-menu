@@ -29,9 +29,9 @@
  * TODO 封装一个基础类，然后 Obsidian、浏览器版等再派生具体差异实现
  */
 
-import { global_setting } from "@/Core/setting"
+import { global_setting } from "@/Core/shared/setting"
 import { getCursorInfo } from "."
-import { AMPanel } from "@/Core/panel"
+import { AMPanel } from "@/Core/panels"
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 
 export class DocumentListeners {

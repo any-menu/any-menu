@@ -2,11 +2,11 @@
  * 一个简单的右键菜单实现库 —— App版本，去除Tauri和Obsidian依赖
  */
 
-import { ABContextMenu } from '@/Core/panel/contextmenu/index'
+import { ABContextMenu } from '@/Core/panels/contextmenu/index'
 
 import { EditableBlock_Raw } from "@editableblock/textarea/dist/EditableBlock/src/EditableBlock_Raw"
-import type { ContextMenuItems, ContextMenuItem } from "@/Core/panel/contextmenu/demo"
-import { global_setting } from '@/Core/setting'
+import type { ContextMenuItems, ContextMenuItem } from "@/Core/panels/contextmenu/demo"
+import { global_setting } from '@/Core/shared/setting'
 
 /**
  * 一个上下文菜单 - 通用版 (App)

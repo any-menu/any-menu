@@ -1,7 +1,7 @@
-import type { MetadataCache } from '../../Type';
-import { t } from '../locales/helper';
-import { global_setting } from '../setting';
-import { RepoAPI } from '../webApi'
+import type { MetadataCache } from '../../../Type';
+import { t } from '../../shared/locales/helper';
+import { global_setting } from '../../shared/setting';
+import { RepoAPI } from '../../shared/webApi'
 import { SettingItem } from './SettingItem';
 
 // import { Pane } from 'tweakpane'; // 约为Ob插件版本增添270KB，有些大，不要了

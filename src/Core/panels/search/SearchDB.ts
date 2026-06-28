@@ -1,6 +1,6 @@
 /** 核心搜索数据库，内置多种子搜索索引方式 */
 
-import { global_setting } from '../../setting'
+import { global_setting } from '../../shared/setting'
 import { TrieDB, type TrieNode } from './TrieDB'
 import { ReverseIndexDB } from './ReverseIndexDB'
 

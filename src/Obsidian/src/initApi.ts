@@ -9,9 +9,9 @@ import {
   getLanguage // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
 } from 'obsidian'
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
-import { global_setting } from '@/Core/setting'
-import { AMPanel, global_el } from '@/Core/panel';
-import { getCursorInfo } from './panel'
+import { global_setting } from '@/Core/shared/setting'
+import { AMPanel, global_el } from '@/Core/panels';
+import { getCursorInfo } from './panels'
 
 export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用

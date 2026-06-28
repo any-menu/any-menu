@@ -11,8 +11,8 @@ import {
   type MarkdownPostProcessorContext,
   Plugin,
 } from 'obsidian'
-import { global_setting } from '@/Core/setting'
-import { registerABContextMenu, registerAMContextMenu, DocumentListeners } from './panel'
+import { global_setting } from '@/Core/shared/setting'
+import { registerABContextMenu, registerAMContextMenu, DocumentListeners } from './panels'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 

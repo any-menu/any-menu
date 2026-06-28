@@ -29,7 +29,7 @@
  */
 
 import type { PanelItem } from "../../../Type"
-import { global_setting } from "../../setting"
+import { global_setting } from "../../shared/setting"
 import { input_suggestion } from "./suggestion_old"
 import { global_el } from "../index"
 

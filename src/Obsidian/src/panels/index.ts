@@ -1,13 +1,13 @@
 import {
   MarkdownView, Plugin, type Editor
 } from 'obsidian'
-import { t } from '@/Core/locales/helper'
-import { AMPanel } from '@/Core/panel/'
-// import { ABContextMenu } from '@/Core/panel/contextmenu/index'
-// import { AMSearch } from "@/Core/panel/search"
-import { initMenuData } from "@/Core/panel/initTool"
-import { global_setting } from '@/Core/setting'
-// import { root_menu } from "@/Core/panel/contextmenu/demo"
+import { t } from '@/Core/shared/locales/helper'
+import { AMPanel } from '@/Core/panels/'
+// import { ABContextMenu } from '@/Core/panels/contextmenu/index'
+// import { AMSearch } from "@/Core/panels/search"
+import { initMenuData } from "@/Core/panels/initTool"
+import { global_setting } from '@/Core/shared/setting'
+// import { root_menu } from "@/Core/panels/contextmenu/demo"
 
 export * from './DocumentListeners'
 export * from './ABContextMenu_Ob'

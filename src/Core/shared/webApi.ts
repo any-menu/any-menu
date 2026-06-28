@@ -7,7 +7,7 @@
  * 也是 api.request 的二次封装
  */
 
-import { global_setting } from './setting'
+import { global_setting } from '../shared/setting'
 
 /**
  * any-menu/any-menu 的 gitee/github 仓库 api (二次封装 base api (网络与本地文件读写))

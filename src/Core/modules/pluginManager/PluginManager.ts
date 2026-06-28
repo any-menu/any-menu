@@ -1,6 +1,6 @@
 // 定义插件必须实现的接口
-import { global_setting } from '../setting';
-import type { MetadataCache, PluginAppCtx, PluginInterface, PluginRunCtx } from '../../Type'
+import { global_setting } from '../../shared/setting';
+import type { MetadataCache, PluginAppCtx, PluginInterface, PluginRunCtx } from '../../../Type'
 import {
   AppCtxDemo, appCtxDemo_createFunctions,
   PluginInterfaceDemo, PluginRunCtxDemo
@@ -10,7 +10,7 @@ import { z } from 'zod'; // 运行时验证库
 // 需要开启 tsconfig.json 中的
 // "resolveJsonModule": true,
 // "esModuleInterop": true,
-import pkg from '../package.json';
+import pkg from '../../package.json';
 const currentAppVersion: string = pkg.version;
 
 // Schema

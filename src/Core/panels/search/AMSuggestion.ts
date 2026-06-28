@@ -1,7 +1,7 @@
-import { global_setting } from "../../setting"
+import { global_setting } from "../../shared/setting"
 import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
 import { global_el } from "../index"
-import { PLUGIN_MANAGER, PluginManager } from "../../pluginManager/PluginManager"
+import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager"
 
 // 建议项
 export class AMSuggestion {

@@ -5,8 +5,8 @@
  */
 
 import type { PanelItem } from "../../Type"
-import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
-import { global_setting } from "../../Core/setting"
+import { PLUGIN_MANAGER, PluginManager } from "../modules/pluginManager/PluginManager"
+import { global_setting } from "../../Core/shared/setting"
 
 import { textToIcon } from "./utils"
 

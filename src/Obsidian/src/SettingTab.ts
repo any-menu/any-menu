@@ -11,9 +11,9 @@
  */
 
 import { App, PluginSettingTab, Notice, type Plugin } from "obsidian"
-import { initSettingTab_1, initSettingTab_2 } from "@/Core/settingPanel/SettingTab"
-import { t } from "@/Core/locales/helper";
-// import { API } from "@/Core/webApi";
+import { initSettingTab_1, initSettingTab_2 } from "@/Core/modules/settingPanel/SettingTab"
+import { t } from "@/Core/shared/locales/helper";
+// import { API } from "@/Core/shared/webApi";
 
 export class AMSettingTab extends PluginSettingTab {
   isInitialized = false

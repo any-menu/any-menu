@@ -1,4 +1,4 @@
-import { global_setting } from "../../setting"
+import { global_setting } from "../../shared/setting"
 import { AMSuggestion } from "./AMSuggestion"
 
 // 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错

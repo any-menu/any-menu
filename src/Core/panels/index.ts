@@ -26,7 +26,7 @@ import { AMToolbar } from './toolbar/index'
 import { AMContextMenu } from './contextmenu/index'
 import { AMMiniEditor } from './miniEditor/index'
 import { AMPin } from './pin/index'
-import { global_setting } from '../setting'
+import { global_setting } from '../shared/setting'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'

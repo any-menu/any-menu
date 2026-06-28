@@ -4,9 +4,9 @@ import { type PanelItem } from "../../Type"
 import { global_el } from "."
 import { type AMContextMenu } from "./contextmenu"
 import { type AMToolbar } from "./toolbar"
-import { global_setting } from "../setting"
+import { global_setting } from "../shared/setting"
 import { SEARCH_DB, SEARCH_DB_img } from "./search/SearchDB"
-import { PLUGIN_MANAGER, PluginManager } from "../pluginManager/PluginManager"
+import { PLUGIN_MANAGER, PluginManager } from "../modules/pluginManager/PluginManager"
 import { toml_parse } from "./contextmenu/demo"
 import * as yaml from 'js-yaml';
 

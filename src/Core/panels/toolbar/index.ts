@@ -1,5 +1,5 @@
 import type { PanelItem } from "../../../Type";
-import { global_setting } from "../../setting"
+import { global_setting } from "../../shared/setting"
 import { init_item } from "../PanelItem"
 
 export class AMToolbar {

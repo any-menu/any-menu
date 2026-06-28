@@ -1,8 +1,8 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
-import { global_setting } from '../../../Core/setting'
-import { global_el } from '../../../Core/panel'
+import { global_setting } from '../../../Core/shared/setting'
+import { global_el } from '../../../Core/panels'
 import { hideWindow, showWindow } from '../module/window'
-// import { toml_parse } from '../../../Core/panel/contextmenu/demo'
+// import { toml_parse } from '../../../Core/panels/contextmenu/demo'
 
 // 注意 api/window 里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
 // convertFileSrc 需要 tauri.confi.json 中的 security 中的一些修改

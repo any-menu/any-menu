@@ -7,11 +7,11 @@
  * 这样方便规范重载的 global_setting.api.saveConfig 行为
  */
 
-// import { t } from '../../Core/locales/helper'
-// import { toml_parse } from '../../Core/panel/contextmenu/demo'
-// import { PLUGIN_MANAGER } from '../../Core/pluginManager/PluginManager'
-import { global_setting } from '../../Core/setting'
-import { initSettingTab_1, initSettingTab_2 } from '../../Core/settingPanel/SettingTab'
+// import { t } from '../../Core/shared/locales/helper'
+// import { toml_parse } from '../../Core/panels/contextmenu/demo'
+// import { PLUGIN_MANAGER } from '../../Core/modules/pluginManager/PluginManager'
+import { global_setting } from '../../Core/shared/setting'
+import { initSettingTab_1, initSettingTab_2 } from '../../Core/modules/settingPanel/SettingTab'
 import { initApi } from './utils/initApi'
 
 initApi()

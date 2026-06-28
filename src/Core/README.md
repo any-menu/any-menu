@@ -1,14 +1,21 @@
 目录
 
-- locals/         | 多语言
-- panel/          | 主面板和子面板
-- pluginManager/  | js插件管理器 (不含普通词典)
-- settingPanel    | 设置面板
+- shared/         | 通用部分 (其他所有子模块均可以依赖这个。尽量简单，
+                    使子模块迁移到其他项目中基本重新实现这个简单的东西即可迁移)
+  - locals/       | 多语言
+  - setting.ts
+- modules/        | 子模块
+  - pluginManager/| js插件管理器 (不含普通词典)
+- panels/         | 面板类别的子模块，相当于 `modules/panels/` 的路径提升和简写。
+                    主面板和子面板
+  - settingPanel  | 设置面板
+  - ...           | (详见 `panels/README.md`)
 - styles/         | 样式
+- (outter)        | 外部零散文件。里面的东西不依赖于此 (否则应在 shared 中)，
+                    这里的东西依赖于子文件夹里东西。
 
 依赖关系
 
-- locals | setting
-  - pluginManager
-    - panel
-      - pluginManager 的 initTool
+- shared/
+  - modules/ & panels/
+    - (outter)
