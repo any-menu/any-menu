@@ -10,7 +10,7 @@ import {
 } from 'obsidian'
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/shared/setting'
-import { AMPanel, global_el } from '@/Core/panels';
+import { activeAMPanel, global_el } from '@/Core/panels/MulPanel';
 import { getCursorInfo } from './panels'
 
 export function initApi(plugin: Plugin) {
@@ -93,7 +93,7 @@ export function initApi(plugin: Plugin) {
       return
     }
 
-    AMPanel.panel_hide()
+    activeAMPanel?.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return
     const cursorInfo = getCursorInfo(plugin)

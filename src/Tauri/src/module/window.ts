@@ -11,7 +11,7 @@ import {
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 
-import { AMPanel, global_el } from '../../../Core/panels/MulPanel'
+import { AMPanel, activeAMPanel, global_el } from '../../../Core/panels/MulPanel'
 import { global_setting } from '../../../Core/shared/setting'
 
 import { setupAppChangeListener } from './focus'
@@ -280,7 +280,7 @@ function autoHide_unFocusMode(is_focus: boolean, appWindow: TauriWindow) {
       const focused = await appWindow.isFocused(); // 查看当前是否聚焦回面板
       if (focused) {}
       else {
-        AMPanel.panel_hide()
+        activeAMPanel?.panel_hide()
       }
     }, 10);
   }
@@ -468,7 +468,7 @@ export async function showWindow(
   void applyFocusMode()
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  AMPanel.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse);
+  activeAMPanel?.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse);
   autoHide_unFocusMode(is_focus, appWindow);
 }
 
@@ -492,7 +492,7 @@ export async function hideWindow(list?: string[], forceBlurApp: boolean = false)
     return
   }
 
-  AMPanel.panel_hide(list) // 隐藏面板&失焦面板
+  activeAMPanel?.panel_hide(list) // 隐藏面板&失焦面板
 
   if (!global_state.isWindowVisible) return // 状态不一定对，可注释掉
 

@@ -31,7 +31,7 @@
 
 import { global_setting } from "@/Core/shared/setting"
 import { getCursorInfo } from "."
-import { AMPanel } from "@/Core/panels"
+import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 
 export class DocumentListeners {
@@ -84,7 +84,7 @@ export class DocumentListeners {
 
     // 按 Esc，无论是否在面板上按，都隐藏
     if (ev.key === 'Escape') {
-      AMPanel.panel_hide([])
+      activeAMPanel?.panel_hide([])
       return
     }
 
@@ -92,7 +92,7 @@ export class DocumentListeners {
     // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
-    AMPanel.panel_hide([])
+    activeAMPanel?.panel_hide([])
   }
 
   /** 键盘抬起事件 */
@@ -122,7 +122,7 @@ export class DocumentListeners {
     // 面板上工作，不管
     if (!(ev.target instanceof Element)) return
     if (ev.target.matches('.am-panel *')) return
-    AMPanel.panel_hide([])
+    activeAMPanel?.panel_hide([])
   }
 
   /**
@@ -207,7 +207,7 @@ export class DocumentListeners {
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus, true)
+      activeAMPanel?.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus, true)
     }
   }
 }

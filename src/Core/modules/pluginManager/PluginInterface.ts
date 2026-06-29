@@ -2,7 +2,7 @@
  * 如果你是脚本开发者，那么你需要要阅读 ../../Type 中的类型即可
  */
 
-import { AMPanel, global_el } from "../../panels/MulPanel";
+import { activeAMPanel, global_el } from "../../panels/MulPanel";
 import { global_setting } from "../../shared/setting";
 import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../../Type";
 
@@ -17,7 +17,7 @@ export const AppCtxDemo: PluginAppCtx = {
     pluginId: '<will be override>',   // will be override, 会变为插件id
   },
   api: {
-    sendText: (str: string) => { global_setting.api.sendText(str); AMPanel.panel_hide(); },
+    sendText: (str: string) => { global_setting.api.sendText(str); activeAMPanel?.panel_hide(); },
     saveToClipboard: (str: string) => { global_setting.api.saveToClipboard(str); },
 
     // will be override, 强制使其输出时显示插件名
@@ -38,7 +38,7 @@ export const AppCtxDemo: PluginAppCtx = {
 
     // #region 面板相关
     hidePanel: (list?: string[]) => {
-      AMPanel.panel_hide(list)
+      activeAMPanel?.panel_hide(list)
       if (list == undefined && global_setting.platform === 'app') {
         global_setting.other.app_hide(list)
       }
@@ -48,11 +48,11 @@ export const AppCtxDemo: PluginAppCtx = {
         global_setting.other.app_show(position, list)
       } else {
         if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
-        AMPanel.panel_show(undefined, list)
+        activeAMPanel?.panel_show(undefined, list)
       }
     },
     togglePanel: (item: string) => {
-      AMPanel.panel_toggle(item)
+      activeAMPanel?.panel_toggle(item)
     },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
       global_el.amPanel?.register_sub_panel(options.id, options.el);

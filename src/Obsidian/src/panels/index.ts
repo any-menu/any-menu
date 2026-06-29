@@ -2,10 +2,10 @@ import {
   MarkdownView, Plugin, type Editor
 } from 'obsidian'
 import { t } from '@/Core/shared/locales/helper'
-import { AMPanel } from '@/Core/panels/'
+import { AMPanel, activeAMPanel } from '@/Core/panels/MulPanel'
 // import { ABContextMenu } from '@/Core/panels/contextmenu/index'
 // import { AMSearch } from "@/Core/panels/search"
-import { initMenuData } from "@/Core/panels/initTool"
+import { initMenuData } from "@/Core/initTool"
 import { global_setting } from '@/Core/shared/setting'
 // import { root_menu } from "@/Core/panels/contextmenu/demo"
 
@@ -80,7 +80,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    AMPanel.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus)
+    activeAMPanel?.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus)
   }
 
   // 注册工具带

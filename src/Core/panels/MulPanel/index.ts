@@ -27,7 +27,7 @@ import { AMToolbar } from '../toolbar/index'
 import { AMContextMenu } from '../contextmenu/index'
 import { AMMiniEditor } from '../miniEditor/index'
 import { AMPin } from './pin/index'
-import { AMTitlebar } from './titlebar'
+// import { AMTitlebar } from './titlebar'
 
 // 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
 // let focus_in: 'search'|'menu' = 'search'
@@ -58,6 +58,7 @@ export const global_el: {
 // 仅用于辅助得到 alt_v_state 的值，无其他用处，请勿直接使用于其他用途。
 // 注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况。
 let alt_key_flag = false
+export let activeAMPanel: AMPanel|null = null
 
 /** AMPanel 使用单例模式管理
  * 
@@ -94,6 +95,18 @@ let alt_key_flag = false
 export class AMPanel {
   public el: HTMLElement
 
+  /// 上一次显示的面板列表
+  /// 作用1: 查看面板大小是否有变化 (相同则无变化)
+  /// 作用2: 对面板的拆分、调序、中间插入或删除
+  static cache_last_panel_list: string[] = []
+
+  // 当前显示状态的缓存 = {
+  //   pos: {x: number, y: number}|undefined,
+  //   list?: string[],
+  //   is_focus: boolean = true,
+  //   is_reverse: boolean = false,
+  // }
+
   /** 单例模式 */
   static factory(el: HTMLElement) {
     // AMTitlebar.factory(el)
@@ -101,7 +114,9 @@ export class AMPanel {
       return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
     }
     if (!global_el.amPanel) {
-      global_el.amPanel = new AMPanel(el)
+      const amPanel = new AMPanel(el)
+      global_el.amPanel = amPanel
+      activeAMPanel = amPanel
     }
     if (!global_el.amSearch) {
       global_el.amSearch = AMSearch.factory(el)
@@ -196,12 +211,14 @@ export class AMPanel {
    *   反向显示时，面板内容将显示在 pos 的上方 (而不是下方)，且根据 list 顺序从下往上显示。
    *   注意: 如果是 app 环境，需要 app 配合
    */
-  static panel_show(
+  panel_show(
     pos: {x: number, y: number}|undefined,
     list?: string[],
     is_focus: boolean = true,
     is_reverse: boolean = false,
   ) {
+    activeAMPanel = this
+
     // 设置初始的 alt 状态
     // 
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
@@ -307,7 +324,7 @@ export class AMPanel {
    *   - 空列表: 容器隐藏，子面板不隐藏 (方便下次显示容器时保留子面板显示状态)
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
-  static panel_hide(list?: string[]) {
+  panel_hide(list?: string[]) {
     // 置顶状态不隐藏，但会尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
     // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
     if (global_setting.state.isPin) {
@@ -354,7 +371,7 @@ export class AMPanel {
   }
 
   /** 切换面板显示/隐藏状态 */
-  static panel_toggle(item: string) {
+  panel_toggle(item: string) {
     // 非自定义
     if (item == 'search') global_el.amSearch?.panel_toggle()
     else if (item == 'toolbar') global_el.amToolbar?.panel_toggle()
@@ -462,7 +479,7 @@ export class AMPanel {
    *   - 点击App窗口以外的地方
    *     - (其他地方负责) 隐藏面板+隐藏窗口
    */
-  static visual_listener_mousedown (ev: MouseEvent) {
+  visual_listener_mousedown (ev: MouseEvent) {
     if (!global_el.amPanel?.el) return
     if (!(ev.target instanceof Element)) return
 
@@ -476,7 +493,7 @@ export class AMPanel {
     else {
       // 前者不包括 .am-panel (允许不规则区域)
       if (ev.target.matches('.am-panel *')) return
-      AMPanel.panel_hide()
+      this.panel_hide()
     }
   }
   /** ESC隐藏
@@ -485,21 +502,19 @@ export class AMPanel {
    * 特殊逻辑: 当输入框聚焦且存在内容时，第一个 Esc 行为由 search 子面板戒断并接管。
    * 仅情况内容而不隐藏面板 (除非两次Esc，一次情况一次退出)
    */
-  static visual_listener_keydown (ev: KeyboardEvent) {
+  visual_listener_keydown (ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       ev.preventDefault()
       if (global_setting.platform == 'app') {
         global_setting.other.app_hide(undefined, true)
       }
       else {
-        AMPanel.panel_hide()
+        this.panel_hide()
       }
       return
     }
   }
 
-  /// 上一次显示的面板列表
-  static cache_last_panel_list: string[] = []
   /** 获取面板尺寸
    * 
    * 有两种获取方案。

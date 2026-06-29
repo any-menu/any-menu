@@ -1,4 +1,4 @@
-import { AMPanel } from ".";
+import { activeAMPanel } from ".";
 import { global_setting } from "../../shared/setting"
 import { AMPin } from './pin/index'
 
@@ -30,5 +30,5 @@ function createHideBtn(el: HTMLElement) {
   btn.classList.add('am-titlebar-btn', 'am-titlebar-minimize')
   btn.title = '隐藏'
   btn.innerText = '隐藏'
-  btn.addEventListener('click', () => { AMPanel.panel_hide() })
+  btn.addEventListener('click', () => { activeAMPanel?.panel_hide() })
 }
