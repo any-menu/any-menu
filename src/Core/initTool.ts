@@ -1,7 +1,7 @@
 /** 依赖于搜索框和多级菜单 */
 
 import { type PanelItem } from "../Type"
-import { global_el } from "./panels/MulPanel"
+import { activeAMPanel } from "./panels/MulPanel"
 import { type AMContextMenu } from "./panels/contextmenu"
 import { type AMToolbar } from "./panels/toolbar"
 import { global_setting } from "./shared/setting"
@@ -38,16 +38,20 @@ import * as yaml from 'js-yaml';
  */
 export async function initMenuData() {
   // 准备元素
-  if (!global_el.amContextMenu) {
+  if (!activeAMPanel) {
+    console.error("Have no active amPanel")
+    return
+  }
+  if (!activeAMPanel.sub_panels.amContextMenu) {
     console.error("AMContextMenu is not initialized")
     return
   }
-  const myContextMenu: AMContextMenu = global_el.amContextMenu
-  if (!global_el.amToolbar) {
+  const myContextMenu: AMContextMenu = activeAMPanel.sub_panels.amContextMenu
+  if (!activeAMPanel.sub_panels.amToolbar) {
     console.error("AMToolbar is not initialized")
     return
   }
-  const myToolbar: AMToolbar = global_el.amToolbar
+  const myToolbar: AMToolbar = activeAMPanel.sub_panels.amToolbar
   // SEARCH_DB
 
   // 测试一下

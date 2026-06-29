@@ -1,6 +1,6 @@
 import { global_setting } from "../../shared/setting"
 import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
-import { activeAMPanel, global_el } from "../MulPanel/index"
+import { activeAMPanel } from "../MulPanel/index"
 import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager"
 
 // 建议项
@@ -90,7 +90,7 @@ export class AMSuggestion {
         }
       }
       // Alt + Key 直接选择对应项
-      else if (ev.altKey || global_el.alt_v_state) {
+      else if (ev.altKey || activeAMPanel?.sub_panels.alt_v_state) {
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
@@ -113,7 +113,9 @@ export class AMSuggestion {
         // step3. 然后再操作
         ev.preventDefault()
         ev.stopPropagation() // 阻止事件冒泡，但似乎失败了。还是依赖下面 alt_v_state 让 contextmenu 不继续触发
-        global_el.alt_v_state = false; activeAMPanel?.el?.classList.remove('show-altkey');
+        if (activeAMPanel) {
+          activeAMPanel.sub_panels.alt_v_state = false; activeAMPanel.el.classList.remove('show-altkey');
+        }
         target_el.click();
       }
     })

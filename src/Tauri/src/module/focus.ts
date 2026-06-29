@@ -3,7 +3,7 @@ import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
 import { global_setting } from '../../../Core/shared/setting'
 import { toggleWindow } from './window'
-import { global_el } from '../../../Core/panels/MulPanel'
+import { activeAMPanel } from '../../../Core/panels/MulPanel'
 
 // 显示面板: 搜索框+菜单
 const PRESET_1 = global_setting.config.panel_preset2[0]
@@ -146,12 +146,15 @@ export function setupAppChangeListener() {
       // 更新 miniEditor 面板显示内容
       // 不主动显示，但如果已经显示了，则更新内容
       // 除了miniEditor不会被显示的情况外，如果异步信息获取足够快，这里是可能在面板显示前更新的。这里也为false
-      if (global_el.amMiniEditor && global_el.amMiniEditor.isShow) {
-        if (global_el.amMiniEditor.flag === 'info') {
-          global_el.amMiniEditor.panel_show(global_setting.state.infoText, false)
-        }
-        else if (global_el.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
-          global_el.amMiniEditor.panel_show(global_setting.state.selectedText, false)
+      if (activeAMPanel) {
+        const sub_panels = activeAMPanel.sub_panels
+        if (sub_panels.amMiniEditor && sub_panels.amMiniEditor.isShow) {
+          if (sub_panels.amMiniEditor.flag === 'info') {
+            sub_panels.amMiniEditor.panel_show(global_setting.state.infoText, false)
+          }
+          else if (sub_panels.amMiniEditor.flag === 'miniEditor' && is_update_selectedText) {
+            sub_panels.amMiniEditor.panel_show(global_setting.state.selectedText, false)
+          }
         }
       }
     }

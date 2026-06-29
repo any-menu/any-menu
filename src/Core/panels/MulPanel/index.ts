@@ -29,33 +29,11 @@ import { AMMiniEditor } from '../miniEditor/index'
 import { AMPin } from './pin/index'
 // import { AMTitlebar } from './titlebar'
 
-// 主要看方向键是处理 搜索框 & 建议项 / 多级菜单
-// let focus_in: 'search'|'menu' = 'search'
-
-// 单例模式下使用，否则不使用
-// TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
-//   而 App 版本，每个进程中这里应只有一个。
-export const global_el: {
-  amSearch: AMSearch | null,
-  amToolbar: AMToolbar | null,
-  amContextMenu: AMContextMenu | null,
-  amMiniEditor: AMMiniEditor | null,
-  amCustom: HTMLElement | null, // 供自定义脚本使用的面板元素
-
-  alt_v_state: boolean,  // 虚拟alt状态
-} = {
-  amSearch: null,
-  amContextMenu: null,
-  amMiniEditor: null,
-  amToolbar: null,
-  amCustom: null,
-
-  alt_v_state: false
-}
 // 按下过 alt+key 组合键。
 // 仅用于辅助得到 alt_v_state 的值，无其他用处，请勿直接使用于其他用途。
 // 注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况。
 let alt_key_flag = false
+
 /// 当前活跃的面板
 export let activeAMPanel: AMPanel|null = null
 
@@ -94,6 +72,27 @@ export let activeAMPanel: AMPanel|null = null
 export class AMPanel {
   public el: HTMLElement
 
+  // 单例模式下使用，否则不使用
+  // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
+  //   而 App 版本，每个进程中这里应只有一个。
+  public sub_panels: {
+    amSearch: AMSearch | null,
+    amToolbar: AMToolbar | null,
+    amContextMenu: AMContextMenu | null,
+    amMiniEditor: AMMiniEditor | null,
+    amCustom: HTMLElement | null, // 供自定义脚本使用的面板元素
+
+    alt_v_state: boolean, // 虚拟alt状态
+  } = {
+    amSearch: null,
+    amContextMenu: null,
+    amMiniEditor: null,
+    amToolbar: null,
+    amCustom: null,
+
+    alt_v_state: false
+  }
+
   /// 上一次显示的面板列表
   /// 作用1: 查看面板大小是否有变化 (相同则无变化)
   /// 作用2: 对面板的拆分、调序、中间插入或删除
@@ -110,26 +109,38 @@ export class AMPanel {
   static factory(el: HTMLElement) {
     // AMTitlebar.factory(el)
     if (activeAMPanel) {
-      return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
+      console.error('临时调试: 当前创建了多个 AMPanel 实例。首个实例目前会存在引用丢失')
     }
-    if (!activeAMPanel) {
-      const amPanel = new AMPanel(el)
-      activeAMPanel = amPanel
+
+    const amPanel = new AMPanel(el)
+    activeAMPanel = amPanel
+
+    amPanel.initSubPanels()
+  }
+
+  private constructor(el: HTMLElement) {
+    this.el = el
+    el.classList.add('am-panel');
+  }
+
+  private initSubPanels() {
+    const el = this.el
+    const sub_panels = this.sub_panels
+
+    if (!sub_panels.amSearch) {
+      sub_panels.amSearch = AMSearch.factory(el)
     }
-    if (!global_el.amSearch) {
-      global_el.amSearch = AMSearch.factory(el)
+    if (!sub_panels.amToolbar) {
+      sub_panels.amToolbar = AMToolbar.factory(el)
     }
-    if (!global_el.amToolbar) {
-      global_el.amToolbar = AMToolbar.factory(el)
+    if (!sub_panels.amContextMenu) {
+      sub_panels.amContextMenu = AMContextMenu.factory(el, undefined, sub_panels.amSearch.el_input ?? undefined)
     }
-    if (!global_el.amContextMenu) {
-      global_el.amContextMenu = AMContextMenu.factory(el, undefined, global_el.amSearch.el_input ?? undefined)
+    if (!sub_panels.amMiniEditor) {
+      sub_panels.amMiniEditor = AMMiniEditor.factory(el)
     }
-    if (!global_el.amMiniEditor) {
-      global_el.amMiniEditor = AMMiniEditor.factory(el)
-    }
-    if (!global_el.amCustom) {
-      global_el.amCustom = document.createElement('div'); el.appendChild(global_el.amCustom); global_el.amCustom.classList.add('am-custom-panel')
+    if (!sub_panels.amCustom) {
+      sub_panels.amCustom = document.createElement('div'); el.appendChild(sub_panels.amCustom); sub_panels.amCustom.classList.add('am-custom-panel')
     }
     // 可选，置顶按钮 (注意创建顺序影响布局)
     {
@@ -156,13 +167,13 @@ export class AMPanel {
           // alt+key
           if (alt_key_flag) {
             alt_key_flag = false
-            global_el.alt_v_state = false
+            sub_panels.alt_v_state = false
             ev.preventDefault() // 不要触发窗口的alt键功能
           } else {
-            global_el.alt_v_state = !global_el.alt_v_state
+            sub_panels.alt_v_state = !sub_panels.alt_v_state
           }
 
-          if (global_el.alt_v_state) {
+          if (sub_panels.alt_v_state) {
             ev.preventDefault() // 不要触发窗口的alt键功能
             el.classList.add('show-altkey')
           } else {
@@ -172,13 +183,6 @@ export class AMPanel {
         }
       })
     }
-
-    return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
-  }
-
-  private constructor(el: HTMLElement) {
-    this.el = el
-    el.classList.add('am-panel');
   }
 
   // #region 面板相关
@@ -222,7 +226,6 @@ export class AMPanel {
     // 理想状态下，显示的时候最好能获取 alt 状态，来设置初始时是否为虚拟 alt 状态
     // 但事实上，在 app 环境中，alt 按下的时候前端未显示，前端是无法获取该 alt 按下状态的
     // 
-    // 例如: global_el.alt_v_state = false
     // 这里最好是根据是否 alt+key 召唤出面板来决定初始的虚拟 alt 状态
     // 可惜前端无法实现，又不想弄后端，搞太复杂
     alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
@@ -275,29 +278,29 @@ export class AMPanel {
     let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
     for (const item of list) {
       if (item == 'search') {
-        global_el.amSearch?.panel_show(!is_focued)
+        this.sub_panels.amSearch?.panel_show(!is_focued)
         is_focued = true
       }
       else if (item == 'toolbar') {
-        global_el.amToolbar?.panel_show()
+        this.sub_panels.amToolbar?.panel_show()
       }
       else if (item == 'menu') {
-        global_el.amContextMenu?.panel_show()
+        this.sub_panels.amContextMenu?.panel_show()
       }
       else if (item == 'miniEditor') {
-        global_el.amMiniEditor?.set_flag('miniEditor')
-        global_el.amMiniEditor?.panel_show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        this.sub_panels.amMiniEditor?.set_flag('miniEditor')
+        this.sub_panels.amMiniEditor?.panel_show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
-        global_el.amMiniEditor?.set_flag('info')
-        global_el.amMiniEditor?.panel_show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
+        this.sub_panels.amMiniEditor?.set_flag('info')
+        this.sub_panels.amMiniEditor?.panel_show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
 
         // 异步添加 info 内容
         global_setting.api.getInfo().then((info_text: string|null) => {
           global_setting.state.infoText += '[info]\n' + (info_text ?? "null") + "\n\n"
-          global_el.amMiniEditor?.panel_show(global_setting.state.infoText, false)
+          this.sub_panels.amMiniEditor?.panel_show(global_setting.state.infoText, false)
         })
       }
       else {
@@ -333,10 +336,10 @@ export class AMPanel {
     // 全部隐藏
     if (list == undefined) {
       this.el.classList.add('am-hide')
-      global_el.amSearch?.panel_hide()
-      global_el.amToolbar?.panel_hide()
-      global_el.amContextMenu?.panel_hide()
-      global_el.amMiniEditor?.panel_hide()
+      this.sub_panels.amSearch?.panel_hide()
+      this.sub_panels.amToolbar?.panel_hide()
+      this.sub_panels.amContextMenu?.panel_hide()
+      this.sub_panels.amMiniEditor?.panel_hide()
       for (const key in this.SubPanel) {
         this.SubPanel[key].classList.add('am-hide')
       }
@@ -345,11 +348,11 @@ export class AMPanel {
     else {
       if (list.length == 0) this.el.classList.add('am-hide')
       for (const item of list) {
-        if (item == 'search')  global_el.amSearch?.panel_hide()
-        else if (item == 'toolbar') global_el.amToolbar?.panel_hide()
-        else if (item == 'menu') global_el.amContextMenu?.panel_hide()
-        else if (item == 'miniEditor') global_el.amMiniEditor?.panel_hide()
-        else if (item == 'info') global_el.amMiniEditor?.panel_hide()
+        if (item == 'search')  this.sub_panels.amSearch?.panel_hide()
+        else if (item == 'toolbar') this.sub_panels.amToolbar?.panel_hide()
+        else if (item == 'menu') this.sub_panels.amContextMenu?.panel_hide()
+        else if (item == 'miniEditor') this.sub_panels.amMiniEditor?.panel_hide()
+        else if (item == 'info') this.sub_panels.amMiniEditor?.panel_hide()
         else {
           for (const key in this.SubPanel) {
             if (key == item) {
@@ -366,16 +369,16 @@ export class AMPanel {
   /** 切换面板显示/隐藏状态 */
   panel_toggle(item: string) {
     // 非自定义
-    if (item == 'search') global_el.amSearch?.panel_toggle()
-    else if (item == 'toolbar') global_el.amToolbar?.panel_toggle()
-    else if (item == 'menu') global_el.amContextMenu?.panel_toggle()
+    if (item == 'search') this.sub_panels.amSearch?.panel_toggle()
+    else if (item == 'toolbar') this.sub_panels.amToolbar?.panel_toggle()
+    else if (item == 'menu') this.sub_panels.amContextMenu?.panel_toggle()
     else if (item == 'miniEditor') {
-      global_el.amMiniEditor?.set_flag('miniEditor')
-      global_el.amMiniEditor?.panel_toggle()
+      this.sub_panels.amMiniEditor?.set_flag('miniEditor')
+      this.sub_panels.amMiniEditor?.panel_toggle()
     }
     else if (item == 'info') {
-      global_el.amMiniEditor?.set_flag('info')
-      global_el.amMiniEditor?.panel_toggle()
+      this.sub_panels.amMiniEditor?.set_flag('info')
+      this.sub_panels.amMiniEditor?.panel_toggle()
     }
     // 插件自定义子面板
     else {
@@ -436,11 +439,11 @@ export class AMPanel {
     if (typeof el === 'function') {
       const container = document.createElement('div'); container.classList.add(`am-sub-panel-${id}`)
       this.SubPanel[id] = container
-      global_el.amCustom?.appendChild(container)
+      this.sub_panels.amCustom?.appendChild(container)
       el(container)
     } else {
       this.SubPanel[id] = el
-      global_el.amCustom?.appendChild(el)
+      this.sub_panels.amCustom?.appendChild(el)
     }
   }
 

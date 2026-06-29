@@ -31,7 +31,7 @@
 import type { PanelItem } from "../../../Type"
 import { global_setting } from "../../shared/setting"
 import { input_suggestion } from "./suggestion_old"
-import { activeAMPanel, global_el } from "../MulPanel/index"
+import { activeAMPanel } from "../MulPanel/index"
 
 // [!code hl] Tauri
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
@@ -428,7 +428,7 @@ export class AMContextMenu {
         }
       }
       // Alt + Key 直接选择对应项
-      else if (ev.altKey || global_el.alt_v_state) {
+      else if (ev.altKey || activeAMPanel?.sub_panels.alt_v_state) {
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
@@ -465,7 +465,9 @@ export class AMContextMenu {
             this.vFocus_update(0) // 右键弹出时，让子菜单自动选中第一个
           }
         } else { // 无子菜单则点击
-          global_el.alt_v_state = false; activeAMPanel?.el?.classList.remove('show-altkey');
+          if (activeAMPanel) {
+            activeAMPanel.sub_panels.alt_v_state = false; activeAMPanel.el?.classList.remove('show-altkey');
+          }
           this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el?.click()
         }
       }

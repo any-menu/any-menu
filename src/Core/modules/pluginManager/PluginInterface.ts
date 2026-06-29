@@ -2,7 +2,7 @@
  * 如果你是脚本开发者，那么你需要要阅读 ../../Type 中的类型即可
  */
 
-import { activeAMPanel, global_el } from "../../panels/MulPanel";
+import { activeAMPanel } from "../../panels/MulPanel";
 import { global_setting } from "../../shared/setting";
 import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../../Type";
 
