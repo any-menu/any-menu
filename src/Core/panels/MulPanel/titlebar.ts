@@ -1,3 +1,4 @@
+import { AMPanel } from ".";
 import { global_setting } from "../../shared/setting"
 import { AMPin } from './pin/index'
 
@@ -12,11 +13,22 @@ export class AMTitlebar {
   constructor(p_el: HTMLElement) {
     const el = document.createElement('div'); p_el.appendChild(el); el.classList.add('am-titlebar')
 
-    AMPin.factory(el);
+    AMPin.factory(el) // 置顶按钮
+    createHideBtn(el)
 
-    this.initEvent(el, p_el)
+    global_setting.other.app_createTitlebar(el)
   }
+}
 
-  initEvent(el: HTMLElement, p_el: HTMLElement) {
-  }
+/** 隐藏窗口
+ * 
+ * (这里不使用最小化，而且还设置了 `"skipTaskbar": true` 隐藏)
+ * 不过这里其实意义也不大，因为有太多其他方法能隐藏。
+ */
+function createHideBtn(el: HTMLElement) {
+  const btn = document.createElement('button'); el.appendChild(btn);
+  btn.classList.add('am-titlebar-btn', 'am-titlebar-minimize')
+  btn.title = '隐藏'
+  btn.innerText = '隐藏'
+  btn.addEventListener('click', () => { AMPanel.panel_hide() })
 }

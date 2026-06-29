@@ -471,6 +471,35 @@ export function initApi() {
   // app 专用 API
   global_setting.other.app_show = showWindow
   global_setting.other.app_hide = hideWindow
+  global_setting.other.app_createTitlebar = async function (container: HTMLElement) {
+
+    const win = getCurrentWindow()
+
+    // 最大化/还原
+    const maximizeBtn = document.createElement('button')
+    maximizeBtn.classList.add('am-titlebar-btn', 'am-titlebar-maximize')
+    maximizeBtn.title = '最大化/还原'
+    maximizeBtn.innerText = '最大化/还原'
+    maximizeBtn.addEventListener('click', () => win.toggleMaximize())
+
+    // 监听最大化 / 还原事件
+    // const _unlistenMax = 
+    win.listen('tauri://maximize', () => {
+      maximizeBtn.classList.add('am-titlebar-restore')
+      maximizeBtn.title = '还原'
+      maximizeBtn.innerText = '还原'
+    })
+    // const _unlistenUnmax = 
+    win.listen('tauri://unmaximize', () => {
+      maximizeBtn.classList.remove('am-titlebar-restore')
+      maximizeBtn.title = '最大化'
+      maximizeBtn.innerText = '最大化'
+    })
+    // 可选：在容器销毁时取消监听（此处省略，必要时可保存 unlisten 引用并调用）
+    // 例如：this._unlisteners = [unlistenMax, unlistenUnmax]
+
+    container.appendChild(maximizeBtn)
+  }
 }
 
 // 旧，废弃

@@ -165,12 +165,12 @@ html, body, #main {
 }
 
 // 特殊-合并相邻边框
-.am-panel>div {
-  margin-bottom: -1px; 
-}
-.am-panel.reverse>div {
-  margin-top: -1px;
-}
+// .am-panel>div {
+//   margin-bottom: -1px; 
+// }
+// .am-panel.reverse>div {
+//   margin-top: -1px;
+// }
 
 /* -------------------------------- 面板置顶按钮 ------------------------- */
 
@@ -191,7 +191,8 @@ html, body, #main {
   // toolbar 其实也可以设置，但是与右键行为冲突了，故没设置
 }
 
-.am-pin {
+// 显示在面板的外侧
+.am-panel-out {
   position: absolute;
   right: -32px; // = 自身宽度30px + 加2px间距
 }

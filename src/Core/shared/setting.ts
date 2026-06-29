@@ -213,6 +213,7 @@ export const global_setting: {
     // (特殊) 用于 Tauri 多窗口资源同步
     app_onChange: () => Promise<void>,
     app_offChange: () => Promise<void>,
+    app_createTitlebar: (el: HTMLElement) => Promise<void>,
   }
 } = {
   platform: 'app',
@@ -413,6 +414,7 @@ export const global_setting: {
     app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },
     app_onChange: async (): Promise<void> => { console.warn("非app环境不支持此操作，或未定义") },
     app_offChange: async (): Promise<void> => { console.warn("非app环境不支持此操作，或未定义") },
+    app_createTitlebar: async (): Promise<void> => { console.warn("非app环境不支持此操作，或未定义") },
   }
 }
 

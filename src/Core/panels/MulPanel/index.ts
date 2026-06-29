@@ -120,7 +120,8 @@ export class AMPanel {
     }
     // 可选，置顶按钮 (注意创建顺序影响布局)
     {
-      AMPin.factory(el)
+      const amPin = AMPin.factory(el)
+      amPin.el.classList.add('am-panel-out')
     }
 
     // alt切换快捷提示

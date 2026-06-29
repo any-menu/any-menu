@@ -447,6 +447,7 @@ export async function showWindow(
 
   // 显示窗口
   await appWindow.setIgnoreCursorEvents(false) // 关闭点击穿透 (点击透明部分可能会临时打开)
+  // await appWindow.unminimize() // 如果窗口被最小化了，先还原
   await appWindow.show(); global_state.isWindowVisible = true;
 
   // 焦点模式/不抢焦点模式，需要 show() 完后运行

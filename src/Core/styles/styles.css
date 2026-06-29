@@ -936,15 +936,33 @@ div.editable-textarea-textarea {
   height: 16px;
 }
 
-.am-titlebar {
-  height: 30px;
-  background: var(--am-bg-color);
-  color: var(--am-color);
-  border-radius: 8px;
-}
-
+/** 标题栏 */
 #main > .am-panel .am-titlebar {
   -webkit-app-region: drag;
+}
+
+.am-titlebar {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 30px;
+  padding-right: 3px;
+  background: var(--am-bg-color);
+  color: var(--am-color);
+  border-radius: 10px;
+}
+.am-titlebar button {
+  height: 29px;
+  background: none;
+  color: var(--ab-tab-root-tx-color);
+  padding: 0 9px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.am-titlebar button:hover {
+  background: var(--ab-tab-root-hv-color);
 }
 
 .editable-codeblock-p {
@@ -1047,14 +1065,6 @@ html, body, #main {
   display: block;
 }
 
-.am-panel > div {
-  margin-bottom: -1px;
-}
-
-.am-panel.reverse > div {
-  margin-top: -1px;
-}
-
 /* -------------------------------- 面板置顶按钮 ------------------------- */
 #main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
   -webkit-app-region: drag;
@@ -1066,7 +1076,7 @@ html, body, #main {
   -webkit-app-region: drag;
 }
 
-.am-pin {
+.am-panel-out {
   position: absolute;
   right: -32px;
 }

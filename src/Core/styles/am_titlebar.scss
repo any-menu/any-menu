@@ -1,14 +1,34 @@
 /** 标题栏 */
 
-.am-titlebar {
-  height: 30px;
-  background: var(--am-bg-color);
-  color: var(--am-color);
-  border-radius: 8px;
-}
-
 #main>.am-panel {
   .am-titlebar {
     -webkit-app-region: drag; // 允许在桌面应用环境中，使用按钮拖动窗口
+  }
+}
+
+.am-titlebar {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 30px;
+  padding-right: 3px;
+  background: var(--am-bg-color);
+  color: var(--am-color);
+  border-radius: 10px;
+
+  button {
+    height: 29px;
+    background: none;
+    // color: var(--am-color);
+    color: var(--ab-tab-root-tx-color);
+    padding: 0 9px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
+    border-radius: 8px;
+
+    &:hover {
+      background: var(--ab-tab-root-hv-color);
+    }
   }
 }
