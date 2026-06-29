@@ -11,7 +11,7 @@ import {
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 
-import { AMPanel, activeAMPanel, global_el } from '../../../Core/panels/MulPanel'
+import { AMPanel, activeAMPanel } from '../../../Core/panels/MulPanel'
 import { global_setting } from '../../../Core/shared/setting'
 
 import { setupAppChangeListener } from './focus'
@@ -183,7 +183,7 @@ function initAutoHide_cursorIgnore() {
     async function poll() {
       try {
         // 面板不可见时 (如主动隐藏后) 自动解除穿透模式检测
-        const panel_el = global_el.amPanel?.el
+        const panel_el = activeAMPanel?.el
         if (!panel_el || panel_el.classList.contains('am-hide')) {
           exit_cursor_ignore_state()
         }

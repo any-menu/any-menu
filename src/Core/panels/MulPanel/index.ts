@@ -36,7 +36,6 @@ import { AMPin } from './pin/index'
 // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
 //   而 App 版本，每个进程中这里应只有一个。
 export const global_el: {
-  amPanel: AMPanel | null,
   amSearch: AMSearch | null,
   amToolbar: AMToolbar | null,
   amContextMenu: AMContextMenu | null,
@@ -45,7 +44,6 @@ export const global_el: {
 
   alt_v_state: boolean,  // 虚拟alt状态
 } = {
-  amPanel: null,
   amSearch: null,
   amContextMenu: null,
   amMiniEditor: null,
@@ -58,6 +56,7 @@ export const global_el: {
 // 仅用于辅助得到 alt_v_state 的值，无其他用处，请勿直接使用于其他用途。
 // 注意需要排除掉通过 alt+key 召唤面板然后松开 alt 的情况。
 let alt_key_flag = false
+/// 当前活跃的面板
 export let activeAMPanel: AMPanel|null = null
 
 /** AMPanel 使用单例模式管理
@@ -110,12 +109,11 @@ export class AMPanel {
   /** 单例模式 */
   static factory(el: HTMLElement) {
     // AMTitlebar.factory(el)
-    if (global_el.amPanel) {
+    if (activeAMPanel) {
       return { amSearch: global_el.amSearch, amContextMenu: global_el.amContextMenu }
     }
-    if (!global_el.amPanel) {
+    if (!activeAMPanel) {
       const amPanel = new AMPanel(el)
-      global_el.amPanel = amPanel
       activeAMPanel = amPanel
     }
     if (!global_el.amSearch) {
@@ -230,8 +228,7 @@ export class AMPanel {
     alt_key_flag = true // 保证 alt+key 召唤面板后，松开 alt 键时会结束虚拟 alt 状态
 
     // 主面板
-    const el_panel = global_el.amPanel?.el
-    if (!el_panel) return
+    const el_panel = this.el
     el_panel.classList.remove('am-hide')
 
     // 定位
@@ -304,7 +301,7 @@ export class AMPanel {
         })
       }
       else {
-        const target_custom_el = global_el.amPanel?.SubPanel?.[item]
+        const target_custom_el = this.SubPanel?.[item]
         if (target_custom_el) target_custom_el.classList.remove('am-hide')
         else console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
       }
@@ -328,29 +325,25 @@ export class AMPanel {
     // 置顶状态不隐藏，但会尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
     // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
     if (global_setting.state.isPin) {
-      global_el.amPanel?.el.blur()
+      this.el.blur()
       return
     }
-
-    // 主面板
-    const el_panel = global_el.amPanel?.el
-    if (!el_panel) return
 
     // 子面板
     // 全部隐藏
     if (list == undefined) {
-      el_panel.classList.add('am-hide')
+      this.el.classList.add('am-hide')
       global_el.amSearch?.panel_hide()
       global_el.amToolbar?.panel_hide()
       global_el.amContextMenu?.panel_hide()
       global_el.amMiniEditor?.panel_hide()
-      for (const key in global_el.amPanel?.SubPanel) {
-        global_el.amPanel?.SubPanel[key].classList.add('am-hide')
+      for (const key in this.SubPanel) {
+        this.SubPanel[key].classList.add('am-hide')
       }
     }
     // 仅隐藏列表中的
     else {
-      if (list.length == 0) el_panel.classList.add('am-hide')
+      if (list.length == 0) this.el.classList.add('am-hide')
       for (const item of list) {
         if (item == 'search')  global_el.amSearch?.panel_hide()
         else if (item == 'toolbar') global_el.amToolbar?.panel_hide()
@@ -358,9 +351,9 @@ export class AMPanel {
         else if (item == 'miniEditor') global_el.amMiniEditor?.panel_hide()
         else if (item == 'info') global_el.amMiniEditor?.panel_hide()
         else {
-          for (const key in global_el.amPanel?.SubPanel) {
+          for (const key in this.SubPanel) {
             if (key == item) {
-              global_el.amPanel?.SubPanel[key].classList.add('am-hide')
+              this.SubPanel[key].classList.add('am-hide')
               break
             }
           }
@@ -386,7 +379,7 @@ export class AMPanel {
     }
     // 插件自定义子面板
     else {
-      const target_custom_el = global_el.amPanel?.SubPanel?.[item]
+      const target_custom_el = this.SubPanel[item]
       if (!target_custom_el) {
         console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
         return
@@ -480,7 +473,6 @@ export class AMPanel {
    *     - (其他地方负责) 隐藏面板+隐藏窗口
    */
   visual_listener_mousedown (ev: MouseEvent) {
-    if (!global_el.amPanel?.el) return
     if (!(ev.target instanceof Element)) return
 
     // app 版本
@@ -530,9 +522,8 @@ export class AMPanel {
       this.cache_last_panel_list.length === list.length && 
       list.every((item, index) => item === this.cache_last_panel_list[index])
     if (isSameList) {
-      const el_panel = global_el.amPanel?.el
-      if (el_panel) {
-        const rect = el_panel.getBoundingClientRect()
+      if (activeAMPanel) {
+        const rect = activeAMPanel.el.getBoundingClientRect()
         const width = rect.width
         const height = rect.height
         if (width > 0 && height > 0) {

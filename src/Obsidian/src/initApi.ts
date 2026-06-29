@@ -10,7 +10,7 @@ import {
 } from 'obsidian'
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/shared/setting'
-import { activeAMPanel, global_el } from '@/Core/panels/MulPanel';
+import { activeAMPanel } from '@/Core/panels/MulPanel';
 import { getCursorInfo } from './panels'
 
 export function initApi(plugin: Plugin) {
@@ -79,10 +79,10 @@ export function initApi(plugin: Plugin) {
     }
 
     if (global_setting.state.isPin) {
-      global_el.amPanel?.el.classList.add('am-pin-active')
+      activeAMPanel?.el.classList.add('am-pin-active')
     }
     else {
-      global_el.amPanel?.el.classList.remove('am-pin-active')
+      activeAMPanel?.el.classList.remove('am-pin-active')
     }
   }
 

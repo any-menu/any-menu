@@ -1,6 +1,6 @@
 import { global_setting } from "../../shared/setting"
 import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB"
-import { global_el } from "../MulPanel/index"
+import { activeAMPanel, global_el } from "../MulPanel/index"
 import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager"
 
 // 建议项
@@ -113,7 +113,7 @@ export class AMSuggestion {
         // step3. 然后再操作
         ev.preventDefault()
         ev.stopPropagation() // 阻止事件冒泡，但似乎失败了。还是依赖下面 alt_v_state 让 contextmenu 不继续触发
-        global_el.alt_v_state = false; global_el.amPanel?.el?.classList.remove('show-altkey');
+        global_el.alt_v_state = false; activeAMPanel?.el?.classList.remove('show-altkey');
         target_el.click();
       }
     })

@@ -55,10 +55,10 @@ export const AppCtxDemo: PluginAppCtx = {
       activeAMPanel?.panel_toggle(item)
     },
     registerSubPanel: (options: { id: string, el: HTMLElement|((el: HTMLElement) => void) }) => {
-      global_el.amPanel?.register_sub_panel(options.id, options.el);
+      activeAMPanel?.register_sub_panel(options.id, options.el);
     },
     unregisterSubPanel: (id: string) => {
-      global_el.amPanel?.unregister_sub_panel(id);
+      activeAMPanel?.unregister_sub_panel(id);
     }
     // #endregion
   }

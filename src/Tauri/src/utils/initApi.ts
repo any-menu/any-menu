@@ -1,6 +1,6 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
 import { global_setting } from '../../../Core/shared/setting'
-import { global_el } from '../../../Core/panels/MulPanel'
+import { activeAMPanel } from '../../../Core/panels/MulPanel'
 import { hideWindow, showWindow } from '../module/window'
 // import { toml_parse } from '../../../Core/panels/contextmenu/demo'
 
@@ -111,12 +111,12 @@ export function initApi() {
     const appWindow = getCurrentWindow()
     if (global_setting.state.isPin) {
       document.body.classList.add('windows-pin-active') // 方便 app 窗口底色控制，和方便多个 pin 按钮共享状态
-      global_el.amPanel?.el.classList.add('am-pin-active')
+      activeAMPanel?.el.classList.add('am-pin-active')
       await appWindow.setAlwaysOnTop(true)  // 置顶窗口
     }
     else {
       document.body.classList.remove('windows-pin-active') // 方便 app 窗口底色控制，和方便多个 pin 按钮共享状态
-      global_el.amPanel?.el.classList.remove('am-pin-active')
+      activeAMPanel?.el.classList.remove('am-pin-active')
       await appWindow.setAlwaysOnTop(false) // 取消置顶但保持在前台
     }
   }
