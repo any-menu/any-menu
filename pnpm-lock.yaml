@@ -17,6 +17,9 @@ importers:
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
+      vite:
+        specifier: ^8.1.0
+        version: 8.1.0(@types/node@25.9.2)(esbuild@0.27.7)(yaml@2.9.0)
 
   src/Core:
     dependencies:

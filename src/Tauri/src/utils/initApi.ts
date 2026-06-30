@@ -210,7 +210,7 @@ export function initApi() {
     return files
   }
 
-  global_setting.api.readFile = async (relPath: string) => {
+  global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
     const file_content: string|unknown = await invoke("read_file", { path: relPath })
     if (typeof file_content !== 'string') {
       console.error("Invalid file content format")

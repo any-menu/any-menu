@@ -5,7 +5,7 @@ import DOMPurify from 'dompurify';
  * 会设置 set, get 方法，请使用 Object.assign 的方式修改对象而非直接赋值
  */
 export const global_setting: {
-  platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin',
+  platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin' | 'browser',
   isDebug: boolean,
   /**
    * 是否启用自动聚焦到输入框 (目前仅app环境有效)。分两种模式: 不聚焦使用和聚焦使用
