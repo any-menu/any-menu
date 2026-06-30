@@ -15,6 +15,8 @@
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "ob:lint": "cd ./src/Obsidian && pnpm lint",
     "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
+    "browser:dev": "cd ./src/Browser && pnpm dev",
+    "browser:build": "cd ./src/Browser && pnpm build",
     "bump": "node src/Scripts/bump.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
