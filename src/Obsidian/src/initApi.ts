@@ -36,7 +36,7 @@ export function initApi(plugin: Plugin) {
     global_setting.api.getSystemIsDark = () => {
       return activeDocument.body.classList.contains('theme-dark')
     }
-    global_setting.config.darkmode as 'light'|'dark'|'auto'
+    // global_setting.config.darkmode as 'light'|'dark'|'auto'
   }
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {

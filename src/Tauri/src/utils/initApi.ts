@@ -36,7 +36,7 @@ export function initApi() {
     global_setting.api.getSystemIsDark = () => {
       return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
-    global_setting.config.darkmode
+    // global_setting.config.darkmode
   }
 
   global_setting.api.getCursorXY = async () => {

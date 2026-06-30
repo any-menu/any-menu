@@ -947,7 +947,7 @@ div.editable-textarea-textarea {
   height: 30px;
   padding-right: 3px;
   background: var(--am-bg-color);
-  color: var(--am-color);
+  color: var(--am-text-color);
   border-radius: 10px;
 }
 .am-titlebar button {

@@ -321,8 +321,8 @@ export class AMPanel {
     }
 
     // 不要用click，获取的是松开时鼠标下的元素，会很容易误触。因为拖拽时鼠标很容易会出现在元素外部
-    window.addEventListener('mousedown', this.visual_listener_mousedown)
-    window.addEventListener('keydown', this.visual_listener_keydown)
+    window.addEventListener('mousedown', (ev) => { this.visual_listener_mousedown(ev) })
+    window.addEventListener('keydown', (ev) => { this.visual_listener_keydown(ev) })
   }
 
   /** 隐藏面板
