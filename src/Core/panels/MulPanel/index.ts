@@ -36,6 +36,8 @@ let alt_key_flag = false
 
 /// 当前活跃的面板
 export let activeAMPanel: AMPanel|null = null
+/// 当前已创建的主面板列表
+const amPanel_list: AMPanel[] = []
 
 /** AMPanel 使用单例模式管理
  * 
@@ -98,15 +100,10 @@ export class AMPanel {
   /// 作用2: 对面板的拆分、调序、中间插入或删除
   static cache_last_panel_list: string[] = []
 
-  // 当前显示状态的缓存 = {
-  //   pos: {x: number, y: number}|undefined,
-  //   list?: string[],
-  //   is_focus: boolean = true,
-  //   is_reverse: boolean = false,
-  // }
+  // #region big3
 
   /** 单例模式 */
-  static factory(el: HTMLElement) {
+  static factory(el: HTMLElement): AMPanel {
     // AMTitlebar.factory(el)
     if (activeAMPanel) {
       console.error('临时调试: 当前创建了多个 AMPanel 实例。首个实例目前会存在引用丢失')
@@ -114,8 +111,11 @@ export class AMPanel {
 
     const amPanel = new AMPanel(el)
     activeAMPanel = amPanel
+    amPanel_list.push(amPanel)
 
     amPanel.initSubPanels()
+
+    return amPanel
   }
 
   private constructor(el: HTMLElement) {
@@ -184,6 +184,16 @@ export class AMPanel {
       })
     }
   }
+
+  public destroy() {
+    activeAMPanel = null
+    const index = amPanel_list.indexOf(this);
+    if (index !== -1) {
+      amPanel_list.splice(index, 1);
+    }
+  }
+
+  // #endregion
 
   // #region 面板相关
 
