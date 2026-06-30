@@ -1,0 +1,17 @@
+/** browser 环境专用样式 */
+
+#main.browser-app {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+
+  .am-browser-debug-btn {
+    margin-top: 300px;
+  }
+
+  .am-config {
+    flex-basis: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+  }
+}

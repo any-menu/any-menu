@@ -1,11 +1,10 @@
 /** 主面板相关 */
 
 import { global_setting } from '../../Core/shared/setting'
-import { activeAMPanel, AMPanel } from "../../Core/panels/MulPanel"
-import { initMenuData } from "../../Core/initTool"
+import { activeAMPanel, AMPanel } from '../../Core/panels/MulPanel'
+import { initSettingTab_1, initSettingTab_2 } from '../../Core/modules/settingPanel/SettingTab'
+import { initMenuData } from '../../Core/initTool'
 import { initApi } from './utils/initApi'
-
-initApi()
 
 // #region 启动时阅读配置文件
 
@@ -22,15 +21,16 @@ async function init() {
 // 前端模块
 window.addEventListener("DOMContentLoaded", async () => {
   const main_el: HTMLDivElement | null = document.querySelector("#main")
-  console.log('测试测试', main_el, document)
   if (!main_el) return
 
+  await initApi()
   await init() // 保证先读取配置再初始化别的
 
   // 临时 debug
   {
     const btn = document.createElement('button'); main_el.appendChild(btn);
       btn.innerText = 'Test, show panel'
+      btn.classList.add('am-browser-debug-btn')
       btn.onclick = () => { activeAMPanel?.panel_show(undefined) }
   }
 
@@ -43,6 +43,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     void initMenuData() // TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
   }
 
+  initSettingPanel(main_el)
+
   // 置顶按钮 (仅 debug 时显示)
   if (!global_setting.isDebug) return;
   const pin_btn = document.createElement('button'); main_el.appendChild(pin_btn); pin_btn.classList.add('btn-1', 'windows-pin');
@@ -52,3 +54,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     global_setting.api.pin()
   })
 })
+
+function initSettingPanel(el: HTMLElement) {
+  const div = document.createElement('div'); el.appendChild(div);
+
+  const { tab_nav_container, tab_content_container } = initSettingTab_1(div)
+  initSettingTab_2(tab_nav_container, tab_content_container)
+}

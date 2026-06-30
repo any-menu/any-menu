@@ -8,12 +8,15 @@ importers:
 
   .: {}
 
-  src/App:
+  src/Browser:
     dependencies:
       '@editableblock/textarea':
         specifier: 1.0.1-beta37
         version: 1.0.1-beta37
     devDependencies:
+      copyfiles:
+        specifier: ^2.4.1
+        version: 2.4.1
       tslib:
         specifier: ^2.8.1
         version: 2.8.1

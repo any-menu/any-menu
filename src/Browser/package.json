@@ -1,5 +1,5 @@
 {
-	"name": "any-menu-app",
+	"name": "any-menu-browser",
 	"version": "1.2.3-beta",
 	"description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
 	"author": "LincZero",
@@ -7,11 +7,13 @@
 	"license": "GNU Affero General Public License v3.0",
 	"main": "main.js",
 	"scripts": {
-		"dev": "vite",
-		"build": "vite build"
+		"dev": "pnpm copy_style && vite",
+		"build": "pnpm copy_style && vite build",
+		"copy_style": "copyfiles --flat ../../src/Core/styles/styles.css ./src/"
 	},
 	"keywords": [],
 	"devDependencies": {
+		"copyfiles": "^2.4.1",
 		"tslib": "^2.8.1",
 		"vite": "^8.1.0"
 	},
