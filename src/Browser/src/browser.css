@@ -1,12 +1,26 @@
 /** browser 环境专用样式 */
 
+:root.am-theme-light {
+  background: none !important;
+}
+:root {
+  background: #2a2932 !important;
+}
+
 #main.browser-app {
   display: flex;
   flex-direction: column;
   padding: 20px;
 
   .am-browser-debug-btn {
+    height: 34px;
     margin-top: 300px;
+    background: var(--am-bg-color);
+    color: var(--am-text-color);
+    border: solid 1px var(--am-bg-color);
+    outline: none;
+    box-shadow: none;
+    border-radius: 8px;
   }
 
   .am-config {
