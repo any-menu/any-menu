@@ -104,7 +104,6 @@ export class AMPanel {
 
   /** 单例模式 */
   static factory(el: HTMLElement): AMPanel {
-    // AMTitlebar.factory(el)
     if (activeAMPanel) {
       console.error('临时调试: 当前创建了多个 AMPanel 实例。首个实例目前会存在引用丢失')
     }
@@ -120,13 +119,15 @@ export class AMPanel {
 
   private constructor(el: HTMLElement) {
     this.el = el
-    el.classList.add('am-panel');
+    el.classList.add('am-panel')
+    el.classList.add('am-hide')
   }
 
   private initSubPanels() {
     const el = this.el
     const sub_panels = this.sub_panels
 
+    // AMTitlebar.factory(el)
     if (!sub_panels.amSearch) {
       sub_panels.amSearch = AMSearch.factory(el)
     }
