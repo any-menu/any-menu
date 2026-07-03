@@ -3,6 +3,8 @@ import { global_setting } from "../../shared/setting"
 import { AMPin } from './pin/index'
 
 export class AMTitlebar {
+  el: HTMLElement
+
   static factory(el: HTMLElement) {
     return new AMTitlebar(el)
   }
@@ -11,12 +13,22 @@ export class AMTitlebar {
    * @param p_el 挂载的元素，同时也是 .am-panel 元素
    */
   constructor(p_el: HTMLElement) {
-    const el = document.createElement('div'); p_el.appendChild(el); el.classList.add('am-titlebar')
+    this.el = document.createElement('div'); p_el.appendChild(this.el); this.el.classList.add('am-titlebar')
 
-    AMPin.factory(el) // 置顶按钮
-    createHideBtn(el)
+    AMPin.factory(this.el) // 置顶按钮
+    createHideBtn(this.el)
 
-    global_setting.other.app_createTitlebar(el)
+    global_setting.other.app_createTitlebar(this.el)
+
+    this.hide()
+  }
+
+  hide() {
+    this.el.classList.add('am-hide')
+  }
+
+  show() {
+    this.el.classList.remove('am-hide')
   }
 }
 

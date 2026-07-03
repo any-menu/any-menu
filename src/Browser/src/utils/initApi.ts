@@ -7,6 +7,28 @@ import { global_setting } from "../../../Core/shared/setting";
 
 export async function initApi() {
   global_setting.platform = 'browser'
+  
+  // 浏览器 App 版本的某些默认配置有所不同
+  {
+    // 路径
+    // ...
+
+    // 语言环境
+    if (global_setting.config.language == 'auto') {
+      global_setting.state.language = navigator.language;
+      if (global_setting.state.language == 'zh-CN') global_setting.state.language = 'zh'
+    } else {
+      global_setting.state.language = global_setting.config.language
+    }
+
+    // 明暗模式
+    global_setting.api.getSystemIsDark = () => {
+      if (window.matchMedia) {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      return false; // 获取不到明或暗，则默认明亮
+    }
+  }
 
   // #region OPFS 准备
 
