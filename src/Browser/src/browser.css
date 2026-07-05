@@ -21,11 +21,19 @@
     outline: none;
     box-shadow: none;
     border-radius: 8px;
+
+    /* 模拟窗口样式 */
+    outline: solid 1px #ffffff44;
+    box-shadow: 8px 8px 6px var(--am-bg-color);
   }
 
   .am-config {
     flex-basis: 100%;
     margin-top: 20px;
     border-radius: 10px;
+
+    /* 模拟窗口样式 */
+    outline: solid 1px #ffffff44;
+    box-shadow: 8px 8px 6px var(--am-bg-color);
   }
 }
