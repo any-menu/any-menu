@@ -4,8 +4,8 @@
  */
 
 import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
-import { global_setting } from "../../../Core/shared/setting";
-import { activeAMPanel } from '../../../Core/panels/MulPanel';
+import { global_setting } from "@/Core/shared/setting";
+import { activeAMPanel } from '@/Core/panels/MulPanel';
 
 export async function initApi() {
   global_setting.platform = 'browser'

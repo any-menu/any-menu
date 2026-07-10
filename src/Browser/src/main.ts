@@ -1,9 +1,9 @@
 /** 主面板相关 */
 
-import { global_setting } from '../../Core/shared/setting'
-import { activeAMPanel, AMPanel } from '../../Core/panels/MulPanel'
-import { initSettingTab_1, initSettingTab_2 } from '../../Core/modules/settingPanel/SettingTab'
-import { initMenuData } from '../../Core/initTool'
+import { global_setting } from '@/Core/shared/setting'
+import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
+import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
+import { initMenuData } from '@/Core/initTool'
 import { initApi, initApi_with_server } from './utils/initApi'
 
 // #region 启动时阅读配置文件
