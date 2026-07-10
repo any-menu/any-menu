@@ -32,6 +32,146 @@ export async function initApi() {
   }
 }
 
+/** 有本地服务器的版本 */
+export async function initApi_with_server() {
+  // 向后端请求，使用后端 api
+  async function request<T>(action: string, params: Record<string, any>): Promise<T> {
+    const res = await fetch(`/__api/fs${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || 'Request failed');
+    }
+    const json = await res.json();
+    if (!json.success) {
+      throw new Error(json.error || 'Unknown error');
+    }
+    return json.data as T;
+  }
+
+  // ------- 文件操作 API -------
+  global_setting.api.isFolder = (relPath: string): Promise<boolean> => {
+    return request<boolean>('/isFolder', { relPath });
+  };
+
+  global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
+    try {
+      return await request<string>('/readFile', { relPath });
+    } catch {
+      return null;
+    }
+  };
+
+  global_setting.api.readFolder = async (
+    relPath: string,
+    recursion_depth?: number
+  ): Promise<string[]> => {
+    try {
+      return await request<string[]>('/readFolder', {
+        relPath,
+        recursion_depth: recursion_depth ?? 0,
+      });
+    } catch {
+      return [];
+    }
+  };
+
+  global_setting.api.writeFile = async (
+    relPath: string,
+    content: string,
+    is_append?: boolean
+  ): Promise<boolean> => {
+    try {
+      await request<boolean>('/writeFile', {
+        relPath,
+        content,
+        is_append: is_append ?? false,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {
+    try {
+      await request<boolean>('/deleteFile', { relPath });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // ------- 通用网络请求 -------
+  global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+    const {
+      url,
+      method = 'GET',
+      headers = {},
+      body,
+      isParseJson = true,
+      isStream,
+      onChunk,
+      onDone,
+    } = conf;
+
+    try {
+      // 流式模式（SSE 或 chunk 回调）
+      if (isStream) {
+        const response = await fetch(url, { method, headers, body });
+        if (!response.ok || !response.body) {
+          return { code: -1, msg: `HTTP error ${response.status}` };
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        while (!done) {
+          const { value, done: streamDone } = await reader.read();
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            onChunk?.(chunk);
+          }
+          done = streamDone;
+        }
+        onDone?.();
+        return null; // 流式模式不返回完整响应体
+      }
+
+      // 普通模式
+      const response = await fetch(url, { method, headers, body });
+      const text = await response.text();
+      let json: any = undefined;
+      if (isParseJson) {
+        try {
+          json = JSON.parse(text);
+        } catch {
+          /* 忽略解析错误 */
+        }
+      }
+
+      const data: UrlResponseData = {
+        text,
+        json,
+        originalResponse: response,
+      };
+
+      return {
+        code: response.ok ? 0 : -1,
+        data,
+        msg: response.ok ? '' : `HTTP error ${response.status}`,
+      };
+    } catch (err: any) {
+      return {
+        code: -1,
+        msg: err.message || 'Network error',
+      };
+    }
+  }
+}
+
 /** 使用 OPFS 和虚拟文件系统的版本 */
 export async function initApi_with_opfs() {
   // #region OPFS 准备
@@ -183,9 +323,7 @@ export async function initApi_with_opfs() {
   }
 
   global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
-    console.log('将读取路径', relPath)
     const fileHandle = await getFileHandle(relPath, false);
-    console.log('将读取路径111', fileHandle)
     if (!fileHandle) return null;
     try {
       const file = await fileHandle.getFile();
@@ -235,146 +373,4 @@ export async function initApi_with_opfs() {
   console.log('🔍 After init:');
   await printFileTree();
   // --- 初始化结束 ---
-}
-
-/** 有本地服务器的版本 */
-export async function initApi_with_server() {
-  // 向后端请求，使用后端 api
-  async function request<T>(action: string, params: Record<string, any>): Promise<T> {
-    console.log('向 server 请求', action, params)
-
-    const res = await fetch(`/__api/fs${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || 'Request failed');
-    }
-    const json = await res.json();
-    if (!json.success) {
-      throw new Error(json.error || 'Unknown error');
-    }
-    return json.data as T;
-  }
-
-  // ------- 文件操作 API -------
-  global_setting.api.isFolder = (relPath: string): Promise<boolean> => {
-    return request<boolean>('/isFolder', { relPath });
-  };
-
-  global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
-    try {
-      return await request<string>('/readFile', { relPath });
-    } catch {
-      return null;
-    }
-  };
-
-  global_setting.api.readFolder = async (
-    relPath: string,
-    recursion_depth?: number
-  ): Promise<string[]> => {
-    try {
-      return await request<string[]>('/readFolder', {
-        relPath,
-        recursion_depth: recursion_depth ?? 0,
-      });
-    } catch {
-      return [];
-    }
-  };
-
-  global_setting.api.writeFile = async (
-    relPath: string,
-    content: string,
-    is_append?: boolean
-  ): Promise<boolean> => {
-    try {
-      await request<boolean>('/writeFile', {
-        relPath,
-        content,
-        is_append: is_append ?? false,
-      });
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {
-    try {
-      await request<boolean>('/deleteFile', { relPath });
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  // ------- 通用网络请求 -------
-  global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
-    const {
-      url,
-      method = 'GET',
-      headers = {},
-      body,
-      isParseJson = true,
-      isStream,
-      onChunk,
-      onDone,
-    } = conf;
-
-    try {
-      // 流式模式（SSE 或 chunk 回调）
-      if (isStream) {
-        const response = await fetch(url, { method, headers, body });
-        if (!response.ok || !response.body) {
-          return { code: -1, msg: `HTTP error ${response.status}` };
-        }
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-        while (!done) {
-          const { value, done: streamDone } = await reader.read();
-          if (value) {
-            const chunk = decoder.decode(value, { stream: true });
-            onChunk?.(chunk);
-          }
-          done = streamDone;
-        }
-        onDone?.();
-        return null; // 流式模式不返回完整响应体
-      }
-
-      // 普通模式
-      const response = await fetch(url, { method, headers, body });
-      const text = await response.text();
-      let json: any = undefined;
-      if (isParseJson) {
-        try {
-          json = JSON.parse(text);
-        } catch {
-          /* 忽略解析错误 */
-        }
-      }
-
-      const data: UrlResponseData = {
-        text,
-        json,
-        originalResponse: response,
-      };
-
-      return {
-        code: response.ok ? 0 : -1,
-        data,
-        msg: response.ok ? '' : `HTTP error ${response.status}`,
-      };
-    } catch (err: any) {
-      return {
-        code: -1,
-        msg: err.message || 'Network error',
-      };
-    }
-  }
 }

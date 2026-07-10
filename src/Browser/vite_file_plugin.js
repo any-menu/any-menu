@@ -1,4 +1,5 @@
-import fs from 'fs';
+// import fs from 'fs';       // ❌ 回调版
+import fs from 'fs/promises'; // ✅ Promise 版
 import path from 'path';
 
 /** 自定义插件：提供文件操作 API
@@ -19,19 +20,18 @@ export const viteFileApiPlugin = {
 
     // 安全解析相对路径，禁止访问项目外文件
     function resolveSafe(relPath) {
-      // const full = path.resolve(root, relPath);
+      if (!relPath) throw new Error('relPath is required');
+      const full = path.resolve(root, relPath);
+
       // if (!full.startsWith(root)) {
       //   throw new Error('Access denied');
       // }
-      // return full;
-
-      if (!relPath) throw new Error('relPath is required');
-      const full = path.resolve(root, relPath);
-      // 使用 path.relative 判断是否在 root 内
+      
       const relative = path.relative(root, full);
       if (relative.startsWith('..') || path.isAbsolute(relative)) {
         throw new Error('Access denied');
       }
+
       return full;
     }
 
@@ -70,7 +70,6 @@ export const viteFileApiPlugin = {
 
           const url = new URL(req.url, `http://${req.headers.host}`);
           action = url.pathname.replace('/__api/fs', '');
-          console.log('server route:', req.url, body)
 
           let result;
           switch (action) {
