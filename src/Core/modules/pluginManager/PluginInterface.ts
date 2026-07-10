@@ -2,8 +2,8 @@
  * 如果你是脚本开发者，那么你需要要阅读 ../../Type 中的类型即可
  */
 
-import { activeAMPanel } from "../../panels/MulPanel";
 import { global_setting } from "../../shared/setting";
+import { activeAMPanel } from "../../panels/MulPanel";
 import type { PluginAppCtx, PluginRunCtx, UrlRequestConfig } from "../../../Type";
 
 export const AppCtxDemo: PluginAppCtx = {

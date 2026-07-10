@@ -5,6 +5,7 @@
 
 import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
 import { global_setting } from "../../../Core/shared/setting";
+import { activeAMPanel } from '../../../Core/panels/MulPanel';
 
 export async function initApi() {
   global_setting.platform = 'browser'
@@ -28,6 +29,21 @@ export async function initApi() {
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
       return false; // 获取不到明或暗，则默认明亮
+    }
+  }
+
+  global_setting.api.pin = async (isPin?: boolean) => {
+    if (isPin === undefined) {
+      global_setting.state.isPin = !global_setting.state.isPin
+    } else {
+      global_setting.state.isPin = isPin
+    }
+
+    if (global_setting.state.isPin) {
+      activeAMPanel?.el.classList.add('am-pin-active')
+    }
+    else {
+      activeAMPanel?.el.classList.remove('am-pin-active')
     }
   }
 }
