@@ -408,7 +408,7 @@ export const global_setting: {
     obsidian_plugin: null,
     obsidian_ctx: null,
     obsidian_run_command: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
-    renderMarkdown: async (): Promise<void> => { console.warn("非obsidian环境不支持此操作") },
+    renderMarkdown: null,
     app_show: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_hide: async (): Promise<void> => { console.warn("非app环境不支持此操作") },
     app_convertFileSrc: async (): Promise<string> => { console.warn("非app环境不支持此操作"); return '[error]' },

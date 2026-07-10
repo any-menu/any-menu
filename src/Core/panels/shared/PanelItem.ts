@@ -192,7 +192,8 @@ export async function init_item(
 
   // 项说明
   if (item.type && ["md", "path"].includes(item.type) && item.content &&
-    !(item.type === "md" && global_setting.platform === "app") // app 暂不支持 md tooltip
+    !(item.type === "md" && !global_setting.other.renderMarkdown)
+      // app 和浏览器等暂不支持 md tooltip，他们是没有定义 renderMarkdown 方法的
   ) {
     let tooltip: HTMLElement|undefined = undefined
     li.onmouseenter = () => {
