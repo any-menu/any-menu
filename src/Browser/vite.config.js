@@ -2,8 +2,10 @@ import { defineConfig } from 'vite';
 import path from 'path';
 // import vue from '@vitejs/plugin-vue';
 
+import { viteFileApiPlugin } from './vite_file_plugin';
+
 export default defineConfig({
-  // plugins: [vue()],
+  plugins: [viteFileApiPlugin], // vue()
   define: {
     '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': JSON.stringify(true),
     // 添加其他需要的特性标志
@@ -15,7 +17,7 @@ export default defineConfig({
       }
     }
   },
-  // base: '/any-block/', // [!code] 临时，需要根据你要部署的位置进行修改
+  // base: '/any-menu/', // [!code] 临时，需要根据你要部署的位置进行修改
   server: {
     host: 'localhost',
     port: 3012,

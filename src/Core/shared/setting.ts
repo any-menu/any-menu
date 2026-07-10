@@ -309,7 +309,7 @@ export const global_setting: {
           }
           file_content = result
         } catch (error) {
-          console.warn("没配置文件，将自动生成一个")
+          console.warn("没配置文件，将自动生成一个", file_path)
           file_content = null
         }
         // 解析，并应用配置文件

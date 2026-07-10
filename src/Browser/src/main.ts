@@ -4,7 +4,7 @@ import { global_setting } from '../../Core/shared/setting'
 import { activeAMPanel, AMPanel } from '../../Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '../../Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '../../Core/initTool'
-import { initApi } from './utils/initApi'
+import { initApi, initApi_with_server } from './utils/initApi'
 
 // #region 启动时阅读配置文件
 
@@ -24,6 +24,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!main_el) return
 
   await initApi()
+  await initApi_with_server()
   await init() // 保证先读取配置再初始化别的
 
   // 临时 debug

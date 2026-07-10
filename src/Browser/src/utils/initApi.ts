@@ -3,6 +3,7 @@
  * 优点：无后端 + 持久化，除了适合快速本地调试，还适合线上演示
  */
 
+import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
 import { global_setting } from "../../../Core/shared/setting";
 
 export async function initApi() {
@@ -29,7 +30,10 @@ export async function initApi() {
       return false; // 获取不到明或暗，则默认明亮
     }
   }
+}
 
+/** 使用 OPFS 和虚拟文件系统的版本 */
+export async function initApi_with_opfs() {
   // #region OPFS 准备
 
   // 获取 OPFS 根目录句柄
@@ -70,12 +74,80 @@ export async function initApi() {
     if (!dirHandle) return null;
     try {
       return await dirHandle.getFileHandle(fileName, { create });
-    } catch {
+    } catch (e) {
+      console.warn('Get file handle error', e);
       return null;
     }
   };
 
   // #endregion
+
+  // #region 调试工具：打印文件树
+  const printFileTree = async () => {
+    console.group('🌳 OPFS File Tree');
+    const printRecursive = async (
+      handle: FileSystemDirectoryHandle,
+      prefix: string = ''
+    ) => {
+      for await (const [name, child] of (handle as any).entries()) {
+        if (child.kind === 'directory') {
+          console.log(`${prefix}📁 ${name}/`);
+          await printRecursive(child, prefix + '  ');
+        } else {
+          console.log(`${prefix}📄 ${name}`);
+        }
+      }
+    };
+    await printRecursive(root);
+    console.groupEnd();
+  };
+  // #endregion
+
+  // // #region 可选的初始化文件夹内容
+  // // 定义你想初始创建的目录与文件结构
+  // const DEMO_STRUCTURE = {
+  //   // 目录使用对象表示，文件使用字符串表示（key 是文件名，value 是文件内容）
+  //   'demo-folder': {
+  //     type: 'dir',
+  //     children: {
+  //       'readme.txt': 'Welcome to the demo!',
+  //       'config.json': JSON.stringify({ theme: 'dark', version: 1 }),
+  //       'sub': {
+  //         type: 'dir',
+  //         children: {
+  //           'note.md': '# Subfolder note',
+  //         },
+  //       },
+  //     },
+  //   },
+  //   'example.txt': 'This is an example file.',
+  //   'data': {
+  //     type: 'dir',
+  //     children: {
+  //       'numbers.csv': '1,2,3\n4,5,6',
+  //     },
+  //   },
+  // };
+
+  //   const initDemoStructure = async (
+  //   baseHandle: FileSystemDirectoryHandle,
+  //   structure: any
+  // ) => {
+  //   for (const [name, descriptor] of Object.entries(structure)) {
+  //     if (typeof descriptor === 'string') {
+  //       // 是文件
+  //       const fileHandle = await baseHandle.getFileHandle(name, { create: true });
+  //       const writable = await fileHandle.createWritable();
+  //       await writable.write(descriptor);
+  //       await writable.close();
+  //     } else if (descriptor && descriptor.type === 'dir') {
+  //       // 是目录
+  //       const dirHandle = await baseHandle.getDirectoryHandle(name, { create: true });
+  //       await initDemoStructure(dirHandle, descriptor.children || {});
+  //     }
+  //   }
+  // };
+  // // #endregion
 
   global_setting.api.readFolder = async (relPath: string, recursion_depth?: number): Promise<string[]> => {
     const segments = splitPath(relPath);
@@ -111,7 +183,9 @@ export async function initApi() {
   }
 
   global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
+    console.log('将读取路径', relPath)
     const fileHandle = await getFileHandle(relPath, false);
+    console.log('将读取路径111', fileHandle)
     if (!fileHandle) return null;
     try {
       const file = await fileHandle.getFile();
@@ -139,6 +213,168 @@ export async function initApi() {
     } catch (e) {
       console.error('OPFS writeFile error:', e);
       return false;
+    }
+  }
+
+  // --- 初始化时进行调试打印与演示结构创建 ---
+  // 1. 打印当前文件系统
+  console.log('🔍 Before init demo structure:');
+  await printFileTree();
+
+  // 2. （可选）初始化演示目录/文件。如果已有则不覆盖。
+  //    这里简单判断：如果根目录下不存在 "demo-folder" 则创建。
+  try {
+    await root.getDirectoryHandle('demo-folder');
+    console.log('ℹ️ Demo structure already exists, skipping creation.');
+  } catch {
+    console.log('📦 Creating demo structure...');
+    console.log('✅ Demo structure created.');
+  }
+
+  // 3. 再次打印文件树，确认结构
+  console.log('🔍 After init:');
+  await printFileTree();
+  // --- 初始化结束 ---
+}
+
+/** 有本地服务器的版本 */
+export async function initApi_with_server() {
+  // 向后端请求，使用后端 api
+  async function request<T>(action: string, params: Record<string, any>): Promise<T> {
+    console.log('向 server 请求', action, params)
+
+    const res = await fetch(`/__api/fs${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || 'Request failed');
+    }
+    const json = await res.json();
+    if (!json.success) {
+      throw new Error(json.error || 'Unknown error');
+    }
+    return json.data as T;
+  }
+
+  // ------- 文件操作 API -------
+  global_setting.api.isFolder = (relPath: string): Promise<boolean> => {
+    return request<boolean>('/isFolder', { relPath });
+  };
+
+  global_setting.api.readFile = async (relPath: string): Promise<string | null> => {
+    try {
+      return await request<string>('/readFile', { relPath });
+    } catch {
+      return null;
+    }
+  };
+
+  global_setting.api.readFolder = async (
+    relPath: string,
+    recursion_depth?: number
+  ): Promise<string[]> => {
+    try {
+      return await request<string[]>('/readFolder', {
+        relPath,
+        recursion_depth: recursion_depth ?? 0,
+      });
+    } catch {
+      return [];
+    }
+  };
+
+  global_setting.api.writeFile = async (
+    relPath: string,
+    content: string,
+    is_append?: boolean
+  ): Promise<boolean> => {
+    try {
+      await request<boolean>('/writeFile', {
+        relPath,
+        content,
+        is_append: is_append ?? false,
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  global_setting.api.deleteFile = async (relPath: string): Promise<boolean> => {
+    try {
+      await request<boolean>('/deleteFile', { relPath });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // ------- 通用网络请求 -------
+  global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
+    const {
+      url,
+      method = 'GET',
+      headers = {},
+      body,
+      isParseJson = true,
+      isStream,
+      onChunk,
+      onDone,
+    } = conf;
+
+    try {
+      // 流式模式（SSE 或 chunk 回调）
+      if (isStream) {
+        const response = await fetch(url, { method, headers, body });
+        if (!response.ok || !response.body) {
+          return { code: -1, msg: `HTTP error ${response.status}` };
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        while (!done) {
+          const { value, done: streamDone } = await reader.read();
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            onChunk?.(chunk);
+          }
+          done = streamDone;
+        }
+        onDone?.();
+        return null; // 流式模式不返回完整响应体
+      }
+
+      // 普通模式
+      const response = await fetch(url, { method, headers, body });
+      const text = await response.text();
+      let json: any = undefined;
+      if (isParseJson) {
+        try {
+          json = JSON.parse(text);
+        } catch {
+          /* 忽略解析错误 */
+        }
+      }
+
+      const data: UrlResponseData = {
+        text,
+        json,
+        originalResponse: response,
+      };
+
+      return {
+        code: response.ok ? 0 : -1,
+        data,
+        msg: response.ok ? '' : `HTTP error ${response.status}`,
+      };
+    } catch (err: any) {
+      return {
+        code: -1,
+        msg: err.message || 'Network error',
+      };
     }
   }
 }
