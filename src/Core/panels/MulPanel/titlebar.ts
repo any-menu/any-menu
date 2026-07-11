@@ -1,21 +1,21 @@
-import { activeAMPanel } from ".";
+import { activeAMPanel, type AMPanel } from ".";
 import { global_setting } from "../../shared/setting"
 import { AMPin } from './pin/index'
 
 export class AMTitlebar {
   el: HTMLElement
 
-  static factory(el: HTMLElement) {
-    return new AMTitlebar(el)
+  static factory(amPanel: AMPanel) {
+    return new AMTitlebar(amPanel)
   }
 
   /**
-   * @param p_el 挂载的元素，同时也是 .am-panel 元素
+   * @param amPanel，其 `.el` 为挂载的元素，同时也是 .am-panel 元素
    */
-  constructor(p_el: HTMLElement) {
-    this.el = document.createElement('div'); p_el.appendChild(this.el); this.el.classList.add('am-titlebar')
+  constructor(public amPanel: AMPanel) {
+    this.el = document.createElement('div'); amPanel.el.appendChild(this.el); this.el.classList.add('am-titlebar')
 
-    AMPin.factory(this.el) // 置顶按钮
+    AMPin.factory(this.el, amPanel) // 置顶按钮
     createHideBtn(this.el)
 
     global_setting.other.app_createTitlebar(this.el)

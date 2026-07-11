@@ -1,20 +1,31 @@
+import { type AMPanel } from "..";
 import { global_setting } from "../../../shared/setting"
 
 export class AMPin {
   el: HTMLElement
+  // p_el: HTMLElement
 
-  static factory(el: HTMLElement) {
-    return new AMPin(el)
+  static factory(p_el: HTMLElement, amPanel: AMPanel) {
+    return new AMPin(p_el, amPanel)
   }
 
   /**
    * @param p_el 挂载的元素，同时也是 .am-panel 元素
    */
-  constructor(p_el: HTMLElement) {
+  constructor(public p_el: HTMLElement, public amPanel: AMPanel) {
     this.el = document.createElement('div'); p_el.appendChild(this.el); this.el.classList.add('am-pin')
     global_setting.api.saveInnerHTML(this.el, `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`)
 
-    this.initEvent(this.el, p_el)
+    // 这里的 target_el 不一定是 p_el
+    // if (p_el.classList.contains('am-panel')) {
+    //   this.initEvent(this.el, p_el)
+    // } else {
+    //   const p_p_el = p_el.parentElement
+    //   if (p_p_el && p_p_el.classList.contains('am-panel')) {
+    //     this.initEvent(this.el, p_p_el)
+    //   }
+    // }
+    this.initEvent(this.el, amPanel.el)
   }
 
   /**
@@ -92,11 +103,19 @@ export class AMPin {
       isDragging = false
       pinEl.classList.remove('am-pin--dragging')
       if (!didDrag) {
-        global_setting.api.pin() // 没有发生过拖动
+        global_setting.api.pin() // 没有发生过拖动，则切换置顶
       } else {
         global_setting.api.pin(true) // 强制置顶
       }
       didDrag = false
+      // titlebar 自动显示
+      if (global_setting.state.isPin) {
+        this.amPanel.sub_panels.amTitlebar?.show()
+        this.amPanel.sub_panels.amPin?.hide()
+      } else {
+        this.amPanel.sub_panels.amTitlebar?.hide()
+        this.amPanel.sub_panels.amPin?.show()
+      }
 
       // 去除临时监听
       document.removeEventListener('mousemove', onMouseMove)
@@ -139,5 +158,13 @@ export class AMPin {
       e.preventDefault()
       e.stopPropagation()
     })
+  }
+
+  hide() {
+    this.el.classList.add('am-hide')
+  }
+
+  show() {
+    this.el.classList.remove('am-hide')
   }
 }

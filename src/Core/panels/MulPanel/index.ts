@@ -27,7 +27,7 @@ import { AMToolbar } from '../toolbar/index'
 import { AMContextMenu } from '../contextmenu/index'
 import { AMMiniEditor } from '../miniEditor/index'
 import { AMPin } from './pin/index'
-// import { AMTitlebar } from './titlebar'
+import { AMTitlebar } from './titlebar'
 
 // 按下过 alt+key 组合键。
 // 仅用于辅助得到 alt_v_state 的值，无其他用处，请勿直接使用于其他用途。
@@ -78,6 +78,8 @@ export class AMPanel {
   // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
   //   而 App 版本，每个进程中这里应只有一个。
   public sub_panels: {
+    amTitlebar: AMTitlebar | null,
+    amPin: AMPin | null,
     amSearch: AMSearch | null,
     amToolbar: AMToolbar | null,
     amContextMenu: AMContextMenu | null,
@@ -86,6 +88,8 @@ export class AMPanel {
 
     alt_v_state: boolean, // 虚拟alt状态
   } = {
+    amTitlebar: null,
+    amPin: null,
     amSearch: null,
     amContextMenu: null,
     amMiniEditor: null,
@@ -127,7 +131,7 @@ export class AMPanel {
     const el = this.el
     const sub_panels = this.sub_panels
 
-    // AMTitlebar.factory(el)
+    sub_panels.amTitlebar = AMTitlebar.factory(this)
     if (!sub_panels.amSearch) {
       sub_panels.amSearch = AMSearch.factory(el)
     }
@@ -145,8 +149,8 @@ export class AMPanel {
     }
     // 可选，置顶按钮 (注意创建顺序影响布局)
     {
-      const amPin = AMPin.factory(el)
-      amPin.el.classList.add('am-panel-out')
+      sub_panels.amPin = AMPin.factory(el, this)
+        sub_panels.amPin.el.classList.add('am-panel-out')
     }
 
     // alt切换快捷提示
