@@ -4,7 +4,7 @@ import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '@/Core/initTool'
-import { initApi, initApi_with_server } from './utils/initApi'
+import { EditorTools, initApi, initApi_with_server } from './utils/initApi'
 
 // #region 启动时阅读配置文件
 
@@ -28,11 +28,33 @@ window.addEventListener("DOMContentLoaded", async () => {
   await init() // 保证先读取配置再初始化别的
 
   // 临时 debug
+  let textarea: HTMLTextAreaElement
+  {
+    textarea = document.createElement('textarea'); main_el.appendChild(textarea);
+      textarea.innerText = 'Test, textarea demo.\n'
+      textarea.classList.add('am-browser-debug-textarea')
+  }
+
+  // 临时 debug
   {
     const btn = document.createElement('button'); main_el.appendChild(btn);
       btn.innerText = 'Test, show panel'
       btn.classList.add('am-browser-debug-btn')
-      btn.onclick = () => { activeAMPanel?.panel_show(undefined) }
+
+      // 非失焦的按钮行为
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // 阻止默认行为（阻止按钮获取焦点）
+        // 手动创建一个 click 事件并立即派发 (触发click但不触发焦点改变)
+        btn.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        }));
+      });
+      btn.onclick = () => {
+        EditorTools.saveCurrentCursor(textarea)
+        activeAMPanel?.panel_show({x: 30, y: 100})
+      }
   }
 
   // initMenu

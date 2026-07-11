@@ -32,6 +32,12 @@ export async function initApi() {
     }
   }
 
+  // const old_sendText = global_setting.api.sendText
+  global_setting.api.sendText = async (text: string) => {
+    activeAMPanel?.panel_hide()
+    EditorTools.recoverCursor(text)
+  }
+
   global_setting.api.pin = async (isPin?: boolean) => {
     if (isPin === undefined) {
       global_setting.state.isPin = !global_setting.state.isPin
@@ -389,4 +395,55 @@ export async function initApi_with_opfs() {
   console.log('🔍 After init:');
   await printFileTree();
   // --- 初始化结束 ---
+}
+
+/** textarea 简易编辑器管理
+ * 主要管理聚焦转移和恢复时的聚焦状态和光标位置恢复
+ */
+export namespace EditorTools {
+
+  // 定义要保存的光标状态
+  interface TextInputCursorState {
+    element: HTMLTextAreaElement | HTMLInputElement; // 目标元素
+    start: number;
+    end: number;
+  }
+
+  let savedCursorState: TextInputCursorState | null = null;
+  
+  // 保存光标状态
+  export function saveCurrentCursor(element: HTMLTextAreaElement): void {
+    savedCursorState = {
+      element,
+      start: element.selectionStart,
+      end: element.selectionEnd,
+    };
+  }
+
+  // 恢复光标位置
+  // (可选) 可以顺便在光标位置插入文本内容
+  export function recoverCursor(insertText: string = '') {
+    // 1. 获取保存的状态
+    if (!savedCursorState || !document.contains(savedCursorState.element)) {
+      return;
+    }
+    const { element, start, end } = savedCursorState;
+
+    // 2. 获取当前值和新值，设置文本
+    const currentValue = element.value;
+    const newValue = 
+      currentValue.substring(0, start) + 
+      insertText + 
+      currentValue.substring(end);
+    element.value = newValue;
+
+    // 3. 计算新的光标位置，设置光标位置和聚焦状态
+    const newCursorPos = start + insertText.length;
+    element.selectionStart = newCursorPos;
+    element.selectionEnd = newCursorPos;
+    element.focus();
+
+    // 4. (可选) 清空保存的状态，防止重复使用
+    savedCursorState = null;
+  }
 }
