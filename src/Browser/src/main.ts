@@ -31,8 +31,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   let textarea: HTMLTextAreaElement
   {
     textarea = document.createElement('textarea'); main_el.appendChild(textarea);
-      textarea.innerText = 'Test, textarea demo.\n'
+      textarea.textContent = 'Test, textarea demo.\n'
+      textarea.setAttribute('spellcheck', 'false')
       textarea.classList.add('am-browser-debug-textarea')
+    textarea.onblur = () => {
+      EditorTools.saveCurrentCursor(textarea)
+    }
   }
 
   // 临时 debug
@@ -52,8 +56,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }));
       });
       btn.onclick = () => {
-        EditorTools.saveCurrentCursor(textarea)
-        activeAMPanel?.panel_show({x: 30, y: 100})
+        activeAMPanel?.panel_show({x: 30, y: 200})
       }
   }
 

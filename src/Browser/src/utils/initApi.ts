@@ -427,9 +427,20 @@ export namespace EditorTools {
     if (!savedCursorState || !document.contains(savedCursorState.element)) {
       return;
     }
-    const { element, start, end } = savedCursorState;
+    let { element } = savedCursorState;
 
-    // 2. 获取当前值和新值，设置文本
+    // 2. 光标原位置信息获取
+    // 先查看是否已经是聚焦状态，如果是，则使用当前的光标位置，而非从状态中更新
+    let start: number, end: number;
+    if (document.activeElement === element) { // 已聚焦 → 使用当前实际光标位置
+      start = element.selectionStart ?? 0;
+      end = element.selectionEnd ?? 0;
+    } else { // 未聚焦 → 使用保存的光标位置
+      start = savedCursorState.start;
+      end = savedCursorState.end;
+    }
+
+    // 3. 获取当前值和新值，设置文本
     const currentValue = element.value;
     const newValue = 
       currentValue.substring(0, start) + 
@@ -437,13 +448,15 @@ export namespace EditorTools {
       currentValue.substring(end);
     element.value = newValue;
 
-    // 3. 计算新的光标位置，设置光标位置和聚焦状态
+    // 4. 计算新的光标位置，设置光标位置和聚焦状态
     const newCursorPos = start + insertText.length;
     element.selectionStart = newCursorPos;
     element.selectionEnd = newCursorPos;
     element.focus();
 
-    // 4. (可选) 清空保存的状态，防止重复使用
-    savedCursorState = null;
+    // 5. 清空/更新保存的状态
+    savedCursorState.start = newCursorPos
+    savedCursorState.end = newCursorPos
+    // savedCursorState = null; // (可选) 清空以防止重复使用
   }
 }
