@@ -387,11 +387,52 @@ export const global_setting: {
       const activeElement: Element|null = document.activeElement
 
       if (activeElement) { // 检查该元素为可编辑的输入框或文本域，则直接输出
-        await global_setting.api.sendText(text)
-      } else { // 否则存到剪切版
-        console.warn('没有活动的元素，将demo文本生成到剪贴板')
-        navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err))
+        const active = activeElement as HTMLElement;
+        const tagName = active.tagName;
+        const isInput = tagName === 'INPUT';
+        const isTextarea = tagName === 'TEXTAREA';
+        const isContentEditable = active.isContentEditable;
+
+        if (isInput || isTextarea) {
+          // 处理 <input> 和 <textarea>
+          const el = active as HTMLInputElement | HTMLTextAreaElement;
+          const nonTextTypes = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'image', 'hidden'];
+          if (
+            !el.disabled &&
+            !el.readOnly &&
+            !(isInput && nonTextTypes.includes((active as HTMLInputElement).type))
+          ) {
+            const start = el.selectionStart ?? 0;
+            const end = el.selectionEnd ?? 0;
+            el.setRangeText(text, start, end, 'end');
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        } else if (isContentEditable) {
+          // 处理 contentEditable 元素（纯现代 API）
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+            // 移动光标到插入文本之后
+            range.setStartAfter(textNode);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            // 触发 input 事件，通知框架数据变更
+            active.dispatchEvent(new Event('input', { bubbles: true }));
+          } else {
+            // 没有选区时回退到剪贴板
+            console.warn('没有活动的选区，将demo文本生成到剪贴板');
+            navigator.clipboard.writeText(text).catch(err => console.error('Could not copy text: ', err));
+          }
+        } 
       }
+
+      // 不成功否则存到剪切版
+      console.warn('没有活动的元素，将demo文本生成到剪贴板')
+      navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err))
     },
     saveToClipboard: async (text: string) => {
       // 默认降级处理、通用浏览器环境
