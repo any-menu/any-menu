@@ -25,7 +25,7 @@ export class AMPin {
     //     this.initEvent(this.el, p_p_el)
     //   }
     // }
-    this.initEvent(this.el, amPanel.el)
+    AMPin.initEvent(this.el, amPanel)
   }
 
   /**
@@ -34,7 +34,8 @@ export class AMPin {
    * 点击: 切换置顶状态
    * 拖拽: 允许拖拽 amPin 来修改 amPanel 的位置
    * 
-   * @param pinEl amPin 元素
+   * @param pinEl amPin 元素，或可拖拽元素
+   *   (本来是仅 amPin 的，后来 amTitlebar 也允许了)
    * @param panelEl amPanel 元素
    * 
    * 注意: 
@@ -45,7 +46,8 @@ export class AMPin {
    * - 普通浏览器环境和 App 环境中，这个置顶和拖拽的行为的实现有所差异。
    *   App 通过 `-webkit-app-region` 实现。且设置该值后，拖拽时连鼠标按下事件都不会触发
    */
-  initEvent(pinEl: HTMLElement, panelEl: HTMLElement) {
+  public static initEvent(pinEl: HTMLElement, amPanel: AMPanel) {
+    const  panelEl: HTMLElement = amPanel.el
     let isDragging = false    // 是否拖拽状态 (是否鼠标按下了)
     let didDrag = false       // 是否发生过拖动
     let startElLeft = 0       // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
@@ -97,24 +99,28 @@ export class AMPin {
 
     // 鼠标抬起
     const onMouseUp = (e: MouseEvent) => {
+      // 清空正在拖拽的标记
       if (!isDragging) return // 理论不会发生
-
-      // 状态标记
       isDragging = false
       pinEl.classList.remove('am-pin--dragging')
-      if (!didDrag) {
-        global_setting.api.pin() // 没有发生过拖动，则切换置顶
-      } else {
-        global_setting.api.pin(true) // 强制置顶
-      }
-      didDrag = false
-      // titlebar 自动显示
-      if (global_setting.state.isPin) {
-        this.amPanel.sub_panels.amTitlebar?.show()
-        this.amPanel.sub_panels.amPin?.hide()
-      } else {
-        this.amPanel.sub_panels.amTitlebar?.hide()
-        this.amPanel.sub_panels.amPin?.show()
+
+      // 点击置顶行为，清空是否拖拽过的标记
+      if (pinEl.classList.contains('am-pin')) {
+        // 状态标记
+        if (!didDrag) {
+          global_setting.api.pin() // 没有发生过拖动，则切换置顶
+        } else {
+          global_setting.api.pin(true) // 强制置顶
+        }
+        didDrag = false
+        // titlebar 自动显示
+        if (global_setting.state.isPin) {
+          amPanel.sub_panels.amTitlebar?.show()
+          amPanel.sub_panels.amPin?.hide()
+        } else {
+          amPanel.sub_panels.amTitlebar?.hide()
+          amPanel.sub_panels.amPin?.show()
+        }
       }
 
       // 去除临时监听

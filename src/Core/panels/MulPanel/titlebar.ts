@@ -21,6 +21,8 @@ export class AMTitlebar {
     global_setting.other.app_createTitlebar(this.el)
 
     this.hide()
+
+    AMPin.initEvent(this.el, amPanel)
   }
 
   hide() {
