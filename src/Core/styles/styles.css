@@ -549,7 +549,8 @@ div.editable-textarea-textarea {
   box-sizing: border-box;
   z-index: 100;
   color: var(--am-pre-text-color);
-  background: transparent;
+  background: var(--am-bg-color);
+  border: 1px solid var(--am-pre-bd-color);
   border-radius: 8px;
 }
 .am-search input.am-search-input {
@@ -561,7 +562,6 @@ div.editable-textarea-textarea {
   outline: none;
   color: var(--am-pre-text-color);
   background: var(--am-pre-bg-color);
-  border: 1px solid var(--am-pre-bd-color);
   border-radius: 8px;
 }
 .am-search input.am-search-input:focus {
@@ -944,13 +944,15 @@ div.editable-textarea-textarea {
 .am-titlebar {
   display: flex;
   flex-direction: row-reverse;
+  gap: 2px;
   height: 30px;
   padding-right: 3px;
   background: var(--am-bg-color);
   color: var(--am-text-color);
   border-radius: 10px;
 }
-.am-titlebar button {
+.am-titlebar button.am-titlebar-btn {
+  position: relative;
   height: 29px;
   background: none;
   color: var(--ab-tab-root-tx-color);
@@ -961,7 +963,36 @@ div.editable-textarea-textarea {
   cursor: pointer;
   border-radius: 8px;
 }
-.am-titlebar button:hover {
+.am-titlebar button.am-titlebar-btn:hover {
+  background: var(--ab-tab-root-hv-color);
+}
+.am-titlebar button.am-titlebar-btn.active {
+  background: var(--ab-tab-root-hv-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list {
+  position: absolute;
+  width: 150px;
+  top: calc(100% + 1px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px;
+  z-index: 102;
+  border-radius: 10px;
+  background: var(--am-bg-color);
+  color: var(--am-text-color);
+  border: solid 1px var(--am-bd-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div {
+  padding: 6px 16px;
+  border-radius: 8px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div:hover {
   background: var(--ab-tab-root-hv-color);
 }
 

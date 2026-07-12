@@ -10,8 +10,12 @@
   box-sizing: border-box;
   z-index: 100; // 高于多级菜单
   color: var(--am-pre-text-color);
-  background: transparent;
+  background: var(--am-bg-color);
+  border: 1px solid var(--am-pre-bd-color);
   border-radius: 8px;
+
+  // (可选) mini serach style
+  // padding: 2px 50px;
 
   input.am-search-input {
     height: 100%;
@@ -23,7 +27,6 @@
     outline: none;
     color: var(--am-pre-text-color);
     background: var(--am-pre-bg-color);
-    border: 1px solid var(--am-pre-bd-color);
     border-radius: 8px;
     // box-shadow: none;
     // box-shadow: 2px 2px 5px rgba(0,0,0,0.2);

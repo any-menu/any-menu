@@ -75,6 +75,7 @@ export class AMTitlebar {
         for (const item of (activeAMPanel?.show_panel_list ?? [])) {
           const el_item = document.createElement('div'); el_panel_list.appendChild(el_item);
             el_item.innerText = item
+            el_item.title = item
 
           el_item.onclick = () => {
             activeAMPanel?.panel_hide([item])

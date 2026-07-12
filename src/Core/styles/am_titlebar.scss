@@ -40,6 +40,7 @@
 
   .am-titlebar-manager .am-titlebar-list {
     position: absolute;
+    width: 150px;
     top: calc(100% + 1px);
     left: 0;
     display: flex;
@@ -56,6 +57,13 @@
     >div {
       padding: 6px 16px;
       border-radius: 8px;
+      text-align: left;
+
+      // 溢出显示 `...`
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
       &:hover {
         background: var(--ab-tab-root-hv-color);
       }
