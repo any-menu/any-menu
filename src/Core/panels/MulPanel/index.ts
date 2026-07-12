@@ -102,7 +102,7 @@ export class AMPanel {
   /// 上一次显示的面板列表
   /// 作用1: 查看面板大小是否有变化 (相同则无变化)
   /// 作用2: 对面板的拆分、调序、中间插入或删除
-  static cache_last_panel_list: string[] = []
+  cache_last_panel_list: string[] = []
 
   // #region big3
 
@@ -285,9 +285,12 @@ export class AMPanel {
       }
     }
 
+    // 列表内容
     if (!list) {
       list = global_setting.config.panel_preset2[0].list
     }
+    // console.log('cache_list', this.cache_last_panel_list, list)
+    // this.cache_last_panel_list = list
 
     // 子面板
     let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
@@ -340,8 +343,9 @@ export class AMPanel {
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
   panel_hide(list?: string[], focusHide: boolean = false) {
-    // 置顶状态进行主动按钮隐藏。
-    // 不进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
+    // 置顶状态下
+    //   仅可进行主动按钮隐藏。
+    //   不能进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
     // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
     if (global_setting.state.isPin && !focusHide) {
       this.el.blur()
@@ -530,8 +534,11 @@ export class AMPanel {
    * 
    * 有两种获取方案。
    * 先用方案一约估，然后显示。后续使用方案二获得更准确的尺寸。
+   * 
+   * 但调用场景通常是显示之前先获取尺寸，看是否进行位置校正，再拿校正后的位置来显示面板。
+   * 主要是这个原因，导致更难获取到准确尺寸。
    */
-  static get_size(list?: string[]): {width: number, height: number} {
+  public get_size(list?: string[]): {width: number, height: number} {
     if (!list) {
       list = global_setting.config.panel_preset2[0].list
     }

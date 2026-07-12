@@ -70,7 +70,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     const screen_size = { width: window.innerWidth, height: window.innerHeight }
 
     // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
-    const panel_size = AMPanel.get_size(panel_list)
+    const panel_size: { width: number, height: number } = (activeAMPanel?.get_size(panel_list)) ?? {width:0, height:0}
     const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "revert")
 
     // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)

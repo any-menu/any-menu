@@ -387,7 +387,7 @@ export async function showWindow(
       const winSize = await appWindow.outerSize()
       cursor = new PhysicalPosition(cursor.x, cursor.y - winSize.height)
     }
-    const panel_size = AMPanel.get_size(panel_list)
+    const panel_size = activeAMPanel?.get_size(panel_list) ?? {width: 0, height:0}
     const over_mode = cursor2_flag ? "revert" : "side"
     const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
     cursor.x = cursor3.x; cursor.y = cursor3.y;
