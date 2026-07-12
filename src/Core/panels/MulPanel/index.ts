@@ -339,10 +339,11 @@ export class AMPanel {
    *   - 空列表: 容器隐藏，子面板不隐藏 (方便下次显示容器时保留子面板显示状态)
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
-  panel_hide(list?: string[]) {
-    // 置顶状态不隐藏，但会尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
+  panel_hide(list?: string[], focusHide: boolean = false) {
+    // 置顶状态进行主动按钮隐藏。
+    // 不进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
     // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
-    if (global_setting.state.isPin) {
+    if (global_setting.state.isPin && !focusHide) {
       this.el.blur()
       return
     }
