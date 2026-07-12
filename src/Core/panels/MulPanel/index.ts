@@ -74,7 +74,6 @@ const amPanel_list: AMPanel[] = []
 export class AMPanel {
   public el: HTMLElement
 
-  // 单例模式下使用，否则不使用
   // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
   //   而 App 版本，每个进程中这里应只有一个。
   public sub_panels: {
@@ -85,8 +84,6 @@ export class AMPanel {
     amContextMenu: AMContextMenu | null,
     amMiniEditor: AMMiniEditor | null,
     amCustom: HTMLElement | null, // 供自定义脚本使用的面板元素
-
-    alt_v_state: boolean, // 虚拟alt状态
   } = {
     amTitlebar: null,
     amPin: null,
@@ -95,14 +92,18 @@ export class AMPanel {
     amMiniEditor: null,
     amToolbar: null,
     amCustom: null,
-
-    alt_v_state: false
   }
+
+  public alt_v_state: boolean = false // 虚拟alt状态
 
   /// 上一次显示的面板列表
   /// 作用1: 查看面板大小是否有变化 (相同则无变化)
   /// 作用2: 对面板的拆分、调序、中间插入或删除
-  cache_last_panel_list: string[] = []
+  show_panel_list: {
+    id: string,
+    el: HTMLElement,
+    obj?: any,
+  }[] = []
 
   // #region big3
 
@@ -172,13 +173,13 @@ export class AMPanel {
           // alt+key
           if (alt_key_flag) {
             alt_key_flag = false
-            sub_panels.alt_v_state = false
+            this.alt_v_state = false
             ev.preventDefault() // 不要触发窗口的alt键功能
           } else {
-            sub_panels.alt_v_state = !sub_panels.alt_v_state
+            this.alt_v_state = !this.alt_v_state
           }
 
-          if (sub_panels.alt_v_state) {
+          if (this.alt_v_state) {
             ev.preventDefault() // 不要触发窗口的alt键功能
             el.classList.add('show-altkey')
           } else {
@@ -290,8 +291,7 @@ export class AMPanel {
     if (!list) {
       list = global_setting.config.panel_preset2[0].list
     }
-    // console.log('cache_list', this.cache_last_panel_list, list)
-    // this.cache_last_panel_list = list
+    console.log('cache_list', this.show_panel_list, list)
 
     // 子面板
     let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
@@ -548,8 +548,8 @@ export class AMPanel {
 
     // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)
     const isSameList = 
-      this.cache_last_panel_list.length === list.length && 
-      list.every((item, index) => item === this.cache_last_panel_list[index])
+      this.show_panel_list.length === list.length && 
+      list.every((item, index) => item === this.show_panel_list[index].id)
     if (isSameList) {
       if (activeAMPanel) {
         const rect = activeAMPanel.el.getBoundingClientRect()

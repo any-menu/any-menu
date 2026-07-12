@@ -428,7 +428,7 @@ export class AMContextMenu {
         }
       }
       // Alt + Key 直接选择对应项
-      else if (ev.altKey || activeAMPanel?.sub_panels.alt_v_state) {
+      else if (ev.altKey || activeAMPanel?.alt_v_state) {
         // step1. 确定目标索引
         let index: number = -1
         if (ev.key >= '1' && ev.key <= '9') { // 支持数字
@@ -466,7 +466,7 @@ export class AMContextMenu {
           }
         } else { // 无子菜单则点击
           if (activeAMPanel) {
-            activeAMPanel.sub_panels.alt_v_state = false; activeAMPanel.el?.classList.remove('show-altkey');
+            activeAMPanel.alt_v_state = false; activeAMPanel.el?.classList.remove('show-altkey');
           }
           this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el?.click()
         }
