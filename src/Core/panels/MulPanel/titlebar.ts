@@ -17,6 +17,7 @@ export class AMTitlebar {
 
     AMPin.factory(this.el, amPanel) // 置顶按钮
     this.createHideBtn()
+    this.createPanelManagerBtn()
 
     global_setting.other.app_createTitlebar(this.el)
 
@@ -44,7 +45,48 @@ export class AMTitlebar {
     btn.title = '隐藏'
     btn.innerText = '隐藏'
     btn.addEventListener('click', () => {
-      activeAMPanel?.panel_hide(undefined, true)
+      activeAMPanel?.panel_hide([], true)
+    })
+  }
+
+  /** 面板管理
+   * 会在所有子面板的上方显示/隐藏一个操作手柄，其功能包括：
+   * 
+   * 关闭 (/隐藏)、分离 (独立)、显示/关闭/排序已经注册的子面板
+   */
+  private createPanelManagerBtn() {
+    const btn = document.createElement('button'); this.el.appendChild(btn);
+    btn.classList.add('am-titlebar-btn', 'am-titlebar-manager')
+    btn.title = '面板管理'
+    btn.innerText = '面板管理'
+    
+    // 按钮的附加面板
+    let el_panel_list: HTMLElement = document.createElement('div');  btn.appendChild(el_panel_list);
+      el_panel_list.classList.add('am-titlebar-list', 'am-hide') // 默认不显示管理面板
+    let is_show = false // 是否处于管理状态中
+    
+    btn.addEventListener('click', () => {
+      if (!is_show) {
+        is_show = true
+        btn.classList.add('active')
+        el_panel_list.classList.remove('am-hide')
+
+        el_panel_list.innerHTML = ''
+        for (const item of (activeAMPanel?.show_panel_list ?? [])) {
+          const el_item = document.createElement('div'); el_panel_list.appendChild(el_item);
+            el_item.innerText = item
+
+          el_item.onclick = () => {
+            activeAMPanel?.panel_hide([item])
+            el_item.remove(); el_item.onclick = null;
+          }
+        }
+      }
+      else {
+        is_show = false
+        btn.classList.remove('active')
+        el_panel_list.classList.add('am-hide')
+      }
     })
   }
 }

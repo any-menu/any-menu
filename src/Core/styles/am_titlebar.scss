@@ -9,13 +9,15 @@
 .am-titlebar {
   display: flex;
   flex-direction: row-reverse;
+  gap: 2px;
   height: 30px;
   padding-right: 3px;
   background: var(--am-bg-color);
   color: var(--am-text-color);
   border-radius: 10px;
 
-  button {
+  button.am-titlebar-btn {
+    position: relative;
     height: 29px;
     background: none;
     // color: var(--am-text-color);
@@ -29,6 +31,34 @@
 
     &:hover {
       background: var(--ab-tab-root-hv-color);
+    }
+
+    &.active {
+      background: var(--ab-tab-root-hv-color);
+    }
+  }
+
+  .am-titlebar-manager .am-titlebar-list {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 2px;
+
+    z-index: 102; // 要大于 serach 栏
+    border-radius: 10px;
+    background: var(--am-bg-color);
+    color: var(--am-text-color);
+    border: solid 1px var(--am-bd-color);
+
+    >div {
+      padding: 6px 16px;
+      border-radius: 8px;
+      &:hover {
+        background: var(--ab-tab-root-hv-color);
+      }
     }
   }
 }

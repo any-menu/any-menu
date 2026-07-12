@@ -1,4 +1,5 @@
 /** browser 环境专用样式 */
+@import url("../../Core/styles/styles.css");
 
 :root.am-theme-light {
   background: none !important;

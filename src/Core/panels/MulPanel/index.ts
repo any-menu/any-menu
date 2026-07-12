@@ -99,11 +99,7 @@ export class AMPanel {
   /// 上一次显示的面板列表
   /// 作用1: 查看面板大小是否有变化 (相同则无变化)
   /// 作用2: 对面板的拆分、调序、中间插入或删除
-  show_panel_list: {
-    id: string,
-    el: HTMLElement,
-    obj?: any,
-  }[] = []
+  show_panel_list: string[] = []
 
   // #region big3
 
@@ -287,11 +283,14 @@ export class AMPanel {
       }
     }
 
-    // 列表内容
+    // 当前显示的面板列表
     if (!list) {
       list = global_setting.config.panel_preset2[0].list
     }
-    console.log('cache_list', this.show_panel_list, list)
+    for (const item of list) {
+      if (this.show_panel_list.includes(item)) continue
+      this.show_panel_list.push(item)
+    }
 
     // 子面板
     let is_focued: boolean = !is_focus // 只聚焦到第一个可聚焦的子面板
@@ -311,6 +310,7 @@ export class AMPanel {
         this.sub_panels.amMiniEditor?.panel_show(global_setting.state.selectedText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
         is_focued = true
       }
+      // TODO 将弃用，以规范这里的行为
       else if (item == 'info') { // 调试用 (仅debug时会进入这里的逻辑)
         this.sub_panels.amMiniEditor?.set_flag('info')
         this.sub_panels.amMiniEditor?.panel_show(global_setting.state.infoText, !is_focued) // undefined 时不重置内容，否则改为 ?? ""
@@ -345,17 +345,32 @@ export class AMPanel {
    */
   panel_hide(list?: string[], focusHide: boolean = false) {
     // 置顶状态下
-    //   仅可进行主动按钮隐藏。
-    //   不能进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
+    //   主面板仅可进行主动按钮隐藏。
+    //   主面板不能进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
+    //   子面板集随意
     // 注意 app 和非 app 版本的实现不同，app 版本的实现此处不提供
     if (global_setting.state.isPin && !focusHide) {
-      this.el.blur()
-      return
+      if (!list || list.length === 0) {
+        this.el.blur()
+        return
+      }
+    }
+
+    // 当前显示的面板列表
+    if (list == undefined) { // 全部隐藏
+      this.show_panel_list = []
+    }
+    else { // 仅隐藏列表中的
+      for (const item of list) {
+        const index = this.show_panel_list.indexOf(item)
+        if (index !== -1) {
+          this.show_panel_list.splice(index, 1)
+        }
+      }
     }
 
     // 子面板
-    // 全部隐藏
-    if (list == undefined) {
+    if (list == undefined) { // 全部隐藏
       this.el.classList.add('am-hide')
       this.sub_panels.amSearch?.panel_hide()
       this.sub_panels.amToolbar?.panel_hide()
@@ -365,8 +380,7 @@ export class AMPanel {
         this.customSubPanel[key].classList.add('am-hide')
       }
     }
-    // 仅隐藏列表中的
-    else {
+    else { // 仅隐藏列表中的
       if (list.length == 0) this.el.classList.add('am-hide')
       for (const item of list) {
         if (item == 'search')  this.sub_panels.amSearch?.panel_hide()
@@ -391,6 +405,14 @@ export class AMPanel {
    * @deprecated TODO 后面应该去弄个 api 去查询某个 item 当前是否在显示，这样更通用、灵活、方便
    */
   panel_toggle(item: string) {
+    // 当前显示的面板列表
+    const index = this.show_panel_list.indexOf(item)
+    if (index !== -1) {
+      this.show_panel_list.splice(index, 1)
+    } else {
+      this.show_panel_list.push(item)
+    }
+
     // 非自定义
     if (item == 'search') this.sub_panels.amSearch?.panel_toggle()
     else if (item == 'toolbar') this.sub_panels.amToolbar?.panel_toggle()
@@ -549,7 +571,7 @@ export class AMPanel {
     // 方案二：直接获取 am-panel 的尺寸 (需要面板进过一次渲染树后才可用)
     const isSameList = 
       this.show_panel_list.length === list.length && 
-      list.every((item, index) => item === this.show_panel_list[index].id)
+      list.every((item, index) => item === this.show_panel_list[index])
     if (isSameList) {
       if (activeAMPanel) {
         const rect = activeAMPanel.el.getBoundingClientRect()
