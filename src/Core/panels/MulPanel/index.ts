@@ -221,6 +221,7 @@ export class AMPanel {
    * - 不包含偏移，请自行相当于光标位置进行偏移再传进来
    * 
    * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
+   *   追加显示的子面板内容
    * @param is_focus 是否聚焦到第一个可聚焦的子面板，默认 true。
    *   如果是选中文本自动弹出面板的场景，则一般 false
    * @param is_reverse 是否反向显示，默认 false。
@@ -322,7 +323,7 @@ export class AMPanel {
         })
       }
       else {
-        const target_custom_el = this.SubPanel?.[item]
+        const target_custom_el = this.customSubPanel?.[item]
         if (target_custom_el) target_custom_el.classList.remove('am-hide')
         else console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
       }
@@ -360,8 +361,8 @@ export class AMPanel {
       this.sub_panels.amToolbar?.panel_hide()
       this.sub_panels.amContextMenu?.panel_hide()
       this.sub_panels.amMiniEditor?.panel_hide()
-      for (const key in this.SubPanel) {
-        this.SubPanel[key].classList.add('am-hide')
+      for (const key in this.customSubPanel) {
+        this.customSubPanel[key].classList.add('am-hide')
       }
     }
     // 仅隐藏列表中的
@@ -374,9 +375,9 @@ export class AMPanel {
         else if (item == 'miniEditor') this.sub_panels.amMiniEditor?.panel_hide()
         else if (item == 'info') this.sub_panels.amMiniEditor?.panel_hide()
         else {
-          for (const key in this.SubPanel) {
+          for (const key in this.customSubPanel) {
             if (key == item) {
-              this.SubPanel[key].classList.add('am-hide')
+              this.customSubPanel[key].classList.add('am-hide')
               break
             }
           }
@@ -386,7 +387,9 @@ export class AMPanel {
     }
   }
 
-  /** 切换面板显示/隐藏状态 */
+  /** 切换面板显示/隐藏状态
+   * @deprecated TODO 后面应该去弄个 api 去查询某个 item 当前是否在显示，这样更通用、灵活、方便
+   */
   panel_toggle(item: string) {
     // 非自定义
     if (item == 'search') this.sub_panels.amSearch?.panel_toggle()
@@ -402,7 +405,7 @@ export class AMPanel {
     }
     // 插件自定义子面板
     else {
-      const target_custom_el = this.SubPanel[item]
+      const target_custom_el = this.customSubPanel[item]
       if (!target_custom_el) {
         console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
         return
@@ -448,32 +451,32 @@ export class AMPanel {
   
   // 这里的自定义子面板针对的是插件的自定义子面板，固定的那几个子面板不属于
 
-  private SubPanel: { [key: string]: HTMLElement } = {}
+  customSubPanel: { [key: string]: HTMLElement } = {}
 
   register_sub_panel(id: string, el: HTMLElement|((el: HTMLElement) => void)) {
-    if (this.SubPanel[id]) {
+    if (this.customSubPanel[id]) {
       console.warn(`SubPanel with id ${id} already exists. It will be replaced.`)
-      this.SubPanel[id].remove()
+      this.customSubPanel[id].remove()
     }
 
     if (typeof el === 'function') {
       const container = document.createElement('div'); container.classList.add(`am-sub-panel-${id}`)
-      this.SubPanel[id] = container
+      this.customSubPanel[id] = container
       this.sub_panels.amCustom?.appendChild(container)
       el(container)
     } else {
-      this.SubPanel[id] = el
+      this.customSubPanel[id] = el
       this.sub_panels.amCustom?.appendChild(el)
     }
   }
 
   unregister_sub_panel(id: string) {
-    if (!this.SubPanel[id]) {
+    if (!this.customSubPanel[id]) {
       console.warn(`SubPanel with id ${id} does not exist.`)
       return
     }
-    this.SubPanel[id].remove()
-    delete this.SubPanel[id]
+    this.customSubPanel[id].remove()
+    delete this.customSubPanel[id]
   }
 
   // #endregion
