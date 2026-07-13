@@ -984,8 +984,13 @@ div.editable-textarea-textarea {
   color: var(--am-text-color);
   border: solid 1px var(--am-bd-color);
 }
+.am-titlebar .am-titlebar-manager .am-titlebar-list > hr {
+  margin: 5px 12px;
+  padding: 0;
+  border-bottom: 1px solid var(--am-bd-color);
+}
 .am-titlebar .am-titlebar-manager .am-titlebar-list > div {
-  padding: 6px 16px;
+  padding: 6px 14px;
   border-radius: 8px;
   text-align: left;
   white-space: nowrap;
