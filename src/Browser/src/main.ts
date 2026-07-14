@@ -62,9 +62,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // initMenu
   {
-    const el_panel = document.createElement('div'); main_el.appendChild(el_panel);
     // 搜索框和多级菜单 - 元素
-    AMPanel.factory(el_panel)
+    AMPanel.factory(main_el)
     // 搜索框和多极菜单 - 数据内容
     void initMenuData() // TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
   }

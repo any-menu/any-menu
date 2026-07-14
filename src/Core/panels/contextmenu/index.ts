@@ -70,44 +70,35 @@ export class AMContextMenu extends AbsAmPanel {
   // - el_parent/body
   //   - el_container .am-context-menu
 
-  /// 可选一个挂载对象来预创建菜单，用于自动销毁，防止内存泄露和重复监听 (如果多个复用元素共用菜单或更菜单则不需要传入)
-  /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
-  public el_parent: HTMLElement|undefined
-  /// 不预创建菜单则没有该项 (非静态创建而是动态创建)
-  public el: HTMLDivElement|undefined // 菜单本体
-
   // #region 特殊函数 big3
 
   /// 创建菜单实例，并自动处理容器和绑定事件
   static factory(
-    el_parent?: HTMLElement,
-    menuItems?: PanelItem[],
+    p_panel: AbsAmPanel,
+    menuItems?: PanelItem[], // 可选的初始化语法糖
     el_input?: HTMLInputElement,
   ): AMContextMenu {
-    const abContextMenu = new AMContextMenu(el_parent, menuItems)
+    const abContextMenu = new AMContextMenu(p_panel, menuItems)
+
     if (el_input) abContextMenu.vFocus_bind_arrowKeyArea(el_input)
     return abContextMenu
   }
 
   /// 创建一个菜单实例
   constructor(
-    el_parent?: HTMLElement,
-    menuItems?: PanelItem[],
+    p_panel: AbsAmPanel,
+    menuItems?: PanelItem[], // 可选的初始化语法糖
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
     // 或改成 "菜单位置" 功能性更强
   ) {
-    super()
-    this.el_parent = el_parent
-    if (!el_parent) return
+    const el = document.createElement('div'); p_panel.el.appendChild(el); el.classList.add('am-context-menu', 'root-menu');
+    super(el, p_panel.el, p_panel)
 
-    // 创建菜单 DOM (默认隐藏)
-    this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-context-menu', 'root-menu');
     this.panel_hide()
 
     // 禁止右键切换光标。不阻止默认菜单和冒泡，不禁止菜单，仅禁止聚焦
     // 原因：聚焦切换到菜单内可能引起ab块重渲染，导致挂钩生命到ab块的菜单消失，而不挂钩生命到ab块则菜单项功能可能引起bug
     window.addEventListener('mousedown', (ev) => {
-      if (!this.el) return
       if (this.el.contains(ev.target as Node)) return
       if (ev.button != 2) return
       ev.preventDefault()
@@ -123,10 +114,9 @@ export class AMContextMenu extends AbsAmPanel {
 
   /// 显示该菜单
   public panel_show() {
-    if (!this.el) return
     this.el.classList.remove('am-hide')
     this.el.classList.add('visible')
-    this.el?.classList.remove('show-altkey')
+    this.el.classList.remove('show-altkey')
 
     // 状态重置
     this.menu_el_data_root.el = null
@@ -136,7 +126,6 @@ export class AMContextMenu extends AbsAmPanel {
 
   /// 隐藏该菜单
   public panel_hide() {
-    if (!this.el) return
     this.el.classList.add('am-hide')
     this.el.classList.remove('visible')
 
@@ -146,7 +135,7 @@ export class AMContextMenu extends AbsAmPanel {
 
   /// 切换该面板显示/隐藏状态
   public panel_toggle() {
-    if (this.el?.classList.contains('am-hide')) {
+    if (this.el.classList.contains('am-hide')) {
       this.panel_show()
     } else {
       this.panel_hide()
@@ -213,8 +202,6 @@ export class AMContextMenu extends AbsAmPanel {
    * TODO 排序机制，目前相同的词典在每次加载后，顺序都不同
    */
   append_data(menuItems: PanelItem[]) {
-    if (!this.el) return
-
     /** 递归生成菜单项
      * @param current_node 当前节点
      */
@@ -315,8 +302,6 @@ export class AMContextMenu extends AbsAmPanel {
    * 即该类不再是完整的 "右键菜单" 所展示的全部内容，而是右键菜单中的 "多级可展开菜单" 中的部分
    */
   append_el(el: HTMLElement) {
-    if (!this.el) return
-
     this.el.appendChild(el)
   }
 
@@ -380,7 +365,7 @@ export class AMContextMenu extends AbsAmPanel {
         return
       }
 
-      if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el ?? null
+      if (!this.menu_el_data_current.el) this.menu_el_data_current.el = this.el
       if (!this.menu_el_data_current.el) return
       // const el_items = this.menu_el_data_current.el.querySelectorAll(":scope>li") // li 可能有 .has-children，可换成 this.menu_el_data_current.children
 

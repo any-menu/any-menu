@@ -7,9 +7,6 @@ import { global_setting } from "../../../Core/shared/setting"
 import { AbsAmPanel } from "../abs"
 
 export class AMMiniEditor extends AbsAmPanel {
-  public el_parent: HTMLElement;
-  public el: HTMLElement;
-
   public cache_text: string = ''
   public editableBlock: EditableBlock_Cm | EditableBlock_Code
   private editableBlock_cm: EditableBlock_Cm
@@ -18,19 +15,19 @@ export class AMMiniEditor extends AbsAmPanel {
   isShow = true
 
   static factory(
-    el_parent: HTMLElement,
+    p_panel: AbsAmPanel,
   ): AMMiniEditor {
-    const amMiniEditor = new AMMiniEditor(el_parent)
+    const amMiniEditor = new AMMiniEditor(p_panel)
     // if (el_input) abContextMenu.bind_arrowKeyArea(el_input)
     return amMiniEditor
   }
 
   constructor(
-    el_parent: HTMLElement,
+    p_panel: AbsAmPanel,
   ) {
-    super()
-    this.el_parent = el_parent
-    this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
+    const el = document.createElement('div'); p_panel.el.appendChild(el); el.classList.add('am-mini-editor');
+    super(el, p_panel.el, p_panel)
+
     this.panel_hide()
 
     // EditableBlock

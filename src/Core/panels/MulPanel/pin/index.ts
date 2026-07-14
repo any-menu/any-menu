@@ -3,19 +3,14 @@ import { AbsAmPanel } from "../../abs"
 import { global_setting } from "../../../shared/setting"
 
 export class AMPin extends AbsAmPanel {
-  el: HTMLElement
-  // p_el: HTMLElement
-
-  static factory(p_el: HTMLElement, amPanel: AMPanel) {
-    return new AMPin(p_el, amPanel)
+  static factory(p_panel: AbsAmPanel, amPanel: AMPanel) {
+    return new AMPin(p_panel, amPanel)
   }
 
-  /**
-   * @param p_el 挂载的元素，同时也是 .am-panel 元素
-   */
-  constructor(public p_el: HTMLElement, public amPanel: AMPanel) {
-    super()
-    this.el = document.createElement('div'); p_el.appendChild(this.el); this.el.classList.add('am-pin')
+  constructor(public p_panel: AbsAmPanel, public amPanel: AMPanel) {
+    const el = document.createElement('div'); p_panel.el.appendChild(el); el.classList.add('am-pin')
+    super(el, p_panel.el, p_panel)
+
     global_setting.api.saveInnerHTML(this.el, `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`)
 
     // 这里的 target_el 不一定是 p_el

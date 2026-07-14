@@ -17,8 +17,8 @@ export class AMSearch extends AbsAmPanel {
   el_input: HTMLInputElement | null = null
   amSuggestion: AMSuggestion | null = null
 
-  static factory(el_parent: HTMLElement): AMSearch {
-    const instance = new AMSearch(el_parent)
+  static factory(p_panel: AbsAmPanel): AMSearch {
+    const instance = new AMSearch(p_panel)
     return instance
   }
 
@@ -26,9 +26,11 @@ export class AMSearch extends AbsAmPanel {
    * @param el 挂载的元素
    * 如果是动态创建创建则不需要，则是在挂载时创建
    */
-  constructor(el_parent: HTMLElement) {
-    super()
-    this.el = this.createDom(el_parent)
+  constructor(p_panel: AbsAmPanel) {
+    const el = document.createElement('div'); p_panel.el.appendChild(el); el.classList.add('am-search');
+    super(el, p_panel.el, p_panel)
+
+    this.init_el()
     this.panel_hide()
   }
 
@@ -40,10 +42,8 @@ export class AMSearch extends AbsAmPanel {
    *     - input.am-search-input (this.el_input)
    *     - .am-search-suggestion (this.el_suggestion)
    */
-  createDom(el: HTMLElement): HTMLElement {
+  init_el() {
     // el_input
-    this.el_parent = el
-    this.el = document.createElement('div'); this.el_parent.appendChild(this.el); this.el.classList.add('am-search');
     this.el_input = document.createElement('input'); this.el.appendChild(this.el_input); this.el_input.classList.add('am-search-input')
       this.el_input.type = 'search'; this.el_input.placeholder = 'Search...';
       // EditableBlock_Raw.insertTextAtCursor(input as HTMLElement, item.callback as string)

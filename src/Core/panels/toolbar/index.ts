@@ -4,23 +4,20 @@ import { init_item } from "../shared/PanelItem"
 import { AbsAmPanel } from "../abs"
 
 export class AMToolbar extends AbsAmPanel {
-  public el_parent: HTMLElement;
-  public el: HTMLElement;
-  
   isShow = true
 
   static factory(
-    el_parent: HTMLElement,
+    p_panel: AbsAmPanel,
   ) {
-    return new AMToolbar(el_parent)
+    return new AMToolbar(p_panel)
   }
 
   constructor(
-    el_parent: HTMLElement,
+    p_panel: AbsAmPanel,
   ) {
-    super()
-    this.el_parent = el_parent
-    this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-toolbar');
+    const el = document.createElement('div'); p_panel.el.appendChild(el); el.classList.add('am-toolbar');
+    super(el, p_panel.el, p_panel)
+
     this.panel_hide()
   }
 

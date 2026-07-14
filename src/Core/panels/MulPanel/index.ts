@@ -20,6 +20,7 @@
  */
 
 import { global_setting } from '../../shared/setting'
+import { AbsAmPanel } from '../abs'
 export * from '../contextmenu/index'
 export * from '../search/index'
 import { AMSearch } from '../search/index'
@@ -71,7 +72,7 @@ const amPanel_list: AMPanel[] = []
  * - Alt Key 行为
  * - 方向键行为
  */
-export class AMPanel {
+export class AMPanel extends AbsAmPanel {
   public el: HTMLElement
 
   // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
@@ -101,7 +102,7 @@ export class AMPanel {
   /// 作用2: 对面板的拆分、调序、中间插入或删除
   show_panel_list: string[] = []
   /// 总面板列表、子面板管理
-  sub_panel_list: { id: string, obj: any|HTMLElement }[] = []
+  sub_panel_list: { id: string, obj: AbsAmPanel }[] = []
 
   // 自定义面板部分
   custom_sub_panel: { [key: string]: HTMLElement } = {}
@@ -109,12 +110,12 @@ export class AMPanel {
   // #region big3
 
   /** 单例模式 */
-  static factory(el: HTMLElement): AMPanel {
+  static factory(p_el: HTMLElement): AMPanel {
     if (activeAMPanel) {
       console.error('临时调试: 当前创建了多个 AMPanel 实例。首个实例目前会存在引用丢失')
     }
 
-    const amPanel = new AMPanel(el)
+    const amPanel = new AMPanel(p_el)
     activeAMPanel = amPanel
     amPanel_list.push(amPanel)
 
@@ -123,9 +124,10 @@ export class AMPanel {
     return amPanel
   }
 
-  private constructor(el: HTMLElement) {
-    this.el = el
-    el.classList.add('am-panel')
+  private constructor(p_el: HTMLElement) {
+    const el = document.createElement('div'); p_el.appendChild(el); el.classList.add('am-panel')
+    super(el, p_el, null)
+
     el.classList.add('am-hide')
   }
 
@@ -135,23 +137,23 @@ export class AMPanel {
 
     sub_panels.amTitlebar = AMTitlebar.factory(this)
     if (!sub_panels.amSearch) {
-      sub_panels.amSearch = AMSearch.factory(el)
+      sub_panels.amSearch = AMSearch.factory(this)
     }
     if (!sub_panels.amToolbar) {
-      sub_panels.amToolbar = AMToolbar.factory(el)
+      sub_panels.amToolbar = AMToolbar.factory(this)
     }
     if (!sub_panels.amContextMenu) {
-      sub_panels.amContextMenu = AMContextMenu.factory(el, undefined, sub_panels.amSearch.el_input ?? undefined)
+      sub_panels.amContextMenu = AMContextMenu.factory(this, undefined, sub_panels.amSearch.el_input ?? undefined)
     }
     if (!sub_panels.amMiniEditor) {
-      sub_panels.amMiniEditor = AMMiniEditor.factory(el)
+      sub_panels.amMiniEditor = AMMiniEditor.factory(this)
     }
     if (!sub_panels.amCustom) {
       sub_panels.amCustom = document.createElement('div'); el.appendChild(sub_panels.amCustom); sub_panels.amCustom.classList.add('am-custom-panel')
     }
     // 可选，置顶按钮 (注意创建顺序影响布局)
     {
-      sub_panels.amPin = AMPin.factory(el, this)
+      sub_panels.amPin = AMPin.factory(this, this)
         sub_panels.amPin.el.classList.add('am-panel-out')
     }
 

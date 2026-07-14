@@ -4,8 +4,6 @@ import { AbsAmPanel } from "../abs";
 import { AMPin } from './pin/index'
 
 export class AMTitlebar extends AbsAmPanel {
-  el: HTMLElement
-
   static factory(amPanel: AMPanel) {
     return new AMTitlebar(amPanel)
   }
@@ -14,10 +12,10 @@ export class AMTitlebar extends AbsAmPanel {
    * @param amPanel，其 `.el` 为挂载的元素，同时也是 .am-panel 元素
    */
   constructor(public amPanel: AMPanel) {
-    super()
-    this.el = document.createElement('div'); amPanel.el.appendChild(this.el); this.el.classList.add('am-titlebar')
+    const el = document.createElement('div');amPanel.el.appendChild(el); el.classList.add('am-titlebar');
+    super(el, amPanel.el, amPanel)
 
-    AMPin.factory(this.el, amPanel) // 置顶按钮
+    AMPin.factory(this, amPanel) // 置顶按钮
     this.createHideBtn()
     this.createPanelManagerBtn()
 

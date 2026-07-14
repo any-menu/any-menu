@@ -10,13 +10,12 @@ import { global_setting } from '@/Core/shared/setting'
 // import { root_menu } from "@/Core/panels/contextmenu/demo"
 
 export * from './DocumentListeners'
-export * from './ABContextMenu_Ob'
+export { registerABContextMenu } from './ABContextMenu_Ob'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {
-  const el_panel = activeDocument.createElement('div'); activeDocument.body.appendChild(el_panel);
   // 搜索框和多极菜单 - 元素
-  AMPanel.factory(el_panel)
+  AMPanel.factory(activeDocument.body)
   // 搜索框和多极菜单 - 数据内容
   void initMenuData() // TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
 
