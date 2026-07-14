@@ -101,6 +101,9 @@ export class AMPanel {
   /// 作用2: 对面板的拆分、调序、中间插入或删除
   show_panel_list: string[] = []
 
+  // 自定义面板部分
+  customSubPanel: { [key: string]: HTMLElement } = {}
+
   // #region big3
 
   /** 单例模式 */
@@ -472,8 +475,6 @@ export class AMPanel {
   // #region 面板相关2，自定义子面板管理
   
   // 这里的自定义子面板针对的是插件的自定义子面板，固定的那几个子面板不属于
-
-  customSubPanel: { [key: string]: HTMLElement } = {}
 
   register_sub_panel(id: string, el: HTMLElement|((el: HTMLElement) => void)) {
     if (this.customSubPanel[id]) {

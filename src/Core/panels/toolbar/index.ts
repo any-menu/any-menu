@@ -1,8 +1,9 @@
-import type { PanelItem } from "../../../Type";
+import type { PanelItem } from "../../../Type"
 import { global_setting } from "../../shared/setting"
 import { init_item } from "../shared/PanelItem"
+import { AbsAmPanel } from "../abs"
 
-export class AMToolbar {
+export class AMToolbar extends AbsAmPanel {
   public el_parent: HTMLElement;
   public el: HTMLElement;
   
@@ -17,6 +18,7 @@ export class AMToolbar {
   constructor(
     el_parent: HTMLElement,
   ) {
+    super()
     this.el_parent = el_parent
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-toolbar');
     this.panel_hide()

@@ -1,10 +1,12 @@
-import { global_setting } from "../../../Core/shared/setting"
 import { OuterEditor } from "@editableblock/cm/dist/EditableBlock/src/OuterEditor"
 import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { EditableBlock_Code } from "@editableblock/code/dist/EditableBlock_Code/src/" // [!code hl]
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
 
-export class AMMiniEditor {
+import { global_setting } from "../../../Core/shared/setting"
+import { AbsAmPanel } from "../abs"
+
+export class AMMiniEditor extends AbsAmPanel {
   public el_parent: HTMLElement;
   public el: HTMLElement;
 
@@ -26,6 +28,7 @@ export class AMMiniEditor {
   constructor(
     el_parent: HTMLElement,
   ) {
+    super()
     this.el_parent = el_parent
     this.el = document.createElement('div'); el_parent.appendChild(this.el); this.el.classList.add('am-mini-editor');
     this.panel_hide()

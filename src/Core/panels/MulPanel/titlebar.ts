@@ -1,8 +1,9 @@
 import { activeAMPanel, type AMPanel } from ".";
 import { global_setting } from "../../shared/setting"
+import { AbsAmPanel } from "../abs";
 import { AMPin } from './pin/index'
 
-export class AMTitlebar {
+export class AMTitlebar extends AbsAmPanel {
   el: HTMLElement
 
   static factory(amPanel: AMPanel) {
@@ -13,6 +14,7 @@ export class AMTitlebar {
    * @param amPanel，其 `.el` 为挂载的元素，同时也是 .am-panel 元素
    */
   constructor(public amPanel: AMPanel) {
+    super()
     this.el = document.createElement('div'); amPanel.el.appendChild(this.el); this.el.classList.add('am-titlebar')
 
     AMPin.factory(this.el, amPanel) // 置顶按钮
@@ -72,6 +74,8 @@ export class AMTitlebar {
         el_panel_list.classList.remove('am-hide')
 
         el_panel_list.innerHTML = ''
+
+        // 已显示的内容
         for (const item of (activeAMPanel?.show_panel_list ?? [])) {
           const el_item = document.createElement('div'); el_panel_list.appendChild(el_item);
             el_item.innerText = item
@@ -80,6 +84,27 @@ export class AMTitlebar {
           el_item.onclick = () => {
             activeAMPanel?.panel_hide([item])
             el_item.remove(); el_item.onclick = null;
+          }
+        }
+
+        const el_hr = document.createElement('hr'); el_panel_list.appendChild(el_hr);
+
+        // 所有已注册的内容
+        const all_panel_list: string[] = [
+          'search', 'toolbar', 'menu', 'miniEditor', 'info',
+          ...Object.keys(activeAMPanel?.customSubPanel ?? {})
+        ]
+        for (const item_name of all_panel_list) {
+          const el_item = document.createElement('div'); el_panel_list.appendChild(el_item);
+            el_item.innerText = item_name
+            el_item.title = item_name
+
+          el_item.onclick = () => {
+            // if (item_el.classList.contains('am-hide')) {
+            //   activeAMPanel?.panel_show(undefined, [item_name])
+            // } else {
+            //   activeAMPanel?.panel_hide([item_name])
+            // }
           }
         }
       }

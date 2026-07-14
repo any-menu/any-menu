@@ -1,4 +1,5 @@
 import { global_setting } from "../../shared/setting"
+import { AbsAmPanel } from "../abs"
 import { AMSuggestion } from "./AMSuggestion"
 
 // 修复在非node环境 (obsidian是node环境，tauri app不是)，`require('obsidian')` 编译报错
@@ -10,7 +11,7 @@ declare var require: any;
  * 
  * 目前仅支持: 静态构建 + 显示/隐藏的策略
  */
-export class AMSearch {
+export class AMSearch extends AbsAmPanel {
   el_parent: HTMLElement | null = null
   el: HTMLElement
   el_input: HTMLInputElement | null = null
@@ -26,6 +27,7 @@ export class AMSearch {
    * 如果是动态创建创建则不需要，则是在挂载时创建
    */
   constructor(el_parent: HTMLElement) {
+    super()
     this.el = this.createDom(el_parent)
     this.panel_hide()
   }

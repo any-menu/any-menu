@@ -37,6 +37,7 @@ import { activeAMPanel } from "../MulPanel/index"
 // import { EditableBlock_Raw } from "@editableblock/cm/dist/EditableBlock/src/EditableBlock_Raw"
 
 import { init_item } from "../shared/PanelItem"
+import { AbsAmPanel } from "../abs"
 
 // 多级菜单
 type MENU_NODE = {
@@ -65,7 +66,7 @@ type MENU_NODE = {
  * 
  * 事件要RAII式管理，确保运行时简单性
  */
-export class AMContextMenu {
+export class AMContextMenu extends AbsAmPanel {
   // - el_parent/body
   //   - el_container .am-context-menu
 
@@ -95,6 +96,7 @@ export class AMContextMenu {
       // is_append: boolean = false, // 是否根菜单/非独立菜单。若是则用原菜单来初始化
     // 或改成 "菜单位置" 功能性更强
   ) {
+    super()
     this.el_parent = el_parent
     if (!el_parent) return
 
