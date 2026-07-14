@@ -18,6 +18,11 @@ export default defineConfig([
       "obsidianmd/sample-names": "off",
       // example: add a rule not in the recommended set and set its severity
       "obsidianmd/prefer-file-manager-trash-file": "error",
+
+      // 允许空 `{}`
+      "no-empty": "off",
+      // addEventListener 的回调允许异步
+      "@typescript-eslint/no-misused-promises": "off",
     },
   },
 ]);

@@ -10,7 +10,7 @@ import { global_setting } from '@/Core/shared/setting'
 // import { root_menu } from "@/Core/panels/contextmenu/demo"
 
 export * from './DocumentListeners'
-export { registerABContextMenu } from './ABContextMenu_Ob'
+export { registerAMContextMenu_Ob } from './ABContextMenu_Ob'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {

@@ -9,6 +9,7 @@ import { PanelItem } from '@/Type'
 import { AMContextMenu } from "@/Core/panels/contextmenu"
 import { root_menu } from "@/Core/panels/contextmenu/demo"
 import { global_setting } from '@/Core/shared/setting'
+import { init_item } from '@/Core/panels/shared/PanelItem'
 import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
 
 /**
@@ -32,7 +33,7 @@ import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/Plug
  *     监听由 append_xxx() 负责
  *   - 使用逻辑: registerABContextMenu(plugin) -> new ABContextMenu_Ob(...).append_xxx(...)
  */
-export class ABContextMenu_Ob extends AMContextMenu {
+export class AMContextMenu_Ob extends AMContextMenu {
   constructor(
     public plugin: Plugin,
     public target: string, // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
@@ -60,122 +61,53 @@ export class ABContextMenu_Ob extends AMContextMenu {
       const plugin = this.plugin
       plugin.registerEvent(
         plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-          addMenuItems(menu, menuItems, editor)
+          this.addMenuItems(menu, menuItems, editor)
         })
       )
     } else {
       console.error("不支持的attach目标字符串", this.target)
     }
+  }
 
-    // 递归添加菜单项
-    // TODO 此处废弃，等待重构
-    function addMenuItems(menu: Menu, menuItems: PanelItem[], editor: Editor) {
-      for (const item of menuItems) {
-        menu.addItem((menuItem: MenuItem) => {
+  /** 递归添加菜单项
+   * 较小改动，更多复用版
+   * 
+   * 快速调试笔记: obsidian 控制台输入以下内容:
+   * ```js
+   * app.workspace.on('editor-menu', (menu, editor, view) => {
+   *     console.log('4453 editor-menu', menu);
+   *     menu.addItem((menuItem) => {
+   *         console.log('4454 menuItem', menuItem)
+   *     })
+   * })
+   * ```
+   */
+  addMenuItems(menu: Menu, menuItems: PanelItem[]) {
+    for (const item of menuItems) {
+      menu.addItem((menuItem: MenuItem) => {
+        // @ts-ignore
+        const li = menuItem.dom as HTMLElement // 重要适配
+        if (!li) return
 
-          // 菜单项标题
-          menuItem.setTitle(item.label)
-          
-          // 菜单项图标
-          if (item.icon) menuItem.setIcon(item.icon)
-
-          // 项功能 (修改自 PanelItem.ts init_item)
-          if (item.content != undefined) {
-            // b1. obsidian 专用命令
-            if (item.type === "command_ob") {
-              menuItem.onClick(async () => {
-                if (!item.content) return
-                global_setting.other.obsidian_run_command?.(item.content); //p_this.panel_hide();
-              })
-            }
-            // b2. 输出纯文本
-            else if (item.type === 'string' || item.type === "md") {
-              menuItem.onClick(async () => {
-                if (!item.content) return
-                await global_setting.api.sendText(item.content); //p_this.panel_hide();
-              })
-            }
-            // b3. 输出 path 对应的文件
-            else if (item.type === 'path') {
-              menuItem.onClick(async () => {
-                if (!item.content) return
-                await global_setting.api.sendText(item.content, 'IMG_MODE'); //p_this.panel_hide();
-              })
-            }
-            // b4. 脚本
-            else if (item.type === 'script') {
-              const plugin = item.plugin ??
-                item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
-              if (plugin) {
-                menuItem.onClick(async () => {
-                  const ctx = PluginManager.getPluginRunCtx(item.label)
-                  void plugin.run(ctx)
-                })
-                if (plugin.onCreateItem) {
-                  const ctx = PluginManager.getPluginRunCtx(item.label)
-                  // plugin.onCreateItem(li, ctx)
-                }
-              }
-            }
-            // b5. 其他类型 (一般是未定义 / 文件夹)
-            else {
-              // console.error('未知的项类型:', item.type)
-            }
-          }
-
-          // 菜单项说明 (修改自 PanelItem.ts init_item)
-          // @ts-ignore
-          const dom = menu.dom
-          if (dom && item.type && ["md", "path"].includes(item.type) && item.content) {
-            let tooltip: HTMLElement|undefined = undefined
-            menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
-              // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)
-              const existingTooltip = dom.querySelector('.ab-contextmenu-tooltip')
-              if (existingTooltip) {
-                dom.removeChild(existingTooltip)
-              }
-
-              // 创建 tooltip
-              tooltip = document.createElement('div'); dom.appendChild(tooltip);
-              tooltip.addClass('ab-contextmenu-tooltip')
-              // 旧版写法，position: fixed。现在改为了absolute 定位
-              // const domRect = li.getBoundingClientRect()
-              // tooltip.setAttribute('style', `
-              //   top: ${domRect.top + 1}px;
-              //   left: ${domRect.right + 1}px;
-              // `)
-
-              if (item.type === "md") { // 一个flag, 表示渲染显示
-                if (item.content) {
-                  void global_setting.other.renderMarkdown?.(item.content, tooltip)
-                }
-              }
-              else if (item.type === "path") { // TODO 这里仅 url 支持，否则会有权限问题
-                const img = document.createElement('img'); tooltip.appendChild(img);
-                  img.setAttribute('src', item.content ?? "");
-                  img.classList.add('tooltip-image');
-              }
-            })
-            menu.registerDomEvent(dom, 'mouseleave', (evt: MouseEvent) => {
-              if (!tooltip) return
-              dom.removeChild(tooltip)
-              tooltip = undefined
-            })
-          }
-
-          // 菜单项的子菜单
-          if (item.children && item.children.length > 0) {
-            // 官方没这个api，隐含api
-            // 且这个api到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
-            // @ts-ignore
-            const submenu = menuItem.setSubmenu()
-            addMenuItems(submenu, item.children, editor) // 递归
-            // const submenu = new Menu()
-            // item.setSubmenu(submenu)
-          }
-        })
-      }
+        void init_item(undefined, li, item, 'label')
+      })
     }
+  }
+
+  /** 递归添加菜单项
+   * obsidian 强化适配版本
+   * 
+   * @deprecated TODO 此处废弃，等待重构
+   */
+  addMenuItems2(menu: Menu, menuItems: PanelItem[]) {
+    for (const item of menuItems) {
+      void init_item2(this, menu, item)
+    }
+  }
+
+  override panel_show(): void {
+    // TODO 如果没有初始化，则初始化
+    super.panel_show()
   }
 }
 
@@ -183,8 +115,24 @@ export class ABContextMenu_Ob extends AMContextMenu {
  * 
  * 推荐在onload中调用
  */
-export function registerABContextMenu(plugin: Plugin) {
-  const abContextMenu = new ABContextMenu_Ob(plugin, 'editor-menu') // 会 plugin.app.workspace.on('editor-menu', ...)
+export function registerAMContextMenu_Ob(plugin: Plugin) {
+  const target = 'editor-menu'
+  const abContextMenu = new AMContextMenu_Ob(plugin, target) // 会 plugin.app.workspace.on('editor-menu', ...)
+
+  plugin.registerEvent(
+    plugin.app.workspace.on('editor-menu', (menu: Menu, _editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
+      abContextMenu.addMenuItems(menu, menuItems)
+
+
+      // abContextMenu.panel_show(menu, menuItems)
+    })
+  )
+
+
+
+
+
+
   abContextMenu.append_data(root_menu)
 }
 
@@ -193,8 +141,10 @@ export function registerABContextMenu(plugin: Plugin) {
  * by gpt
  * 
  * 推荐在onload中调用
+ * 
+ * @deprecated
  */
-function registerABContextMenuDemo(plugin: Plugin) {
+function _registerABContextMenuDemo(plugin: Plugin) {
   // 右键菜单 - 文件浏览器
   plugin.registerEvent(
     plugin.app.workspace.on('file-menu', (menu: Menu, file: TFile) => {
@@ -274,5 +224,150 @@ function registerABContextMenuDemo(plugin: Plugin) {
 
     // 4. 在鼠标点击的位置显示菜单
     menu.showAtMouseEvent(event)
+  })
+}
+
+/** obsidian 特供版 init_item
+ * 
+ * take from `src\Core\panels\shared\PanelItem.ts` 并修改
+ * 
+ * @deprecated
+ */
+export async function init_item2(
+  p_this: AMContextMenu_Ob, // [!code hl] 仅用于递归调用
+  menu: Menu, // [!code hl]
+  item: PanelItem,
+  mode: 'icon' | 'label' | 'none' = 'label'
+) {
+  menu.addItem((menuItem: MenuItem) => {
+  // @ts-ignore
+  const dom = menu.dom as HTMLElement // 重要适配
+  if (!dom) return
+  const li = activeDocument.createElement('div'); dom.appendChild(li);
+
+  // #region 填充显示内容 (标题/图标) // [!code hl]
+  // 不填充
+  if (mode === 'none') {}
+  // 仅标题
+  else if (mode === 'label') {
+    menuItem.setTitle(item.label)
+  }
+  // 仅图标
+  else if (mode === 'icon') {
+    // 例如 menuItem.setIcon('list-plus')
+  }
+
+  // if (mode === 'icon') { // (可选) 可以仅应用于图标，也能用于多级菜单
+  //   // (可选1) hash 背景颜色 (注意这里的亮度根据明暗主题又有所不同)
+  //   // const hashColor = textToHashColor(item.label)
+  //   // li.style.background = hashColor.background
+  //   // li.style.color = hashColor.color
+  // 
+  //   // (可选2) hash 文字颜色 (注意这里的亮度根据明暗主题又有所不同)
+  //   const hashColor = textToHashColor(item.label, undefined, undefined, undefined, 75 )
+  //   li.style.color = hashColor.background
+  // }
+
+  // #endregion
+
+  // #region 项功能
+  if (item.content != undefined) { // 排除 "文件夹项"
+    li.addEventListener('mousedown', (event) => {
+      event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
+    })
+
+    // b1. obsidian 专用命令
+    if (item.type === "command_ob") {
+      menuItem.onClick(() => { // [!code hl]
+        if (!item.content) return
+        global_setting.other.obsidian_run_command?.(item.content);
+      })
+    }
+    // b2. 输出纯文本
+    else if (item.type === 'string' || item.type === "md") {
+      menuItem.onClick(async () => { // [!code hl]
+        if (!item.content) return
+        await global_setting.api.sendText(item.content);
+      })
+    }
+    // b3. 输出 path 对应的文件
+    else if (item.type === 'path') {
+      menuItem.onClick(async () => { // [!code hl]
+        if (!item.content) return
+        await global_setting.api.sendText(item.content, 'IMG_MODE');
+      })
+    }
+    // b4. 脚本
+    else if (item.type === 'script') {
+      const plugin = item.plugin ??
+        item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
+      if (plugin) {
+        menuItem.onClick(() => { // [!code hl]
+          const ctx = PluginManager.getPluginRunCtx(item.label)
+          void plugin.run(ctx)
+        })
+        if (plugin.onCreateItem) {
+          const ctx = PluginManager.getPluginRunCtx(item.label)
+          plugin.onCreateItem(li, ctx)
+        }
+      }
+    }
+    // b5. 其他类型 (一般是未定义 / 文件夹)
+    else {
+      // console.error('未知的项类型:', item.type)
+    }
+  }
+  // #endregion
+
+  // #region 项说明
+  if (dom && item.type && ["md", "path"].includes(item.type) && item.content) {
+    let tooltip: HTMLElement|undefined = undefined
+    menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
+      // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)
+      const existingTooltip = dom.querySelector('.ab-contextmenu-tooltip')
+      if (existingTooltip) {
+        dom.removeChild(existingTooltip)
+      }
+
+      // 创建 tooltip
+      tooltip = activeDocument.createElement('div'); dom.appendChild(tooltip);
+      tooltip.addClass('ab-contextmenu-tooltip')
+      // 旧版写法，position: fixed。现在改为了absolute 定位
+      // const domRect = dom.getBoundingClientRect()
+      // tooltip.setAttribute('style', `
+      //   top: ${domRect.top + 1}px;
+      //   left: ${domRect.right + 1}px;
+      // `)
+
+      if (item.type === "md") { // 一个flag, 表示渲染显示
+        if (item.content) {
+          void global_setting.other.renderMarkdown?.(item.content, tooltip)
+        }
+      }
+      else if (item.type === "path") { // TODO 这里仅 url 支持，否则会有权限问题
+        const img = activeDocument.createElement('img'); tooltip.appendChild(img);
+          img.setAttribute('src', item.content ?? "");
+          img.classList.add('tooltip-image');
+      }
+    })
+    menu.registerDomEvent(dom, 'mouseleave', (evt: MouseEvent) => {
+      if (!tooltip) return
+      dom.removeChild(tooltip)
+      tooltip = undefined
+    })
+  }
+
+  // 菜单项的子菜单
+  if (item.children && item.children.length > 0) {
+    // 官方没这个api，隐含api
+    // 且这个api到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
+    // @ts-ignore
+    const submenu = menuItem.setSubmenu() as Menu
+    p_this.addMenuItems(submenu, item.children) // 递归
+    // const submenu = new Menu()
+    // item.setSubmenu(submenu)
+  }
+  // #endregion
+
   })
 }

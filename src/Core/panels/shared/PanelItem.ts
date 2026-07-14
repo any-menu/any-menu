@@ -59,7 +59,7 @@ async function save_lucideIconCache(lucideIconCache: Map<string, string>) {
  * - icon-label: (未实现) 同时填充 icon+label
  */
 export async function init_item(
-  _p_this: any,
+  _p_this: unknown,
   li: HTMLElement,
   item: PanelItem,
   mode: 'icon' | 'label' | 'none' = 'label'
@@ -142,7 +142,7 @@ export async function init_item(
 
   // #endregion
 
-  // 项功能
+  // #region 项功能
   if (item.content != undefined) { // 排除 "文件夹项"
     li.addEventListener('mousedown', (event) => {
       event.preventDefault() // 防止左/右键导致编辑光标失焦/改变
@@ -150,7 +150,7 @@ export async function init_item(
 
     // b1. obsidian 专用命令
     if (item.type === "command_ob") {
-      li.addEventListener('click', async () => {
+      li.addEventListener('click', () => {
         if (!item.content) return
         global_setting.other.obsidian_run_command?.(item.content);
       })
@@ -174,7 +174,7 @@ export async function init_item(
       const plugin = item.plugin ??
         item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
       if (plugin) {
-        li.addEventListener('click', async () => {
+        li.addEventListener('click', () => {
           const ctx = PluginManager.getPluginRunCtx(item.label)
           void plugin.run(ctx)
         })
@@ -189,8 +189,9 @@ export async function init_item(
       // console.error('未知的项类型:', item.type)
     }
   }
+  // #endregion
 
-  // 项说明
+  // #region 项说明
   if (item.type && ["md", "path"].includes(item.type) && item.content &&
     !(item.type === "md" && !global_setting.other.renderMarkdown)
       // app 和浏览器等暂不支持 md tooltip，他们是没有定义 renderMarkdown 方法的
@@ -230,4 +231,5 @@ export async function init_item(
       tooltip = undefined
     }
   }
+  // #endregion
 }
