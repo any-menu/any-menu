@@ -23,16 +23,16 @@ export class AMTitlebar extends AbsAmPanel {
 
     global_setting.other.app_createTitlebar(this.el)
 
-    this.hide()
+    this.panel_hide()
 
     AMPin.initEvent(this.el, amPanel)
   }
 
-  hide() {
+  panel_hide() {
     this.el.classList.add('am-hide')
   }
 
-  show() {
+  panel_show() {
     this.el.classList.remove('am-hide')
   }
 
@@ -92,7 +92,7 @@ export class AMTitlebar extends AbsAmPanel {
         // 所有已注册的内容
         const all_panel_list: string[] = [
           'search', 'toolbar', 'menu', 'miniEditor', 'info',
-          ...Object.keys(activeAMPanel?.customSubPanel ?? {})
+          ...Object.keys(activeAMPanel?.custom_sub_panel ?? {})
         ]
         for (const item_name of all_panel_list) {
           const el_item = document.createElement('div'); el_panel_list.appendChild(el_item);

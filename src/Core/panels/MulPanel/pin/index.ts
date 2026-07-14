@@ -117,10 +117,10 @@ export class AMPin extends AbsAmPanel {
         didDrag = false
         // titlebar 自动显示
         if (global_setting.state.isPin) {
-          amPanel.sub_panels.amTitlebar?.show()
+          amPanel.sub_panels.amTitlebar?.panel_show()
           amPanel.sub_panels.amPin?.hide()
         } else {
-          amPanel.sub_panels.amTitlebar?.hide()
+          amPanel.sub_panels.amTitlebar?.panel_hide()
           amPanel.sub_panels.amPin?.show()
         }
       }

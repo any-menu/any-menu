@@ -100,9 +100,11 @@ export class AMPanel {
   /// 作用1: 查看面板大小是否有变化 (相同则无变化)
   /// 作用2: 对面板的拆分、调序、中间插入或删除
   show_panel_list: string[] = []
+  /// 总面板列表、子面板管理
+  sub_panel_list: { id: string, obj: any|HTMLElement }[] = []
 
   // 自定义面板部分
-  customSubPanel: { [key: string]: HTMLElement } = {}
+  custom_sub_panel: { [key: string]: HTMLElement } = {}
 
   // #region big3
 
@@ -326,7 +328,7 @@ export class AMPanel {
         })
       }
       else {
-        const target_custom_el = this.customSubPanel?.[item]
+        const target_custom_el = this.custom_sub_panel?.[item]
         if (target_custom_el) target_custom_el.classList.remove('am-hide')
         else console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
       }
@@ -379,8 +381,8 @@ export class AMPanel {
       this.sub_panels.amToolbar?.panel_hide()
       this.sub_panels.amContextMenu?.panel_hide()
       this.sub_panels.amMiniEditor?.panel_hide()
-      for (const key in this.customSubPanel) {
-        this.customSubPanel[key].classList.add('am-hide')
+      for (const key in this.custom_sub_panel) {
+        this.custom_sub_panel[key].classList.add('am-hide')
       }
     }
     else { // 仅隐藏列表中的
@@ -392,9 +394,9 @@ export class AMPanel {
         else if (item == 'miniEditor') this.sub_panels.amMiniEditor?.panel_hide()
         else if (item == 'info') this.sub_panels.amMiniEditor?.panel_hide()
         else {
-          for (const key in this.customSubPanel) {
+          for (const key in this.custom_sub_panel) {
             if (key == item) {
-              this.customSubPanel[key].classList.add('am-hide')
+              this.custom_sub_panel[key].classList.add('am-hide')
               break
             }
           }
@@ -430,7 +432,7 @@ export class AMPanel {
     }
     // 插件自定义子面板
     else {
-      const target_custom_el = this.customSubPanel[item]
+      const target_custom_el = this.custom_sub_panel[item]
       if (!target_custom_el) {
         console.warn(`No sub panel found for item ${item}. Please confirm if the panel has been registered.`)
         return
@@ -477,29 +479,29 @@ export class AMPanel {
   // 这里的自定义子面板针对的是插件的自定义子面板，固定的那几个子面板不属于
 
   register_sub_panel(id: string, el: HTMLElement|((el: HTMLElement) => void)) {
-    if (this.customSubPanel[id]) {
+    if (this.custom_sub_panel[id]) {
       console.warn(`SubPanel with id ${id} already exists. It will be replaced.`)
-      this.customSubPanel[id].remove()
+      this.custom_sub_panel[id].remove()
     }
 
     if (typeof el === 'function') {
       const container = document.createElement('div'); container.classList.add(`am-sub-panel-${id}`)
-      this.customSubPanel[id] = container
+      this.custom_sub_panel[id] = container
       this.sub_panels.amCustom?.appendChild(container)
       el(container)
     } else {
-      this.customSubPanel[id] = el
+      this.custom_sub_panel[id] = el
       this.sub_panels.amCustom?.appendChild(el)
     }
   }
 
   unregister_sub_panel(id: string) {
-    if (!this.customSubPanel[id]) {
+    if (!this.custom_sub_panel[id]) {
       console.warn(`SubPanel with id ${id} does not exist.`)
       return
     }
-    this.customSubPanel[id].remove()
-    delete this.customSubPanel[id]
+    this.custom_sub_panel[id].remove()
+    delete this.custom_sub_panel[id]
   }
 
   // #endregion
