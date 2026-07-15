@@ -11,6 +11,7 @@ import { root_menu } from "@/Core/panels/contextmenu/demo" // TODO 将弃用
 import { global_setting } from '@/Core/shared/setting'
 import { init_item } from '@/Core/panels/shared/PanelItem'
 import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
+import { activeAMPanel } from '@/Core/panels/MulPanel'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -99,8 +100,6 @@ export class AMContextMenu_Ob { // extends AMContextMenu {
 
   /** 递归添加菜单项
    * obsidian 强化适配版本
-   * 
-   * @deprecated TODO 此处废弃，等待重构
    */
   addMenuItems2(menu: Menu, menuItems: PanelItem[]) {
     for (const item of menuItems) {
@@ -123,10 +122,22 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
   const abContextMenu = new AMContextMenu_Ob(plugin, target) // 会 plugin.app.workspace.on('editor-menu', ...)
 
   plugin.registerEvent(
-    plugin.app.workspace.on('editor-menu', (menu: Menu, _editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-      abContextMenu.addMenuItems(menu, root_menu) // TODO 不要用 root_menu 了
-
+    plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
+      abContextMenu.addMenuItems2(menu, root_menu) // TODO 不要用 root_menu 了
       // abContextMenu.panel_show(menu, root_menu)
+
+      // selected
+      const selectedText = editor.getSelection()
+      global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
+
+      window.requestAnimationFrame(() => { // 延时，否则 rect 坐标为0
+        // @ts-ignore
+        const dom = menu.dom as HTMLElement // 重要适配
+        if (!dom) return
+        const rect = dom.getBoundingClientRect()
+        if (rect.right == 0) return
+        activeAMPanel?.panel_show({ x:rect.right, y:rect.top })
+      });
     })
   )
 }
@@ -225,8 +236,6 @@ function _registerABContextMenuDemo(plugin: Plugin) {
 /** obsidian 特供版 init_item
  * 
  * take from `src\Core\panels\shared\PanelItem.ts` 并修改
- * 
- * @deprecated
  */
 export async function init_item2(
   p_this: AMContextMenu_Ob, // [!code hl] 仅用于递归调用
@@ -358,7 +367,7 @@ export async function init_item2(
     // 且这个api到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
     // @ts-ignore
     const submenu = menuItem.setSubmenu() as Menu
-    p_this.addMenuItems(submenu, item.children) // 递归
+    p_this.addMenuItems2(submenu, item.children) // 递归
     // const submenu = new Menu()
     // item.setSubmenu(submenu)
   }
