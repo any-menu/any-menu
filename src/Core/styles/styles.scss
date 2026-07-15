@@ -738,12 +738,18 @@ table.dataview-table {
 
 /* -------------------------------- Obsidian 专用 ----------------------- */
 
+// 设置页
 .am-ob-setting-btn { // 也会受到 .tab-root/.am-config button 影响
   position: absolute;
   bottom: 12px;
   z-index: 4;
   left: 16px;
   right: auto;
+}
+
+// ob 默认菜单
+div.menu {
+  overflow: visible; // 原 hidden
 }
 
 /* -------------------------------- 默认 ------------------------------- */

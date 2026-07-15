@@ -244,10 +244,14 @@ export async function init_item2(
   mode: 'icon' | 'label' | 'none' = 'label'
 ) {
   menu.addItem((menuItem: MenuItem) => {
+
+  // 重要适配
   // @ts-ignore
-  const dom = menu.dom as HTMLElement // 重要适配
+  const dom = menu.dom as HTMLElement // .menu，注意默认有个 `.menu { overflow: hideen }` 的样式
   if (!dom) return
-  const li = activeDocument.createElement('div'); dom.appendChild(li);
+  // @ts-ignore
+  const li = menuItem.dom as HTMLElement // .menu-item.tappable(.selected)
+  if (!li) return
 
   // #region 填充显示内容 (标题/图标) // [!code hl]
   // 不填充
@@ -324,24 +328,16 @@ export async function init_item2(
   // #endregion
 
   // #region 项说明
-  if (dom && item.type && ["md", "path"].includes(item.type) && item.content) {
+  if (item.type && ["md", "path"].includes(item.type) && item.content) {
     let tooltip: HTMLElement|undefined = undefined
-    menu.registerDomEvent(dom, 'mouseenter', (evt: MouseEvent) => {
+    li.addEventListener('mouseenter', () => {
       // 清空 tooltip (可能存在，但一般不会存在，仅冗余避免重复创建和内存泄露)
-      const existingTooltip = dom.querySelector('.ab-contextmenu-tooltip')
-      if (existingTooltip) {
-        dom.removeChild(existingTooltip)
-      }
+      const tooltip_old = dom.querySelector('.ab-contextmenu-tooltip')
+      tooltip_old?.remove()
 
       // 创建 tooltip
-      tooltip = activeDocument.createElement('div'); dom.appendChild(tooltip);
+      tooltip = activeDocument.createElement('div'); li.appendChild(tooltip);
       tooltip.addClass('ab-contextmenu-tooltip')
-      // 旧版写法，position: fixed。现在改为了absolute 定位
-      // const domRect = dom.getBoundingClientRect()
-      // tooltip.setAttribute('style', `
-      //   top: ${domRect.top + 1}px;
-      //   left: ${domRect.right + 1}px;
-      // `)
 
       if (item.type === "md") { // 一个flag, 表示渲染显示
         if (item.content) {
@@ -354,22 +350,29 @@ export async function init_item2(
           img.classList.add('tooltip-image');
       }
     })
-    menu.registerDomEvent(dom, 'mouseleave', (evt: MouseEvent) => {
-      if (!tooltip) return
-      dom.removeChild(tooltip)
-      tooltip = undefined
+
+    li.addEventListener('mouseleave', () => {
+      // tooltip?.remove()
+      // tooltip = undefined
     })
+
+    /* 旧
+    menu.registerDomEvent(dom, 'mouseenter', (_evt: MouseEvent) => {
+    })
+    menu.registerDomEvent(dom, 'mouseleave', (_evt: MouseEvent) => {
+    })*/
   }
 
   // 菜单项的子菜单
   if (item.children && item.children.length > 0) {
     // 官方没这个api，隐含api
-    // 且这个api到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
+    // 但这个官方的 setSubmenu 方法有 bug:
+    // 到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
+    // 估计官方也没考虑到三级以上菜单的事
+    // 将弃用
     // @ts-ignore
     const submenu = menuItem.setSubmenu() as Menu
     p_this.addMenuItems2(submenu, item.children) // 递归
-    // const submenu = new Menu()
-    // item.setSubmenu(submenu)
   }
   // #endregion
 

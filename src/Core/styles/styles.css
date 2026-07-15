@@ -1594,6 +1594,10 @@ table.dataview-table .btn {
   right: auto;
 }
 
+div.menu {
+  overflow: visible;
+}
+
 /* -------------------------------- 默认 ------------------------------- */
 .am-hide {
   display: none !important;
