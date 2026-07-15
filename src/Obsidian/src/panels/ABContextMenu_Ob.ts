@@ -6,11 +6,10 @@ import {
 
 import { PanelItem } from '@/Type'
 // import { AMContextMenu } from "@/Core/panels/contextmenu"
-import { root_menu } from "@/Core/panels/contextmenu/demo" // TODO 将弃用
 import { global_setting } from '@/Core/shared/setting'
 import { init_item } from '@/Core/panels/shared/PanelItem'
 import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
-import { activeAMPanel, AMContextMenu } from '@/Core/panels/MulPanel'
+import { activeAMPanel, all_append_data, AMContextMenu } from '@/Core/panels/MulPanel'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -138,8 +137,7 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
 
   plugin.registerEvent(
     plugin.app.workspace.on(target, (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-      abContextMenu.addMenuItems2(menu, root_menu) // TODO 不要用 root_menu 了
-      // abContextMenu.panel_show(menu, root_menu)
+      abContextMenu.addMenuItems2(menu, all_append_data as PanelItem[])
 
       // selected
       const selectedText = editor.getSelection()

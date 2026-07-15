@@ -47,6 +47,10 @@ type MENU_NODE = {
   vFocus_index: number,   // 字节点的虚拟聚焦索引 (范围为 -1 ~ children.length-1)
 }
 
+// 仅用于动态创建方案
+// 目前的通用版本仅静态，而 Obsidian 插件版本是动态创建的，所以主要是那边使用
+export const all_append_data: PanelItem[] = []
+
 /**
  * 多级菜单
  * 旧: ~~一个上下文菜单~~
@@ -186,7 +190,7 @@ export class AMContextMenu extends AbsAmPanel {
   ///// 键盘选择项追踪，初始不起作用。将弃用，这个无法和多级菜单配合使用
   // private current_vFocus: number = -1
 
-  // #region 添加菜单项  
+  // #region 添加菜单项
 
   /** 添加菜单项 - 操作糖，快捷添加一组按键
    * 
@@ -202,6 +206,7 @@ export class AMContextMenu extends AbsAmPanel {
    * TODO 排序机制，目前相同的词典在每次加载后，顺序都不同
    */
   append_data(menuItems: PanelItem[]) {
+    all_append_data.push(...menuItems)
     AMContextMenu.li_list(this.el, menuItems, this.menu_el_data_root, true)
   }
 
