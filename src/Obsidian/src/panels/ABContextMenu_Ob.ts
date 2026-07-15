@@ -6,15 +6,15 @@ import {
 } from 'obsidian'
 
 import { PanelItem } from '@/Type'
-import { AMContextMenu } from "@/Core/panels/contextmenu"
-import { root_menu } from "@/Core/panels/contextmenu/demo"
+// import { AMContextMenu } from "@/Core/panels/contextmenu"
+import { root_menu } from "@/Core/panels/contextmenu/demo" // TODO 将弃用
 import { global_setting } from '@/Core/shared/setting'
 import { init_item } from '@/Core/panels/shared/PanelItem'
 import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
 
 /**
  * 用于obsidian原菜单上的追加。
- * 若非需要在原菜单基础上追加，则使用父类ABContextMenu即可
+ * 若非需要在原菜单基础上追加，则使用父类即可
  * 
  * 与父类不同:
  * 
@@ -33,13 +33,12 @@ import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/Plug
  *     监听由 append_xxx() 负责
  *   - 使用逻辑: registerABContextMenu(plugin) -> new ABContextMenu_Ob(...).append_xxx(...)
  */
-export class AMContextMenu_Ob extends AMContextMenu {
+export class AMContextMenu_Ob { // extends AMContextMenu {
   constructor(
     public plugin: Plugin,
     public target: string, // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
     menuItems?: PanelItem[],
   ) {
-    super(undefined, menuItems)
   }
 
   // override bind_emitArea(targetElement: HTMLElement | string): void {
@@ -49,25 +48,29 @@ export class AMContextMenu_Ob extends AMContextMenu {
   //   return
   // }
 
-  /// 支持obsidian原生菜单
-  /// 为基类方法支持动态创建策略 (原方法只支持静态创建策略)
-  /// 并支持 command_ob 类型
-  override append_data(menuItems2: PanelItem[]) {
-    const menuItems: PanelItem[] = menuItems2
-    // 预创建菜单版本
-    if (this.el) return super.append_data(menuItems)
+  /**
+   * 添加菜单项
+   * 
+   * 支持obsidian原生菜单
+   * (注意 ob 方案需要动态创建菜单 / 监听并动态挂载 (TODO)，
+   * 无法在事件之前完成所有 dom 操作)
+   */
+  // append_data(menuItems: PanelItem[]) {
+  //   // 预创建菜单版本
+  //   // if (this.el) return super.append_data(menuItems)
 
-    if (this.target === 'editor' || this.target === 'editor-menu') {
-      const plugin = this.plugin
-      plugin.registerEvent(
-        plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-          this.addMenuItems(menu, menuItems, editor)
-        })
-      )
-    } else {
-      console.error("不支持的attach目标字符串", this.target)
-    }
-  }
+  //   // editor-menu 动态创建版本
+  //   if (this.target === 'editor' || this.target === 'editor-menu') {
+  //     const plugin = this.plugin
+  //     plugin.registerEvent(
+  //       plugin.app.workspace.on('editor-menu', (menu: Menu, _editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
+  //         this.addMenuItems(menu, menuItems)
+  //       })
+  //     )
+  //   } else {
+  //     console.error("不支持的attach目标字符串", this.target)
+  //   }
+  // }
 
   /** 递归添加菜单项
    * 较小改动，更多复用版
@@ -105,10 +108,10 @@ export class AMContextMenu_Ob extends AMContextMenu {
     }
   }
 
-  override panel_show(): void {
-    // TODO 如果没有初始化，则初始化
-    super.panel_show()
-  }
+  // override panel_show(): void {
+  //   // TODO 如果没有初始化，则初始化
+  //   super.panel_show()
+  // }
 }
 
 /** 注册obsidian右键菜单
@@ -121,19 +124,11 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
 
   plugin.registerEvent(
     plugin.app.workspace.on('editor-menu', (menu: Menu, _editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-      abContextMenu.addMenuItems(menu, menuItems)
+      abContextMenu.addMenuItems(menu, root_menu) // TODO 不要用 root_menu 了
 
-
-      // abContextMenu.panel_show(menu, menuItems)
+      // abContextMenu.panel_show(menu, root_menu)
     })
   )
-
-
-
-
-
-
-  abContextMenu.append_data(root_menu)
 }
 
 /** 注册obsidian右键菜单 (仅Demo，现无用)
@@ -193,7 +188,7 @@ function _registerABContextMenuDemo(plugin: Plugin) {
     // 3. 向菜单中添加自定义项目
     menu.addItem((item: MenuItem) =>
       item
-        .setTitle("操作 A")
+        .setTitle("Item test a")
         .setIcon("info")
         .onClick(() => {
           new Notification("你点击了操作 A")
@@ -202,7 +197,7 @@ function _registerABContextMenuDemo(plugin: Plugin) {
 
     menu.addItem((item: MenuItem) =>
       item
-        .setTitle("操作 B")
+        .setTitle("Item test b")
         .setIcon("checkmark")
         .onClick(() => {
           new Notification("你点击了操作 B")
@@ -214,7 +209,7 @@ function _registerABContextMenuDemo(plugin: Plugin) {
 
     menu.addItem((item: MenuItem) =>
       item
-        .setTitle("危险操作")
+        .setTitle("Danger item c")
         .setIcon("trash")
         .setSection('danger') // 可以把项目分组到 'danger' 区，通常会用红色显示
         .onClick(() => {
