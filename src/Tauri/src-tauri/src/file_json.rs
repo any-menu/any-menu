@@ -257,12 +257,14 @@ fn default_app_config() -> AppConfig { AppConfig {
         "note_paths": "./notes/",   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
         "cache_paths": "./cache/",  // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/cache/"
         "send_text_method": "clipboard",
+        "auto_show_toolbar_on_select": false,
+        "auto_append_to_contextmenu": "right", // 仅 obsidian 支持
+
         "app_black_list": ["- Obsidian "],
         "app_ad_shortcut": true,
 
         "toolbar_list": [],
         "context_menu_list": [],
-        "auto_show_toolbar_on_select": false,
 
         "panel_preset2": [
         {

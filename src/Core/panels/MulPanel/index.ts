@@ -226,6 +226,7 @@ export class AMPanel extends AbsAmPanel {
    * 
    * @param list 不传则使用配置的默认列表，空列表不额外显示子面板只显示容器
    *   追加显示的子面板内容
+   *   注意区分语义：追加显示 or 仅显示。目前是前者，后者需要先调用 panel_hide 再调用 show
    * @param is_focus 是否聚焦到第一个可聚焦的子面板，默认 true。
    *   如果是选中文本自动弹出面板的场景，则一般 false
    * @param is_reverse 是否反向显示，默认 false。

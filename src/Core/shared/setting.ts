@@ -79,13 +79,18 @@ export const global_setting: {
      * TODO: 后续是否有可能不同的字典/词表用不同的发送方式? 例如有些词表用来表示按键操作组
      */
     send_text_method: 'keyboard'|'clipboard'|'auto',
+    // 选中文本时是否自动显示工具栏
+    auto_show_toolbar_on_select: boolean,
+    // 自动追加至右键的上下文默认菜单。可选值: 不追加|追加至右侧|追加至底部|均追加|取代原来的菜单
+    auto_append_to_contextmenu: 'disable'|'right'|'bottom'|'both'|'replace',
+
     // app黑名单，其中 'obsidian' 主要针对同时安装anymenu ob插件版和app版的情况。ob进黑名单则插件优先 (推荐)，否则app版优先
     app_black_list: string[],
     // app是否使用高级快捷键，TODO 未起作用
     app_ad_shortcut: boolean,
+
     toolbar_list: string[],
     context_menu_list: string[],
-    auto_show_toolbar_on_select: boolean, // 选中文本时是否自动显示工具栏
 
     // 快捷键与面板/操作的解耦。此处是普通快捷键，会被黑白名单影响
     // 这里的2是历史遗留问题。因为该选项以前是对象，现在改数组后避免和以前用户的选项合并导致冲突
@@ -234,12 +239,14 @@ export const global_setting: {
     "note_paths": "./notes/",   // 通常放置生成结果 (markdown等)，备注个人开发环境常用: "./notes/" or "H:/Git/Private/Group_Note/MdNote_Public/note/"
     "cache_paths": "./cache/",  // 在 obsidian 版本中，这里的默认值会是 "./<.obsidian>/plugins/any-menu/cache/"
     "send_text_method": "clipboard",
+    "auto_show_toolbar_on_select": false,
+    "auto_append_to_contextmenu": "right", // 仅 obsidian 支持
+
     "app_black_list": ["- Obsidian "],
     "app_ad_shortcut": true,
 
     "toolbar_list": [],
     "context_menu_list": [],
-    "auto_show_toolbar_on_select": false,
 
     "panel_preset2": [
       {

@@ -1150,6 +1150,22 @@ function initSettingTab_configUI(tab_nav_container: HTMLElement, tab_content_con
       )
 
     new SettingItem(tab_content)
+      .setName(t('Auto append to contextmenu'))
+      .setDesc(t('Auto append to contextmenu2'))
+      .addDropdown(dropdown => {
+        dropdown.addOption('disable', 'Disable')
+        dropdown.addOption('right', 'Right')
+        dropdown.addOption('bottom', 'Bottom')
+        dropdown.addOption('both', 'Both')
+        // dropdown.addOption('replace', 'Replace') // 未开发
+        dropdown.setValue(global_setting.config.auto_append_to_contextmenu)
+        dropdown.onChange(async (value) => {
+          global_setting.config.auto_append_to_contextmenu = value as 'disable'|'right'|'bottom'|'both'
+          await global_setting.api.saveConfig()
+        })
+      })
+
+    new SettingItem(tab_content)
       .setName(t('Auto show toolbar on select'))
       .setDesc(t('Auto show toolbar on select2'))
       .addToggle(toggle => toggle

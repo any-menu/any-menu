@@ -66,6 +66,8 @@ export default {
   'Debug mode2': '仅供开发者使用。主要为开启一些额外的控制台打印。',
   'Auto show toolbar on select': '选中文本时自动显示工具栏',
   'Auto show toolbar on select2': '在编辑器中选中文本时，自动弹出工具栏。',
+  'Auto append to contextmenu': '追加插件菜单到默认右键菜单中',
+  'Auto append to contextmenu2': '(仅 obsidian 插件版本生效)',
   'Server port': 'HTTP服务器端口',
   'Server port2': '对于App版本是开启的HTTP服务端口，对于非App版本则是要访问的端口。\n\
 两者需一致。填0表示不开启该项服务。若没安装本地App版本，则此项也无效。',

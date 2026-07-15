@@ -137,20 +137,27 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
 
   plugin.registerEvent(
     plugin.app.workspace.on(target, (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-      abContextMenu.addMenuItems2(menu, all_append_data as PanelItem[])
-
       // selected
       const selectedText = editor.getSelection()
       global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
 
-      window.requestAnimationFrame(() => { // 延时，否则 rect 坐标为0
-        // @ts-expect-error
-        const dom = menu.dom as HTMLElement // 重要适配
-        if (!dom) return
-        const rect = dom.getBoundingClientRect()
-        if (rect.right == 0) return
-        activeAMPanel?.panel_show({ x:rect.right, y:rect.top })
-      });
+      const append_mode = global_setting.config.auto_append_to_contextmenu as string
+
+      if (append_mode === 'bottom' || append_mode === 'both') {
+        abContextMenu.addMenuItems2(menu, all_append_data as PanelItem[])
+      }      
+
+      if (append_mode === 'right' || append_mode === 'both') {
+        window.requestAnimationFrame(() => { // 延时，否则 rect 坐标为0
+          // @ts-expect-error
+          const dom = menu.dom as HTMLElement // 重要适配
+          if (!dom) return
+          const rect = dom.getBoundingClientRect()
+          if (rect.right == 0) return
+          // activeAMPanel?.panel_hide(undefined)
+          activeAMPanel?.panel_show({ x:rect.right, y:rect.top }, ['menu'])
+        })
+      }
     })
   )
 }
