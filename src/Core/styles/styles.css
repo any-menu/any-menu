@@ -712,7 +712,8 @@ div.editable-textarea-textarea {
   padding: 4px;
   counter-reset: alt-index 0;
 }
-.am-context-menu .am-context-menu-item {
+
+.am-context-menu-item {
   box-sizing: border-box;
   position: relative;
   width: 100%;
@@ -725,17 +726,17 @@ div.editable-textarea-textarea {
   font-size: 14px;
   cursor: pointer;
 }
-.am-context-menu .am-context-menu-item .left {
+.am-context-menu-item .left {
   margin-right: 10px;
 }
-.am-context-menu .am-context-menu-item:hover {
+.am-context-menu-item:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.am-context-menu .am-context-menu-item.focus-active {
+.am-context-menu-item.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }
-.am-context-menu .am-context-menu-item::after {
+.am-context-menu-item::after {
   counter-increment: alt-index 1;
   content: attr(data-altkey);
   display: none;
@@ -746,22 +747,26 @@ div.editable-textarea-textarea {
   opacity: 0.6;
   color: #ffffff;
 }
-.am-context-menu .am-context-menu-item.has-children::before {
+.am-context-menu-item.has-children::before {
   content: "▶";
   float: right;
   font-size: 12px;
   margin-top: 2px;
 }
-.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
+.am-context-menu-item.has-children > .am-context-menu.sub-menu {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
 }
-.am-context-menu .am-context-menu-item .am-context-menu-label {
+.am-context-menu-item .am-context-menu-label {
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.menu-item.am-context-menu-item.has-children {
+  display: block;
 }
 
 .ab-contextmenu-tooltip {
@@ -1595,6 +1600,9 @@ table.dataview-table .btn {
 }
 
 div.menu {
+  overflow: visible;
+}
+div.menu .menu-scroll {
   overflow: visible;
 }
 

@@ -747,9 +747,12 @@ table.dataview-table {
   right: auto;
 }
 
-// ob 默认菜单
+// ob 默认菜单 // 原 overflow hidden
 div.menu {
-  overflow: visible; // 原 hidden
+  overflow: visible;
+  .menu-scroll {
+    overflow: visible;
+  }
 }
 
 /* -------------------------------- 默认 ------------------------------- */

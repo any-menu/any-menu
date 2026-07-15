@@ -2,7 +2,6 @@ import {
   MarkdownView, Plugin, Menu,
   type MenuItem, type Editor,
   type MarkdownFileInfo,
-  TFile,
 } from 'obsidian'
 
 import { PanelItem } from '@/Type'
@@ -11,7 +10,7 @@ import { root_menu } from "@/Core/panels/contextmenu/demo" // TODO 将弃用
 import { global_setting } from '@/Core/shared/setting'
 import { init_item } from '@/Core/panels/shared/PanelItem'
 import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
-import { activeAMPanel } from '@/Core/panels/MulPanel'
+import { activeAMPanel, AMContextMenu } from '@/Core/panels/MulPanel'
 
 /**
  * 用于obsidian原菜单上的追加。
@@ -37,41 +36,8 @@ import { activeAMPanel } from '@/Core/panels/MulPanel'
 export class AMContextMenu_Ob { // extends AMContextMenu {
   constructor(
     public plugin: Plugin,
-    public target: string, // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
-    menuItems?: PanelItem[],
   ) {
   }
-
-  // override bind_emitArea(targetElement: HTMLElement | string): void {
-  //   // 预创建菜单版本
-  //   if (this.el_container) return super.bind_emitArea(targetElement)
-  // 
-  //   return
-  // }
-
-  /**
-   * 添加菜单项
-   * 
-   * 支持obsidian原生菜单
-   * (注意 ob 方案需要动态创建菜单 / 监听并动态挂载 (TODO)，
-   * 无法在事件之前完成所有 dom 操作)
-   */
-  // append_data(menuItems: PanelItem[]) {
-  //   // 预创建菜单版本
-  //   // if (this.el) return super.append_data(menuItems)
-
-  //   // editor-menu 动态创建版本
-  //   if (this.target === 'editor' || this.target === 'editor-menu') {
-  //     const plugin = this.plugin
-  //     plugin.registerEvent(
-  //       plugin.app.workspace.on('editor-menu', (menu: Menu, _editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
-  //         this.addMenuItems(menu, menuItems)
-  //       })
-  //     )
-  //   } else {
-  //     console.error("不支持的attach目标字符串", this.target)
-  //   }
-  // }
 
   /** 递归添加菜单项
    * 较小改动，更多复用版
@@ -89,11 +55,15 @@ export class AMContextMenu_Ob { // extends AMContextMenu {
   addMenuItems(menu: Menu, menuItems: PanelItem[]) {
     for (const item of menuItems) {
       menu.addItem((menuItem: MenuItem) => {
-        // @ts-ignore
+        // @ts-expect-error
         const li = menuItem.dom as HTMLElement // 重要适配
         if (!li) return
-
         void init_item(undefined, li, item, 'label')
+
+        // 菜单项的子菜单
+        if (item.children && item.children.length > 0) {
+          this.addMenuItem3(li, item.children)
+        }
       })
     }
   }
@@ -103,14 +73,59 @@ export class AMContextMenu_Ob { // extends AMContextMenu {
    */
   addMenuItems2(menu: Menu, menuItems: PanelItem[]) {
     for (const item of menuItems) {
-      void init_item2(this, menu, item)
+      menu.addItem((menuItem: MenuItem) => {
+        void init_item2(menu, menuItem, item)
+
+        // 菜单项的子菜单
+        if (item.children && item.children.length > 0) {
+          // (二选一) 官方隐含api (非明面)
+          // 但这个官方的 setSubmenu 方法有 bug:
+          // 到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
+          // 估计官方也没考虑到三级以上菜单的事
+          // 将弃用
+          // // @ts-expect-error
+          // const subMenu = menuItem.setSubmenu() as Menu
+          // p_this.addMenuItems2(subMenu, item.children) // 递归
+
+          // (二选一) 通用 div 实现
+          // @ts-expect-error
+          const li = menuItem.dom as HTMLElement
+          if (!li) return
+          this.addMenuItem3(li, item.children)
+        }
+      })
     }
   }
 
-  // override panel_show(): void {
-  //   // TODO 如果没有初始化，则初始化
-  //   super.panel_show()
-  // }
+  /** 递归添加菜单项
+   * 
+   * 从 obsidian 的默认菜单元素项适配到 `AMContextMenu.li_list`
+   * 
+   * 然后 `AMContextMenu.li_list` 不从默认菜单开始，而是从普通 div 开始的通用版本
+   * 
+   * 主要是 obsidian 默认的菜单 api 太垃了
+   */
+  addMenuItem3(
+    li: HTMLElement,
+    menuItems: PanelItem[],
+  ) {
+    li.classList.add('am-context-menu-item')
+
+    li.classList.add('has-children')
+    const li_ul = activeDocument.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
+    AMContextMenu.li_list(li_ul, menuItems, {
+      el: li_ul,
+      parent: null,
+      children: [],
+      vFocus_index: -1,
+    }, false)
+    li.addEventListener('mouseenter', () => {
+      li_ul.classList.add('visible')
+    })
+    li.addEventListener('mouseleave', () => {
+      li_ul.classList.remove('visible')
+    })
+  }
 }
 
 /** 注册obsidian右键菜单
@@ -118,11 +133,11 @@ export class AMContextMenu_Ob { // extends AMContextMenu {
  * 推荐在onload中调用
  */
 export function registerAMContextMenu_Ob(plugin: Plugin) {
-  const target = 'editor-menu'
-  const abContextMenu = new AMContextMenu_Ob(plugin, target) // 会 plugin.app.workspace.on('editor-menu', ...)
+  const target = 'editor-menu' // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
+  const abContextMenu = new AMContextMenu_Ob(plugin)
 
   plugin.registerEvent(
-    plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
+    plugin.app.workspace.on(target, (menu: Menu, editor: Editor, _view: MarkdownView | MarkdownFileInfo) => {
       abContextMenu.addMenuItems2(menu, root_menu) // TODO 不要用 root_menu 了
       // abContextMenu.panel_show(menu, root_menu)
 
@@ -131,7 +146,7 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
       global_setting.state.selectedText = selectedText.length > 0 ? selectedText : undefined
 
       window.requestAnimationFrame(() => { // 延时，否则 rect 坐标为0
-        // @ts-ignore
+        // @ts-expect-error
         const dom = menu.dom as HTMLElement // 重要适配
         if (!dom) return
         const rect = dom.getBoundingClientRect()
@@ -142,114 +157,21 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
   )
 }
 
-/** 注册obsidian右键菜单 (仅Demo，现无用)
- * 
- * by gpt
- * 
- * 推荐在onload中调用
- * 
- * @deprecated
- */
-function _registerABContextMenuDemo(plugin: Plugin) {
-  // 右键菜单 - 文件浏览器
-  plugin.registerEvent(
-    plugin.app.workspace.on('file-menu', (menu: Menu, file: TFile) => {
-      // 只在右键点击 .md 文件时添加菜单项
-      if (file instanceof TFile && file.extension === 'md') {
-        menu.addItem((item: MenuItem) => {
-          item
-            .setTitle("我的文件菜单操作")
-            .setIcon("document") // 使用内置图标
-            .onClick(async () => {
-              new Notification(`你点击了文件: ${file.path}`)
-              // console.log(`文件路径: ${file.path}`)
-            });
-        });
-      }
-    })
-  )
-
-  // 右键菜单 - 编辑器
-  plugin.registerEvent(
-    plugin.app.workspace.on('editor-menu', (menu: Menu, editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
-      menu.addItem((item: MenuItem) => {
-        item
-          .setTitle("我的编辑器菜单操作")
-          .setIcon("pencil") // 使用内置图标
-          .onClick(() => {
-            // 在光标位置插入文本
-            editor.replaceSelection('你好，Obsidian！')
-          });
-      });
-    })
-  )
-
-  // 右键菜单 - 右下角状态栏 (自定义div)
-  const myCustomDiv = plugin.addStatusBarItem().createEl('div', { // 创建一个我们自己的 div 元素，并添加到状态栏
-    text: '右键点我!',
-    cls: 'my-custom-div' // 添加一个class方便样式化
-  })
-  plugin.registerDomEvent(myCustomDiv, 'contextmenu', (event: MouseEvent) => {
-    // 1. 阻止默认的浏览器右键菜单
-    event.preventDefault()
-
-    // 2. 创建一个新的、独立的 Menu 实例
-    const menu = new Menu()
-
-    // 3. 向菜单中添加自定义项目
-    menu.addItem((item: MenuItem) =>
-      item
-        .setTitle("Item test a")
-        .setIcon("info")
-        .onClick(() => {
-          new Notification("你点击了操作 A")
-        })
-    );
-
-    menu.addItem((item: MenuItem) =>
-      item
-        .setTitle("Item test b")
-        .setIcon("checkmark")
-        .onClick(() => {
-          new Notification("你点击了操作 B")
-        })
-    );
-
-    // 添加一个分割线
-    menu.addSeparator()
-
-    menu.addItem((item: MenuItem) =>
-      item
-        .setTitle("Danger item c")
-        .setIcon("trash")
-        .setSection('danger') // 可以把项目分组到 'danger' 区，通常会用红色显示
-        .onClick(() => {
-          new Notification("这是一个危险操作！")
-        })
-    );
-
-    // 4. 在鼠标点击的位置显示菜单
-    menu.showAtMouseEvent(event)
-  })
-}
-
 /** obsidian 特供版 init_item
  * 
  * take from `src\Core\panels\shared\PanelItem.ts` 并修改
  */
 export async function init_item2(
-  p_this: AMContextMenu_Ob, // [!code hl] 仅用于递归调用
-  menu: Menu, // [!code hl]
+  menu: Menu,         // [!code hl]
+  menuItem: MenuItem, // [!code hl]
   item: PanelItem,
   mode: 'icon' | 'label' | 'none' = 'label'
 ) {
-  menu.addItem((menuItem: MenuItem) => {
-
   // 重要适配
-  // @ts-ignore
+  // @ts-expect-error
   const dom = menu.dom as HTMLElement // .menu，注意默认有个 `.menu { overflow: hideen }` 的样式
   if (!dom) return
-  // @ts-ignore
+  // @ts-expect-error
   const li = menuItem.dom as HTMLElement // .menu-item.tappable(.selected)
   if (!li) return
 
@@ -327,7 +249,7 @@ export async function init_item2(
   }
   // #endregion
 
-  // #region 项说明
+  // #region 项说明、项子菜单
   if (item.type && ["md", "path"].includes(item.type) && item.content) {
     let tooltip: HTMLElement|undefined = undefined
     li.addEventListener('mouseenter', () => {
@@ -352,8 +274,8 @@ export async function init_item2(
     })
 
     li.addEventListener('mouseleave', () => {
-      // tooltip?.remove()
-      // tooltip = undefined
+      tooltip?.remove()
+      tooltip = undefined
     })
 
     /* 旧
@@ -362,19 +284,5 @@ export async function init_item2(
     menu.registerDomEvent(dom, 'mouseleave', (_evt: MouseEvent) => {
     })*/
   }
-
-  // 菜单项的子菜单
-  if (item.children && item.children.length > 0) {
-    // 官方没这个api，隐含api
-    // 但这个官方的 setSubmenu 方法有 bug:
-    // 到了第三级菜单开始，就会有bug: 切换悬浮的二级菜单对象时，三级菜单不会更新
-    // 估计官方也没考虑到三级以上菜单的事
-    // 将弃用
-    // @ts-ignore
-    const submenu = menuItem.setSubmenu() as Menu
-    p_this.addMenuItems2(submenu, item.children) // 递归
-  }
   // #endregion
-
-  })
 }

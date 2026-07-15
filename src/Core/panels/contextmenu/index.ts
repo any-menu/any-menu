@@ -202,97 +202,99 @@ export class AMContextMenu extends AbsAmPanel {
    * TODO 排序机制，目前相同的词典在每次加载后，顺序都不同
    */
   append_data(menuItems: PanelItem[]) {
-    /** 递归生成菜单项
-     * @param current_node 当前节点
-     */
-    const li_list = (
-      ul: HTMLElement,
-      menuItems: PanelItem[],
-      current_node: MENU_NODE,
-      is_root: boolean = false,
-    ): void => { // HTMLUListElement
-      let sub_node: MENU_NODE
-      let alt_key_index = current_node.children.length // alt+key 快捷键起点，包括已经插入过的 (目前仅支持顺序的 [1-90a-z]，将0放9后面优化手感。超出不显示，不支持自定义)      
-      menuItems.forEach((item: PanelItem) => {
-        // 项顺序检查 (order, 仅检查第一层)
-        // 但这里和 toolbar 不同的是: 这里要考虑 alt+key 和自定义顺序的冲突问题，特别是这还是动态插入而非全额插入情景
-        // 当前方案是：如果是根插入，则插入会重置 attr-altkey 属性 (应该性能损耗不大)
-        if (is_root) {
-          if (global_setting.config.context_menu_list.length == 0) {} // 没限制则全部放行
-          else if (global_setting.config.context_menu_list.includes(item.label)) { // 有则添加顺序
-            const index = global_setting.config.context_menu_list.indexOf(item.label)
-            item.order = index
-          }
-          else { // 没有则不显示
-            return
+    AMContextMenu.li_list(this.el, menuItems, this.menu_el_data_root, true)
+  }
+
+  /** 递归生成菜单项
+   * @param ul 父节点元素
+   * @param menuItems 当前节点信息
+   * @param current_node 当前节点
+   */
+  public static li_list(
+    ul: HTMLElement,
+    menuItems: PanelItem[],
+    current_node: MENU_NODE,
+    is_root: boolean = false,
+  ): void { // HTMLUListElement
+    let sub_node: MENU_NODE
+    let alt_key_index = current_node.children.length // alt+key 快捷键起点，包括已经插入过的 (目前仅支持顺序的 [1-90a-z]，将0放9后面优化手感。超出不显示，不支持自定义)      
+    menuItems.forEach((item: PanelItem) => {
+      // 项顺序检查 (order, 仅检查第一层)
+      // 但这里和 toolbar 不同的是: 这里要考虑 alt+key 和自定义顺序的冲突问题，特别是这还是动态插入而非全额插入情景
+      // 当前方案是：如果是根插入，则插入会重置 attr-altkey 属性 (应该性能损耗不大)
+      if (is_root) {
+        if (global_setting.config.context_menu_list.length == 0) {} // 没限制则全部放行
+        else if (global_setting.config.context_menu_list.includes(item.label)) { // 有则添加顺序
+          const index = global_setting.config.context_menu_list.indexOf(item.label)
+          item.order = index
+        }
+        else { // 没有则不显示
+          return
+        }
+      }
+
+      // alt_key_key
+      let alt_key_key: string = get_alt_key_key(alt_key_index)
+      function get_alt_key_key (alt_key_index: number): string {
+        if (alt_key_index < 9) {
+          return (alt_key_index + 1).toString()
+        } else if (alt_key_index == 9) {
+          return "0"
+        } else if (alt_key_index < 36) {
+          return String.fromCharCode(97 + alt_key_index - 10)
+        } else return ""
+      }
+      alt_key_index++
+
+      // 项元素
+      const li = document.createElement('li'); li.classList.add('am-context-menu-item');
+        sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
+
+      // 根据 order 插入节点，并重置 alt_key_key (仅根节点)
+      // TODO 同 order 根据名字排序
+      if (is_root) {
+        const order = item.order ?? 1000; li.dataset.order = order.toString();
+        let inserted = false; // 若为 true，表示已插入到某个节点的前面
+        for (const child of Array.from(ul.children) as HTMLElement[]) {
+          const childOrderAttr = child.dataset.order;
+          const childOrder = childOrderAttr !== undefined ? parseInt(childOrderAttr, 10) : 1000;
+          if (childOrder > order) { // 找到第一个 order 比当前大的节点，插在它前面
+            ul.insertBefore(li, child);
+            inserted = true;
+            break;
           }
         }
-
-        // alt_key_key
-        let alt_key_key: string = get_alt_key_key(alt_key_index)
-        function get_alt_key_key (alt_key_index: number): string {
-          if (alt_key_index < 9) {
-            return (alt_key_index + 1).toString()
-          } else if (alt_key_index == 9) {
-            return "0"
-          } else if (alt_key_index < 36) {
-            return String.fromCharCode(97 + alt_key_index - 10)
-          } else return ""
+        if (inserted) { // 插入成功，则重置所有 data-altKey 属性
+          for (let alt_key_index = 0; alt_key_index < ul.children.length; alt_key_index++) {
+            const child = ul.children[alt_key_index] as HTMLElement;
+            child.setAttribute('data-altkey', get_alt_key_key(alt_key_index));
+          }
         }
-        alt_key_index++
-
-        // 项元素
-        const li = document.createElement('li'); li.classList.add('am-context-menu-item');
-          sub_node = { el: li, parent: current_node, children: [], vFocus_index: -1 }; current_node.children.push(sub_node);
-
-        // 根据 order 插入节点，并重置 alt_key_key (仅根节点)
-        // TODO 同 order 根据名字排序
-        if (is_root) {
-          const order = item.order ?? 1000; li.dataset.order = order.toString();
-          let inserted = false; // 若为 true，表示已插入到某个节点的前面
-          for (const child of Array.from(ul.children) as HTMLElement[]) {
-            const childOrderAttr = child.dataset.order;
-            const childOrder = childOrderAttr !== undefined ? parseInt(childOrderAttr, 10) : 1000;
-            if (childOrder > order) { // 找到第一个 order 比当前大的节点，插在它前面
-              ul.insertBefore(li, child);
-              inserted = true;
-              break;
-            }
-          }
-          if (inserted) { // 插入成功，则重置所有 data-altKey 属性
-            for (let alt_key_index = 0; alt_key_index < ul.children.length; alt_key_index++) {
-              const child = ul.children[alt_key_index] as HTMLElement;
-              child.setAttribute('data-altkey', get_alt_key_key(alt_key_index));
-            }
-          }
-          else { // 如果没有比它大的，说明应该是最大的，直接追加在最后
-            ul.appendChild(li);
-            li.setAttribute('data-altkey', alt_key_key);
-          }
-        } else {
-          ul.appendChild(li); 
+        else { // 如果没有比它大的，说明应该是最大的，直接追加在最后
+          ul.appendChild(li);
           li.setAttribute('data-altkey', alt_key_key);
         }
+      } else {
+        ul.appendChild(li); 
+        li.setAttribute('data-altkey', alt_key_key);
+      }
 
-        // 项的 图标 名字 功能 说明 等
-        void init_item(this, li, item, 'label')
+      // 项的 图标 名字 功能 说明 等
+      void init_item(undefined, li, item, 'label')
 
-        // 项的子菜单
-        if (item.children) {
-          li.classList.add('has-children')
-          const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
-          li_list(li_ul, item.children, sub_node)
-          li.addEventListener('mouseenter', () => {
-            li_ul.classList.add('visible')
-          })
-          li.addEventListener('mouseleave', () => {
-            li_ul.classList.remove('visible')
-          })
-        }
-      })
-    }
-
-    li_list(this.el, menuItems, this.menu_el_data_root, true)
+      // 项的子菜单
+      if (item.children) {
+        li.classList.add('has-children')
+        const li_ul = document.createElement('div'); li.appendChild(li_ul); li_ul.classList.add('am-context-menu', 'sub-menu');
+        AMContextMenu.li_list(li_ul, item.children, sub_node)
+        li.addEventListener('mouseenter', () => {
+          li_ul.classList.add('visible')
+        })
+        li.addEventListener('mouseleave', () => {
+          li_ul.classList.remove('visible')
+        })
+      }
+    })
   }
 
   /** 添加菜单项 - 给菜单添加一个自定义元素
