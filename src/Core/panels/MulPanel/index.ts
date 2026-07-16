@@ -355,16 +355,6 @@ export class AMPanel extends AbsAmPanel {
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
   panel_hide(list?: string[], focusHide: boolean = false) {
-    // 自动隐藏的事件监听 - 取消
-    window.removeEventListener('mousedown', this.visual_listener_mousedown)
-    window.removeEventListener('keydown', this.visual_listener_keydown)
-
-    // 在隐藏状态下调用隐藏方法。obsidian 的 DocumentListeners 会这样触发到。
-    if (this.el.classList.contains('am-hide')) {
-      console.warn('Call the hiding method in the hidden state.')
-      return
-    }
-
     // 置顶状态下
     //   主面板仅可进行主动按钮隐藏。
     //   主面板不能进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)
@@ -375,6 +365,16 @@ export class AMPanel extends AbsAmPanel {
         this.el.blur()
         return
       }
+    }
+
+    // 自动隐藏的事件监听 - 取消
+    window.removeEventListener('mousedown', this.visual_listener_mousedown)
+    window.removeEventListener('keydown', this.visual_listener_keydown)
+
+    // 在隐藏状态下调用隐藏方法。obsidian 的 DocumentListeners 会这样触发到。
+    if (this.el.classList.contains('am-hide')) {
+      console.warn('Call the hiding method in the hidden state.')
+      return
     }
 
     // 当前显示的面板列表
