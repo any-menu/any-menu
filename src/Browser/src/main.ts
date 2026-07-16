@@ -9,7 +9,7 @@ import { EditorTools, initApi, initApi_with_server } from './utils/initApi'
 // #region 启动时阅读配置文件
 
 let is_init = false
-async function init() {
+async function init_config() {
   if (is_init) return
   is_init = true
   const result = await global_setting.api.loadConfig()
@@ -25,9 +25,22 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await initApi()
   await initApi_with_server()
-  await init() // 保证先读取配置再初始化别的
+  await init_config() // 保证先读取配置再初始化别的
+  // 自动更新选中文本 (防抖版，非节流版)
+  // 目前不可用: 失焦会导致清空所选文本
+  // {
+  //   let timer: ReturnType<typeof setTimeout>;
+  //   document.addEventListener('selectionchange', () => {
+  //     clearTimeout(timer)
+  //     timer = setTimeout(() => {
+  //       const selection = document.getSelection()
+  //       const currentText = selection?.toString() ?? undefined
+  //       global_setting.state.selectedText = currentText
+  //     }, 200)
+  //   })
+  // }
 
-  // 临时 debug
+  // 文本框
   let textarea: HTMLTextAreaElement
   {
     textarea = document.createElement('textarea'); main_el.appendChild(textarea);
@@ -39,7 +52,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // 临时 debug
+  // 展开面板按钮
   {
     const btn = document.createElement('button'); main_el.appendChild(btn);
       btn.innerText = 'Test, show panel'
@@ -68,6 +81,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     void initMenuData() // TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
   }
 
+  // 设置面板
   initSettingPanel(main_el)
 
   // 置顶按钮 (仅 debug 时显示)

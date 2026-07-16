@@ -402,9 +402,11 @@ export async function initApi_with_opfs() {
  */
 export namespace EditorTools {
 
-  // 定义要保存的光标状态
+  // 召唤面板时对应的文本编辑器
+  // 包括: 要保存的光标状态
   interface TextInputCursorState {
     element: HTMLTextAreaElement | HTMLInputElement; // 目标元素
+    // selectedText // 这个直接保存到状态中
     start: number;
     end: number;
   }
@@ -413,6 +415,14 @@ export namespace EditorTools {
   
   // 保存光标状态
   export function saveCurrentCursor(element: HTMLTextAreaElement): void {
+    // 选中文本，两方法:
+    // - getSelection 版 (当前)
+    // - selectionStart 和 selectionEnd 获取版
+    //   - 仅表单元素、仅纯文本
+    const selection = window.getSelection()
+    global_setting.state.selectedText = selection?.toString() ?? undefined
+
+    // 其他状态
     savedCursorState = {
       element,
       start: element.selectionStart,
