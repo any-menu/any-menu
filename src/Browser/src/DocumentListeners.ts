@@ -1,6 +1,4 @@
 /**
- * modi from https://github.com/chrisgurney/obsidian-note-toolbar/blob/ae125b8380639a998b253979fad7bbae6baf2ff4/src/Listeners/DocumentListeners.ts
- * 
  * ## 设计要点 (插件版和 app 版通用)
  * 
  * 这里设计一套 "选中文本自动弹出面板" 的通用交互逻辑，
@@ -25,18 +23,14 @@
  *   (只有主动唤出面板才应该抢焦点，否则不应该抢焦点)
  * - 倒置翻转显示 (不要遮挡当前选中文本的下面的内容，优先在上方显示，避免影响用户原来的进一步操作)
  *   (只有主动唤出才可在下面显示)
- * 
- * TODO 封装一个基础类，然后 Obsidian、浏览器版等再派生具体差异实现
  */
 
 import { global_setting } from "@/Core/shared/setting"
-import { getCursorInfo } from "."
 import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
-import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 
 export class DocumentListeners {
 
-  public isContextOpening: boolean = false;     // 菜单展开状态
+  public isContextOpening: boolean = false;
   public isKeyboardSelection: boolean = false;  // 键盘选择状态 (互斥a)，上次的按下键是键盘键
   public isMouseSelecting: boolean = false;     // 鼠标选择状态 (互斥a)，上次的按下键是鼠标键
   public isMouseDown: boolean = false;          // 鼠标按下状态 (仅用于标注拖拽行为)
@@ -55,26 +49,37 @@ export class DocumentListeners {
   public register() {
     if (!global_setting.config.auto_show_toolbar_on_select) return
 
-    // [!code hl] obsidian 专属版本
-    this.plugin.registerDomEvent(activeDocument, 'contextmenu', this.onContextMenu);
-    this.plugin.registerDomEvent(activeDocument, 'dblclick', this.onDoubleClick);
-    this.plugin.registerDomEvent(activeDocument, 'keydown', this.onKeyDown);
-    this.plugin.registerDomEvent(activeDocument, 'keyup', this.onKeyUp);
-    this.plugin.registerDomEvent(activeDocument, 'mousemove', this.onMouseMove);
-    this.plugin.registerDomEvent(activeDocument, 'mouseup', this.onMouseUp);
-    this.plugin.registerDomEvent(activeDocument, 'mousedown', this.onMouseDown);
-    this.plugin.registerDomEvent(activeDocument, 'selectionchange', this.onSelectionChange);
+    document.addEventListener('contextmenu', this.onContextMenu);
+    document.addEventListener('dblclick', this.onDoubleClick);
+    document.addEventListener('keydown', this.onKeyDown);
+    document.addEventListener('keyup', this.onKeyUp);
+    document.addEventListener('mousemove', this.onMouseMove);
+    document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener('mousedown', this.onMouseDown);
+    document.addEventListener('selectionchange', this.onSelectionChange);
   }
 
   public unregister() {
-    // [!code hl] obsidian 专属版本
-    // 无实现
-    // obsidian 的 `registerDomEvent` 相较于原生的 `addEventListener`，可以在插件卸载时自动取消注册
+    document.removeEventListener('contextmenu', this.onContextMenu);
+    document.removeEventListener('dblclick', this.onDoubleClick);
+    document.removeEventListener('keydown', this.onKeyDown);
+    document.removeEventListener('keyup', this.onKeyUp);
+    document.removeEventListener('mousemove', this.onMouseMove);
+    document.removeEventListener('mouseup', this.onMouseUp);
+    document.removeEventListener('mousedown', this.onMouseDown);
+    document.removeEventListener('selectionchange', this.onSelectionChange);
   }
 
-  /** 右键/上下文菜单展开事件 */
   onContextMenu = () => {
     this.isContextOpening = true;
+  }
+
+  /** 通过双击选择 */
+  onDoubleClick = async (_event: MouseEvent) => {
+    this.isKeyboardSelection = false; this.isMouseSelecting = true;
+
+    // 选区改变事件是异步的，可能发生在双击行为之后
+    window.setTimeout(() => void this.showPanel(), 10);
   }
 
   /** 键盘按下事件 */
@@ -104,14 +109,6 @@ export class DocumentListeners {
       // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
       if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
-  }
-
-  /** 通过双击选择 */
-  onDoubleClick = async (_event: MouseEvent) => {
-    this.isKeyboardSelection = false; this.isMouseSelecting = true;
-
-    // 选区改变事件是异步的，可能发生在双击行为之后
-    window.setTimeout(() => void this.showPanel(), 10);
   }
 
   /** 鼠标按下事件 */
@@ -166,7 +163,7 @@ export class DocumentListeners {
    */
   onSelectionChange = (_event: unknown) => {
     // 只匹配某些 class 中/编辑模式下的选中项
-    const selectedText = getSelection_editor(this.plugin)
+    const selectedText = getSelection_editor()
     if (!selectedText) {
       this.previewSelection = null
       return
@@ -174,7 +171,7 @@ export class DocumentListeners {
 
     // 任意元素选中
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
-    const selection = activeDocument.getSelection()
+    const selection = document.getSelection()
     if (!selection || selection.isCollapsed) {
       this.previewSelection = null
       return
@@ -197,19 +194,15 @@ export class DocumentListeners {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
-    const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) return
-    const editor = activeView.editor
     void show_panel_auto(
-      this.plugin, editor,
       global_setting.config.panel_preset2[1].list,
       // global_setting.config.panel_preset2[1].is_focus
       false // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
     )
 
-    async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[], is_focus?: boolean) {
+    async function show_panel_auto (panel_list?: string[], is_focus?: boolean) {
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo(plugin, editor)
+      const cursorInfo = getCursorInfo()
       if (!cursorInfo) return
       const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.top }
 
@@ -233,47 +226,14 @@ export class DocumentListeners {
   }
 }
 
-// [!code hl] obsidian 专属版本，且只匹配某些 class 中/编辑模式下的选中项
-function getSelection_editor(plugin: Plugin, previewOnly: boolean = false): string|null {
-  const editor = plugin.app.workspace.activeEditor?.editor;
-  const view = plugin.app.workspace.getActiveViewOfType(ItemView);
-  if (!(view instanceof MarkdownView)) return null
+// 只匹配某些 class 中/编辑模式下的选中项
+function getSelection_editor(): string|null {
+  return 'flag_getSelection_editor'
+}
 
-  const mode = view.getMode();
-  const isPreviewMode = (mode === 'preview');
-  
-  // 检查选择是否处于嵌入状态（用于编辑模式）
-  let isInEmbed = false;
-  if (!isPreviewMode) {
-    const selectionNode = activeDocument.getSelection()?.focusNode;
-    const element = (selectionNode as HTMLElement)?.closest ? 
-      (selectionNode as HTMLElement) : 
-      (selectionNode as Node)?.parentElement;
-    isInEmbed = !!element?.closest('.markdown-embed');
-  }
-  
-  // 如果设置了 PreviewOnly 标志，则仅返回预览模式或嵌入的选择
-  if (previewOnly && !isPreviewMode && !isInEmbed) {
-    return null
-  }
-  
-  // 在预览模式或嵌入中，使用文档选择
-  if (isPreviewMode || isInEmbed) {
-    const documentSelection = activeDocument.getSelection();
-    const selectedText = documentSelection?.toString().trim();
-    if (selectedText) return selectedText;
-  }
-  
-  // 在编辑模式下（不在嵌入模式下），使用编辑器选择
-  if (!isPreviewMode && !isInEmbed && editor) {
-    const selection = editor.getSelection();
-    if (selection) return selection;
-
-    // 或返回光标处的单词（如果有的话）
-    const cursor = editor.getCursor();
-    const wordRange = editor.wordAt(cursor);
-    if (wordRange) return editor.getRange(wordRange.from, wordRange.to);
-  }
-
-  return null
+/** 获取游标和选区位置，还有对一些信息的采集 */
+function getCursorInfo(): {
+  pos: {left: number, top: number, right: number, bottom: number}
+} | void {
+  return
 }
