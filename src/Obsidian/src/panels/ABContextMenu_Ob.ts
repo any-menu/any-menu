@@ -155,7 +155,10 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
           const rect = dom.getBoundingClientRect()
           if (rect.right == 0) return
           // activeAMPanel?.panel_hide(undefined)
-          activeAMPanel?.panel_show({ x:rect.right, y:rect.top }, ['menu'])
+          activeAMPanel?.panel_show(
+            { x:rect.right, y:rect.top },
+            // ['toolbar', 'menu'],
+          )
         })
       }
     })

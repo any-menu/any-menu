@@ -143,7 +143,7 @@ export class AMPanel extends AbsAmPanel {
       sub_panels.amToolbar = AMToolbar.factory(this)
     }
     if (!sub_panels.amContextMenu) {
-      sub_panels.amContextMenu = AMContextMenu.factory(this, undefined, sub_panels.amSearch.el_input ?? undefined)
+      sub_panels.amContextMenu = AMContextMenu.factory(this, undefined, sub_panels.amSearch?.el_input ?? undefined)
     }
     if (!sub_panels.amMiniEditor) {
       sub_panels.amMiniEditor = AMMiniEditor.factory(this)
@@ -337,9 +337,12 @@ export class AMPanel extends AbsAmPanel {
       }
     }
 
+    // 自动隐藏的事件监听 - 注册
     // 不要用click，获取的是松开时鼠标下的元素，会很容易误触。因为拖拽时鼠标很容易会出现在元素外部
-    window.addEventListener('mousedown', (ev) => { this.visual_listener_mousedown(ev) })
-    window.addEventListener('keydown', (ev) => { this.visual_listener_keydown(ev) })
+    window.removeEventListener('mousedown', this.visual_listener_mousedown); // 防御性卸载，没注册过也无害
+    window.removeEventListener('keydown', this.visual_listener_keydown);
+    window.addEventListener('mousedown', this.visual_listener_mousedown)
+    window.addEventListener('keydown', this.visual_listener_keydown)
   }
 
   /** 隐藏面板
@@ -352,6 +355,16 @@ export class AMPanel extends AbsAmPanel {
    *   - 无参数 (undefined): 表示隐藏全部。容器隐藏，子面板也全部隐藏
    */
   panel_hide(list?: string[], focusHide: boolean = false) {
+    // 自动隐藏的事件监听 - 取消
+    window.removeEventListener('mousedown', this.visual_listener_mousedown)
+    window.removeEventListener('keydown', this.visual_listener_keydown)
+
+    // 在隐藏状态下调用隐藏方法。obsidian 的 DocumentListeners 会这样触发到。
+    if (this.el.classList.contains('am-hide')) {
+      console.warn('Call the hiding method in the hidden state.')
+      return
+    }
+
     // 置顶状态下
     //   主面板仅可进行主动按钮隐藏。
     //   主面板不能进行自动隐藏，而是改为尝试进行主动失焦 (保持置顶的前提下将焦点返回之前的状态)

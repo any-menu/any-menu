@@ -93,7 +93,13 @@ export class AMSearch extends AbsAmPanel {
     if (this.el_input) this.el_input.value = ''
     if (this.amSuggestion) this.amSuggestion.panel_hide()
 
-    if (this.el) this.el.classList.add('am-hide')
+    // 在隐藏状态下调用隐藏方法。见 MulPanel 对应注释
+    if (this.el.classList.contains('am-hide')) {
+      console.warn('Call the hiding method in the hidden state. [Search panel]')
+      return
+    }
+  
+    this.el.classList.add('am-hide')
     this.el_input?.blur()
 
     // 隐藏后恢复聚焦
