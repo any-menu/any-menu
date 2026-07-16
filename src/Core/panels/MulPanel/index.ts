@@ -539,7 +539,7 @@ export class AMPanel extends AbsAmPanel {
    *   - 点击App窗口以外的地方
    *     - (其他地方负责) 隐藏面板+隐藏窗口
    */
-  visual_listener_mousedown (ev: MouseEvent) {
+  visual_listener_mousedown = (ev: MouseEvent) => { // 箭头写法，以绑定 this，且不临时生成 (避免重复注册)
     if (!(ev.target instanceof Element)) return
 
     // app 版本
@@ -561,7 +561,7 @@ export class AMPanel extends AbsAmPanel {
    * 特殊逻辑: 当输入框聚焦且存在内容时，第一个 Esc 行为由 search 子面板戒断并接管。
    * 仅情况内容而不隐藏面板 (除非两次Esc，一次情况一次退出)
    */
-  visual_listener_keydown (ev: KeyboardEvent) {
+  visual_listener_keydown = (ev: KeyboardEvent) => {
     if (ev.key === 'Escape') {
       ev.preventDefault()
       if (global_setting.platform == 'app') {
