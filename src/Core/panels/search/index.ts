@@ -12,8 +12,6 @@ declare var require: any;
  * 目前仅支持: 静态构建 + 显示/隐藏的策略
  */
 export class AMSearch extends AbsAmPanel {
-  el_parent: HTMLElement | null = null
-  el: HTMLElement
   el_input: HTMLInputElement | null = null
   amSuggestion: AMSuggestion | null = null
 

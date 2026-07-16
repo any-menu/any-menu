@@ -73,7 +73,6 @@ const amPanel_list: AMPanel[] = []
  * - 方向键行为
  */
 export class AMPanel extends AbsAmPanel {
-  public el: HTMLElement
 
   // TODO 这里要重构一下，对于浏览器环境，这里允许有多个。(模拟伪窗口)
   //   而 App 版本，每个进程中这里应只有一个。
