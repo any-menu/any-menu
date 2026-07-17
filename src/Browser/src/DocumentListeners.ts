@@ -43,7 +43,6 @@ export class DocumentListeners {
   private previewSelection: Selection | null = null;
 
   constructor(
-    private plugin: Plugin
   ) {}
 
   public register() {
@@ -172,7 +171,7 @@ export class DocumentListeners {
     // 任意元素选中
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = document.getSelection()
-    if (!selection || selection.isCollapsed) {
+    if (!selection || !selection.isCollapsed || selection.toString() === '') {
       this.previewSelection = null
       return
     }
@@ -235,5 +234,9 @@ function getSelection_editor(): string|null {
 function getCursorInfo(): {
   pos: {left: number, top: number, right: number, bottom: number}
 } | void {
-  return
+  return {
+    pos: {
+      left: 200, top: 200, right: 400, bottom: 400
+    }
+  }
 }

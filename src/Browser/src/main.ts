@@ -5,6 +5,7 @@ import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '@/Core/initTool'
 import { EditorTools, initApi, initApi_with_server } from './utils/initApi'
+import { DocumentListeners } from './DocumentListeners'
 
 // #region 启动时阅读配置文件
 
@@ -39,6 +40,30 @@ window.addEventListener("DOMContentLoaded", async () => {
   //     }, 200)
   //   })
   // }
+  const documentListeners = new DocumentListeners()
+  documentListeners.register() // 也不用去 unregister 了，持续到页面销毁
+
+  // 展开面板按钮
+  {
+    const btn = document.createElement('button'); main_el.appendChild(btn);
+      btn.innerText = 'Test, show panel'
+      btn.classList.add('am-browser-debug-btn')
+
+      // 非失焦的按钮行为
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // 阻止默认行为（阻止按钮获取焦点）
+        e.stopPropagation();
+        // 手动创建一个 click 事件并立即派发 (触发click但不触发焦点改变)
+        btn.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        }));
+      });
+      btn.onclick = () => {
+        activeAMPanel?.panel_show({x: 30, y: 200})
+      }
+  }
 
   // 文本框
   let textarea: HTMLTextAreaElement
@@ -50,27 +75,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     textarea.onblur = () => {
       EditorTools.saveCurrentCursor(textarea)
     }
-  }
-
-  // 展开面板按钮
-  {
-    const btn = document.createElement('button'); main_el.appendChild(btn);
-      btn.innerText = 'Test, show panel'
-      btn.classList.add('am-browser-debug-btn')
-
-      // 非失焦的按钮行为
-      btn.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // 阻止默认行为（阻止按钮获取焦点）
-        // 手动创建一个 click 事件并立即派发 (触发click但不触发焦点改变)
-        btn.dispatchEvent(new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        }));
-      });
-      btn.onclick = () => {
-        activeAMPanel?.panel_show({x: 30, y: 200})
-      }
   }
 
   // initMenu

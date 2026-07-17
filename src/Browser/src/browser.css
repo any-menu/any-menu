@@ -17,6 +17,7 @@
 #main.browser-app {
   display: flex;
   flex-direction: column;
+  gap: 20px;
   padding: 20px;
 
   .am-browser-debug-textarea {
@@ -31,7 +32,6 @@
 
   .am-browser-debug-btn {
     height: 34px;
-    margin-top: 20px;
     background: var(--am-bg-color);
     color: var(--am-text-color);
     border: solid 1px var(--am-bd-color);
@@ -40,7 +40,6 @@
 
   .am-config {
     flex-basis: 100%;
-    margin-top: 20px;
   }
 
   .am-browser-debug-textarea,
