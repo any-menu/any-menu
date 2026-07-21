@@ -5,7 +5,7 @@ import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '@/Core/initTool'
 import { EditorTools, initApi, initApi_with_server } from './utils/initApi'
-import { DocumentListeners } from './DocumentListeners'
+import { DocumentListeners } from './panels/DocumentListeners'
 
 // #region 启动时阅读配置文件
 

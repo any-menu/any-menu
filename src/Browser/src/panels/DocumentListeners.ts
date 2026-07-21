@@ -27,6 +27,7 @@
 
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
+import { getCursorInfo } from "./cursorInfo"
 
 export class DocumentListeners {
 
@@ -201,8 +202,11 @@ export class DocumentListeners {
 
     async function show_panel_auto (panel_list?: string[], is_focus?: boolean) {
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo()
-      if (!cursorInfo) return
+      const cursorInfo =getCursorInfo()
+      if (!cursorInfo) {
+        console.warn('获取光标位置失败')
+        return
+      }
       const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.top }
 
       // 2. 光标修正 - 屏幕尺寸
@@ -228,15 +232,4 @@ export class DocumentListeners {
 // 只匹配某些 class 中/编辑模式下的选中项
 function getSelection_editor(): string|null {
   return 'flag_getSelection_editor'
-}
-
-/** 获取游标和选区位置，还有对一些信息的采集 */
-function getCursorInfo(): {
-  pos: {left: number, top: number, right: number, bottom: number}
-} | void {
-  return {
-    pos: {
-      left: 200, top: 200, right: 400, bottom: 400
-    }
-  }
 }
