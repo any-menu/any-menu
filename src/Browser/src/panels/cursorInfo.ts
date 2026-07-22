@@ -50,7 +50,6 @@ function getSelectionRect(): {
   const activeEl = document.activeElement;
   if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
     const ret = getSelectionRect_in_inputEl(activeEl)
-    console.log('光标位置2', ret)
     return ret
   }
 
@@ -58,16 +57,19 @@ function getSelectionRect(): {
 }
 
 /**
- * 通过镜像法获取 <input> / <textarea> 光标的坐标
+ * 通过镜像法获取 `<input>` / `<textarea>` 光标的坐标
  */
 function getSelectionRect_in_inputEl(
   input: HTMLInputElement | HTMLTextAreaElement
 ): { left: number; top: number; right: number; bottom: number } | null {
-  // 创建一个隐藏的镜像元素，用于计算文本偏移
-  const mirror = document.createElement('div');
-  const style = window.getComputedStyle(input);
+  // 1. 准备 - 创建一个隐藏的镜像元素，用于计算文本偏移
+  const input_p = input.parentNode
+  if (!input_p) return null
+  const textareaRect = input.getBoundingClientRect(); // 必须在插入镜像元素前获取，避免触发 "Forced Synchronous Layout"
+  const mirror = document.createElement('div'); input_p.insertBefore(mirror, input) // input el 前插入 mirror
 
-  // 复制所有影响文本排布的样式（列表可根据需要扩展）
+  // 2.1. 保持一致性 - 复制所有影响文本排布的样式（列表可根据需要扩展）
+  const style = window.getComputedStyle(input);
   const copyStyles = [
     'font-family', 'font-size', 'font-style', 'font-weight', 'font-variant',
     'letter-spacing', 'word-spacing', 'text-transform', 'text-indent',
@@ -75,27 +77,40 @@ function getSelectionRect_in_inputEl(
     'box-sizing', 'width', 'padding', 'border',
     'line-height', 'text-align',
   ];
-
   for (const prop of copyStyles) {
     (mirror.style as any)[prop] = style.getPropertyValue(prop);
   }
-  // 对于 textarea，需要支持换行
-  mirror.style.position = 'absolute';
+
+  // 2.2. 保持一致性 - 保证文本换行、溢出等行为
   mirror.style.visibility = 'hidden';
-  mirror.style.whiteSpace = 'pre-wrap'; // 保留换行
   mirror.style.overflow = 'hidden';
-  // 确保不影响页面布局
-  mirror.style.top = '0';
-  mirror.style.left = '0';
-  mirror.style.width = style.width; // 与输入框等宽（尤其对 textarea 重要）
-  document.body.appendChild(mirror);
+  mirror.style.whiteSpace = 'pre-wrap';
+  mirror.style.pointerEvents = 'none'; // 避免遮挡操作
 
-  // 获取光标位置
-  const start = input.selectionStart ?? 0;
-  // 取光标前的文本，并在末尾插入零宽标记 <span>
-  const textBefore = input.value.substring(0, start);
-  const textAfter = input.value.substring(start);
+  // 2.3. 保持一致性 - 一些非 css 属性，如视觉尺寸和位置等
+  mirror.style.position = 'fixed'; // 必须先 fixed
+  mirror.style.width = textareaRect.width + 'px';
+  mirror.style.height = textareaRect.height + 'px';
+  mirror.style.top = textareaRect.top + 'px';
+  mirror.style.left = textareaRect.left + 'px';
+  // mirror.style.bottom = textareaRect.bottom + 'px';
+  // mirror.style.right = textareaRect.right + 'px';
 
+  // 2.4. 保持一致性 - (特殊) 可观察性
+  const debug = true // debug 可能需要临时查看镜像元素，否则该元素通常是隐藏的
+  if (debug) { // 处理 debug 与正常模式的显示差异
+    mirror.style.visibility = 'visible'; // 覆盖之前的
+    mirror.style.opacity = '0.6';
+    mirror.style.zIndex = '99999';
+    mirror.style.backgroundColor = 'white'; // 颜色区分一下
+    mirror.style.color = 'black';
+    mirror.style.borderColor = 'red';
+  }
+
+  // 3. 获取光标位置
+  const start = input.selectionStart ?? 0
+  const textBefore = input.value.substring(0, start) // 取光标前的文本，并在末尾插入零宽标记 <span>
+  const textAfter = input.value.substring(start)
   // 将换行符转换为 <br>，以保证 textarea 换行正确
   mirror.innerHTML = escapeHtml(textBefore) + '<span id="mirror-caret">&#x200B;</span>' + escapeHtml(textAfter);
   const caretSpan = mirror.querySelector('#mirror-caret') as HTMLSpanElement;
@@ -120,8 +135,18 @@ function getSelectionRect_in_inputEl(
     height = inputRect.height;
   }
 
-  // 清理镜像
-  document.body.removeChild(mirror);
+  // 4. 结束 - 清理镜像
+  if (!debug) {
+    mirror.remove()
+  }
+
+  console.log('光标位置2', 'target', input, 'inputRect', textareaRect, 'pos', {
+    left,
+    top,
+    right: left,
+    bottom: top + height,
+  }
+  )
 
   return {
     left,
