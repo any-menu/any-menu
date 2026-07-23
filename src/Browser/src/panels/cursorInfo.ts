@@ -22,38 +22,32 @@ export function getCursorInfo(): {
 function getSelectionRect(): {
   left: number; top: number; right: number; bottom: number
 } | null {
-  // 1) 优先尝试标准 Selection / Range API
-  const selection = window.getSelection();
-  if (selection && selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    if (range) {
-      const rect = range.getBoundingClientRect();
-      // 即使是折叠选区，rect 也有有效的 left/top 值
-      if (rect) {
-        console.log('光标位置1', {
-          left: rect.left,
-          top: rect.top,
-          right: rect.right,
-          bottom: rect.bottom,
-        })
-        return {
-          left: rect.left,
-          top: rect.top,
-          right: rect.right,
-          bottom: rect.bottom,
-        };
-      }
-    }
-  }
-
-  // 2) 降级：处理原生 `<input>` 或 `<textarea>`
+  // 处理原生 `<input>` 或 `<textarea>` 的选中文本
   const activeEl = document.activeElement;
   if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
     const ret = getSelectionRect_in_inputEl(activeEl)
     return ret
   }
 
-  return null;
+  // 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
+  const selection = window.getSelection()
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0)
+    if (range) {
+      const rect = range.getBoundingClientRect()
+      // 即使是折叠选区，rect 也有有效的 left/top 值
+      if (rect) {
+        return {
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+        }
+      }
+    }
+  }
+
+  return null
 }
 
 /**
@@ -68,7 +62,7 @@ function getSelectionRect_in_inputEl(
   const textareaRect = input.getBoundingClientRect(); // 必须在插入镜像元素前获取，避免触发 "Forced Synchronous Layout"
   const is_debug_mirror = false // 仅开始时使用。可能需要临时查看镜像元素，否则该元素通常是隐藏的
   if (is_debug_mirror) {
-    document.querySelectorAll('.am-mirror-temp').forEach(el => el.remove());
+    document.querySelectorAll('.am-mirror-temp').forEach(el => el.remove())
   }
   const mirror = document.createElement('div'); input_p.insertBefore(mirror, input) // input el 前插入 mirror
     mirror.classList.add('am-mirror-temp')
@@ -100,8 +94,8 @@ function getSelectionRect_in_inputEl(
   mirror.style.boxSizing = 'border-box'
   mirror.style.width = textareaRect.width + 'px';
   mirror.style.height = textareaRect.height + 'px';
-  mirror.style.top = textareaRect.top + 'px';
-  mirror.style.left = textareaRect.left + 'px';
+  mirror.style.top = textareaRect.top - input.scrollTop + 'px';
+  mirror.style.left = textareaRect.left - input.scrollLeft + 'px';
   // mirror.style.bottom = textareaRect.bottom + 'px';
   // mirror.style.right = textareaRect.right + 'px';
 
@@ -115,46 +109,35 @@ function getSelectionRect_in_inputEl(
     mirror.style.borderColor = 'red';
   }
 
-  // 3. 获取光标位置
+  // 3. 插入光标标志符，并获取位置
   const start = input.selectionStart ?? 0
-  const textBefore = input.value.substring(0, start) // 取光标前的文本，并在末尾插入零宽标记 <span>
+  const textBefore = input.value.substring(0, start) // 取光标前的文本，并在末尾插入零宽标记元素
   const textAfter = input.value.substring(start)
-  // 将换行符转换为 <br>，以保证 textarea 换行正确
-  mirror.innerHTML = escapeHtml(textBefore) + '<span id="mirror-caret">&#x200B;</span>' + escapeHtml(textAfter);
-  const caretSpan = mirror.querySelector('#mirror-caret') as HTMLSpanElement;
+  mirror.innerHTML = escapeHtml(textBefore) + '<span id="mirror-caret">&#x200B;</span>' + escapeHtml(textAfter)
+  const caretSpan = mirror.querySelector('#mirror-caret') as HTMLSpanElement
 
-  let left = 0, top = 0, height = 0;
+  let left = 0, top = 0, height = 0
   if (caretSpan) {
-    const spanRect = caretSpan.getBoundingClientRect();
-    const inputRect = input.getBoundingClientRect();
+    const caretRect = caretSpan.getBoundingClientRect()
 
-    // 相对输入框左上角的偏移
-    const offsetLeft = spanRect.left - inputRect.left;
-    const offsetTop = spanRect.top - inputRect.top;
+    // 其中 scroll 值和 textareaRect 偏移，都已放在 mirror el 上了，这里就不用再算那些偏移了
+    // console.log('debug 情况 x', caretRect.left, textareaRect.left, input.scrollLeft)
+    // console.log('debug 情况 y', caretRect.top, textareaRect.top, input.scrollTop)
 
-    left = inputRect.left + offsetLeft;
-    top = inputRect.top + offsetTop;
-    height = spanRect.height || parseFloat(style.lineHeight) || parseFloat(style.fontSize) || 16;
-  } else {
-    // 极低概率未找到，直接返回输入框左上角
-    const inputRect = input.getBoundingClientRect();
-    left = inputRect.left;
-    top = inputRect.top;
-    height = inputRect.height;
+    left = caretRect.left
+    top = caretRect.top
+    height = caretRect.height || parseFloat(style.lineHeight) || parseFloat(style.fontSize) || 16
+  }
+  else { // 理论上不会走这里。如是，则直接返回输入框左上角
+    left = textareaRect.left
+    top = textareaRect.top
+    height = textareaRect.height
   }
 
   // 4. 结束 - 清理镜像
   if (!is_debug_mirror) {
     mirror.remove()
   }
-
-  console.log('光标位置2', 'target', input, 'inputRect', textareaRect, 'pos', {
-    left,
-    top,
-    right: left,
-    bottom: top + height,
-  }
-  )
 
   return {
     left,
@@ -163,7 +146,9 @@ function getSelectionRect_in_inputEl(
     bottom: top + height,
   };
 
-  /** 简单的 HTML 转义，防止 XSS 和内容干扰 */
+  /** 简单的 HTML 转义，防止 XSS 和内容干扰
+   * 例如将换行符转换为 <br>，以保证 textarea 换行正确
+   */
   function escapeHtml(str: string): string {
     return str
       .replace(/&/g, '&amp;')
