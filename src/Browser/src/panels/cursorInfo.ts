@@ -109,30 +109,45 @@ function getSelectionRect_in_inputEl(
     mirror.style.borderColor = 'red';
   }
 
-  // 3. 插入光标标志符，并获取位置
-  const start = input.selectionStart ?? 0
-  const textBefore = input.value.substring(0, start) // 取光标前的文本，并在末尾插入零宽标记元素
-  const textAfter = input.value.substring(start)
-  mirror.innerHTML = escapeHtml(textBefore) + '<span id="mirror-caret">&#x200B;</span>' + escapeHtml(textAfter)
+  // 3.1. 插入光标标志符。拆分为 `前文本 前插入标识 选择文本 后插入标识 后文本` 五个节点
+  const startNum = input.selectionStart ?? 0
+  const endNum = input.selectionEnd ?? 0
+  const textBefore = input.value.substring(0, startNum)
+  const textMid = input.value.substring(startNum, endNum)
+  const textAfter = input.value.substring(endNum)
+  mirror.innerHTML = escapeHtml(textBefore) +
+    '<span id="mirror-caret">&#x200B;</span>' +
+    escapeHtml(textMid) +
+    '<span id="mirror-caret-end">&#x200B;</span>' +
+    escapeHtml(textAfter)
   const caretSpan = mirror.querySelector('#mirror-caret') as HTMLSpanElement
+  const caretSpanEnd = mirror.querySelector('#mirror-caret-end') as HTMLSpanElement
+  if (!caretSpan || !caretSpanEnd) { // 理论上不会走这里。如是，则直接返回输入框矩形
+    const left = textareaRect.left
+    const right = textareaRect.right
+    const top = textareaRect.top
+    const height = textareaRect.height
 
-  let left = 0, top = 0, height = 0
-  if (caretSpan) {
-    const caretRect = caretSpan.getBoundingClientRect()
-
-    // 其中 scroll 值和 textareaRect 偏移，都已放在 mirror el 上了，这里就不用再算那些偏移了
-    // console.log('debug 情况 x', caretRect.left, textareaRect.left, input.scrollLeft)
-    // console.log('debug 情况 y', caretRect.top, textareaRect.top, input.scrollTop)
-
-    left = caretRect.left
-    top = caretRect.top
-    height = caretRect.height || parseFloat(style.lineHeight) || parseFloat(style.fontSize) || 16
+    mirror.remove()
+    return {
+      left,
+      top,
+      right: right,
+      bottom: top + height,
+    }
   }
-  else { // 理论上不会走这里。如是，则直接返回输入框左上角
-    left = textareaRect.left
-    top = textareaRect.top
-    height = textareaRect.height
-  }
+
+  // 3.2. 获取插入的光标标志符位置
+  // 其中 scroll 值和 textareaRect 偏移，都已放在 mirror el 上了，这里就不用再算那些偏移了
+  let left = 0, right = 0, top = 0, height = 0
+  const caretRect = caretSpan.getBoundingClientRect()
+  const caretRectEnd = caretSpanEnd.getBoundingClientRect()
+  left = caretRect.left
+  right = caretRectEnd.right
+  top = caretRect.top
+  height = caretRect.height || parseFloat(style.lineHeight) || parseFloat(style.fontSize) || 16
+  // console.log('debug 情况 x', caretRect.left, textareaRect.left, input.scrollLeft)
+  // console.log('debug 情况 y', caretRect.top, textareaRect.top, input.scrollTop)
 
   // 4. 结束 - 清理镜像
   if (!is_debug_mirror) {
@@ -142,9 +157,9 @@ function getSelectionRect_in_inputEl(
   return {
     left,
     top,
-    right: left,   // 光标宽度为 0
+    right,
     bottom: top + height,
-  };
+  }
 
   /** 简单的 HTML 转义，防止 XSS 和内容干扰
    * 例如将换行符转换为 <br>，以保证 textarea 换行正确
