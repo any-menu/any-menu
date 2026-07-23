@@ -66,7 +66,12 @@ function getSelectionRect_in_inputEl(
   const input_p = input.parentNode
   if (!input_p) return null
   const textareaRect = input.getBoundingClientRect(); // 必须在插入镜像元素前获取，避免触发 "Forced Synchronous Layout"
+  const is_debug_mirror = false // 仅开始时使用。可能需要临时查看镜像元素，否则该元素通常是隐藏的
+  if (is_debug_mirror) {
+    document.querySelectorAll('.am-mirror-temp').forEach(el => el.remove());
+  }
   const mirror = document.createElement('div'); input_p.insertBefore(mirror, input) // input el 前插入 mirror
+    mirror.classList.add('am-mirror-temp')
 
   // 2.1. 保持一致性 - 复制所有影响文本排布的样式（列表可根据需要扩展）
   const style = window.getComputedStyle(input);
@@ -74,8 +79,11 @@ function getSelectionRect_in_inputEl(
     'font-family', 'font-size', 'font-style', 'font-weight', 'font-variant',
     'letter-spacing', 'word-spacing', 'text-transform', 'text-indent',
     'white-space', 'word-wrap', 'overflow-wrap',
-    'box-sizing', 'width', 'padding', 'border',
+    'padding', 'border',
     'line-height', 'text-align',
+    // 后面定位时使用的 getBoundingClientRect 是 border-box 模型，这里可以与原来的不同
+    // 所以这些属性虽然影响排布，但也不同步：
+    // 'box-sizing', 'width',
   ];
   for (const prop of copyStyles) {
     (mirror.style as any)[prop] = style.getPropertyValue(prop);
@@ -89,6 +97,7 @@ function getSelectionRect_in_inputEl(
 
   // 2.3. 保持一致性 - 一些非 css 属性，如视觉尺寸和位置等
   mirror.style.position = 'fixed'; // 必须先 fixed
+  mirror.style.boxSizing = 'border-box'
   mirror.style.width = textareaRect.width + 'px';
   mirror.style.height = textareaRect.height + 'px';
   mirror.style.top = textareaRect.top + 'px';
@@ -97,10 +106,9 @@ function getSelectionRect_in_inputEl(
   // mirror.style.right = textareaRect.right + 'px';
 
   // 2.4. 保持一致性 - (特殊) 可观察性
-  const debug = true // debug 可能需要临时查看镜像元素，否则该元素通常是隐藏的
-  if (debug) { // 处理 debug 与正常模式的显示差异
+  if (is_debug_mirror) { // 处理 debug 与正常模式的显示差异
     mirror.style.visibility = 'visible'; // 覆盖之前的
-    mirror.style.opacity = '0.6';
+    mirror.style.opacity = '0.2';
     mirror.style.zIndex = '99999';
     mirror.style.backgroundColor = 'white'; // 颜色区分一下
     mirror.style.color = 'black';
@@ -136,7 +144,7 @@ function getSelectionRect_in_inputEl(
   }
 
   // 4. 结束 - 清理镜像
-  if (!debug) {
+  if (!is_debug_mirror) {
     mirror.remove()
   }
 
