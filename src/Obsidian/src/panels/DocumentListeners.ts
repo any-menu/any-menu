@@ -63,7 +63,10 @@ export class DocumentListeners extends DocumentListeners_ {
   }
 
   protected override updateSelectedText() {
-    // 只匹配某些 class 中/编辑模式下的选中项
+    // 1. 排除 - 不匹配在弹出的工具栏/菜单上的选中行为
+    if (DocumentListeners_.get_isInPanel()) return
+
+    // 2. 排除 - 只匹配某些 class 中/编辑模式下的选中项
     const selectedText = getSelection_editor(this.plugin)
     if (!selectedText) {
       this.previewSelection = null

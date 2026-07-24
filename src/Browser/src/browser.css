@@ -38,6 +38,10 @@
     box-shadow: none;
   }
 
+  .am-browser-debug-info {
+    white-space: pre-wrap;
+  }
+
   .am-config {
     flex-basis: 100%;
   }

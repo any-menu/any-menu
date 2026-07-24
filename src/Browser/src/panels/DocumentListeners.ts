@@ -94,26 +94,30 @@ export class DocumentListeners {
   }
 
   /** 键盘抬起事件 */
-  onKeyUp = (ev: KeyboardEvent) => {
+  onKeyUp = (event: KeyboardEvent) => {
     // this.isKeyboardSelection = true; this.isMouseSelecting = false; // 注释，只记录该松开行为的上一个操作
     this.isMouseDown = false;
 
-    if (ev.key === 'Shift' || ev.key === 'Alt') { // shift+鼠标/键盘，以及alt+鼠标都可以连选
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('.am-panel')) return
+    if (event.key === 'Shift' || event.key === 'Alt') { // shift+鼠标/键盘，以及alt+鼠标都可以连选
       // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
       if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
   }
 
   /** 鼠标双击选择 */
-  onDoubleClick = async (_event: MouseEvent) => {
+  onDoubleClick = async (event: MouseEvent) => {
     this.isKeyboardSelection = false; this.isMouseSelecting = true;
 
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('.am-panel')) return
     // 选区改变事件是异步的，可能发生在双击行为之后
     window.setTimeout(() => void this.showPanel(), 10);
   }
 
   /** 鼠标按下事件 */
-  onMouseDown = (ev: MouseEvent) => {
+  onMouseDown = (event: MouseEvent) => {
     // // 在底部工具栏中，当点击项目时防止手机导航栏出现
     // if (Platform.isPhone && this.ntb.render.phoneTbarPosition === PositionType.Bottom) {
     //   const target = event.target as HTMLElement;
@@ -126,8 +130,8 @@ export class DocumentListeners {
 
     // if (ev.altKey == true && ev.button === 0) return // 目前是选择结束而非过程弹出，故连选过程也先取消
     // 面板上工作，不管
-    if (!(ev.target instanceof Element)) return
-    if (ev.target.matches('.am-panel *')) return
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('.am-panel')) return
     activeAMPanel?.panel_hide([])
   }
 
@@ -135,12 +139,15 @@ export class DocumentListeners {
    * 鼠标松开事件
    * 我们还监听文档以捕获编辑器之外的鼠标释放
    */
-  onMouseUp = async (_event: MouseEvent) => {
+  onMouseUp = async (event: MouseEvent) => {
     // this.isKeyboardSelection = false; this.isMouseSelecting = true; // 注释，只记录该松开行为的上一个操作
     this.isMouseDown = false;
 
     if (!global_setting.config.auto_show_toolbar_on_select) return
     if (!this.previewSelection) return
+
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('.am-panel')) return
     // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
     if (this.isMouseSelecting) window.setTimeout(() => void this.showPanel(), 10);
 
@@ -162,27 +169,43 @@ export class DocumentListeners {
    * 
    * 使用在预览模式或 Markdown 嵌入中选择的任何文本更新局部变量
    */
-  onSelectionChange = (_event: unknown) => {
+  onSelectionChange = (_event: Event) => {
     this.updateSelectedText()
   }
 
+  /** 智能更新选区
+   * 
+   * ## 智能更新规则：
+   * 
+   * 避免在弹出面板中的选区行为，去影响本来在编辑器区域中的选区事件
+   * 主要有两个判断:
+   * 1. 判断选区变更时，是否在弹出面板对应的 class 内
+   * 2. (可选) 判断选区变更时是否在编辑器对应的 class 内
+   * 
+   * ## 注意
+   * 
+   * 此处暂时不更新到 global_setting.state.selectedText 中
+   * 原因是还没解决聚焦到 am-panel 上导致原元素上的选择状态变为空的情况
+   */
   protected updateSelectedText() {
-    // 只匹配某些 class 中/编辑模式下的选中项
+    // 1. 排除 - 不匹配在弹出的工具栏/菜单上的选中行为
+    if (DocumentListeners.get_isInPanel()) return
+
+    // 2. 排除 - 只匹配某些 class 中/编辑模式下的选中项
     const selectedText = getSelection_editor()
     if (!selectedText) {
-      this.previewSelection = null
       return
     }
 
-    // 任意元素选中
+    // 3. 任意元素选中，更新当前的选中状态
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = document.getSelection()
     if (!selection || !selection.isCollapsed || selection.toString() === '') {
-      this.previewSelection = null
+      this.previewSelection = null; // global_setting.state.selectedText = undefined;
       return
     }
 
-    this.previewSelection = selection
+    this.previewSelection = selection; // global_setting.state.selectedText = selection.toString();
   }
 
   /**
@@ -232,7 +255,33 @@ export class DocumentListeners {
       activeAMPanel?.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus, true)
     }
   }
+
+  // 无法判断也返回 false
+  static get_isInPanel(): boolean {
+    const selection = document.getSelection();
+    const target_class = 'am-panel'
+
+    // 有选区时，取选区所在容器判断
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      const node = range.commonAncestorContainer
+      const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element)
+      if (!el) return false
+      return el.closest(`.${target_class}`) !== null
+    }
+    // 无选区时（例如单纯聚焦），检查当前活动元素
+    else {
+      const el = document.activeElement;
+      if (el) {
+        return el.closest(`.${target_class}`) !== null
+      }
+    }
+
+    return false
+  }
 }
+
+
 
 // 只匹配某些 class 中/编辑模式下的选中项
 function getSelection_editor(): string|null {

@@ -77,6 +77,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // debug 信息面板
+  {
+    const info_el = document.createElement('div'); main_el.appendChild(info_el);
+      info_el.classList.add('am-browser-debug-info')
+    setInterval(() => {
+      info_el.textContent = JSON.stringify(global_setting.state, null, 2)
+    }, 500)
+  }
+
   // initMenu
   {
     // 搜索框和多级菜单 - 元素
