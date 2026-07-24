@@ -9,10 +9,6 @@ importers:
   .: {}
 
   src/Browser:
-    dependencies:
-      '@editableblock/textarea':
-        specifier: 1.0.1-beta37
-        version: 1.0.1-beta37
     devDependencies:
       copyfiles:
         specifier: ^2.4.1
@@ -208,9 +204,6 @@ packages:
 
   '@editableblock/textarea@1.0.1-beta35':
     resolution: {integrity: sha512-4X4FT6lIjz1pXW4+A9HPEg7ZpkBxXjRiMTDdhgVs+nnkJgT7vAMLSBRqsFvI9hqSZedgguRnX946sOxegSwO5w==}
-
-  '@editableblock/textarea@1.0.1-beta37':
-    resolution: {integrity: sha512-mxaz8BIeFLWKBhyj9fvpVyfL09Qsvdd9pObxxIxU+NsO4wNqu2xhgvTyBUEYgx2wVyE6qmS25mCN7PHHJ/g1og==}
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -2907,8 +2900,6 @@ snapshots:
   '@editableblock/core@1.0.1-beta40': {}
 
   '@editableblock/textarea@1.0.1-beta35': {}
-
-  '@editableblock/textarea@1.0.1-beta37': {}
 
   '@emnapi/core@1.11.1':
     dependencies:

@@ -29,30 +29,20 @@
  * TODO 封装一个基础类，然后 Obsidian、浏览器版等再派生具体差异实现
  */
 
-import { global_setting } from "@/Core/shared/setting"
-import { getCursorInfo } from "."
-import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
+import { global_setting } from "@/Core/shared/setting"
+import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
+import { DocumentListeners as DocumentListeners_ } from "@/Browser/src/panels/DocumentListeners"
+import { getCursorInfo } from "."
 
-export class DocumentListeners {
-
-  public isContextOpening: boolean = false;     // 菜单展开状态
-  public isKeyboardSelection: boolean = false;  // 键盘选择状态 (互斥a)，上次的按下键是键盘键
-  public isMouseSelecting: boolean = false;     // 鼠标选择状态 (互斥a)，上次的按下键是鼠标键
-  public isMouseDown: boolean = false;          // 鼠标按下状态 (仅用于标注拖拽行为)
-
-	// 跟踪指针位置，用于放置用户界面元素
-	public pointerX: number = 0;
-	public pointerY: number = 0;
-
-  // 当前文本选择
-  private previewSelection: Selection | null = null;
-
+export class DocumentListeners extends DocumentListeners_ {
   constructor(
     private plugin: Plugin
-  ) {}
+  ) {
+    super()
+  }
 
-  public register() {
+  public override register() {
     if (!global_setting.config.auto_show_toolbar_on_select) return
 
     // [!code hl] obsidian 专属版本
@@ -66,105 +56,13 @@ export class DocumentListeners {
     this.plugin.registerDomEvent(activeDocument, 'selectionchange', this.onSelectionChange);
   }
 
-  public unregister() {
+  public override unregister() {
     // [!code hl] obsidian 专属版本
     // 无实现
     // obsidian 的 `registerDomEvent` 相较于原生的 `addEventListener`，可以在插件卸载时自动取消注册
   }
 
-  /** 右键/上下文菜单展开事件 */
-  onContextMenu = () => {
-    this.isContextOpening = true;
-  }
-
-  /** 键盘按下事件 */
-  onKeyDown = (ev: KeyboardEvent) => {
-    this.isKeyboardSelection = true; this.isMouseSelecting = false;
-    this.isMouseDown = false;
-
-    // 按 Esc，无论是否在面板上按，都隐藏
-    if (ev.key === 'Escape') {
-      activeAMPanel?.panel_hide([])
-      return
-    }
-
-    // if (ev.shiftKey == true || altKey) return // 目前是选择结束而非过程弹出，故连选过程也先取消
-    // 面板上工作，不管
-    if (!(ev.target instanceof Element)) return
-    if (ev.target.matches('.am-panel *')) return
-    activeAMPanel?.panel_hide([])
-  }
-
-  /** 键盘抬起事件 */
-  onKeyUp = (ev: KeyboardEvent) => {
-    // this.isKeyboardSelection = true; this.isMouseSelecting = false; // 注释，只记录该松开行为的上一个操作
-    this.isMouseDown = false;
-
-    if (ev.key === 'Shift' || ev.key === 'Alt') { // shift+鼠标/键盘，以及alt+鼠标都可以连选
-      // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
-      if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
-    }
-  }
-
-  /** 通过双击选择 */
-  onDoubleClick = async (_event: MouseEvent) => {
-    this.isKeyboardSelection = false; this.isMouseSelecting = true;
-
-    // 选区改变事件是异步的，可能发生在双击行为之后
-    window.setTimeout(() => void this.showPanel(), 10);
-  }
-
-  /** 鼠标按下事件 */
-  onMouseDown = (ev: MouseEvent) => {
-    // // 在底部工具栏中，当点击项目时防止手机导航栏出现
-    // if (Platform.isPhone && this.ntb.render.phoneTbarPosition === PositionType.Bottom) {
-    //   const target = event.target as HTMLElement;
-    //   const isToolbar = (target.closest('.cg-note-toolbar-container') !== null);
-    //   if (isToolbar) event.stopPropagation();
-    // }
-
-    this.isKeyboardSelection = false; this.isMouseSelecting = true;
-    this.isMouseDown = true;
-
-    // if (ev.altKey == true && ev.button === 0) return // 目前是选择结束而非过程弹出，故连选过程也先取消
-    // 面板上工作，不管
-    if (!(ev.target instanceof Element)) return
-    if (ev.target.matches('.am-panel *')) return
-    activeAMPanel?.panel_hide([])
-  }
-
-  /**
-   * 鼠标松开事件
-   * 我们还监听文档以捕获编辑器之外的鼠标释放
-   */
-  onMouseUp = async (_event: MouseEvent) => {
-    // this.isKeyboardSelection = false; this.isMouseSelecting = true; // 注释，只记录该松开行为的上一个操作
-    this.isMouseDown = false;
-
-    if (!global_setting.config.auto_show_toolbar_on_select) return
-    if (!this.previewSelection) return
-    // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 mouseup 之前触发
-    if (this.isMouseSelecting) window.setTimeout(() => void this.showPanel(), 10);
-
-    this.isMouseSelecting = false;
-  }
-
-  /** 追踪鼠标位置 */
-  onMouseMove = (event: MouseEvent) => {
-    this.pointerX = event.clientX;
-    this.pointerY = event.clientY;
-    if (this.isMouseDown) {
-      this.isKeyboardSelection = false; this.isMouseSelecting = true;
-    }
-  }
-
-  /**
-   * 选择文本改变事件
-   * 跟踪任何文档选择，但仅限于预览模式
-   * 
-   * 使用在预览模式或 Markdown 嵌入中选择的任何文本更新局部变量
-   */
-  onSelectionChange = (_event: unknown) => {
+  protected override updateSelectedText() {
     // 只匹配某些 class 中/编辑模式下的选中项
     const selectedText = getSelection_editor(this.plugin)
     if (!selectedText) {
@@ -193,7 +91,7 @@ export class DocumentListeners {
    * - 必须是非聚焦显示
    * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
    */
-  private async showPanel() {
+  protected override async showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
@@ -210,7 +108,10 @@ export class DocumentListeners {
     async function show_panel_auto (plugin: Plugin, editor: Editor, panel_list?: string[], is_focus?: boolean) {
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo(plugin, editor)
-      if (!cursorInfo) return
+      if (!cursorInfo) {
+        console.warn('获取光标位置失败')
+        return
+      }
       const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.top }
 
       // 2. 光标修正 - 屏幕尺寸

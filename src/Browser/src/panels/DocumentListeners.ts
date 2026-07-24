@@ -41,7 +41,7 @@ export class DocumentListeners {
 	public pointerY: number = 0;
 
   // 当前文本选择
-  private previewSelection: Selection | null = null;
+  protected previewSelection: Selection | null = null;
 
   constructor(
   ) {}
@@ -70,16 +70,9 @@ export class DocumentListeners {
     document.removeEventListener('selectionchange', this.onSelectionChange);
   }
 
+  /** 右键/上下文菜单展开事件 */
   onContextMenu = () => {
     this.isContextOpening = true;
-  }
-
-  /** 通过双击选择 */
-  onDoubleClick = async (_event: MouseEvent) => {
-    this.isKeyboardSelection = false; this.isMouseSelecting = true;
-
-    // 选区改变事件是异步的，可能发生在双击行为之后
-    window.setTimeout(() => void this.showPanel(), 10);
   }
 
   /** 键盘按下事件 */
@@ -109,6 +102,14 @@ export class DocumentListeners {
       // 设置定时器是因为 SelectionChange 事件是异步的，并且可能不会在 keyup 之前触发
       if (this.isKeyboardSelection) window.setTimeout(() => void this.showPanel(), 10);
     }
+  }
+
+  /** 鼠标双击选择 */
+  onDoubleClick = async (_event: MouseEvent) => {
+    this.isKeyboardSelection = false; this.isMouseSelecting = true;
+
+    // 选区改变事件是异步的，可能发生在双击行为之后
+    window.setTimeout(() => void this.showPanel(), 10);
   }
 
   /** 鼠标按下事件 */
@@ -162,6 +163,10 @@ export class DocumentListeners {
    * 使用在预览模式或 Markdown 嵌入中选择的任何文本更新局部变量
    */
   onSelectionChange = (_event: unknown) => {
+    this.updateSelectedText()
+  }
+
+  protected updateSelectedText() {
     // 只匹配某些 class 中/编辑模式下的选中项
     const selectedText = getSelection_editor()
     if (!selectedText) {
@@ -190,7 +195,7 @@ export class DocumentListeners {
    * - 必须是非聚焦显示
    * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
    */
-  private async showPanel() {
+  protected async showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
