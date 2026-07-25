@@ -28,6 +28,7 @@
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
 import { getCursorInfo } from "./cursorInfo"
+import { EditorTools } from "../utils/initApi";
 
 export class DocumentListeners {
 
@@ -200,7 +201,12 @@ export class DocumentListeners {
       return
     }
 
-    // 2. 更新当前的选中状态
+    // 更新当前选中状态 - 光标位置
+    if (el && el instanceof HTMLTextAreaElement) {
+      EditorTools.saveCurrentCursor(el)
+    }
+
+    // 2. 更新当前选中状态 - 选中文本
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = document.getSelection()
     if (!selection || !selection.isCollapsed || selection.toString() === '') { // 无选中

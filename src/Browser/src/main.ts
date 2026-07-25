@@ -72,19 +72,37 @@ window.addEventListener("DOMContentLoaded", async () => {
       textarea.textContent = 'Test, textarea demo.\n'
       textarea.setAttribute('spellcheck', 'false')
       textarea.classList.add('am-browser-debug-textarea')
-    textarea.onblur = () => {
-      EditorTools.saveCurrentCursor(textarea)
-    }
+    // textarea.onblur = () => {
+    //   EditorTools.saveCurrentCursor(textarea)
+    // }
   }
 
   // debug 信息面板
   {
     const info_el = document.createElement('div'); main_el.appendChild(info_el);
       info_el.classList.add('am-browser-debug-info')
+    const info_el_fold = document.createElement('button'); info_el.appendChild(info_el_fold);
+      info_el_fold.classList.add('fold'); info_el_fold.title = 'Fold'; info_el_fold.textContent = '>'
+      let is_fold = false
+      info_el_fold.onclick = () => {
+        is_fold = !is_fold
+        if (is_fold) {
+          info_el_fold.textContent = '<'
+          info_el_title.classList.add('am-hide')
+          info_el_msg.classList.add('am-hide')
+        } else {
+          info_el_fold.textContent = '>'
+          info_el_title.classList.remove('am-hide')
+          info_el_msg.classList.remove('am-hide')
+        }
+      }
+    const info_el_title = document.createElement('h3'); info_el.appendChild(info_el_title);
+      info_el_title.textContent = 'Debug panel'
+    const info_el_msg = document.createElement('div'); info_el.appendChild(info_el_msg);
     setInterval(() => {
-      info_el.textContent = JSON.stringify(global_setting.state, null, 2) +
+      info_el_msg.textContent = JSON.stringify(global_setting.state, null, 2) +
         '\n' +
-        JSON.stringify(EditorTools.savedCursorState, null, 2)
+        JSON.stringify(EditorTools.state, null, 2)
     }, 500)
   }
 

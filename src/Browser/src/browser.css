@@ -39,7 +39,25 @@
   }
 
   .am-browser-debug-info {
+    position: fixed;
+    top: 400px;
+    right: 10px;
+
+    padding: 10px;
+    z-index: 14;
     white-space: pre-wrap;
+    background: var(--am-bg-color);
+    color: var(--am-text-color);
+    border: solid 1px var(--am-bd-color);
+
+    .fold {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    h3 {
+      margin: 0 0 10px;
+    }
   }
 
   .am-config {
@@ -48,6 +66,7 @@
 
   .am-browser-debug-textarea,
   .am-browser-debug-btn,
+  .am-browser-debug-info,
   .am-config {
     border-radius: 10px;
 
