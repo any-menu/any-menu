@@ -82,7 +82,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     const info_el = document.createElement('div'); main_el.appendChild(info_el);
       info_el.classList.add('am-browser-debug-info')
     setInterval(() => {
-      info_el.textContent = JSON.stringify(global_setting.state, null, 2)
+      info_el.textContent = JSON.stringify(global_setting.state, null, 2) +
+        '\n' +
+        JSON.stringify(EditorTools.savedCursorState, null, 2)
     }, 500)
   }
 

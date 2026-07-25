@@ -411,23 +411,25 @@ export namespace EditorTools {
     end: number;
   }
 
-  let savedCursorState: TextInputCursorState | null = null;
+  export let savedCursorState: TextInputCursorState | null = null;
   
-  // 保存光标状态
+  // 保存光标状态 // TODO 应该放到 DocumentListeners.ts 中
   export function saveCurrentCursor(element: HTMLTextAreaElement): void {
     // 选中文本，两方法:
     // - getSelection 版 (当前)
     // - selectionStart 和 selectionEnd 获取版
     //   - 仅表单元素、仅纯文本
-    const selection = window.getSelection()
-    global_setting.state.selectedText = selection?.toString() ?? undefined
+
+    // 不保存选中状态，因为这里是失焦点触发，失焦时选中项会丢失，为空。但我们要保留之前的选中状态
+    // const selection = document.getSelection()
+    // global_setting.state.selectedText = selection?.toString() ?? undefined
 
     // 其他状态
     savedCursorState = {
       element,
       start: element.selectionStart,
       end: element.selectionEnd,
-    };
+    }
   }
 
   // 恢复光标位置

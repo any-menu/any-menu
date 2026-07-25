@@ -188,24 +188,27 @@ export class DocumentListeners {
    * 原因是还没解决聚焦到 am-panel 上导致原元素上的选择状态变为空的情况
    */
   protected updateSelectedText() {
-    // 1. 排除 - 不匹配在弹出的工具栏/菜单上的选中行为
-    if (DocumentListeners.get_isInPanel()) return
+    const el: HTMLElement|null = DocumentListeners.get_selection_el()
 
-    // 2. 排除 - 只匹配某些 class 中/编辑模式下的选中项
-    const selectedText = getSelection_editor()
-    if (!selectedText) {
+    // 1. 排除
+    // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
+    if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+      return
+    }
+    // 1.2. 只匹配某些 class 中/编辑模式下的选中项
+    if (!el) { // 无法获取 el 也认为不在目标元素上
       return
     }
 
-    // 3. 任意元素选中，更新当前的选中状态
+    // 2. 更新当前的选中状态
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = document.getSelection()
-    if (!selection || !selection.isCollapsed || selection.toString() === '') {
-      this.previewSelection = null; // global_setting.state.selectedText = undefined;
-      return
+    if (!selection || !selection.isCollapsed || selection.toString() === '') { // 无选中
+      this.previewSelection = null; global_setting.state.selectedText = undefined;
     }
-
-    this.previewSelection = selection; // global_setting.state.selectedText = selection.toString();
+    else { // 有选中
+      this.previewSelection = selection; global_setting.state.selectedText = selection.toString();
+    }
   }
 
   /**
@@ -256,34 +259,24 @@ export class DocumentListeners {
     }
   }
 
-  // 无法判断也返回 false
-  static get_isInPanel(): boolean {
+  /// 获取选区变化时所在的 el
+  /// 可基于此实现 isInPanel (无法判断也返回 false)
+  static get_selection_el(): HTMLElement | null {
     const selection = document.getSelection();
-    const target_class = 'am-panel'
-
+    
+    // 获取选区变化时的目标元素
+    let el: HTMLElement|null
     // 有选区时，取选区所在容器判断
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0)
       const node = range.commonAncestorContainer
-      const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element)
-      if (!el) return false
-      return el.closest(`.${target_class}`) !== null
+      el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
     }
     // 无选区时（例如单纯聚焦），检查当前活动元素
     else {
-      const el = document.activeElement;
-      if (el) {
-        return el.closest(`.${target_class}`) !== null
-      }
+      el = document.activeElement as (HTMLElement | null);
     }
 
-    return false
+    return el
   }
-}
-
-
-
-// 只匹配某些 class 中/编辑模式下的选中项
-function getSelection_editor(): string|null {
-  return 'flag_getSelection_editor'
 }

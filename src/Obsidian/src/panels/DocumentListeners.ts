@@ -63,25 +63,29 @@ export class DocumentListeners extends DocumentListeners_ {
   }
 
   protected override updateSelectedText() {
-    // 1. 排除 - 不匹配在弹出的工具栏/菜单上的选中行为
-    if (DocumentListeners_.get_isInPanel()) return
-
-    // 2. 排除 - 只匹配某些 class 中/编辑模式下的选中项
+    const el: HTMLElement|null = DocumentListeners_.get_selection_el()
+  
+    // 1. 排除
+    // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
+    if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也为不在 panel 上
+      return
+    }
+    // 1.2. 只匹配某些 class 中/编辑模式下的选中项
     const selectedText = getSelection_editor(this.plugin)
     if (!selectedText) {
       this.previewSelection = null
       return
     }
 
-    // 任意元素选中
+    // 2. 更新当前的选中状态
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = activeDocument.getSelection()
-    if (!selection || selection.isCollapsed || selection.toString() === '') {
-      this.previewSelection = null
-      return
+    if (!selection || selection.isCollapsed || selection.toString() === '') { // 无选中
+      this.previewSelection = null; global_setting.state.selectedText = undefined;
     }
-
-    this.previewSelection = selection
+    else { // 有选中
+      this.previewSelection = selection; global_setting.state.selectedText = selection.toString();
+    }
   }
 
   /**
