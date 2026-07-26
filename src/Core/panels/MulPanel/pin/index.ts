@@ -1,4 +1,4 @@
-import { type AMPanel } from ".."
+import { AMPanel } from ".."
 import { AbsAmPanel } from "../../abs"
 import { global_setting } from "../../../shared/setting"
 
@@ -72,26 +72,17 @@ export class AMPin extends AbsAmPanel {
       let newLeft = startElLeft + dx
       let newTop  = startElTop  + dy
 
-      // 位置校正
-      // 限制在视口范围内，防止面板被拖出屏幕
-      // 26px 是 pin 按钮超出 am-panel 的空间
-      // (二选一) panel 面板完整在屏幕内
-      // const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft
-      // const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
-      // const minLeft = startElOffsetLeft
-      // const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
-      // (二选一) pin 按钮不出屏幕。面板本体可以允许被拖出
-      const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft // 左上同
-      const maxTop  = (window.innerHeight - 26) + startElOffsetTop
-      const minLeft = startElOffsetLeft - startElWidth
-      const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0) // 左上同
-
-      newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft))
-      newTop  = Math.max(minTop, Math.min(newTop,  maxTop))
+      // 位置纠正
+      const ret = AMPanel.fix_position_when_move(
+        startElWidth,
+        startElOffsetLeft,
+        startElOffsetTop,
+        {left: newLeft, top: newTop},
+      )
 
       // 应用新值
-      panelEl.style.left = `${newLeft}px`
-      panelEl.style.top  = `${newTop}px`
+      panelEl.style.left = `${ret.left}px`
+      panelEl.style.top  = `${ret.top}px`
     }
 
     // 鼠标抬起

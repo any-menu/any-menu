@@ -54,6 +54,9 @@
       position: absolute;
       right: 0;
       top: 0;
+      background: var(--am-bg-color);
+      color: var(--am-text-color);
+      border: solid 1px var(--am-bd-color);
     }
     h3 {
       margin: 0 0 10px;

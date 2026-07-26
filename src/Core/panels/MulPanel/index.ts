@@ -642,6 +642,15 @@ export class AMPanel extends AbsAmPanel {
   }
 
   /** 用屏幕/窗口大小位置纠正光标位置
+   * 
+   * 两个作用：
+   * 1. 显示时位置校正:
+   *    如果靠近边缘则靠边显示/反向显示，避免部分内容显示溢出屏幕。
+   *    尺寸获取稍复杂，需要估算和缓存。
+   * 2. 拖拽时位置校正:
+   *    限制拖拽范围，避免拖拽到屏幕外。
+   *    尺寸获取简单，直接获取当前面板的尺寸即可。
+   * 
    * @param screen_size 屏幕/窗口大小
    * @param panel_size 显示的面板大小
    * @param cursor 光标位置
@@ -660,8 +669,8 @@ export class AMPanel extends AbsAmPanel {
     mode: "revert"|"side" = "side",
     center_x: boolean = false
   ): {x: number, y: number} {
-    const side_gap = 4    // 靠边间隙
-    const line_height = 24 // 反向显示时，需要减行高
+    const side_gap = 4    // 靠边间隙 (美观考虑)
+    const line_height = 24 // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
 
     // y轴溢出
     if (screen_size.height - side_gap < cursor.y + panel_size.height) {
@@ -689,5 +698,33 @@ export class AMPanel extends AbsAmPanel {
     }
 
     return { x: cursor.x, y: cursor.y }
+  }
+
+  static fix_position_when_move(
+    startElWidth: number,       // 起始元素宽度
+    startElOffsetLeft: number,  // == `- startElx + startElLeft` == minLeft
+    startElOffsetTop: number,   // == `- startEly + startElTop`  == minTop
+    newPos: {left: number, top: number},
+  ) {
+    // 位置校正
+    // 限制在视口范围内，防止面板被拖出屏幕
+    // 26px 是 pin 按钮超出 am-panel 的空间
+
+    // (二选一) panel 面板完整在屏幕内
+    // const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft
+    // const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
+    // const minLeft = startElOffsetLeft
+    // const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
+
+    // (二选一) pin 按钮不出屏幕。面板本体可以允许被拖出
+    const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft // 左上同
+    const maxTop  = (window.innerHeight - 26) + startElOffsetTop
+    const minLeft = startElOffsetLeft - startElWidth
+    const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0) // 左上同
+
+    newPos.left = Math.max(minLeft, Math.min(newPos.left, maxLeft))
+    newPos.top  = Math.max(minTop, Math.min(newPos.top,  maxTop))
+
+    return { left: newPos.left, top: newPos.top }
   }
 }

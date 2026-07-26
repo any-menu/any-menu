@@ -100,8 +100,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       info_el_title.textContent = 'Debug panel'
     const info_el_msg = document.createElement('div'); info_el.appendChild(info_el_msg);
     setInterval(() => {
-      info_el_msg.textContent = JSON.stringify(global_setting.state, null, 2) +
-        '\n' +
+      info_el_msg.textContent = 
+        (new Date().toLocaleString()) + '\n' +
+        JSON.stringify(global_setting.state, null, 2) + '\n' +
         JSON.stringify(EditorTools.state, null, 2)
     }, 500)
   }
