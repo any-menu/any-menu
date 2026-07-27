@@ -648,10 +648,11 @@ export class AMPanel extends AbsAmPanel {
    *   - 场景: 如果靠近边缘则靠边显示/反向显示，避免部分内容显示溢出屏幕。
    *   - 尺寸获取: 稍复杂，需要估算和缓存。
    *   - 溢出判断: 全部内容均不可在屏幕外
-   * - 拖拽时位置校正
+   * - 拖拽时位置校正 (弃用)
    *   - 场景: 限制拖拽范围，避免拖拽到屏幕外。
    *   - 尺寸获取: 很简单，直接获取当前面板的尺寸即可。
    *   - 溢出判断: 几乎所有内容可以在屏幕外，但需要保证手柄不可出现在屏幕外 (避免拖拽不回来)
+   *   - 备注: 该方式弃用，目前通过纠正移动后的鼠标坐标进行纠正，逻辑要简单且可靠很多
    * 
    * @param screen_size 屏幕/窗口大小
    * @param panel_size 显示的面板大小
@@ -705,8 +706,12 @@ export class AMPanel extends AbsAmPanel {
     return target_pos
   }
 
-  // 位置校正
-  // 限制在视口范围内，防止面板被拖出屏幕
+  /** 位置校正 - 移动版
+   * 限制在视口范围内，防止面板被拖出屏幕
+   * 
+   * @deprecated 该方法弃用，改为在拖拽时纠正鼠标位置
+   *   简单可靠很多，且不需要考虑移动的面板元素或操控元素的尺寸和位置
+   */
   static fix_position_when_move(
     screen_size: {width: number, height: number}, // 屏幕元素尺寸
     panel_size: {width: number, height: number},  // 起始元素尺寸

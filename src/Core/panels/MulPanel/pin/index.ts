@@ -48,14 +48,14 @@ export class AMPin extends AbsAmPanel {
     let isDragging = false    // 是否拖拽状态 (是否鼠标按下了)
     let didDrag = false       // 是否发生过拖动
     //  (以下变量在开始拖拽时，会自动更新)
-    let startElLeft = 0       // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
-    let startElTop = 0        // 起始元素  top 属性 (不一定为真实位置, 可能有 transform 等属性)
     let startElx = 0          // 起始元素 x 轴位置
     let startEly = 0          // 起始元素 y 轴位置
-    let startElWidth = 0      // 起始元素宽度
-    let startElHeight = 0     // 起始元素高度
-    let startElOffsetLeft = 0 // 冗余，== `- startElx + startElLeft` == minLeft
-    let startElOffsetTop = 0  // 冗余，== `- startEly + startElTop`  == minTop
+    let startElLeft = 0       // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
+    let startElTop = 0        // 起始元素  top 属性 (不一定为真实位置, 可能有 transform 等属性)
+    // let startElWidth = 0      // 起始元素宽度
+    // let startElHeight = 0     // 起始元素高度
+    // let startElOffsetLeft = 0 // 冗余，== `- startElx + startElLeft` == minLeft
+    // let startElOffsetTop = 0  // 冗余，== `- startEly + startElTop`  == minTop
     let startMouseX = 0       // 起始光标 x 轴
     let startMouseY = 0       // 起始光标 y 轴
 
@@ -67,20 +67,15 @@ export class AMPin extends AbsAmPanel {
       didDrag = true
       if (global_setting.platform === 'app') return // App 环境不走这里。不过一般也到不了这个事件，仅以防万一
 
+      // 位置纠正 (方式1)
+      let endMouseX = Math.max(0, Math.min(e.clientX, window.innerWidth))
+      let endMouseY = Math.max(0, Math.min(e.clientY, window.innerHeight))
+
       // 移动后的值
-      const dx = e.clientX - startMouseX
-      const dy = e.clientY - startMouseY
+      const dx = endMouseX - startMouseX
+      const dy = endMouseY - startMouseY
       let endElx = startElx + dx
       let endEly = startEly + dy
-
-      // 位置纠正
-      const ret = AMPanel.fix_position_when_move(
-        {width: window.innerWidth, height: window.innerHeight},
-        {width: startElWidth, height: startElHeight},
-        {x: endElx, y: endEly},
-      )
-      endElx = ret.x
-      endEly = ret.y
 
       // 应用新值
       const endElLeft = startElLeft + (endElx - startElx)
@@ -133,13 +128,13 @@ export class AMPin extends AbsAmPanel {
       const startElRect = panelEl.getBoundingClientRect()
       startElx = startElRect.x
       startEly = startElRect.y
-      startElWidth = startElRect.width
-      startElHeight = startElRect.height
       const computedStyle = window.getComputedStyle(panelEl)
       startElLeft = parseInt(computedStyle.left) || panelEl.offsetLeft // 避免非 px 单位
       startElTop  = parseInt(computedStyle.top)  || panelEl.offsetTop
-      startElOffsetLeft = - startElx + startElLeft
-      startElOffsetTop  = - startEly + startElTop
+      // startElWidth = startElRect.width
+      // startElHeight = startElRect.height
+      // startElOffsetLeft = - startElx + startElLeft
+      // startElOffsetTop  = - startEly + startElTop
       startMouseX = e.clientX
       startMouseY = e.clientY
 
