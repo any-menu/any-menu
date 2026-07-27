@@ -54,10 +54,10 @@ export class AMPin extends AbsAmPanel {
     let startEly = 0          // 起始元素 y 轴位置
     let startElWidth = 0      // 起始元素宽度
     let startElHeight = 0     // 起始元素高度
-    let startMouseX = 0       // 起始光标 x 轴
-    let startMouseY = 0       // 起始光标 y 轴
     let startElOffsetLeft = 0 // 冗余，== `- startElx + startElLeft` == minLeft
     let startElOffsetTop = 0  // 冗余，== `- startEly + startElTop`  == minTop
+    let startMouseX = 0       // 起始光标 x 轴
+    let startMouseY = 0       // 起始光标 y 轴
 
     // 鼠标移动 (无节流，也无使用虚拟dom节约性能)
     const onMouseMove = (e: MouseEvent) => {
@@ -70,20 +70,23 @@ export class AMPin extends AbsAmPanel {
       // 移动后的值
       const dx = e.clientX - startMouseX
       const dy = e.clientY - startMouseY
-      let newLeft = startElLeft + dx
-      let newTop  = startElTop  + dy
+      let endElx = startElx + dx
+      let endEly = startEly + dy
 
       // 位置纠正
       const ret = AMPanel.fix_position_when_move(
+        {width: window.innerWidth, height: window.innerHeight},
         {width: startElWidth, height: startElHeight},
-        startElOffsetLeft,
-        startElOffsetTop,
-        {x: newLeft, y: newTop},
+        {x: endElx, y: endEly},
       )
+      endElx = ret.x
+      endEly = ret.y
 
       // 应用新值
-      panelEl.style.left = `${ret.x}px`
-      panelEl.style.top  = `${ret.y}px`
+      const endElLeft = startElLeft + (endElx - startElx)
+      const endElTop  = startElTop  + (endEly - startEly)
+      panelEl.style.left = `${endElLeft}px`
+      panelEl.style.top  = `${endElTop}px`
     }
 
     // 鼠标抬起
@@ -126,6 +129,7 @@ export class AMPin extends AbsAmPanel {
       if (e.button !== 0) return // 仅响应左键
 
       // 初始状态
+      // 最终 left 值 = 起始 left 值 + (目标 x 轴 - 起始 x 轴)
       const startElRect = panelEl.getBoundingClientRect()
       startElx = startElRect.x
       startEly = startElRect.y

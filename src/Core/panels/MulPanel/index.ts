@@ -705,32 +705,29 @@ export class AMPanel extends AbsAmPanel {
     return target_pos
   }
 
+  // 位置校正
+  // 限制在视口范围内，防止面板被拖出屏幕
   static fix_position_when_move(
     screen_size: {width: number, height: number}, // 屏幕元素尺寸
     panel_size: {width: number, height: number},  // 起始元素尺寸
-    startElOffsetLeft: number,  // == `- startElx + startElLeft` == minLeft
-    startElOffsetTop: number,   // == `- startEly + startElTop`  == minTop
     target_pos: {x: number, y: number}, // 目标位置 (面板左上角的位置)
   ) {
-    // 位置校正
-    // 限制在视口范围内，防止面板被拖出屏幕
-    // 26px 是 pin 按钮超出 am-panel 的空间
-
     // (二选一) panel 面板完整在屏幕内
-    // const maxLeft = (screen_size.width - startElWidth - 26) + startElOffsetLeft
-    // const maxTop  = (screen_size.height - startElHeight) + startElOffsetTop
-    // const minLeft = startElOffsetLeft
-    // const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
+    // const maxX = screen_size.width - (startElWidth + 26)
+    // const minX = 0
+    // const maxY = screen_size.height - startElHeight
+    // const minY = 0 // (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
 
     // (二选一) pin 按钮不出屏幕。面板本体可以允许被拖出
-    const maxLeft = (screen_size.width - panel_size.width - 26) + startElOffsetLeft // 左上同
-    const maxTop  = (screen_size.height - 26) + startElOffsetTop
-    const minLeft = startElOffsetLeft - panel_size.width
-    const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0) // 左上同
+    // 26px 是 pin 按钮超出 am-panel 的空间
+    const maxX = screen_size.width - panel_size.width - 26
+    const minX = - panel_size.width
+    const maxY = screen_size.height - 26
+    const minY = 0 // (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
 
     // 限制 minLeft <= x <= maxLeft, minTop <= y <= maxTop
-    target_pos.x = Math.max(minLeft, Math.min(target_pos.x, maxLeft))
-    target_pos.y = Math.max(minTop, Math.min(target_pos.y,  maxTop))
+    target_pos.x = Math.max(minX, Math.min(target_pos.x, maxX))
+    target_pos.y = Math.max(minY, Math.min(target_pos.y, maxY))
 
     return target_pos
   }
