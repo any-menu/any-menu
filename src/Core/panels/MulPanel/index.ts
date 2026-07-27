@@ -644,16 +644,19 @@ export class AMPanel extends AbsAmPanel {
   /** 用屏幕/窗口大小位置纠正光标位置
    * 
    * 两个作用：
-   * 1. 显示时位置校正:
-   *    如果靠近边缘则靠边显示/反向显示，避免部分内容显示溢出屏幕。
-   *    尺寸获取稍复杂，需要估算和缓存。
-   * 2. 拖拽时位置校正:
-   *    限制拖拽范围，避免拖拽到屏幕外。
-   *    尺寸获取简单，直接获取当前面板的尺寸即可。
+   * - 显示时位置校正
+   *   - 场景: 如果靠近边缘则靠边显示/反向显示，避免部分内容显示溢出屏幕。
+   *   - 尺寸获取: 稍复杂，需要估算和缓存。
+   *   - 溢出判断: 全部内容均不可在屏幕外
+   * - 拖拽时位置校正
+   *   - 场景: 限制拖拽范围，避免拖拽到屏幕外。
+   *   - 尺寸获取: 很简单，直接获取当前面板的尺寸即可。
+   *   - 溢出判断: 几乎所有内容可以在屏幕外，但需要保证手柄不可出现在屏幕外 (避免拖拽不回来)
    * 
    * @param screen_size 屏幕/窗口大小
    * @param panel_size 显示的面板大小
-   * @param cursor 光标位置
+   * @param target_pos 目标位置 (面板左上角的位置)
+   * 
    * @param mode 纠正模式，反向显示 or 靠边显示。TODO x和y模式应该可以分别设置
    *   目前我的一个建议是，若基于鼠标位置显示，则靠边；
    *   若是基于光标位置显示，则反向显示 (避免遮挡当前输入内容)
@@ -661,11 +664,13 @@ export class AMPanel extends AbsAmPanel {
    * @param center_x x轴中心模式，即让窗口的中心对准光标位置
    *   此状态下，x轴不会应用纠正模式 (TODO 应强制为靠边显示)
    *   有的中心模式还是根据整个选取矩形来的，我这里只根据结束光标位置来
+   * @returns 纠正后的目标位置
    */
   static fix_position(
     screen_size: {width: number, height: number},
     panel_size: {width: number, height: number},
-    cursor: { x: number, y: number },
+
+    target_pos: { x: number, y: number },
     mode: "revert"|"side" = "side",
     center_x: boolean = false
   ): {x: number, y: number} {
@@ -673,18 +678,18 @@ export class AMPanel extends AbsAmPanel {
     const line_height = 24 // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
 
     // y轴溢出
-    if (screen_size.height - side_gap < cursor.y + panel_size.height) {
+    if (screen_size.height - side_gap < target_pos.y + panel_size.height) {
       if (mode == "revert") { // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
-        cursor.y = cursor.y - line_height - panel_size.height
+        target_pos.y = target_pos.y - line_height - panel_size.height
       } else {
-        cursor.y = screen_size.height - side_gap - panel_size.height
-        cursor.x += 4 // 避免变成 `<-->` 光标，好看一些
+        target_pos.y = screen_size.height - side_gap - panel_size.height
+        target_pos.x += 4 // 避免变成 `<-->` 光标，好看一些
       }
     }
 
     // x轴中心模式
     if (center_x) {
-      cursor.x = cursor.x - panel_size.width / 2
+      target_pos.x = target_pos.x - panel_size.width / 2
     }
     else {
       // // x轴溢出 TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
@@ -697,34 +702,36 @@ export class AMPanel extends AbsAmPanel {
       // }
     }
 
-    return { x: cursor.x, y: cursor.y }
+    return target_pos
   }
 
   static fix_position_when_move(
-    startElWidth: number,       // 起始元素宽度
+    screen_size: {width: number, height: number}, // 屏幕元素尺寸
+    panel_size: {width: number, height: number},  // 起始元素尺寸
     startElOffsetLeft: number,  // == `- startElx + startElLeft` == minLeft
     startElOffsetTop: number,   // == `- startEly + startElTop`  == minTop
-    newPos: {left: number, top: number},
+    target_pos: {x: number, y: number}, // 目标位置 (面板左上角的位置)
   ) {
     // 位置校正
     // 限制在视口范围内，防止面板被拖出屏幕
     // 26px 是 pin 按钮超出 am-panel 的空间
 
     // (二选一) panel 面板完整在屏幕内
-    // const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft
-    // const maxTop  = (window.innerHeight - startElHeight) + startElOffsetTop
+    // const maxLeft = (screen_size.width - startElWidth - 26) + startElOffsetLeft
+    // const maxTop  = (screen_size.height - startElHeight) + startElOffsetTop
     // const minLeft = startElOffsetLeft
     // const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0)
 
     // (二选一) pin 按钮不出屏幕。面板本体可以允许被拖出
-    const maxLeft = (window.innerWidth - startElWidth - 26) + startElOffsetLeft // 左上同
-    const maxTop  = (window.innerHeight - 26) + startElOffsetTop
-    const minLeft = startElOffsetLeft - startElWidth
+    const maxLeft = (screen_size.width - panel_size.width - 26) + startElOffsetLeft // 左上同
+    const maxTop  = (screen_size.height - 26) + startElOffsetTop
+    const minLeft = startElOffsetLeft - panel_size.width
     const minTop  = startElOffsetTop + (global_setting.platform === 'obsidian-plugin' ? 80 : 0) // 左上同
 
-    newPos.left = Math.max(minLeft, Math.min(newPos.left, maxLeft))
-    newPos.top  = Math.max(minTop, Math.min(newPos.top,  maxTop))
+    // 限制 minLeft <= x <= maxLeft, minTop <= y <= maxTop
+    target_pos.x = Math.max(minLeft, Math.min(target_pos.x, maxLeft))
+    target_pos.y = Math.max(minTop, Math.min(target_pos.y,  maxTop))
 
-    return { left: newPos.left, top: newPos.top }
+    return target_pos
   }
 }

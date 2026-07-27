@@ -47,16 +47,17 @@ export class AMPin extends AbsAmPanel {
     const  panelEl: HTMLElement = amPanel.el
     let isDragging = false    // 是否拖拽状态 (是否鼠标按下了)
     let didDrag = false       // 是否发生过拖动
+    //  (以下变量在开始拖拽时，会自动更新)
     let startElLeft = 0       // 起始元素 left 属性 (不一定为真实位置, 可能有 transform 等属性)
     let startElTop = 0        // 起始元素  top 属性 (不一定为真实位置, 可能有 transform 等属性)
     let startElx = 0          // 起始元素 x 轴位置
     let startEly = 0          // 起始元素 y 轴位置
-    let startElOffsetLeft = 0 // == `- startElx + startElLeft` == minLeft
-    let startElOffsetTop = 0  // == `- startEly + startElTop`  == minTop
     let startElWidth = 0      // 起始元素宽度
-    // let startElHeight = 0  // 起始元素高度
+    let startElHeight = 0     // 起始元素高度
     let startMouseX = 0       // 起始光标 x 轴
     let startMouseY = 0       // 起始光标 y 轴
+    let startElOffsetLeft = 0 // 冗余，== `- startElx + startElLeft` == minLeft
+    let startElOffsetTop = 0  // 冗余，== `- startEly + startElTop`  == minTop
 
     // 鼠标移动 (无节流，也无使用虚拟dom节约性能)
     const onMouseMove = (e: MouseEvent) => {
@@ -74,15 +75,15 @@ export class AMPin extends AbsAmPanel {
 
       // 位置纠正
       const ret = AMPanel.fix_position_when_move(
-        startElWidth,
+        {width: startElWidth, height: startElHeight},
         startElOffsetLeft,
         startElOffsetTop,
-        {left: newLeft, top: newTop},
+        {x: newLeft, y: newTop},
       )
 
       // 应用新值
-      panelEl.style.left = `${ret.left}px`
-      panelEl.style.top  = `${ret.top}px`
+      panelEl.style.left = `${ret.x}px`
+      panelEl.style.top  = `${ret.y}px`
     }
 
     // 鼠标抬起
@@ -129,7 +130,7 @@ export class AMPin extends AbsAmPanel {
       startElx = startElRect.x
       startEly = startElRect.y
       startElWidth = startElRect.width
-      // startElHeight = startElRect.height
+      startElHeight = startElRect.height
       const computedStyle = window.getComputedStyle(panelEl)
       startElLeft = parseInt(computedStyle.left) || panelEl.offsetLeft // 避免非 px 单位
       startElTop  = parseInt(computedStyle.top)  || panelEl.offsetTop
