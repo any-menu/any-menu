@@ -654,6 +654,8 @@ export class AMPanel extends AbsAmPanel {
    *   - 溢出判断: 几乎所有内容可以在屏幕外，但需要保证手柄不可出现在屏幕外 (避免拖拽不回来)
    *   - 备注: 该方式弃用，目前通过纠正移动后的鼠标坐标进行纠正，逻辑要简单且可靠很多
    * 
+   * TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
+   * 
    * @param screen_size 屏幕/窗口大小
    * @param panel_size 显示的面板大小
    * @param target_pos 目标位置 (面板左上角的位置)
@@ -666,6 +668,7 @@ export class AMPanel extends AbsAmPanel {
    *   此状态下，x轴不会应用纠正模式 (TODO 应强制为靠边显示)
    *   有的中心模式还是根据整个选取矩形来的，我这里只根据结束光标位置来
    * @returns 纠正后的目标位置
+   *   TODO 如果触发了 revert 模式的翻转，还应该通知界面。倒置建议栏的方向、搜索栏在菜单的下面
    */
   static fix_position(
     screen_size: {width: number, height: number},
@@ -678,29 +681,49 @@ export class AMPanel extends AbsAmPanel {
     const side_gap = 4    // 靠边间隙 (美观考虑)
     const line_height = 24 // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
 
-    // y轴溢出
-    if (screen_size.height - side_gap < target_pos.y + panel_size.height) {
-      if (mode == "revert") { // TODO 这里应该通知界面，倒置建议栏的方向、搜索栏在菜单的下面
-        target_pos.y = target_pos.y - line_height - panel_size.height
-      } else {
-        target_pos.y = screen_size.height - side_gap - panel_size.height
-        target_pos.x += 4 // 避免变成 `<-->` 光标，好看一些
-      }
-    }
-
-    // x轴中心模式
+    // 映射到x轴中心模式。推荐该模式下，溢出校正模式选择 side 模式
     if (center_x) {
       target_pos.x = target_pos.x - panel_size.width / 2
     }
-    else {
-      // // x轴溢出 TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
-      // if (screen_size.width - side_gap < cursor.x + panel_size.width) {
-      //   if (mode == "revert") {
-      //     cursor.x = cursor.x - panel_size.width
-      //   } else {
-      //     cursor.x = screen_size.width - side_gap - panel_size.width
-      //   }
-      // }
+
+    // 溢出屏幕时，位置纠正
+    {
+      // y轴上溢出
+      if (target_pos.y < 0) {
+        if (mode = "side") {
+          target_pos.y = side_gap
+        } else {
+          target_pos.y = target_pos.y + panel_size.height + line_height
+        }
+      }
+      // y轴下溢出
+      else if (target_pos.y + panel_size.height > screen_size.height) {
+        if (mode == "side") {
+          target_pos.y = screen_size.height - side_gap - panel_size.height
+          // target_pos.x += 4 // 避免变成 `<-->` 光标，好看一些
+        } else {
+          target_pos.y = target_pos.y - panel_size.height - line_height
+        }
+      }
+      // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
+
+      // x轴左溢出
+      if (target_pos.x < 0) {
+        if (mode == "side") {
+          target_pos.x = side_gap
+        } else {
+          target_pos.x = target_pos.x + panel_size.width
+        }
+      }
+      // x轴右溢出
+      else if (target_pos.x + panel_size.width > screen_size.width) {
+        if (mode == "side") {
+          target_pos.x = screen_size.width - side_gap - panel_size.width
+        } else {
+          target_pos.x = target_pos.x - panel_size.width
+        }
+      }
+      // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
     }
 
     return target_pos
