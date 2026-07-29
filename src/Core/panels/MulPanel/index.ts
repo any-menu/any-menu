@@ -217,6 +217,9 @@ export class AMPanel extends AbsAmPanel {
    *   (一般用于确定位置和显示后，插件因需要显示更多 list 而再次调用 show 的插件 api)
    * - 'center' 直接显示在页面的正中心 TODO 未支持
    *   (但一般不作用于 Panel，而是作用于窗口的情况比较多)
+   * - 注意不自带位置校正。
+   *   因为校正有不同的模式 (靠边 or 翻转、所有内容在屏内 or 手柄在屏内)，
+   *   不可能在该函数内实现，需校正后再传入。
    * 
    * 注意项
    * - 如果是 app 环境，强制 pos 为 `{x: 0, y: 0}`。
@@ -656,6 +659,7 @@ export class AMPanel extends AbsAmPanel {
    * 
    * TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
    * TODO 目前默认反向显示时，使用的方案是 css `translate(0px, -100%);` 
+   *   优点是不需要计算面板尺寸，不过这个函数本来就需要面板尺寸来着
    *   即目标的位置是面板的左下角，而不是左上角。此时该函数存在 bug
    * 
    * @param screen_size 屏幕/窗口大小
@@ -669,8 +673,8 @@ export class AMPanel extends AbsAmPanel {
    * @param center_x x轴中心模式，即让窗口的中心对准光标位置
    *   此状态下，x轴不会应用纠正模式 (TODO 应强制为靠边显示)
    *   有的中心模式还是根据整个选取矩形来的，我这里只根据结束光标位置来
+   * @param reverse_y 是否初始为y轴反向显示模式
    * @returns 纠正后的目标位置
-   *   TODO 如果触发了 revert 模式的翻转，还应该通知界面。倒置建议栏的方向、搜索栏在菜单的下面
    */
   static fix_position(
     screen_size: {width: number, height: number},
@@ -678,8 +682,9 @@ export class AMPanel extends AbsAmPanel {
 
     target_pos: { x: number, y: number },
     mode: "revert"|"side" = "side",
-    center_x: boolean = false
-  ): {x: number, y: number} {
+    center_x: boolean = false,
+    reverse_y: boolean = false,
+  ): {x: number, y: number, is_reverse: boolean} {
     const side_gap = 4    // 靠边间隙 (美观考虑)
     const line_height = 24 // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
 
@@ -696,6 +701,7 @@ export class AMPanel extends AbsAmPanel {
           target_pos.y = side_gap
         } else {
           target_pos.y = target_pos.y + panel_size.height + line_height
+          reverse_y = !reverse_y
         }
       }
       // y轴下溢出
@@ -705,6 +711,7 @@ export class AMPanel extends AbsAmPanel {
           // target_pos.x += 4 // 避免变成 `<-->` 光标，好看一些
         } else {
           target_pos.y = target_pos.y - panel_size.height - line_height
+          reverse_y = !reverse_y
         }
       }
       // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
@@ -728,7 +735,7 @@ export class AMPanel extends AbsAmPanel {
       // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
     }
 
-    return target_pos
+    return { x: target_pos.x, y: target_pos.y, is_reverse: reverse_y }
   }
 
   /** 位置校正 - 移动版

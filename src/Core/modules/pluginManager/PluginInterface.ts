@@ -48,7 +48,7 @@ export const AppCtxDemo: PluginAppCtx = {
         global_setting.other.app_show(position, list)
       } else {
         if (position != undefined) { console.warn('非 app 环境不支持 position 参数') }
-        activeAMPanel?.panel_show(undefined, list)
+        activeAMPanel?.panel_show(undefined, list, true, false)
       }
     },
     togglePanel: (item: string) => {

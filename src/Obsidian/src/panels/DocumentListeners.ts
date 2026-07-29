@@ -121,22 +121,14 @@ export class DocumentListeners extends DocumentListeners_ {
       }
       const cursor = { x: cursorInfo.pos.right, y: cursorInfo.pos.top }
 
-      // 2. 光标修正 - 屏幕尺寸
+      // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
-
-      // 2. 光标修正 - 面板尺寸，并计算触底对齐/反向显示后的坐标
       const panel_size: { width: number, height: number } = (activeAMPanel?.get_size(panel_list ?? [])) ?? {width:0, height:0}
-      const cursor3 = AMPanel.fix_position(screen_size, panel_size, cursor, "side", true)
-
-      // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
-      {
-        // cursor3.x += 2 (中心模式，不偏移)
-        cursor3.y -= 2
-      }
+      const ret = AMPanel.fix_position(screen_size, panel_size, cursor, "side", true, true)
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      activeAMPanel?.panel_show({x: cursor3.x, y: cursor3.y}, panel_list, is_focus, true)
+      activeAMPanel?.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
     }
   }
 }

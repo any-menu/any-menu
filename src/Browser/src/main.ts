@@ -61,7 +61,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }));
       });
       btn.onclick = () => {
-        activeAMPanel?.panel_show({x: 30, y: 200})
+        activeAMPanel?.panel_show({x: 30, y: 200}, undefined, true, false)
       }
   }
 

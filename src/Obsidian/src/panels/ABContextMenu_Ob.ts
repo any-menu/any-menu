@@ -157,7 +157,9 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
           // activeAMPanel?.panel_hide(undefined)
           activeAMPanel?.panel_show(
             { x:rect.right, y:rect.top },
-            // ['toolbar', 'menu'],
+            undefined, // ['toolbar', 'menu'],
+            false,
+            false,
           )
         })
       }
