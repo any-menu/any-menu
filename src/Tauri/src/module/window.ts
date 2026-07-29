@@ -397,8 +397,8 @@ export async function showWindow(
     const el = document.querySelector('#main') as HTMLElement|null
     if (el) {
       el.dataset.positionMode = 'cursor'
-      if (is_reverse) el.classList.add('reverse')
-      else el.classList.remove('reverse')
+      if (is_reverse) el.classList.add('am-reverse')
+      else el.classList.remove('am-reverse')
     }
   } else if (pos === 'center') {
     cursor = await cursorPosition() // 仅用于提供类型 (含 x,y 以外的信息)
@@ -424,8 +424,8 @@ export async function showWindow(
     const el = document.querySelector('#main') as HTMLElement|null
     if (el) {
       el.dataset.positionMode = 'center'
-      if (is_reverse) el.classList.add('reverse')
-      else el.classList.remove('reverse')
+      if (is_reverse) el.classList.add('am-reverse')
+      else el.classList.remove('am-reverse')
     }
   } else if (pos === undefined) { // 沿用之前的位置
   } else { // 使用给定的坐标
@@ -440,8 +440,8 @@ export async function showWindow(
     const el = document.querySelector('#main') as HTMLElement|null
     if (el) {
       el.dataset.positionMode = 'xy'
-      if (is_reverse) el.classList.add('reverse')
-      else el.classList.remove('reverse')
+      if (is_reverse) el.classList.add('am-reverse')
+      else el.classList.remove('am-reverse')
     }
   }
 

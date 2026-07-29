@@ -570,7 +570,7 @@ div.editable-textarea-textarea {
 
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 建议列表 */
-.am-panel.reverse .am-search .am-search-suggestion {
+.am-panel.am-reverse .am-search .am-search-suggestion {
   top: unset;
   bottom: 100%;
 }
@@ -1078,7 +1078,7 @@ html, body, #main {
   left: 4px;
 }
 
-#main.reverse > .windows-pin {
+#main.am-reverse > .windows-pin {
   bottom: unset;
   top: 5px;
 }
@@ -1092,7 +1092,7 @@ html, body, #main {
   z-index: 15;
   flex-direction: column;
 }
-.am-panel.reverse {
+.am-panel.am-reverse {
   flex-direction: column-reverse;
 }
 .am-panel.am-hide {

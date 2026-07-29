@@ -110,7 +110,7 @@ html, body, #main {
   //   bottom: 50px;
   // }
 }
-#main.reverse {
+#main.am-reverse {
   >.windows-pin {
     bottom: unset;
     top: 5px;
@@ -129,14 +129,14 @@ html, body, #main {
 
   // reverse 模式 (1)
   flex-direction: column;
-  &.reverse {
+  &.am-reverse {
     flex-direction: column-reverse;
   }
 
   // reverse 模式 (2)
   // flex-direction: row;
   // flex-wrap: wrap;
-  // &.reverse {
+  // &.am-reverse {
   //   flex-wrap: wrap-reverse;
   // }
 
@@ -168,7 +168,7 @@ html, body, #main {
 // .am-panel>div {
 //   margin-bottom: -1px; 
 // }
-// .am-panel.reverse>div {
+// .am-panel.am-reverse>div {
 //   margin-top: -1px;
 // }
 

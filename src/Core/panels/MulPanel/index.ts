@@ -267,12 +267,12 @@ export class AMPanel extends AbsAmPanel {
           ;(el_panel as any)['sty' + 'le'].left = `0px`
           ;(el_panel as any)['sty' + 'le'].top = `0px`
           ;(el_panel as any)['sty' + 'le'].bottom = 'unset'
-          el_panel.classList.remove('reverse') // 对应: flex-direction: column;
+          el_panel.classList.remove('am-reverse') // 对应: flex-direction: column;
         } else {
           ;(el_panel as any)['sty' + 'le'].left = `0px`
           ;(el_panel as any)['sty' + 'le'].top = 'unset'
           ;(el_panel as any)['sty' + 'le'].bottom = `0px`
-          el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+          el_panel.classList.add('am-reverse') // 对应: flex-direction: column-reverse;
         }
       }
       else {
@@ -281,11 +281,11 @@ export class AMPanel extends AbsAmPanel {
         ;(el_panel as any)['sty' + 'le'].bottom = 'unset'
         if (!is_reverse) {
           ;(el_panel as any)['sty' + 'le'].transform = `translate(0, 0)`
-          el_panel.classList.remove('reverse') // 对应: flex-direction: column;
+          el_panel.classList.remove('am-reverse') // 对应: flex-direction: column;
         }
         else {
           ;(el_panel as any)['sty' + 'le'].transform = `translate(0, -100%)`
-          el_panel.classList.add('reverse') // 对应: flex-direction: column-reverse;
+          el_panel.classList.add('am-reverse') // 对应: flex-direction: column-reverse;
         }
       }
     }
@@ -655,6 +655,8 @@ export class AMPanel extends AbsAmPanel {
    *   - 备注: 该方式弃用，目前通过纠正移动后的鼠标坐标进行纠正，逻辑要简单且可靠很多
    * 
    * TODO 上游给的屏幕坐标没考虑多屏的情况，面板的宽度也是错的
+   * TODO 目前默认反向显示时，使用的方案是 css `translate(0px, -100%);` 
+   *   即目标的位置是面板的左下角，而不是左上角。此时该函数存在 bug
    * 
    * @param screen_size 屏幕/窗口大小
    * @param panel_size 显示的面板大小
