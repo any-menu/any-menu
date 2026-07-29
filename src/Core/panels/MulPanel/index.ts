@@ -680,62 +680,66 @@ export class AMPanel extends AbsAmPanel {
     screen_size: {width: number, height: number},
     panel_size: {width: number, height: number},
 
-    target_pos: { x: number, y: number },
+    target_pos: { left: number, top: number, right: number, bottom: number, x: number, y: number },
     mode: "revert"|"side" = "side",
-    center_x: boolean = false,
-    reverse_y: boolean = false,
+    x_dire: "left"|"center" = "left", // 暂不支持 "right" 值，感觉没必要
+    y_dire: "top"|"bottom" = "bottom" // 旧 `reverse_y: boolean = false,` 需要特别注意，这里暂时使用的是 css 位移实现
   ): {x: number, y: number, is_reverse: boolean} {
-    const side_gap = 4    // 靠边间隙 (美观考虑)
-    const line_height = 24 // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
+    const side_gap = 4      // 靠边间隙 (美观考虑)
+    const line_height = 24  // 反向显示时，需要减行高 (缺点: 原行高过大时可能不美观)
 
+    // 计算真实位置
     // 映射到x轴中心模式。推荐该模式下，溢出校正模式选择 side 模式
-    if (center_x) {
-      target_pos.x = target_pos.x - panel_size.width / 2
+    if (x_dire == "center") {
+      target_pos.left = target_pos.left - panel_size.width / 2
+    }
+    if (y_dire == "top") {
+      target_pos.top = target_pos.top - panel_size.height - line_height
     }
 
     // 溢出屏幕时，位置纠正
     {
-      // y轴上溢出
-      if (target_pos.y < 0) {
-        if (mode = "side") {
-          target_pos.y = side_gap
-        } else {
-          target_pos.y = target_pos.y + panel_size.height + line_height
-          reverse_y = !reverse_y
-        }
-      }
       // y轴下溢出
-      else if (target_pos.y + panel_size.height > screen_size.height) {
+      if (target_pos.top + panel_size.height > screen_size.height) {
         if (mode == "side") {
-          target_pos.y = screen_size.height - side_gap - panel_size.height
-          // target_pos.x += 4 // 避免变成 `<-->` 光标，好看一些
+          target_pos.top = screen_size.height - side_gap - panel_size.height
+          // target_pos.left += 4 // 避免变成 `<-->` 光标，好看一些
         } else {
-          target_pos.y = target_pos.y - panel_size.height - line_height
-          reverse_y = !reverse_y
+          target_pos.top = target_pos.top - panel_size.height - line_height
+          y_dire = "top"
         }
       }
-      // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
+      // y轴上溢出
+      if (target_pos.top < 0) {
+        if (mode = "side") {
+          target_pos.top = side_gap
+        } else {
+          target_pos.top = target_pos.top + panel_size.height + line_height
+          y_dire = "bottom"
+        }
+      }
+      // 还有一种情况是左右均溢出 (面板大小大于频率大小)。暂不考虑这种情况
 
-      // x轴左溢出
-      if (target_pos.x < 0) {
+      // x轴右溢出
+      if (target_pos.left + panel_size.width > screen_size.width) {
         if (mode == "side") {
-          target_pos.x = side_gap
+          target_pos.left = screen_size.width - side_gap - panel_size.width
         } else {
-          target_pos.x = target_pos.x + panel_size.width
+          target_pos.left = target_pos.left - panel_size.width
         }
       }
-      // x轴右溢出
-      else if (target_pos.x + panel_size.width > screen_size.width) {
+      // x轴左溢出
+      if (target_pos.left < 0) {
         if (mode == "side") {
-          target_pos.x = screen_size.width - side_gap - panel_size.width
+          target_pos.left = side_gap
         } else {
-          target_pos.x = target_pos.x - panel_size.width
+          target_pos.left = target_pos.left + panel_size.width
         }
       }
       // 还有一种情况是左右均溢出 (面板大小大于频率大小)，暂不考虑这种情况
     }
 
-    return { x: target_pos.x, y: target_pos.y, is_reverse: reverse_y }
+    return { x: target_pos.left, y: target_pos.top, is_reverse: y_dire == "top" }
   }
 
   /** 位置校正 - 移动版
