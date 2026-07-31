@@ -17,10 +17,15 @@
     "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
     "browser:dev": "cd ./src/Browser && pnpm dev",
     "browser:build": "cd ./src/Browser && pnpm build",
+    "core:init": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
     "bump": "node src/Scripts/bump.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "license": "GPL-3.0-only",
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@any-menu/any-menu-core": "^1.2.2",
+    "copyfiles": "^2.4.1"
+  }
 }

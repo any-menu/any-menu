@@ -39,7 +39,8 @@ pnpm up -i --latest # 强制列出最新版的包并可选自动升级
 ## 目录介绍
 
 - Type    | 插件类型
-- Core    | 核心、跨平台接口 api 预定义
+- Core    | 核心、跨平台接口 api 预定义。
+            有可能会在项目中，也有可能通过 npm 库方式依赖。
 - Tauri   | 桌面应用版本 App
 - App     | 在线测试/使用
 - Obsidian| Obsidian 插件
