@@ -6,6 +6,8 @@
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",
   "scripts": {
+    "core:update": "pnpm install @any-menu/any-menu-core@beta && pnpm core:move && pnpm install --filter Core",
+    "core:move": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
     "tr:dev": "cd ./src/Tauri && pnpm tr:dev",
     "tr:build": "cd ./src/Tauri && pnpm tr:build",
     "tr:debug": "cd ./src/Tauri && pnpm tr:debug",
@@ -17,8 +19,6 @@
     "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
     "browser:dev": "cd ./src/Browser && pnpm dev",
     "browser:build": "cd ./src/Browser && pnpm build",
-    "core:init": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
-    "core:update": "pnpm install @any-menu/any-menu-core@beta && pnpm core:init",
     "bump": "node src/Scripts/bump.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +26,7 @@
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
-    "@any-menu/any-menu-core": "1.2.3-beta3",
+    "@any-menu/any-menu-core": "1.2.3-beta4",
     "copyfiles": "^2.4.1"
   }
 }

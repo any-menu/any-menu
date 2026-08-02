@@ -9,17 +9,14 @@ importers:
   .:
     devDependencies:
       '@any-menu/any-menu-core':
-        specifier: 1.2.3-beta3
-        version: 1.2.3-beta3
+        specifier: 1.2.3-beta4
+        version: 1.2.3-beta4
       copyfiles:
         specifier: ^2.4.1
         version: 2.4.1
 
   src/Browser:
     devDependencies:
-      copyfiles:
-        specifier: ^2.4.1
-        version: 2.4.1
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -74,7 +71,7 @@ importers:
         version: 2.8.1
     publishDirectory: dist
 
-  src/CoreBackup:
+  src/CoreSource:
     dependencies:
       '@editableblock/cm':
         specifier: 1.0.1-beta40
@@ -107,6 +104,9 @@ importers:
       '@types/node':
         specifier: ^25.9.2
         version: 25.9.2
+      copyfiles:
+        specifier: ^2.4.1
+        version: 2.4.1
       javascript-obfuscator:
         specifier: ^5.4.3
         version: 5.4.3
@@ -208,8 +208,8 @@ importers:
 
 packages:
 
-  '@any-menu/any-menu-core@1.2.3-beta3':
-    resolution: {integrity: sha512-Y2ias1Q1DZ9ER8kzXLZ+U2PfWW/8E81MT5/xlWyGWx+D5dc3pR5/45ZT8P0yslR2MfKWmy9MEs0Qzu5ki5vUfQ==}
+  '@any-menu/any-menu-core@1.2.3-beta4':
+    resolution: {integrity: sha512-kibu86n49FZRietjMzegwgWvoyqRjLQ+JiPz+jqXU0a3pnX42519dxnQiCsEYY2Yspkpnw9jyjvIbdhlCsrHpw==}
 
   '@codemirror/autocomplete@6.20.3':
     resolution: {integrity: sha512-tlosUqb+3BbxCxZdu4tKeRghPFC+QM7q4X5YhKV2eCmPG+1r2F3f4AaSz5sCrFqUtX4Jh20VFTKecl16MgiV9g==}
@@ -2843,7 +2843,7 @@ packages:
 
 snapshots:
 
-  '@any-menu/any-menu-core@1.2.3-beta3':
+  '@any-menu/any-menu-core@1.2.3-beta4':
     dependencies:
       '@editableblock/cm': 1.0.1-beta40
       '@editableblock/code': 1.0.1-beta40
