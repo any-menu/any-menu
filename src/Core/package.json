@@ -1,12 +1,12 @@
 {
   "name": "@any-menu/any-menu-core",
-  "version": "1.2.3-beta2",
+  "version": "1.2.3-beta3",
   "author": "LincZero",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
-    "dist"
+    "."
   ],
   "publishConfig": {
     "directory": "dist"

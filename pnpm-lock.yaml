@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@any-menu/any-menu-core':
-        specifier: ^1.2.2
-        version: 1.2.2
+        specifier: 1.2.3-beta2
+        version: 1.2.3-beta2
       copyfiles:
         specifier: ^2.4.1
         version: 2.4.1
@@ -161,8 +161,8 @@ importers:
 
 packages:
 
-  '@any-menu/any-menu-core@1.2.2':
-    resolution: {integrity: sha512-ipugjy6ThH8bms7YDE5dP/OnyD2WaWxk4muDKFyGhjewsYwjN9ZGaQaH/C597FGwArinGsGVvFflCj59yXntsQ==}
+  '@any-menu/any-menu-core@1.2.3-beta2':
+    resolution: {integrity: sha512-OabWVd2PKm2uftMYh62qZ+P/ZveJY/yO5Ggm4naHT0ivvU9RnYnKpWvkhy7687Zc+1PHbZw11Xg1jyaKzJJMxw==}
 
   '@codemirror/autocomplete@6.20.3':
     resolution: {integrity: sha512-tlosUqb+3BbxCxZdu4tKeRghPFC+QM7q4X5YhKV2eCmPG+1r2F3f4AaSz5sCrFqUtX4Jh20VFTKecl16MgiV9g==}
@@ -2796,7 +2796,7 @@ packages:
 
 snapshots:
 
-  '@any-menu/any-menu-core@1.2.2':
+  '@any-menu/any-menu-core@1.2.3-beta2':
     dependencies:
       '@editableblock/cm': 1.0.1-beta40
       '@editableblock/code': 1.0.1-beta40

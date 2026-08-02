@@ -25,7 +25,7 @@
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@10.10.0",
   "devDependencies": {
-    "@any-menu/any-menu-core": "^1.2.2",
+    "@any-menu/any-menu-core": "1.2.3-beta2",
     "copyfiles": "^2.4.1"
   }
 }

@@ -3,7 +3,7 @@ import { EditableBlock_Cm } from "@editableblock/cm/dist/EditableBlock_Cm/src/"
 import { EditableBlock_Code } from "@editableblock/code/dist/EditableBlock_Code/src/" // [!code hl]
 import { type RangeSpec_None } from "@editableblock/cm/dist/EditableBlock_Cm/src/selector"
 
-import { global_setting } from "../../../Core/shared/setting"
+import { global_setting } from "../../shared/setting"
 import { AbsAmPanel } from "../abs"
 
 export class AMMiniEditor extends AbsAmPanel {
