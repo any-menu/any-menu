@@ -26,6 +26,7 @@ jobs:
     - name: build
       run: |
         pnpm install --frozen-lockfile
+        pnpm prebuild
         pnpm ob:build # build-min
         pnpm ob:build-pinyin
     - name: upload build artifact
@@ -56,6 +57,7 @@ jobs:
     - name: build
       run: |
         pnpm install --frozen-lockfile
+        pnpm prebuild
         pnpm browser:build
 
   build-tauri:
@@ -92,13 +94,11 @@ jobs:
         run: |
           rustup target add x86_64-pc-windows-msvc
       
-      - name: Env - FrontEnd - Install frontend dependencies
-        working-directory: ./src/Tauri
-        run: pnpm install
-      
-      - name: Build - Tauri application
-        working-directory: ./src/Tauri
-        run: pnpm tauri build
+      - name: Build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm prebuild
+          pnpm tr:build
 
       - name: Upload MSI artifact (Windows)
         if: matrix.platform == 'windows-latest'
