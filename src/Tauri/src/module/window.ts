@@ -389,7 +389,12 @@ export async function showWindow(
     }
     const panel_size = activeAMPanel?.get_size(panel_list) ?? {width: 0, height:0}
     const over_mode = cursor2_flag ? "revert" : "side"
-    const cursor3 = AMPanel.fix_position(screenSize, panel_size, cursor, over_mode)
+    const cursor3 = AMPanel.fix_position(
+      screenSize,
+      panel_size,
+      { left: cursor.x, top: cursor.y, right: cursor.x, bottom: cursor.y },
+      over_mode
+    )
     cursor.x = cursor3.x; cursor.y = cursor3.y;
     if (global_setting.isDebug) global_setting.state.infoText += `[finialPosition]\nover_mode:${over_mode}, x:${cursor.x}, y:${cursor.y}\n\n`
 
