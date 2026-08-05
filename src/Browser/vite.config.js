@@ -5,6 +5,12 @@ import path from 'path';
 import { viteFileApiPlugin } from './vite_file_plugin';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '../../src')
+    }
+  },
+
   plugins: [viteFileApiPlugin], // vue()
   define: {
     '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': JSON.stringify(true),
@@ -36,11 +42,5 @@ export default defineConfig({
       external: ['obsidian'],
       input: path.resolve(__dirname, './index.html'),
     },
-  },
-  resolve: {
-    // Vite 打包时无法使用 tsconfig.json 中的路径别名，所以在这里也配置一次
-    alias: {
-      '@': path.resolve(__dirname, '../../src')
-    }
   }
 });
