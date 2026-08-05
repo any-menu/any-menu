@@ -18,7 +18,7 @@
 ---
 
 其中 only-obsidian repo/branch 还需要 npm 上传一下
-`npm login`, `npm publish ./src/Core --access public`
+`npm login`, `npm publish ./src/CoreSource --access public`
 如果有插件 API 变动， Type 也需要 npm 上传一下
 `npm login`, `npm publish ./src/Type --access public`
 
@@ -38,23 +38,27 @@ pnpm up -i --latest # 强制列出最新版的包并可选自动升级
 
 ## 目录介绍
 
-- Type    | 插件类型
-- Core    | 核心、跨平台接口 api 预定义。
-            有可能会在项目中，也有可能通过 npm 库方式依赖。
-- Tauri   | 桌面应用版本 App
-- App     | 在线测试/使用
-- Obsidian| Obsidian 插件
-- Script  | 其他可执行脚本工具
-- WebCore | (不一定在) 纯浏览器环境 (非 App) 的子项目的通用逻辑
-- ...     | (不一定在) 可能还有浏览器扩展、 VSCode 扩展等
+- Type        | 插件类型
+- Core        | 核心、跨平台接口 api 预定义。
+                有可能会在项目中，也有可能通过 npm 库方式依赖。
+- Browser     | 在线测试/使用，本地浏览器快速 debug 项目
+- Tauri       | 桌面应用版本 App
+- Obsidian    | Obsidian 插件
+- Script      | 其他可执行脚本工具
+- CoreSource  | (不一定在) Core 模块的未编译版本。
+                ignore 了，你可能无法看到该文件夹。
+                这个另外存放在 Core 仓库，不存放在主仓库中。
+- WebCore     | (不一定在) 纯浏览器环境 (非 App) 的子项目的通用逻辑
+- ...         | (不一定在) 可能还有浏览器扩展、 VSCode 扩展等
 
 依赖树：
 
 - Type
-  - Core
+  - Core / CoreSource
     - Tauri
-    - WebCore
+    - WebCore (不一定有)
       - Obsidian
+      - Browser
       - 可能的浏览器扩展、VSCode扩展等
         (当然，他们不一定在这。
         一是通用代码会比较少，不放一起也行。
