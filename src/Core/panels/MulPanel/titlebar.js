@@ -15,6 +15,7 @@ export class AMTitlebar extends AbsAmPanel {
         AMPin.factory(this, amPanel);
         this.createHideBtn();
         this.createPanelManagerBtn();
+        this.createReverseBtn();
         global_setting.other.app_createTitlebar(this.el);
         this.panel_hide();
         AMPin.initEvent(this.el, amPanel);
@@ -83,6 +84,18 @@ export class AMTitlebar extends AbsAmPanel {
                 btn.classList.remove('active');
                 el_panel_list.classList.add('am-hide');
             }
+        });
+    }
+    createReverseBtn() {
+        const btn = document.createElement('button');
+        this.el.appendChild(btn);
+        btn.classList.add('am-titlebar-btn', 'am-titlebar-reverse');
+        btn.title = '上下翻转';
+        btn.innerText = '上下翻转';
+        btn.addEventListener('click', () => {
+            if (!activeAMPanel)
+                return;
+            activeAMPanel.el.classList.toggle('am-reverse');
         });
     }
 }

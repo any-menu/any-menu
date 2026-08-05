@@ -7,8 +7,11 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "pnpm core:update",
-    "core:update": "pnpm install @any-menu/any-menu-core@beta && pnpm core:move && pnpm install --filter Core",
-    "core:move": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
+    "core:update": "pnpm core:updateFromNpm",
+    "core:updateFromNpm": "pnpm install @any-menu/any-menu-core@beta && pnpm core:move && pnpm install --filter Core",
+    "core:moveFromNpm": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
+    "core:updateFromSource": "pnpm -C src/CoreSource build && pnpm core:moveFromSource",
+    "core:moveFromSource": "copyfiles -u 3 \"src/CoreSource/dist/**/*\" src/Core/",
     "tr:dev": "cd ./src/Tauri && pnpm tr:dev",
     "tr:build": "cd ./src/Tauri && pnpm tr:build",
     "tr:debug": "cd ./src/Tauri && pnpm tr:debug",

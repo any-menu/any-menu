@@ -8,4 +8,5 @@ export declare class AMTitlebar extends AbsAmPanel {
     panel_show(): void;
     private createHideBtn;
     private createPanelManagerBtn;
+    private createReverseBtn;
 }
