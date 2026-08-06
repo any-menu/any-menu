@@ -25,27 +25,24 @@ use log::{debug, warn, info, error};
 use crate::text;
 use crate::utils;
 
-use tauri::{
-    Manager,
-};
-
 // #region getScreenSize
 
 #[tauri::command]
 pub fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
-    // 窗口所在的显示器
-    let window = app_handle
-        // .get_window("main") // tauri v1
-        .get_webview_window("main") // tauri v2
-        .ok_or("Main window not found")?;
-    let window_monitor = window
-        .current_monitor()
-        .map_err(|e| e.to_string())?
-        .ok_or("No monitor found for current window")?;
-    let at_size = window_monitor.size();
-    log::info!("at_size:        width={}, height={}", at_size.width, at_size.height);
+    // // 获取窗口所在的显示器
+    // let window = app_handle
+    //     // .get_window("main") // tauri v1
+    //     .get_webview_window("main") // tauri v2
+    //     .ok_or("Main window not found")?;
+    // let window_monitor = window
+    //     .current_monitor()
+    //     .map_err(|e| e.to_string())?
+    //     .ok_or("No monitor found for current window")?;
+    // let at_size = window_monitor.size();
+    // log::info!("at_size:        width={}, height={}", at_size.width, at_size.height);
+    // Ok((at_size.width as i32, at_size.height as i32))
 
-    // 主显示器
+    // 获取主显示器
     // let primary_monitor = app_handle
     //     .primary_monitor()
     //     .map_err(|e| e.to_string())?
@@ -66,8 +63,42 @@ pub fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), Strin
 
     // 其他方案: 也可以用第三方库，如 screen
 
-    // 返回
-    Ok((at_size.width as i32, at_size.height as i32))
+    // 获取所有显示器
+    let monitors = app_handle
+        .available_monitors()
+        .map_err(|e| e.to_string())?;
+    if monitors.is_empty() {
+        return Err("No monitors available".into());
+    }
+
+    // 所有显示器的外接矩形
+    let mut min_x = i32::MAX;
+    let mut min_y = i32::MAX;
+    let mut max_x = i32::MIN;
+    let mut max_y = i32::MIN;
+    for monitor in &monitors {
+        let pos = monitor.position();
+        let size = monitor.size();
+
+        let left = pos.x;
+        let top = pos.y;
+        let right = pos.x + size.width as i32;
+        let bottom = pos.y + size.height as i32;
+
+        min_x = min_x.min(left);
+        min_y = min_y.min(top);
+        max_x = max_x.max(right);
+        max_y = max_y.max(bottom);
+    }
+    let total_width = max_x - min_x;
+    let total_height = max_y - min_y;
+
+    log::info!(
+        "Total bounding rectangle size = {} x {}, origin=({},{})",
+        total_width, total_height, min_x, min_y
+    );
+
+    Ok((total_width, total_height))
 }
 
 // #endregion
