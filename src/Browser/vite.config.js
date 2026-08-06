@@ -7,7 +7,8 @@ import { viteFileApiPlugin } from './vite_file_plugin';
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../../src')
+      '@': path.resolve(__dirname, '../../src'),
+      // '@/Core': path.resolve(__dirname, '../../src/CoreSource'),
     }
   },
 
