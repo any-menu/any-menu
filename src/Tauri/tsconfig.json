@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
 
   "compilerOptions": {
+    "baseUrl": ".",
     "types": [],
     "target": "ES2020",
     "useDefineForClassFields": true,
