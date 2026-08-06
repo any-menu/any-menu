@@ -237,7 +237,7 @@ export class DocumentListeners {
       false // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
     )
 
-    async function show_panel_auto (panel_list?: string[], is_focus?: boolean) {
+    async function show_panel_auto (panel_list: string[], is_focus?: boolean) {
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo()
       if (!cursorInfo) {

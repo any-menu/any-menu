@@ -59,7 +59,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     },
   })
 
-  const show_panel = async (editor: Editor, panel_list?: string[], is_focus?: boolean) => {
+  const show_panel = async (editor: Editor, panel_list: string[], is_focus?: boolean) => {
     // 1. 光标位置 (右下)
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return

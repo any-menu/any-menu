@@ -31,10 +31,10 @@ export declare class AMPanel extends AbsAmPanel {
     private constructor();
     private initSubPanels;
     destroy(): void;
-    panel_show(pos: {
+    panel_show(pos?: {
         x: number;
         y: number;
-    } | undefined, list?: string[], is_focus?: boolean, is_reverse?: boolean): void;
+    }, list?: string[], is_focus?: boolean, is_reverse?: boolean): void;
     panel_hide(list?: string[], focusHide?: boolean): void;
     panel_toggle(item: string): void;
     register_sub_panel(id: string, el: HTMLElement | ((el: HTMLElement) => void)): void;

@@ -137,54 +137,55 @@ export class AMPanel extends AbsAmPanel {
     }
     panel_show(pos, list, is_focus = true, is_reverse = false) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
-        activeAMPanel = this;
-        alt_key_flag = true;
-        const el_panel = this.el;
-        el_panel.classList.remove('am-hide');
         {
             if (pos === undefined) {
             }
             else if (global_setting.platform == 'app') {
                 if (!is_reverse) {
                     ;
-                    el_panel['sty' + 'le'].left = `0px`;
-                    el_panel['sty' + 'le'].top = `0px`;
-                    el_panel['sty' + 'le'].bottom = 'unset';
-                    el_panel.classList.remove('am-reverse');
+                    this.el['sty' + 'le'].left = `0px`;
+                    this.el['sty' + 'le'].top = `0px`;
+                    this.el['sty' + 'le'].bottom = 'unset';
+                    this.el.classList.remove('am-reverse');
                 }
                 else {
                     ;
-                    el_panel['sty' + 'le'].left = `0px`;
-                    el_panel['sty' + 'le'].top = 'unset';
-                    el_panel['sty' + 'le'].bottom = `0px`;
-                    el_panel.classList.add('am-reverse');
+                    this.el['sty' + 'le'].left = `0px`;
+                    this.el['sty' + 'le'].top = 'unset';
+                    this.el['sty' + 'le'].bottom = `0px`;
+                    this.el.classList.add('am-reverse');
                 }
             }
             else {
                 ;
-                el_panel['sty' + 'le'].left = `${pos.x}px`;
-                el_panel['sty' + 'le'].top = `${pos.y}px`;
-                el_panel['sty' + 'le'].bottom = 'unset';
+                this.el['sty' + 'le'].left = `${pos.x}px`;
+                this.el['sty' + 'le'].top = `${pos.y}px`;
+                this.el['sty' + 'le'].bottom = 'unset';
                 if (!is_reverse) {
                     ;
-                    el_panel['sty' + 'le'].transform = `translate(0, 0)`;
-                    el_panel.classList.remove('am-reverse');
+                    this.el['sty' + 'le'].transform = `translate(0, 0)`;
+                    this.el.classList.remove('am-reverse');
                 }
                 else {
                     ;
-                    el_panel['sty' + 'le'].transform = `translate(0, -100%)`;
-                    el_panel.classList.add('am-reverse');
+                    this.el['sty' + 'le'].transform = `translate(0, -100%)`;
+                    this.el.classList.add('am-reverse');
                 }
             }
         }
         if (!list) {
             list = global_setting.config.panel_preset2[0].list;
         }
-        for (const item of list) {
-            if (this.show_panel_list.includes(item))
-                continue;
-            this.show_panel_list.push(item);
+        {
+            activeAMPanel = this;
+            alt_key_flag = true;
+            for (const item of list) {
+                if (this.show_panel_list.includes(item))
+                    continue;
+                this.show_panel_list.push(item);
+            }
         }
+        this.el.classList.remove('am-hide');
         let is_focued = !is_focus;
         for (const item of list) {
             if (item == 'search') {
