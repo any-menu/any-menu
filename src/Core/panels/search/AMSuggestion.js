@@ -71,7 +71,7 @@ export class AMSuggestion {
                         el_input.value = search_result[this.currentFocus].value;
                 }
             }
-            else if (ev.altKey || (activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.alt_v_state)) {
+            else if (ev.altKey || (activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.state.alt_virtual_flag)) {
                 let index = -1;
                 if (ev.key >= '1' && ev.key <= '9') {
                     index = parseInt(ev.key) - 1;
@@ -92,7 +92,7 @@ export class AMSuggestion {
                 ev.preventDefault();
                 ev.stopPropagation();
                 if (activeAMPanel) {
-                    activeAMPanel.alt_v_state = false;
+                    activeAMPanel.state.alt_virtual_flag = false;
                     activeAMPanel.el.classList.remove('show-altkey');
                 }
                 target_el.click();

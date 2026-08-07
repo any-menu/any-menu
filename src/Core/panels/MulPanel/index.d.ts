@@ -18,12 +18,11 @@ export declare class AMPanel extends AbsAmPanel {
         amMiniEditor: AMMiniEditor | null;
         amCustom: HTMLElement | null;
     };
-    alt_v_state: boolean;
-    show_panel_list: string[];
-    sub_panel_list: {
-        id: string;
-        obj: AbsAmPanel;
-    }[];
+    state: {
+        alt_virtual_flag: boolean;
+        alt_key_flag: boolean;
+        show_panel_list: string[];
+    };
     custom_sub_panel: {
         [key: string]: HTMLElement;
     };

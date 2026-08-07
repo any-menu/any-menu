@@ -8,7 +8,6 @@ import { AMContextMenu } from '../contextmenu/index';
 import { AMMiniEditor } from '../miniEditor/index';
 import { AMPin } from './pin/index';
 import { AMTitlebar } from './titlebar';
-let alt_key_flag = false;
 export let activeAMPanel = null;
 const amPanel_list = [];
 export class AMPanel extends AbsAmPanel {
@@ -36,9 +35,11 @@ export class AMPanel extends AbsAmPanel {
             amToolbar: null,
             amCustom: null,
         };
-        this.alt_v_state = false;
-        this.show_panel_list = [];
-        this.sub_panel_list = [];
+        this.state = {
+            alt_virtual_flag: false,
+            alt_key_flag: false,
+            show_panel_list: [],
+        };
         this.custom_sub_panel = {};
         this.visual_listener_mousedown = (ev) => {
             if (!(ev.target instanceof Element))
@@ -97,26 +98,26 @@ export class AMPanel extends AbsAmPanel {
         {
             el.addEventListener('keydown', (ev) => {
                 if (ev.key === 'Alt') {
-                    alt_key_flag = false;
+                    this.state.alt_key_flag = false;
                     ev.preventDefault();
                     el.classList.add('show-altkey');
                 }
                 if (ev.altKey) {
                     if (ev.key != 'Alt')
-                        alt_key_flag = true;
+                        this.state.alt_key_flag = true;
                 }
             });
             el.addEventListener('keyup', (ev) => {
                 if (ev.key === 'Alt') {
-                    if (alt_key_flag) {
-                        alt_key_flag = false;
-                        this.alt_v_state = false;
+                    if (this.state.alt_key_flag) {
+                        this.state.alt_key_flag = false;
+                        this.state.alt_virtual_flag = false;
                         ev.preventDefault();
                     }
                     else {
-                        this.alt_v_state = !this.alt_v_state;
+                        this.state.alt_virtual_flag = !this.state.alt_virtual_flag;
                     }
-                    if (this.alt_v_state) {
+                    if (this.state.alt_virtual_flag) {
                         ev.preventDefault();
                         el.classList.add('show-altkey');
                     }
@@ -178,11 +179,11 @@ export class AMPanel extends AbsAmPanel {
         }
         {
             activeAMPanel = this;
-            alt_key_flag = true;
+            this.state.alt_key_flag = true;
             for (const item of list) {
-                if (this.show_panel_list.includes(item))
+                if (this.state.show_panel_list.includes(item))
                     continue;
-                this.show_panel_list.push(item);
+                this.state.show_panel_list.push(item);
             }
         }
         this.el.classList.remove('am-hide');
@@ -241,13 +242,13 @@ export class AMPanel extends AbsAmPanel {
             return;
         }
         if (list == undefined) {
-            this.show_panel_list = [];
+            this.state.show_panel_list = [];
         }
         else {
             for (const item of list) {
-                const index = this.show_panel_list.indexOf(item);
+                const index = this.state.show_panel_list.indexOf(item);
                 if (index !== -1) {
-                    this.show_panel_list.splice(index, 1);
+                    this.state.show_panel_list.splice(index, 1);
                 }
             }
         }
@@ -289,12 +290,12 @@ export class AMPanel extends AbsAmPanel {
     }
     panel_toggle(item) {
         var _a, _b, _c, _d, _e, _f, _g;
-        const index = this.show_panel_list.indexOf(item);
+        const index = this.state.show_panel_list.indexOf(item);
         if (index !== -1) {
-            this.show_panel_list.splice(index, 1);
+            this.state.show_panel_list.splice(index, 1);
         }
         else {
-            this.show_panel_list.push(item);
+            this.state.show_panel_list.push(item);
         }
         if (item == 'search')
             (_a = this.sub_panels.amSearch) === null || _a === void 0 ? void 0 : _a.panel_toggle();
@@ -354,8 +355,8 @@ export class AMPanel extends AbsAmPanel {
         if (!list) {
             list = global_setting.config.panel_preset2[0].list;
         }
-        const isSameList = this.show_panel_list.length === list.length &&
-            list.every((item, index) => item === this.show_panel_list[index]);
+        const isSameList = this.state.show_panel_list.length === list.length &&
+            list.every((item, index) => item === this.state.show_panel_list[index]);
         if (isSameList) {
             if (activeAMPanel) {
                 const rect = activeAMPanel.el.getBoundingClientRect();

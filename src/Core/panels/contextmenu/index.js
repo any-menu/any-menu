@@ -199,7 +199,7 @@ export class AMContextMenu extends AbsAmPanel {
                     (_e = (_d = this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index]) === null || _d === void 0 ? void 0 : _d.el) === null || _e === void 0 ? void 0 : _e.click();
                 }
             }
-            else if (ev.altKey || (activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.alt_v_state)) {
+            else if (ev.altKey || (activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.state.alt_virtual_flag)) {
                 let index = -1;
                 if (ev.key >= '1' && ev.key <= '9') {
                     index = parseInt(ev.key) - 1;
@@ -234,7 +234,7 @@ export class AMContextMenu extends AbsAmPanel {
                 }
                 else {
                     if (activeAMPanel) {
-                        activeAMPanel.alt_v_state = false;
+                        activeAMPanel.state.alt_virtual_flag = false;
                         (_h = activeAMPanel.el) === null || _h === void 0 ? void 0 : _h.classList.remove('show-altkey');
                     }
                     (_j = this.menu_el_data_current.children[this.menu_el_data_current.vFocus_index].el) === null || _j === void 0 ? void 0 : _j.click();

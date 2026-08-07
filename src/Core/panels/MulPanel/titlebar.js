@@ -53,7 +53,7 @@ export class AMTitlebar extends AbsAmPanel {
                 btn.classList.add('active');
                 el_panel_list.classList.remove('am-hide');
                 el_panel_list.innerHTML = '';
-                for (const item of ((_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.show_panel_list) !== null && _a !== void 0 ? _a : [])) {
+                for (const item of ((_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.state.show_panel_list) !== null && _a !== void 0 ? _a : [])) {
                     const el_item = document.createElement('div');
                     el_panel_list.appendChild(el_item);
                     el_item.innerText = item;
