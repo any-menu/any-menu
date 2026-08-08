@@ -218,7 +218,7 @@ export class DocumentListeners {
   }
 
   /**
-   * 在预览模式下显示文本工具栏以供选择
+   * 在预览模式下选中文本后，显示文本工具栏以供选择
    * 
    * 无选择内容则不工作
    * 
@@ -231,14 +231,13 @@ export class DocumentListeners {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
-    void show_panel_auto(
-      global_setting.config.panel_preset2[1].list,
-      // global_setting.config.panel_preset2[1].is_focus
-      false // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
-    )
+    void show_panel_auto()
 
-    async function show_panel_auto (panel_list: string[], is_focus?: boolean) {
+    async function show_panel_auto () {
       if (!activeAMPanel) return
+      
+      // 0. 默认参数
+      const panel_list = global_setting.config.panel_preset2[1].list
 
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo()
@@ -254,7 +253,13 @@ export class DocumentListeners {
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      activeAMPanel.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
+      activeAMPanel.panel_hide()
+      activeAMPanel.panel_show(
+        {x: ret.x, y: ret.y},
+        panel_list,
+        false, // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
+        ret.is_reverse
+      )
     }
   }
 

@@ -78,7 +78,12 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    activeAMPanel.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
+    activeAMPanel.panel_hide()
+    activeAMPanel.panel_show(
+      {x: ret.x, y: ret.y},
+      panel_list,
+      is_focus, ret.is_reverse
+    )
   }
 
   // 注册工具带

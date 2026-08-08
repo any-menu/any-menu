@@ -136,7 +136,7 @@ export class AMPanel extends AbsAmPanel {
             amPanel_list.splice(index, 1);
         }
     }
-    panel_show(pos, list, is_focus = true, is_reverse = false) {
+    panel_show(pos, list, is_focus = true, is_reverse = false, is_show_container = true) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         {
             if (pos === undefined) {
@@ -174,19 +174,28 @@ export class AMPanel extends AbsAmPanel {
                 }
             }
         }
-        if (!list) {
-            list = global_setting.config.panel_preset2[0].list;
+        {
+            if (!list) {
+                if (this.state.show_panel_list.length === 0) {
+                    this.state.show_panel_list = global_setting.config.panel_preset2[0].list;
+                }
+                list = this.state.show_panel_list;
+            }
+            else {
+                for (const item of list) {
+                    if (this.state.show_panel_list.includes(item))
+                        continue;
+                    this.state.show_panel_list.push(item);
+                }
+            }
         }
         {
             activeAMPanel = this;
             this.state.alt_key_flag = true;
-            for (const item of list) {
-                if (this.state.show_panel_list.includes(item))
-                    continue;
-                this.state.show_panel_list.push(item);
-            }
         }
-        this.el.classList.remove('am-hide');
+        if (is_show_container) {
+            this.el.classList.remove('am-hide');
+        }
         let is_focued = !is_focus;
         for (const item of list) {
             if (item == 'search') {
@@ -227,7 +236,7 @@ export class AMPanel extends AbsAmPanel {
         window.addEventListener('mousedown', this.visual_listener_mousedown);
         window.addEventListener('keydown', this.visual_listener_keydown);
     }
-    panel_hide(list, focusHide = false) {
+    panel_hide(list, focusHide = false, is_hide_container = true) {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         if (global_setting.state.isPin && !focusHide) {
             if (!list || list.length === 0) {
@@ -241,19 +250,23 @@ export class AMPanel extends AbsAmPanel {
             console.warn('Call the hiding method in the hidden state.');
             return;
         }
-        if (list == undefined) {
-            this.state.show_panel_list = [];
-        }
-        else {
-            for (const item of list) {
-                const index = this.state.show_panel_list.indexOf(item);
-                if (index !== -1) {
-                    this.state.show_panel_list.splice(index, 1);
+        {
+            if (list == undefined) {
+                this.state.show_panel_list = [];
+            }
+            else {
+                for (const item of list) {
+                    const index = this.state.show_panel_list.indexOf(item);
+                    if (index !== -1) {
+                        this.state.show_panel_list.splice(index, 1);
+                    }
                 }
             }
         }
-        if (list == undefined) {
+        if (is_hide_container) {
             this.el.classList.add('am-hide');
+        }
+        if (list == undefined) {
             (_a = this.sub_panels.amSearch) === null || _a === void 0 ? void 0 : _a.panel_hide();
             (_b = this.sub_panels.amToolbar) === null || _b === void 0 ? void 0 : _b.panel_hide();
             (_c = this.sub_panels.amContextMenu) === null || _c === void 0 ? void 0 : _c.panel_hide();
@@ -263,8 +276,6 @@ export class AMPanel extends AbsAmPanel {
             }
         }
         else {
-            if (list.length == 0)
-                this.el.classList.add('am-hide');
             for (const item of list) {
                 if (item == 'search')
                     (_e = this.sub_panels.amSearch) === null || _e === void 0 ? void 0 : _e.panel_hide();

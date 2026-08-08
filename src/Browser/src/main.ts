@@ -61,7 +61,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         }));
       });
       btn.onclick = () => {
-        activeAMPanel?.panel_show(
+        if (!activeAMPanel) return
+        activeAMPanel.panel_hide()
+        activeAMPanel.panel_show(
           {x: 30, y: 200},
           global_setting.config.panel_preset2[0].list,
           true, false
