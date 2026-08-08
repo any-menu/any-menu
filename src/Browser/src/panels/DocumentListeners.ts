@@ -248,7 +248,7 @@ export class DocumentListeners {
 
       // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
-      const panel_size = activeAMPanel.get_size(panel_list ?? [])
+      const panel_size = activeAMPanel.get_size(panel_list)
       const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
 
       // 3. 显示面板

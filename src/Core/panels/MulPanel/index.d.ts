@@ -33,14 +33,14 @@ export declare class AMPanel extends AbsAmPanel {
     panel_show(pos?: {
         x: number;
         y: number;
-    }, list?: string[], is_focus?: boolean, is_reverse?: boolean, is_show_container?: boolean): void;
+    }, append_list?: string[], is_focus?: boolean, is_reverse?: boolean, is_show_container?: boolean): void;
     panel_hide(list?: string[], focusHide?: boolean, is_hide_container?: boolean): void;
     panel_toggle(item: string): void;
     register_sub_panel(id: string, el: HTMLElement | ((el: HTMLElement) => void)): void;
     unregister_sub_panel(id: string): void;
     visual_listener_mousedown: (ev: MouseEvent) => void;
     visual_listener_keydown: (ev: KeyboardEvent) => void;
-    get_size(list?: string[]): {
+    get_size(append_list?: string[]): {
         width: number;
         height: number;
     };

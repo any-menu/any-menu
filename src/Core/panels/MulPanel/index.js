@@ -136,7 +136,7 @@ export class AMPanel extends AbsAmPanel {
             amPanel_list.splice(index, 1);
         }
     }
-    panel_show(pos, list, is_focus = true, is_reverse = false, is_show_container = true) {
+    panel_show(pos, append_list, is_focus = true, is_reverse = false, is_show_container = true) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         {
             if (pos === undefined) {
@@ -175,14 +175,14 @@ export class AMPanel extends AbsAmPanel {
             }
         }
         {
-            if (!list) {
+            if (!append_list) {
                 if (this.state.show_panel_list.length === 0) {
                     this.state.show_panel_list = global_setting.config.panel_preset2[0].list;
                 }
-                list = this.state.show_panel_list;
+                append_list = this.state.show_panel_list;
             }
             else {
-                for (const item of list) {
+                for (const item of append_list) {
                     if (this.state.show_panel_list.includes(item))
                         continue;
                     this.state.show_panel_list.push(item);
@@ -197,7 +197,7 @@ export class AMPanel extends AbsAmPanel {
             this.el.classList.remove('am-hide');
         }
         let is_focued = !is_focus;
-        for (const item of list) {
+        for (const item of append_list) {
             if (item == 'search') {
                 (_a = this.sub_panels.amSearch) === null || _a === void 0 ? void 0 : _a.panel_show(!is_focued);
                 is_focued = true;
@@ -362,9 +362,18 @@ export class AMPanel extends AbsAmPanel {
         this.custom_sub_panel[id].remove();
         delete this.custom_sub_panel[id];
     }
-    get_size(list) {
-        if (!list) {
-            list = global_setting.config.panel_preset2[0].list;
+    get_size(append_list) {
+        const list = [...this.state.show_panel_list];
+        {
+            const append_list2 = append_list !== null && append_list !== void 0 ? append_list : [];
+            if (!append_list2) { }
+            else {
+                for (const item of append_list2) {
+                    if (list.includes(item))
+                        continue;
+                    list.push(item);
+                }
+            }
         }
         const isSameList = this.state.show_panel_list.length === list.length &&
             list.every((item, index) => item === this.state.show_panel_list[index]);

@@ -59,7 +59,7 @@ export class AMTitlebar extends AbsAmPanel {
                     el_item.innerText = item;
                     el_item.title = item;
                     el_item.onclick = () => {
-                        activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide([item]);
+                        activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide([item], undefined, false);
                         el_item.remove();
                         el_item.onclick = null;
                     };
