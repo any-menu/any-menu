@@ -44,7 +44,7 @@ export declare class AMPanel extends AbsAmPanel {
         width: number;
         height: number;
     };
-    static fix_position(screen_size: {
+    fix_position(screen_size: {
         width: number;
         height: number;
     }, panel_size: {

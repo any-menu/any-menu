@@ -238,6 +238,8 @@ export class DocumentListeners {
     )
 
     async function show_panel_auto (panel_list: string[], is_focus?: boolean) {
+      if (!activeAMPanel) return
+
       // 1. 光标位置 // [!code hl] (右上)
       const cursorInfo = getCursorInfo()
       if (!cursorInfo) {
@@ -247,12 +249,12 @@ export class DocumentListeners {
 
       // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
-      const panel_size: { width: number, height: number } = (activeAMPanel?.get_size(panel_list ?? [])) ?? {width:0, height:0}
-      const ret = AMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
+      const panel_size = activeAMPanel.get_size(panel_list ?? [])
+      const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
-      activeAMPanel?.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
+      activeAMPanel.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
     }
   }
 

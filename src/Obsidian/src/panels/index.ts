@@ -60,14 +60,16 @@ export function registerAMContextMenu(plugin: Plugin) {
   })
 
   const show_panel = async (editor: Editor, panel_list: string[], is_focus?: boolean) => {
+    if (!activeAMPanel) return
+
     // 1. 光标位置 (右下)
     const cursorInfo = getCursorInfo(plugin, editor)
     if (!cursorInfo) return
 
     // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
     const screen_size = { width: window.innerWidth, height: window.innerHeight }
-    const panel_size: { width: number, height: number } = (activeAMPanel?.get_size(panel_list)) ?? {width:0, height:0}
-    const ret = AMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "revert", "right", "bottom")
+    const panel_size: { width: number, height: number } = activeAMPanel.get_size(panel_list)
+    const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "revert", "right", "bottom")
 
     // 2. 光标修正 - 微小偏移，若 reverse 要反向 (TODO 如果触底后反向显示，则会偏移错误)
     {
@@ -76,7 +78,7 @@ export function registerAMContextMenu(plugin: Plugin) {
     }
 
     // 3. 显示面板
-    activeAMPanel?.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
+    activeAMPanel.panel_show({x: ret.x, y: ret.y}, panel_list, is_focus, ret.is_reverse)
   }
 
   // 注册工具带

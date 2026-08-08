@@ -398,7 +398,7 @@ export class AMPanel extends AbsAmPanel {
         const width = Math.max(...width_list);
         return { width, height };
     }
-    static fix_position(screen_size, panel_size, selection_rect, mode = "side", x_dire = "right", y_dire = "bottom") {
+    fix_position(screen_size, panel_size, selection_rect, mode = "side", x_dire = "right", y_dire = "bottom") {
         const side_gap = 4;
         selection_rect = {
             left: selection_rect.left - 2,
