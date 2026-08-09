@@ -105,6 +105,8 @@ git remote add prorepo https://github.com/any-menu/any-menu-pro.git
 # 3．推送到新仓库
 # or: git push -u origin main
 git push -u prorepo main
+
+# or git branch --set-upstream-to=origin/main
 ```
 
 上面时临时 push 时切换对应的仓库，永久切换默认推送仓库做法如下：
