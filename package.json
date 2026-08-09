@@ -6,8 +6,8 @@
   "description": "Powerful input method assistant / editor assistant. Support custom templates, dictionaries and scripts.",
   "main": "index.js",
   "scripts": {
-    "prebuild": "",
-    "core:update": "pnpm core:updateFromNpm",
+    "prebuild": "node -e \"\"",
+    "core:update": "pnpm core:updateFromSource",
     "core:updateFromNpm": "pnpm install @any-menu/any-menu-core@beta && pnpm core:moveFromNpm && pnpm install --filter Core",
     "core:moveFromNpm": "copyfiles -u 3 \"node_modules/@any-menu/any-menu-core/**/*\" src/Core/",
     "core:updateFromSource": "pnpm -C src/CoreSource build && pnpm core:moveFromSource",
