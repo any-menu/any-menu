@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  js-yaml: 4.3.1
+
 importers:
 
   .:
@@ -39,55 +42,8 @@ importers:
         specifier: ^3.4.5
         version: 3.4.8
       js-yaml:
-        specifier: ^4.1.0
-        version: 4.2.0
-      pinyin:
-        specifier: ^4.0.0
-        version: 4.0.0
-      smol-toml:
-        specifier: ^1.4.2
-        version: 1.6.1
-      zod:
-        specifier: ^4.3.6
-        version: 4.4.3
-    devDependencies:
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
-      '@types/node':
-        specifier: ^25.9.2
-        version: 25.9.2
-      copyfiles:
-        specifier: ^2.4.1
-        version: 2.4.1
-      javascript-obfuscator:
-        specifier: ^5.4.3
-        version: 5.4.3
-      node:
-        specifier: ^22.20.0
-        version: 22.22.3
-      tslib:
-        specifier: ^2.8.1
-        version: 2.8.1
-    publishDirectory: dist
-
-  src/CoreSource:
-    dependencies:
-      '@editableblock/cm':
-        specifier: 1.0.1-beta40
-        version: 1.0.1-beta40
-      '@editableblock/code':
-        specifier: 1.0.1-beta40
-        version: 1.0.1-beta40
-      '@editableblock/core':
-        specifier: 1.0.1-beta40
-        version: 1.0.1-beta40
-      dompurify:
-        specifier: ^3.4.5
-        version: 3.4.8
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.2.0
+        specifier: 4.3.1
+        version: 4.3.1
       pinyin:
         specifier: ^4.0.0
         version: 4.0.0
@@ -2013,8 +1969,8 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  js-yaml@4.2.0:
-    resolution: {integrity: sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==}
+  js-yaml@4.3.1:
+    resolution: {integrity: sha512-CY6crGq313MX8GkwvB7tzgp99vjQxY1++5y10/BKN/GUfHqWaOGQMNZkBvqSzsZKWk/ijwHlWzzkLulsGHhjWQ==}
     hasBin: true
 
   json-buffer@3.0.1:
@@ -2849,7 +2805,7 @@ snapshots:
       '@editableblock/code': 1.0.1-beta40
       '@editableblock/core': 1.0.1-beta40
       dompurify: 3.4.8
-      js-yaml: 4.2.0
+      js-yaml: 4.3.1
       pinyin: 4.0.0
       smol-toml: 1.6.1
       zod: 4.4.3
@@ -4865,7 +4821,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  js-yaml@4.2.0:
+  js-yaml@4.3.1:
     dependencies:
       argparse: 2.0.1
 

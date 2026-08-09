@@ -32,5 +32,10 @@
   "devDependencies": {
     "@any-menu/any-menu-core": "1.2.3-beta4",
     "copyfiles": "^2.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "4.3.1"
+    }
   }
 }
