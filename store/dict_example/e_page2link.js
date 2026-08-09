@@ -1,9 +1,10 @@
+// TODO 支持选中 url，然后进行网络访问并获取标题
 export default {
     metadata: {
         id: 'anymenu-example-page2link',
         name: '示例-获取页面的 md 链接',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero, Copilot Cluade Opus 4.6',
         description: '获取浏览器/文档环境下当前标签页标题和链接，生成 Markdown 链接。使用: 选中浏览器中的url，或选中 "<alt> http..." 格式的文本',
         icon: 'lucide-link'
@@ -15,7 +16,7 @@ export default {
         if (match) {
             const title = match[1].trim(); // TODO 自动转义标题中的 `[]()` 等符号
             const url = match[2].trim();
-            ctx.api.sendText(`[${title}](${url})`)
+            this.app.api.sendText(`[${title}](${url})`)
             return
         }
 
@@ -38,16 +39,16 @@ export default {
         if (ctx.env.activeDocTitle) {
             title = ctx.env.activeDocTitle
         } else {
-            title = ctx.env.activeAppName.split(' - ')[0].split(' — ')[0] // 以 " - " 或 " — " 分割，取第一个部分作为标题
+            title = (ctx.env.activeAppName ?? "").split(' - ')[0].split(' — ')[0] // 以 " - " 或 " — " 分割，取第一个部分作为标题
             // 优化
             title = cleanTitle(title)
         }
 
         // 构造 markdown 链接
         const markdownLink = `[${title}](${url})` // 可以根据需要修改成 obsidian wiki 链接的形式
-        ctx.api.saveToClipboard(markdownLink)
-        ctx.api.notify('成功复制: ' + markdownLink)
-        ctx.api.hidePanel()
+        this.app.api.saveToClipboard(markdownLink)
+        this.app.api.notify('成功复制: ' + markdownLink)
+        this.app.api.hidePanel()
     }
 }
 

@@ -3,7 +3,7 @@
  * take from: https://github.com/Obsidian-Forge/obsidian-i18n/
  */
 
-import { global_setting } from '@/Core/setting'
+import { global_setting } from '@/Core/shared/setting'
 import { RequestUrlParam, requestUrl } from 'obsidian'
 
 /**

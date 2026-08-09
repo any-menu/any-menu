@@ -1,0 +1,80 @@
+/** browser 环境专用样式 */
+@import url("../../Core/styles/styles.css");
+
+:root.am-theme-light {
+  background: none !important;
+
+  --browser-bd-color: #00000044;
+  --browser-shadow-color: #00000044;
+}
+:root {
+  background: #2a2932 !important;
+
+  --browser-bd-color: #ffffff44;
+  --browser-shadow-color: #00000044;
+}
+
+#main.browser-app {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+
+  .am-browser-debug-textarea {
+    resize: vertical;
+    height: 300px;
+    padding: 10px;
+    border: solid 1px var(--am-bd-color);
+    background: var(--am-pre-bg-color);
+    color: var(--am-pre-text-color);
+    font-size: 17px;
+  }
+
+  .am-browser-debug-btn {
+    height: 34px;
+    background: var(--am-bg-color);
+    color: var(--am-text-color);
+    border: solid 1px var(--am-bd-color);
+    box-shadow: none;
+  }
+
+  .am-browser-debug-info {
+    position: fixed;
+    top: 400px;
+    right: 10px;
+
+    padding: 10px;
+    z-index: 14;
+    white-space: pre-wrap;
+    background: var(--am-bg-color);
+    color: var(--am-text-color);
+    border: solid 1px var(--am-bd-color);
+
+    .fold {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: var(--am-bg-color);
+      color: var(--am-text-color);
+      border: solid 1px var(--am-bd-color);
+    }
+    h3 {
+      margin: 0 0 10px;
+    }
+  }
+
+  .am-config {
+    flex-basis: 100%;
+  }
+
+  .am-browser-debug-textarea,
+  .am-browser-debug-btn,
+  .am-browser-debug-info,
+  .am-config {
+    border-radius: 10px;
+
+    /* 模拟窗口样式 */
+    outline: solid 1px var(--browser-bd-color);
+    box-shadow: 4px 4px 6px var(--browser-shadow-color);
+  }
+}

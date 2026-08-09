@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-table',
         name: '多种方式生成表格',
-        version: '1.1.0',
-        min_app_version: '1.1.0',
+        version: '1.1.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         description: '输出 markdown 表格。支持多种生成方式。如选中 "c列数r行数"，或选中 tsv/csv 内容等',
         icon: 'lucide-table'
@@ -14,7 +14,7 @@ export default {
 
         // b1. 不选中内容
         if (!str || str.trim() === '') {
-            ctx.api.sendText(`\
+            this.app.api.sendText(`\
 |   |   |   |
 |---|---|---|
 |   |   |   |
@@ -28,12 +28,12 @@ export default {
         if (match1) {
             const col = Number(match1[1]);
             const row = Number(match1[2]);
-            ctx.api.sendText(makeEmptyTable(col, row));
+            this.app.api.sendText(makeEmptyTable(col, row));
             return;
         } else if (match2) {
             const row = Number(match2[1]);
             const col = Number(match2[2]);
-            ctx.api.sendText(makeEmptyTable(col, row));
+            this.app.api.sendText(makeEmptyTable(col, row));
             return;
         }
 
@@ -43,11 +43,11 @@ export default {
         // - dsv: Delimiter-separatedvalues（分隔符分隔值，分隔符可以自定义）
         const parsedTable = parseDelimitedText(str);
         if (parsedTable) {
-            ctx.api.sendText(toMarkdownTable(parsedTable));
+            this.app.api.sendText(toMarkdownTable(parsedTable));
             return;
         }
 
-        ctx.api.notify('输入的文本格式不符合要求，无法生成表格');
+        this.app.api.notify('输入的文本格式不符合要求，无法生成表格');
         console.warn('输入的文本格式不符合要求，无法生成表格', str);
     }
 }

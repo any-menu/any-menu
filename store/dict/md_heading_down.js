@@ -2,8 +2,8 @@ export default {
     metadata: {
         id: 'anymenu-md-heading-down',
         name: 'md_降低标题等级',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         description: "将 Markdown 标题降低一级，例如 H1 -> H2。注意不能包含 H6",
         // modi from: icon: 'lucide-heading-6'
@@ -47,6 +47,6 @@ export default {
         }
 
         str = result.join('\n');
-        ctx.api.sendText(str)
+        this.app.api.sendText(str)
     }
 }

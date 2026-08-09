@@ -2,16 +2,16 @@ export default {
     metadata: {
         id: 'anymenu-example-request',
         name: '示例-网络请求',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         icon: 'lucide-cloud-rain'
     },
 
-    async run(ctx) {
+    async run(_ctx) {
         // 其他一些测试用 api:
         // https://api.example.com/data
-        const ret = await ctx.api.urlRequest({
+        const ret = await this.app.api.urlRequest({
             url: 'https://httpbin.org/get',
             method: 'GET',
             // headers: {
@@ -21,6 +21,6 @@ export default {
         });
 
         console.log('Request result: ', ret);
-        ctx.api.sendText(`${JSON.stringify(ret, null, 2)}`);
+        this.app.api.sendText(`${JSON.stringify(ret, null, 2)}`);
     }
 }

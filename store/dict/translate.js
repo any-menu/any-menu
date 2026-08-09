@@ -1,4 +1,4 @@
-let cache_ctx = null
+let cache_app = null
 let panelEl = null
 
 /**
@@ -34,8 +34,8 @@ const ENGINES = {
     google: {
         name: 'Google (免费)',
         needKey: false,
-        translate: async (ctx, text, from, to) => {
-            const ret = await ctx.api.urlRequest({
+        translate: async (app, text, from, to) => {
+            const ret = await app.api.urlRequest({
                 url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`,
                 method: 'GET',
                 isParseJson: true,
@@ -47,9 +47,9 @@ const ENGINES = {
     mymemory: {
         name: 'MyMemory (免费)',
         needKey: false,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             const langpair = `${from === 'auto' ? 'autodetect' : from}|${to}`
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url: `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langpair}`,
                 method: 'GET',
                 isParseJson: true,
@@ -61,12 +61,12 @@ const ENGINES = {
     deepl: {
         name: 'DeepL (需 Key)',
         needKey: true,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             if (!DEEPL_API_KEY) return '[请先配置 DEEPL_API_KEY]'
             const host = DEEPL_API_KEY.endsWith(':fx') ? 'api-free.deepl.com' : 'api.deepl.com'
             const params = new URLSearchParams({ text, target_lang: to.toUpperCase() })
             if (from !== 'auto') params.append('source_lang', from.toUpperCase())
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url: `https://${host}/v2/translate`,
                 method: 'POST',
                 headers: { 'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`, 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -80,10 +80,10 @@ const ENGINES = {
     libre: {
         name: 'LibreTranslate (需 Key)',
         needKey: true,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             const body = { q: text, source: from === 'auto' ? 'auto' : from, target: to }
             if (LIBRE_API_KEY) body.api_key = LIBRE_API_KEY
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url: `${LIBRE_URL}/translate`,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -97,11 +97,11 @@ const ENGINES = {
     yandex: {
         name: 'Yandex (需 Key)',
         needKey: true,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             if (!YANDEX_API_KEY) return '[请先配置 YANDEX_API_KEY]'
             const body = { texts: [text], targetLanguageCode: to }
             if (from !== 'auto') body.sourceLanguageCode = from
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url: 'https://translate.api.cloud.yandex.net/translate/v2/translate',
                 method: 'POST',
                 headers: { 'Authorization': `Api-Key ${YANDEX_API_KEY}`, 'Content-Type': 'application/json' },
@@ -115,11 +115,11 @@ const ENGINES = {
     azure: {
         name: 'Azure (需 Key)',
         needKey: true,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             if (!AZURE_API_KEY || !AZURE_REGION) return '[请先配置 AZURE_API_KEY 和 AZURE_REGION]'
             let url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${to}`
             if (from !== 'auto') url += `&from=${from}`
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url,
                 method: 'POST',
                 headers: { 'Ocp-Apim-Subscription-Key': AZURE_API_KEY, 'Ocp-Apim-Subscription-Region': AZURE_REGION, 'Content-Type': 'application/json' },
@@ -133,7 +133,7 @@ const ENGINES = {
     baidu: {
         name: '百度翻译 (需 Key)',
         needKey: true,
-        translate: async (ctx, text, from, to) => {
+        translate: async (app, text, from, to) => {
             if (!BAIDU_APP_ID || !BAIDU_SECRET_KEY) return '[请先配置 BAIDU_APP_ID 和 BAIDU_SECRET_KEY]'
             const bFrom = from === 'auto' ? 'auto' : (BAIDU_LANG_MAP[from] || from)
             const bTo = BAIDU_LANG_MAP[to] || to
@@ -142,7 +142,7 @@ const ENGINES = {
             const signStr = BAIDU_APP_ID + text + salt + BAIDU_SECRET_KEY
             const sign = await md5(signStr)
             const params = new URLSearchParams({ q: text, from: bFrom, to: bTo, appid: BAIDU_APP_ID, salt, sign })
-            const ret = await ctx.api.urlRequest({
+            const ret = await app.api.urlRequest({
                 url: `https://fanyi-api.baidu.com/api/trans/vip/translate?${params.toString()}`,
                 method: 'GET',
                 isParseJson: true,
@@ -257,7 +257,7 @@ function buildPanel() {
     const btnInsert = document.createElement('button'); btnInsert.textContent = '插入译文'
     btnInsert.className = 'btn'
     btnInsert.onclick = () => {
-        if (cache_ctx && dstBox.value) cache_ctx.api.sendText(dstBox.value)
+        if (cache_app && dstBox.value) cache_app.api.sendText(dstBox.value)
     }
     btnBar.appendChild(btnInsert)
 
@@ -269,7 +269,7 @@ function buildPanel() {
     const btnCopy = document.createElement('button'); btnCopy.textContent = '复制译文'
     btnCopy.className = 'btn'
     btnCopy.onclick = () => {
-        if (cache_ctx && dstBox.value) cache_ctx.api.saveToClipboard(dstBox.value)
+        if (cache_app && dstBox.value) cache_app.api.saveToClipboard(dstBox.value)
     }
     btnBar.appendChild(btnCopy)
 
@@ -283,7 +283,7 @@ async function doTranslate(srcBox, dstBox) {
     dstBox.value = '翻译中...'
     try {
         const engine = ENGINES[currentEngine]
-        const result = await engine.translate(cache_ctx, text, currentFrom, currentTo)
+        const result = await engine.translate(cache_app, text, currentFrom, currentTo)
         dstBox.value = result ?? '翻译失败'
     } catch (e) {
         console.error('Translate error:', e)
@@ -295,47 +295,50 @@ export default {
     metadata: {
         id: 'anymenu-translate',
         name: '翻译',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         description: '选中文本后翻译，支持多种免费翻译源',
         icon: 'lucide-languages',
         css: `
 .translate-root {
   padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px;
-  background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
+  background: var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
   .translate-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
-    select { flex:1; min-width:0; padding:2px 4px; background:var(--ab-menu-bg-color); color:CurrentColor; border-radius:4px; }
+    select { flex:1; min-width:0; padding:2px 4px; background:var(--am-bg-color); color:CurrentColor; border-radius:4px; }
     .translate-arrow { flex-shrink:0; }
   }
   .translate-label-src { margin-top:4px; }
-  .translate-content { background:var(--am-background-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
+  .translate-content { background:var(--am-bg-color); color:currentColor; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
     font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
   }
   .translate-content-src { min-height:40px; max-height:120px; }
   .translate-content-dst { max-height:120px; user-select:text; }
   .translate-btnbar {
     display:flex; gap:6px;
-    button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
+    button { background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
   }
 }
 `
     },
 
-    onLoad() {},
+    onLoad() {
+        if (!cache_app) cache_app = this.app
+    },
 
     onUnload() {
-        if (cache_ctx) cache_ctx.api.unregisterSubPanel('translate-panel')
+        this.app.api.unregisterSubPanel('translate-panel')
     },
 
     async run(ctx) {
+        if (!cache_app) cache_app = this.app
+
         // 首次运行时注册面板
-        if (!cache_ctx) {
-            cache_ctx = ctx
+        if (!panelEl) {
             panelEl = buildPanel()
-            ctx.api.registerSubPanel({ id: 'translate-panel', el: panelEl })
-        } else cache_ctx = ctx
+            this.app.api.registerSubPanel({ id: 'translate-panel', el: panelEl })
+        }
 
         // 填充原文
         const srcBox = panelEl.querySelector('#__translate_src')
@@ -345,8 +348,8 @@ export default {
         dstBox.textContent = ''
 
         // 切换到翻译面板
-        ctx.api.hidePanel(['menu'])
-        ctx.api.showPanel(['translate-panel'])
+        this.app.api.hidePanel(['menu'])
+        this.app.api.showPanel(['translate-panel'])
 
         // 有选中文本时自动翻译
         if (selectedText) {

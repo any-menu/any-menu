@@ -6,23 +6,23 @@ label = "callout"
 
 [[categories.children]]
 label = "note"
-detail = "md"
-callback = "> [!note]\n> \n> Note demo.\n\n"
+type = "md"
+content = "> [!note]\n> \n> Note demo.\n\n"
 
 [[categories.children]]
 label = "warning"
-detail = "md"
-callback = "> [!warning]\n> \n> Warning demo.\n\n"
+type = "md"
+content = "> [!warning]\n> \n> Warning demo.\n\n"
 
 [[categories.children]]
 label = "tip"
-detail = "md"
-callback = "> [!tip]\n> \n> Tip demo.\n\n"
+type = "md"
+content = "> [!tip]\n> \n> Tip demo.\n\n"
 
 [[categories.children]]
 label = "note_complex"
-detail = "md"
-callback = "> [!note]+ title\n> Note demo.\n\n"
+type = "md"
+content = "> [!note]+ title\n> Note demo.\n\n"
 
 # ============================================================
 # mdit container 分类
@@ -32,20 +32,20 @@ label = "mdit container"
 
 [[categories.children]]
 label = "note"
-detail = "md"
-callback = ":::note\n\nNote demo.\n\n:::\n\n"
+type = "md"
+content = ":::note\n\nNote demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "warning"
-detail = "md"
-callback = ":::warning\n\nWarning demo.\n\n:::\n\n"
+type = "md"
+content = ":::warning\n\nWarning demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "tip"
-detail = "md"
-callback = ":::tip\n\nTip demo.\n\n:::\n\n"
+type = "md"
+content = ":::tip\n\nTip demo.\n\n:::\n\n"
 
 [[categories.children]]
 label = "note_complex"
-detail = "md"
-callback = ":::note+ title\n\nNote demo.\n\n:::\n\n"
+type = "md"
+content = ":::note+ title\n\nNote demo.\n\n:::\n\n"

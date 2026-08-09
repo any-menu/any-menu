@@ -7,6 +7,15 @@
 
 /** 插件必须实现的接口 */
 export interface PluginInterface {
+  /* 
+   * 该成员存在，当不放类型里
+   * 
+   * 不要赋值。插件加载时会自动填充，方便插件访问。
+   * 亦同 onLoad 方法给的那个参数，不使用这个也没有问题。
+   * 这个只是方便使用的语法糖而已
+   */
+  app?: PluginAppCtx
+
   /** 元数据 */
   metadata: {
     /** 唯一标识符 */
@@ -35,16 +44,16 @@ export interface PluginInterface {
     css?: string;
   };
 
-  /**
+  /*
    * 旧版接口
    * @deprecated 没有 ctx 环境，未来将废弃，请使用 `run` 接口代替
-   */
-  process?: (str?: string) => Promise<void | string>;
+   *
+  process?: (str?: string) => Promise<void | string>;*/
 
   /**
    * 主入口，点击或选择时触发
    */
-  run: (ctx: PluginInterfaceCtx) => Promise<void>;
+  run: (runCtx: PluginRunCtx) => Promise<void>;
 
   /*
    * 算了，感觉还是直接 callback 给按钮对象让绑定比较方便。
@@ -72,20 +81,18 @@ export interface PluginInterface {
    * 面板中该脚本的项被创建时调用
    * 
    * @version 1.1.11 新增
-   * @param ctx 注意与 run 的 ctx 类型虽然相同，但传递时机是不同的。
-   *   - 这里的 ctx 在初始化时就有的，因此会缺失一些运行时信息，如选中文本、当前页面标题等。
-   *   - 只有 run 的 ctx 才会有这些运行时信息。
-   *   TODO 这个问题获取后续可以完善。提供一个 api 让插件在非 run 函数内也能 get 一些运行期信息
+   * 
+   * TODO 可以移至 AppCtx 中的 registerEvent 方法里，然后这里保留为语法糖
+   *   本质上 run 和 onCreateItem 都可以通过 registerEvent 方法进行声明
    */
-  onCreateItem?: (el: HTMLElement, ctx: PluginInterfaceCtx) => void;
+  onCreateItem?: (el: HTMLElement, ctx: PluginRunCtx) => void;
 
   /**
    * 插件加载时调用
-   * TODO
-   *   目前没什么用，应该给他一个 ctx，这样可以加载时就进行注册面板等操作
-   *   不过目前还是提倡在 run 内判断首次运行时注册，避免软件启用时就做一大堆操作
+   * 
+   * @param app 全局上下文
    */
-  onLoad?: () => void;
+  onLoad?: (app: PluginAppCtx) => void;
 
   /**
    * 插件卸载时调用
@@ -94,36 +101,47 @@ export interface PluginInterface {
 }
 
 /** 插件运行时上下文 */
-export interface PluginInterfaceCtx {
+export interface PluginRunCtx {
   /** 环境信息 */
   env: {
     /** 当前选中文本 */
-    selectedText?: string;
-    /** 当前平台 */
-    platform: 'app' | 'obsidian-plugin' | string;
+    selectedText?: string
     /** 当前激活的应用/窗口名称 */
-    activeAppName?: string;
+    activeAppName?: string
     /** 当前文档/页面标题（如浏览器页面标题、Obsidian 笔记名等） */
-    activeDocTitle?: string;
+    activeDocTitle?: string
     /**
      * 当前文档/页面链接（如浏览器页面 URL、Obsidian 笔记路径等）
      *
      * 目前只支持 Obsidian 环境，App (Tauri) 环境暂未支持
      *   App 端很难获取，UIA 有可能可以但也很麻烦，不一定能拿到
      */
-    activeDocUrl?: string;
-
-    /** 仅 Obsidian 环境拥有 */
-    obsidian?: {
-        plugin: any;
-        ctx: any;
-    };
+    activeDocUrl?: string
 
     // TODO: 更多环境
     // - miniEditorText?: string;
     // - historySelected (用来连续复制，或模型连续提供上下文时使用)
     // - 当前选中类型 (文件/图片/文字等...)
-  }
+  },
+}
+
+/** 插件全局上下文
+ * 
+ * 主要是仅 get 方法、静态的、任何插件任何情景中，这部分的上下文不变
+ */
+export interface PluginAppCtx {
+  env: {
+    /** 当前平台 */
+    platform: 'app' | 'obsidian-plugin' | string;
+    /** 仅 Obsidian 环境拥有 */
+    obsidian?: {
+      plugin: any; // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
+      // app, 略，plugin.app 获取就好
+      ctx: any;
+    };
+    pluginName: string;
+    pluginId: string;
+  },
   /** API 接口 */
   api: {
     /**
@@ -148,16 +166,22 @@ export interface PluginInterfaceCtx {
 
     /**
      * 读文件（低~高风险）
-     * @param basePath 基础路径标识，`CONFIG` 表示配置目录，`PUBLIC` 表示公共目录
+     * @param basePath 基础路径标识
+     *   - `CONFIG` | 表示配置目录
+     *   - `PUBLIC` | 表示公共资源目录
+     *   - `CACHE`  | (default) 表示缓存目录
      * @param relPath  相对路径，禁止包含 `../` 等路径穿越
      * 
      * TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
      */
-    readFile: (basePath: 'CONFIG' | 'PUBLIC', relPath: string) => Promise<string | null>;
+    readFile: (path?: {
+      relPath: string,
+      basePath?: 'CACHE' | 'NOTE' | 'DICT'
+    }) => Promise<string | null>;
 
     /**
      * 写文件（低~高风险）
-     * @param basePath  基础路径标识
+     * @param basePath  基础路径标识 (详见 readFile 函数说明)
      * @param relPath   相对路径，禁止包含 `../` 等路径穿越
      * @param content   文件内容
      * @param is_append 是否追加写入
@@ -165,11 +189,18 @@ export interface PluginInterfaceCtx {
      * TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
      */
     writeFile: (
-      basePath: 'CONFIG' | 'PUBLIC',
-      relPath: string,
       content: string,
-      is_append?: boolean
+      path?: {
+        relPath: string,
+        basePath?: 'CACHE' | 'NOTE' | 'DICT'
+      },
+      is_append?: boolean,
     ) => Promise<boolean>;
+
+    // TODO event 还可以完善: 语法糖 (双击、右击)
+    // 补充: onCreateItem 是 registerEvent 的语法糖，run 其实又是 onCreateItem 的语法糖
+    //   如果你的任务相对简单，可以直接使用这两个语法糖
+    // registerEvent: (event: 'createItem'|'run') => Promise<void>
 
     // #region 面板相关
 
@@ -220,7 +251,7 @@ export interface PluginInterfaceCtx {
     // 
     // 话说这里要弄权限管理不，如上面那些带风险的接口
     // 然后没有权限的插件调用这些接口时，就会 NOTICE方式提示用户某插件需要，并引导用户自行开启
-  }
+  };
 }
 
 /**
@@ -237,7 +268,6 @@ export interface UrlRequestConfig {
   onChunk?: (chunk: string) => void;  // 每个 SSE chunk 的回调
   onDone?: () => void;                // 流结束回调
 }
-
 /**
  * 统一响应接口
  */
@@ -251,4 +281,100 @@ export interface UrlResponseData {
   json?: any;
   originalResponse: any; // 原始响应对象，用于调试
   // 可能还有 arrayBuffer headers json status text
+}
+
+/**
+ * 面板上的功能项的定义
+ * 
+ * 同时也是 toml 扩展名内容的格式
+ * 
+ * ## 作为面板上的功能项
+ * 
+ * 统一将不同的来源整合成相同的结果。来源可能是:
+ * - 各种词典 (json / yaml / toml)。TODO json/yaml 未支持，需支持一下
+ *   - md 类型 (txt一定是md类型 (纯文本类型也行，目前不区分这两))
+ *   - command_ob 类型，会转义为执行 ob 命令
+ * - 插件 (js)
+ * - 注意 csv / txt 不走这里，不会仅面板显示，只走数据库
+ */
+export interface PanelItem {
+  /// 显示名。众多别名/匹配名中的主名称
+  label: string
+  /** 详见 PluginInterface.metadata.icon 注释，此处的 string 使用前记得 DOMPurify 处理 */
+  icon?: string
+  /**
+   * 现用法:
+   * 在字典中表示 callback 的类型
+   * 
+   * 旧用法:
+   * 悬浮时展示说明 (为安全起见，目前仅支持图片链接而非任意html)。
+   * 话说如果不包含用例，像ob环境，直接渲染岂不是更好?
+   */
+  detail?: string
+
+  /// 匹配名，显示名的多个别名、匹配增强名、拼音等
+  /// (不是id)
+  key?: string
+  /** 用于控制其项的排序，越小越靠前，默认为 1000 */
+  order?: number
+  /** 
+   * 多级菜单中的子菜单项
+   * - 目前仅菜单栏支持多级菜单，工具栏不支持
+   * - 仅 json/yaml/toml 来源支持声明多级菜单，txt 和 js 不支持
+   */
+  children?: PanelItem[]
+
+  // output_string 与 plugin 互斥，有且仅有一个，另一个为未定义
+  // 通常分别为 toml 和 js 定义的面板功能项
+
+  /**
+   * exec_type
+   * exec_content 根据 exec_type 的不同，表示不同，exec_type 为:
+   * - script     | 则 content 为脚本 id。可选通过 id 找到脚本并执行其 run 方法。
+   *                但一般情况下会有 plugin 的冗余字段存在，用那个更好。
+   * - string     | 输出对应文本
+   * - md         | 同 string, 只是声明这是个 md 内容 (即可选使用 md 渲染的方式预览内容)
+   * - path       | 输出对应 path/url 的文件 (一般是图片路径，通过剪切板黏贴出来)
+   * - command_ob | 仅 obsidian 环境生效，执行 obsidian 命令
+   * 
+   * 补充: 旧版会使用 detail 来表示 command_ob；
+   * 旧版会使用搜索框的特殊标识来表示图片/文件路径
+   */
+  type?: "script"|"string"|"md"|"path"|"command_ob"|"folder"
+  content?: string
+
+  // (仅插件创建的项才有，词典等其他方式创建时这里是未定义)
+  plugin?: PluginInterface
+
+  // 下面内容均为废弃项
+  /*
+    * 执行该项
+    * - 字符串: 输出该字符串，一般用于词典。方便声明demo模板
+    * - 函数: 自定义回调，一般用于自定义脚本
+    * 
+    * 废弃，且没有 string 类型的可能
+    */
+  // callback?: string | PluginInterface_run
+  /*
+    * 仅脚本支持的部分
+    * 
+    * 这里的 string 类型是无效的 (应去掉)，放这里只是为了避免 toml_parse 转该类型时编辑器报错
+    * 
+    * 废弃
+    */
+  // onCreateItem_callback?: string | PluginInterface_onCreateItem
+}
+
+/** 加载过的插件的元数据缓存
+ * (基本同 PluginInterface.metadata, icon 和 css 不要)
+ * 
+ * 同时 `Map<path, MetadataCache>` 也是 cache_plugin_meta.json 文件内容的格式
+ */
+export interface MetadataCache {
+  id: string;
+  version: string;
+  min_app_version: string;
+  name?: string;
+  author?: string;
+  description?: string;
 }

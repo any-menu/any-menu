@@ -7,8 +7,8 @@ label = "with anyblock"
 [[categories.children]]
 label = "树图"
 key = "列表转树图 list2echarts_tree"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_tree]
 
 - 11
@@ -31,8 +31,8 @@ callback = """
 [[categories.children]]
 label = "径向树图"
 key = "列表转径向树图 list2echarts_tree_radial"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_tree_radial]
 
 - 11
@@ -55,8 +55,8 @@ callback = """
 [[categories.children]]
 label = "树图_带方向"
 key = "列表转树图_带方向 list2echarts_tree_BT"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_tree_BT]
 
 - 11
@@ -79,8 +79,8 @@ callback = """
 [[categories.children]]
 label = "树图_折线"
 key = "列表转树图_折线 list2echarts_tree_polyline"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_tree_polyline]
 
 - 11
@@ -103,8 +103,8 @@ callback = """
 [[categories.children]]
 label = "旭日图"
 key = "列表转旭日图 list2echarts_sunburst"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_sunburst]
 
 - 11
@@ -127,8 +127,8 @@ callback = """
 [[categories.children]]
 label = "甘特图"
 key = "列表转甘特图 list2echarts_gantt"
-detail = "md"
-callback = """
+type = "md"
+content = """
 [list2echarts_gantt]
 
 - 2025-12-03/2025-12-24 | 上半，杜林、温迪、雅柯达卡池
@@ -155,8 +155,8 @@ label = "tree"
 [[categories.children]]
 label = "线图"
 key = "线图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const oneDay = 86400000;
 const data = [];
@@ -259,8 +259,8 @@ const timeId = setInterval(() => {
 [[categories.children]]
 label = "柱状图"
 key = "柱状图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const data = [];
 
@@ -338,8 +338,8 @@ const timeId = setInterval(() => {
 [[categories.children]]
 label = "饼图"
 key = "饼图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 {
   "legend": {
@@ -416,8 +416,8 @@ callback = """
 [[categories.children]]
 label = "散点图"
 key = "散点图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 {
   "xAxis": {},
@@ -459,8 +459,8 @@ callback = """
 [[categories.children]]
 label = "极坐标图"
 key = "极坐标图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const data = []
 
@@ -504,8 +504,8 @@ const option = {
 [[categories.children]]
 label = "烛台图"
 key = "烛台图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const upColor = '#ec0000'
 const upBorderColor = '#8A0000'
@@ -817,8 +817,8 @@ const option = {
 [[categories.children]]
 label = "雷达图"
 key = "雷达图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 {
   "legend": {
@@ -858,8 +858,8 @@ callback = """
 [[categories.children]]
 label = "热力图"
 key = "热力图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 /*
  * perlin noise helper from https://github.com/josephg/noisejs
@@ -1048,8 +1048,8 @@ const height = 500
 [[categories.children]]
 label = "树图"
 key = "树图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const data = await fetch(
   'https://theme-hope-assets.vuejs.press/data/flare.json',
@@ -1086,8 +1086,8 @@ const height = 600
 [[categories.children]]
 label = "多图"
 key = "多图"
-detail = "md"
-callback = """
+type = "md"
+content = """
 ```echarts
 const option = {
   legend: {},

@@ -18,6 +18,13 @@ export default defineConfig([
       "obsidianmd/sample-names": "off",
       // example: add a rule not in the recommended set and set its severity
       "obsidianmd/prefer-file-manager-trash-file": "error",
+
+      // 允许空 `{}`
+      "no-empty": "off",
+      // addEventListener 的回调允许异步
+      "@typescript-eslint/no-misused-promises": "off",
+      // 允许 instanceof (多窗口时有风险。需确保 el 从当前窗口内拿到的，避免交叉判断)
+      "obsidianmd/prefer-instanceof": "off",
     },
   },
 ]);

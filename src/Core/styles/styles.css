@@ -548,8 +548,9 @@ div.editable-textarea-textarea {
   display: inline-block;
   box-sizing: border-box;
   z-index: 100;
-  color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  color: var(--am-pre-text-color);
+  background: var(--am-bg-color);
+  border: 1px solid var(--am-pre-bd-color);
   border-radius: 8px;
 }
 .am-search input.am-search-input {
@@ -559,19 +560,17 @@ div.editable-textarea-textarea {
   padding: 0 12px;
   border: none;
   outline: none;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
-  border: 1px solid var(--am-background-color);
+  color: var(--am-pre-text-color);
+  background: var(--am-pre-bg-color);
   border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 .am-search input.am-search-input:focus {
-  border-color: var(--am-bright-color);
+  border-color: var(--am-pre-bd-hlcolor);
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */
 /* 建议列表 */
-.am-panel.reverse .am-search .am-search-suggestion {
+.am-panel.am-reverse .am-search .am-search-suggestion {
   top: unset;
   bottom: 100%;
 }
@@ -587,7 +586,7 @@ div.editable-textarea-textarea {
   bottom: unset;
   padding: 4px;
   border-radius: 8px;
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-pre-bg-color);
   opacity: 0.98;
   border: 1px solid var(--ab-tab-root-bd-color);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -704,7 +703,7 @@ div.editable-textarea-textarea {
   grid-template-rows: repeat(10, auto);
   gap: 0 0;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -713,7 +712,8 @@ div.editable-textarea-textarea {
   padding: 4px;
   counter-reset: alt-index 0;
 }
-.am-context-menu .am-context-menu-item {
+
+.am-context-menu-item {
   box-sizing: border-box;
   position: relative;
   width: 100%;
@@ -726,17 +726,17 @@ div.editable-textarea-textarea {
   font-size: 14px;
   cursor: pointer;
 }
-.am-context-menu .am-context-menu-item .left {
+.am-context-menu-item .left {
   margin-right: 10px;
 }
-.am-context-menu .am-context-menu-item:hover {
+.am-context-menu-item:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.am-context-menu .am-context-menu-item.focus-active {
+.am-context-menu-item.focus-active {
   background-color: var(--am-bright-color) !important;
   color: #ffffff;
 }
-.am-context-menu .am-context-menu-item::after {
+.am-context-menu-item::after {
   counter-increment: alt-index 1;
   content: attr(data-altkey);
   display: none;
@@ -747,22 +747,26 @@ div.editable-textarea-textarea {
   opacity: 0.6;
   color: #ffffff;
 }
-.am-context-menu .am-context-menu-item.has-children::before {
+.am-context-menu-item.has-children::before {
   content: "▶";
   float: right;
   font-size: 12px;
   margin-top: 2px;
 }
-.am-context-menu .am-context-menu-item.has-children > .am-context-menu.sub-menu {
+.am-context-menu-item.has-children > .am-context-menu.sub-menu {
   position: absolute;
   top: -4px;
   left: calc(0px + 100%);
 }
-.am-context-menu .am-context-menu-item .am-context-menu-label {
+.am-context-menu-item .am-context-menu-label {
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.menu-item.am-context-menu-item.has-children {
+  display: block;
 }
 
 .ab-contextmenu-tooltip {
@@ -790,16 +794,16 @@ div.editable-textarea-textarea {
   width: -moz-fit-content;
   width: fit-content;
   margin: 0;
-  min-height: 32px;
+  min-height: 30px;
   max-width: 506px;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-bg-color);
   border-radius: 8px;
   border: 1px solid var(--ab-tab-root-bd-color);
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-  padding: 0 1px;
+  padding: 1px;
 }
 .am-toolbar:empty {
   display: none;
@@ -937,6 +941,71 @@ div.editable-textarea-textarea {
   height: 16px;
 }
 
+/** 标题栏 */
+#main > .am-panel .am-titlebar {
+  -webkit-app-region: drag;
+}
+
+.am-titlebar {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 2px;
+  height: 30px;
+  padding-right: 3px;
+  background: var(--am-bg-color);
+  color: var(--am-text-color);
+  border-radius: 10px;
+}
+.am-titlebar button.am-titlebar-btn {
+  position: relative;
+  height: 29px;
+  background: none;
+  color: var(--ab-tab-root-tx-color);
+  padding: 0 9px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.am-titlebar button.am-titlebar-btn:hover {
+  background: var(--ab-tab-root-hv-color);
+}
+.am-titlebar button.am-titlebar-btn.active {
+  background: var(--ab-tab-root-hv-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list {
+  position: absolute;
+  width: 150px;
+  top: calc(100% + 1px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px;
+  z-index: 102;
+  border-radius: 10px;
+  background: var(--am-bg-color);
+  color: var(--am-text-color);
+  border: solid 1px var(--am-bd-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > hr {
+  margin: 5px 12px;
+  padding: 0;
+  border-bottom: 1px solid var(--am-bd-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div {
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div:hover {
+  background: var(--ab-tab-root-hv-color);
+}
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;
@@ -944,45 +1013,44 @@ div.editable-textarea-textarea {
 }
 
 :root {
-  --am-bright-color: #23A8F2;
   --am-text-color: #f6f6f6;
-  --am-background-color: #2f2f2f;
-  color: var(--am-text-color);
-  background-color: var(--am-background-color);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --am-text-color: #1E1E1E;
-    --am-background-color: #f6f6f6;
-  }
-}
-:root {
+  --am-bg-color: #1B1B1B;
+  --am-bd-color: #34343f;
+  --am-pre-text-color: #e3e3e3;
+  --am-pre-bg-color: #282828;
+  --am-pre-bd-color: #383839;
+  --am-pre-bd-hlcolor: #0078d7;
+  --ab-tab-root-tx-color: #9e9e9e;
   --ab-tab-root-bg-color: #0d1117;
   --ab-tab-root-bd-color: #34343f;
   --ab-tab-root-hv-color: #363639;
-  --ab-tab-root-tx-color: #9e9e9e;
-  --ab-bright-color: orange;
-  --pre-background-color: #1b1b1b;
-  --ab-table-border-width: 1px;
-  --ab-table-border-color: #363636;
+  --am-bright-color: #23A8F2;
+  --am-bright-bg-color: #4a89dc;
   --ab-width-inner: 100%;
   --ab-width-outer: 100%;
-  --ab-menu-bg-color: #1B1B1B;
-  --ab-menu-text-color: #CCCCCC;
+  --ab-table-border-width: 1px;
+  --ab-table-border-color: #363636;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --ab-tab-root-bg-color: #ffffff;
-    --ab-tab-root-bd-color: #e0e0e0;
-    --ab-tab-root-hv-color: #d7d7d7;
-    --ab-tab-root-tx-color: #5c5c5c;
-    --pre-background-color: #f2f2f2;
-    --ab-menu-bg-color: #ffffff;
-    --ab-menu-text-color: black;
-  }
+:root.am-theme-light {
+  --am-text-color: #1E1E1E;
+  --am-bg-color: #f6f6f6;
+  --am-bd-color: #e0e0e0;
+  --am-pre-text-color: #3b3b3b;
+  --am-pre-bg-color: #ffffff;
+  --am-pre-bd-color: #e5e5e5;
+  --am-pre-bd-hlcolor: #005eb5;
+  --ab-tab-root-tx-color: #5c5c5c;
+  --ab-tab-root-bg-color: #ffffff;
+  --ab-tab-root-bd-color: #e0e0e0;
+  --ab-tab-root-hv-color: #d7d7d7;
 }
+
+html {
+  color: var(--am-text-color);
+  background-color: var(--am-bg-color);
+}
+
 html, body, #main, #am-config {
   margin: 0;
   padding: 0;
@@ -1010,7 +1078,7 @@ html, body, #main {
   left: 4px;
 }
 
-#main.reverse > .windows-pin {
+#main.am-reverse > .windows-pin {
   bottom: unset;
   top: 5px;
 }
@@ -1024,7 +1092,7 @@ html, body, #main {
   z-index: 15;
   flex-direction: column;
 }
-.am-panel.reverse {
+.am-panel.am-reverse {
   flex-direction: column-reverse;
 }
 .am-panel.am-hide {
@@ -1042,8 +1110,14 @@ html, body, #main {
 #main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
   -webkit-app-region: drag;
 }
+#main > .am-panel .am-search-input:-moz-placeholder {
+  -webkit-app-region: drag;
+}
+#main > .am-panel .am-search-input:placeholder-shown {
+  -webkit-app-region: drag;
+}
 
-.am-pin {
+.am-panel-out {
   position: absolute;
   right: -32px;
 }
@@ -1064,18 +1138,23 @@ html, body, #main {
   outline: none;
   background: transparent;
   border-radius: 8px;
+  background: var(--am-bg-color);
   color: var(--am-text-color);
-  opacity: 0.7;
+  opacity: 0.3;
 }
 .am-pin:hover, .windows-pin:hover {
-  background-color: var(--ab-tab-root-hv-color);
+  background: var(--ab-tab-root-hv-color);
+  opacity: 1;
   cursor: pointer;
 }
 
 .windows-pin-active {
-  background: rgba(0, 0, 0, 0.02) !important;
+  background: rgba(128, 128, 128, 0.02) !important;
 }
 
+.am-pin-active .am-pin, .windows-pin-active .am-pin {
+  opacity: 1;
+}
 .am-pin-active .am-pin > svg, .am-pin-active .windows-pin > svg, .windows-pin-active .am-pin > svg, .windows-pin-active .windows-pin > svg {
   stroke: var(--am-bright-color);
 }
@@ -1089,7 +1168,7 @@ html, body, #main {
   padding: 0;
   height: 250px;
   color: var(--ab-tab-root-tx-color);
-  background-color: var(--ab-menu-bg-color);
+  background-color: var(--am-bg-color);
   z-index: 10;
   flex-direction: column;
 }
@@ -1118,6 +1197,11 @@ html, body, #main {
   overflow-y: auto;
   max-height: 100%;
 }
+.am-custom-panel > div {
+  background: var(--am-bg-color);
+  border: 1px solid var(--ab-tab-root-bd-color);
+  border-radius: 8px;
+}
 
 /* -------------------------------- 配置页面 ----------------------------- */
 .tab-root-parent {
@@ -1128,7 +1212,7 @@ html, body, #main {
   border-radius: 8px;
 }
 
-.tab-root {
+.am-config {
   padding: 0px;
   position: relative;
   width: 100%;
@@ -1137,32 +1221,32 @@ html, body, #main {
   background-color: var(--ab-tab-root-bg-color);
   color: var(--ab-tab-root-tx-color);
 }
-.tab-root * {
+.am-config * {
   box-sizing: border-box;
 }
-.tab-root .tab-nav-container {
+.am-config .tab-nav-container {
   display: flex;
   height: 32px;
   line-height: 32px;
   background-color: var(--ab-tab-root-bd-color);
 }
-.tab-root .tab-nav-container > div {
+.am-config .tab-nav-container > div {
   display: inline-block;
   padding: 0 12px;
   cursor: pointer;
   background-color: var(--ab-tab-root-bd-color);
 }
-.tab-root .tab-nav-container > div.active {
+.am-config .tab-nav-container > div.active {
   border-bottom: none;
   background-color: var(--ab-tab-root-bg-color);
 }
-.tab-root .tab-nav-container > div {
+.am-config .tab-nav-container > div {
   border-radius: 6px 6px 0 0;
 }
-.tab-root .tab-nav-container > div:first-child {
+.am-config .tab-nav-container > div:first-child {
   border-radius: 0 6px 0 0;
 }
-.tab-root .tab-content-container {
+.am-config .tab-content-container {
   position: absolute;
   top: 32px;
   bottom: 0;
@@ -1171,23 +1255,29 @@ html, body, #main {
   background-color: var(--ab-tab-root-bg-color);
   color: var(--ab-tab-root-tx-color);
 }
-.tab-root .tab-content-container > div {
+.am-config .tab-content-container > div {
   width: 100%;
   height: 100%;
   overflow: auto;
   padding: 8px;
+  padding-bottom: 58px;
   white-space: pre-wrap;
   background-color: var(--ab-tab-root-bg-color);
   display: none;
 }
-.tab-root .tab-content-container > div.active {
+.am-config .tab-content-container > div.active {
   display: block;
 }
-.tab-root div:has(> textarea) {
-  position: relative;
+.am-config .tab-content-container > div[index=setting-modi-files] {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  padding-bottom: 8px;
 }
-.tab-root div:has(> textarea) textarea {
+.am-config .tab-content-container > div[index=setting-modi-files] span {
+  height: 30px;
+}
+.am-config .tab-content-container > div[index=setting-modi-files] textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -1196,7 +1286,8 @@ html, body, #main {
   font-size: 14px;
   line-height: 20px;
   padding: 8px;
-  background-color: var(--pre-background-color);
+  border: 1px solid var(--am-pre-bd-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
   resize: none;
   border: none;
@@ -1205,25 +1296,29 @@ html, body, #main {
   outline: none;
   box-shadow: none;
 }
-.tab-root div:has(> textarea) textarea.no-save {
+.am-config .tab-content-container > div[index=setting-modi-files] textarea.no-save {
   border-left: 1px solid orange;
 }
-.tab-root div:has(> textarea) textarea.error-save {
+.am-config .tab-content-container > div[index=setting-modi-files] textarea.error-save {
   border-left: 1px solid red;
 }
-.tab-root .setting-buttons {
+.am-config .setting-buttons {
   position: absolute;
   height: 28px;
   right: 16px;
   bottom: 16px;
   opacity: 0.85;
+  z-index: 2;
 }
-.tab-root .setting-buttons button {
+.am-config .setting-buttons button {
   border-radius: 8px;
   padding: 2px 18px;
   margin-left: 10px;
+  outline: none;
+  box-shadow: none;
+  border: 1px solid var(--ab-tab-root-bd-color);
 }
-.tab-root details {
+.am-config details {
   white-space: normal;
 }
 
@@ -1260,7 +1355,8 @@ table.dataview-table .btn {
 }
 .dataview-card .card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 6px;
   border: solid 1px var(--ab-tab-root-bd-color);
   padding: 10px;
@@ -1269,8 +1365,26 @@ table.dataview-table .btn {
 .dataview-card .card:hover {
   background-color: var(--ab-tab-root-hv-color);
 }
-.dataview-card .btn {
+.dataview-card .card > div {
+  font-size: 15px;
+  line-height: 24px;
+  width: 100%;
+}
+.dataview-card .card > div.name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+}
+.dataview-card .card > div.uninstall, .dataview-card .card > div.isenabled, .dataview-card .card > div.isdownload {
+  width: auto;
+  margin-top: auto;
+}
+.dataview-card .card > div.uninstall, .dataview-card .card > div.isdownload {
+  margin-left: auto;
+}
+.dataview-card .card .btn {
   float: right;
+  height: 24px;
 }
 
 .dataview-table .btn, .dataview-card .btn {
@@ -1301,7 +1415,7 @@ table.dataview-table .btn {
 }
 
 /* -------------------------------- 配置页面配置项 ------------------------ */
-.tab-root .setting-item {
+.am-config .setting-item {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1313,38 +1427,38 @@ table.dataview-table .btn {
   border-radius: 12px;
   background: none;
 }
-.tab-root .setting-item .setting-item-info {
+.am-config .setting-item .setting-item-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.tab-root .setting-item .setting-item-info .setting-item-name {
+.am-config .setting-item .setting-item-info .setting-item-name {
   font-weight: 500;
   margin-bottom: 2px;
 }
-.tab-root .setting-item .setting-item-info .setting-item-desc {
+.am-config .setting-item .setting-item-info .setting-item-desc {
   font-size: 0.9em;
   margin-top: 4px;
   opacity: 0.8;
 }
-.tab-root .setting-item .setting-item-control {
+.am-config .setting-item .setting-item-control {
   margin-top: 4px;
 }
-.tab-root .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
-.tab-root .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
+.am-config .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
+.am-config .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.tab-root .setting-item .setting-item-control .setting-item-text {
+.am-config .setting-item .setting-item-control .setting-item-text {
   padding: 4px 8px;
   border-radius: 6px;
   border: 0.5px solid var(--ab-tab-root-bd-color);
   outline: none;
   box-shadow: none;
-  background-color: var(--pre-background-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle {
+.am-config .setting-item .setting-item-control .setting-item-toggle {
   display: inline-block;
   width: 40px;
   height: 20px;
@@ -1353,14 +1467,14 @@ table.dataview-table .btn {
   position: relative;
   cursor: pointer;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle input {
+.am-config .setting-item .setting-item-control .setting-item-toggle input {
   opacity: 0;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle::after {
+.am-config .setting-item .setting-item-control .setting-item-toggle::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -1371,22 +1485,36 @@ table.dataview-table .btn {
   background-color: white;
   transition: all 0.25s ease;
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle.is-enabled {
+.am-config .setting-item .setting-item-control .setting-item-toggle.is-enabled {
   background-color: var(--am-bright-color);
 }
-.tab-root .setting-item .setting-item-control .setting-item-toggle.is-enabled::after {
+.am-config .setting-item .setting-item-control .setting-item-toggle.is-enabled::after {
   left: 22px;
 }
-.tab-root .setting-item .setting-item-control .setting-item-select {
+.am-config .setting-item .setting-item-control .setting-item-select {
   padding: 4px 8px;
   border-radius: 6px;
   border: 0.5px solid var(--ab-tab-root-bd-color);
   outline: none;
   box-shadow: none;
-  background-color: var(--pre-background-color);
+  background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
 }
-.tab-root .setting-item .setting-item-heading {
+.am-config .setting-item .setting-item-control input[type=color]::-webkit-color-swatch-wrapper,
+.am-config .setting-item .setting-item-control input[type=color]::-webkit-color-swatch {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+.am-config .setting-item .setting-item-control .setting-item-color-picker {
+  padding: 0;
+  margin: 0;
+  border: solid 2px var(--ab-tab-root-bd-color);
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+}
+.am-config .setting-item .setting-item-heading {
   flex-basis: 100%;
   display: flex;
   align-items: center;
@@ -1395,7 +1523,7 @@ table.dataview-table .btn {
   cursor: pointer;
   font-size: 22px;
 }
-.tab-root .setting-item .setting-item-heading .collapse-btn {
+.am-config .setting-item .setting-item-heading .collapse-btn {
   display: inline-flex;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -1403,7 +1531,7 @@ table.dataview-table .btn {
   height: 7px;
   margin-left: 10px;
 }
-.tab-root .setting-item .setting-item-heading .collapse-btn::after {
+.am-config .setting-item .setting-item-heading .collapse-btn::after {
   content: "";
   display: block;
   box-sizing: border-box;
@@ -1415,14 +1543,14 @@ table.dataview-table .btn {
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(45deg) translate(-1px, 0px);
 }
-.tab-root .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
+.am-config .setting-item .setting-item-heading.is-collapsed .collapse-btn::after {
   transform: rotate(-45deg) translate(-2px, 0px);
 }
-.tab-root .setting-item .setting-item-heading:hover .collapse-btn::after {
+.am-config .setting-item .setting-item-heading:hover .collapse-btn::after {
   color: var(--am-bright-color);
   border-color: var(--am-bright-color);
 }
-.tab-root .setting-item .setting-item-divider {
+.am-config .setting-item .setting-item-divider {
   flex-basis: 100%;
   width: 100%;
   height: 1px;
@@ -1430,26 +1558,38 @@ table.dataview-table .btn {
   background-color: var(--ab-tab-root-bd-color);
 }
 
-/* -------------------------------- 黑暗主题滚动条样式 -------------------- */
-@media (prefers-color-scheme: dark) {
+/* -------------------------------- 滚动条样式 ------------------------ */
+:root {
   /* 适用于 Webkit 内核的浏览器 (Chrome, Safari, Edge 等) */
-  ::-webkit-scrollbar {
-    width: 12px; /* 滚动条整体宽度 */
-    height: 12px; /* 对于水平滚动条的高度 */
-  }
-  ::-webkit-scrollbar-track {
-    background: #202324; /* 滚动条轨道背景色 */
-    border-radius: 6px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: #4a4d4f; /* 滚动条滑块颜色 */
-    border-radius: 6px; /* 滑块圆角 */
-    border: 3px solid #202324; /* 在滑块周围创建边框，看起来像内边距 */
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #5a5e60; /* 鼠标悬停时滑块的颜色 */
-  }
 }
+:root ::-webkit-scrollbar {
+  width: 12px; /* 滚动条整体宽度 */
+  height: 12px; /* 对于水平滚动条的高度 */
+}
+:root ::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background: var(--scroll-bg);
+}
+:root ::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  border: 3px solid var(--scroll-bg);
+  background-color: var(--scroll-main);
+}
+:root ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-hover);
+}
+:root {
+  --scroll-bg: #151517; /* 滚动条轨道背景色 */
+  --scroll-main: #3c3c3d; /* 滚动条滑块颜色 */
+  --scroll-hover: #545557; /* 滚动条滑块悬浮颜色 */
+}
+
+:root.am-theme-light {
+  --scroll-bg: #f0f0f0;
+  --scroll-main: #858585;
+  --scroll-hover: #858585;
+}
+
 /* -------------------------------- Obsidian 专用 ----------------------- */
 .am-ob-setting-btn {
   position: absolute;
@@ -1457,6 +1597,13 @@ table.dataview-table .btn {
   z-index: 4;
   left: 16px;
   right: auto;
+}
+
+div.menu {
+  overflow: visible;
+}
+div.menu .menu-scroll {
+  overflow: visible;
 }
 
 /* -------------------------------- 默认 ------------------------------- */
@@ -1489,13 +1636,12 @@ table.dataview-table .btn {
   border-color: #396cd8;
   background-color: #e8e8e8;
 }
-@media (prefers-color-scheme: dark) {
-  #main a:hover, #am-config a:hover {
-    color: #24c8db;
-  }
-  #main button:active, #am-config button:active {
-    background-color: rgba(15, 15, 15, 0.4117647059);
-  }
+
+:root.am-theme-dark #main a:hover, :root.am-theme-dark #am-config a:hover {
+  color: #24c8db;
+}
+:root.am-theme-dark #main button:active, :root.am-theme-dark #am-config button:active {
+  background-color: rgba(15, 15, 15, 0.4117647059);
 }
 
 /* -------------------------------- 默认并废弃 --------------------------- */

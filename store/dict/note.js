@@ -1,10 +1,9 @@
-let cache_ctx = null
 let cache_el = null
 let cache_el_content = null
 
 let alt_v_state = false  // 虚拟alt状态
 
-function buildPanel() {
+function buildPanel(app) {
     const root = document.createElement('div')
         root.className = 'note-root'
 
@@ -56,12 +55,15 @@ function buildPanel() {
         btnSave.className = 'btn'
         btnSave.dataset.altKey = '1'
         btnSave.onclick = async () => {
-            const ret = await cache_ctx.api.writeFile('PUBLIC', folderPath.value + fileName.value, `## ${titleName.value}\n\n${contentEl.value}\n\n`, true)
+            const ret = await app.api.writeFile(`## ${titleName.value}\n\n${contentEl.value}\n\n`, {
+                relPath: folderPath.value + fileName.value,
+                basePath: 'NOTE', 
+            }, true)
             if (ret) {
-                cache_ctx.api.notify('保存成功')
+                app.api.notify('保存成功')
             } else {
                 console.error('保存失败', ret)
-                cache_ctx.api.notify('保存失败')
+                app.api.notify('保存失败')
             }
         }
 
@@ -76,14 +78,14 @@ function buildPanel() {
         btnCopy.className = 'btn'
         btnCopy.dataset.altKey = '3'
         btnCopy.onclick = () => {
-            if (cache_ctx && contentEl.value) cache_ctx.api.saveToClipboard(contentEl.value)
+            if (app && contentEl.value) app.api.saveToClipboard(contentEl.value)
         }
 
     const btnInsert = document.createElement('button'); btnBar.appendChild(btnInsert); btnInsert.textContent = '插入'
         btnInsert.className = 'btn'
         btnInsert.dataset.altKey = '4'
         btnInsert.onclick = () => {
-            if (cache_ctx && contentEl.value) cache_ctx.api.sendText(contentEl.value)
+            if (app && contentEl.value) app.api.sendText(contentEl.value)
         }
 
     const btnCodeblock = document.createElement('button'); btnBar.appendChild(btnCodeblock); btnCodeblock.textContent = '嵌入代码块'
@@ -101,7 +103,7 @@ function buildPanel() {
         btnHistory.className = 'btn'
         btnHistory.dataset.altKey = '6'
         btnHistory.onclick = () => {
-            cache_ctx.api.notify('功能开发中...')
+            app.api.notify('功能开发中...')
         }
 
     const init_alt_mode = () => { // 复用 panel 提供的 alt 键管理
@@ -124,27 +126,27 @@ export default {
     metadata: {
         id: 'anymenu-note',
         name: '笔记',
-        version: '1.0.0',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         description: '快速保存笔记、查看笔记',
         icon: 'lucide-notebook-pen',
         css: `
 .note-root {
   padding:8px; display:flex; flex-direction:column; gap:6px; min-width:280px; font-size:13px;
-  background: var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
+  background: var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); border-radius:8px;
   .note-toolbar {
     display:flex; gap:6px; align-items:center; flex-wrap:wrap;
-    > * { flex:1; min-width:0; padding:4px 8px; background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:CurrentColor; border-radius:4px; }
+    > * { flex:1; min-width:0; padding:4px 8px; background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:CurrentColor; border-radius:4px; }
   }
   .note-content {
-    background:var(--am-background-color); color:currentColor; outline:none; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
+    background:var(--am-bg-color); color:currentColor; outline:none; padding:6px; border-radius:4px; white-space:pre-wrap; overflow-y:auto; resize:vertical; width:100%; box-sizing:border-box; border:1px solid var(--ab-tab-root-bd-color); font-size:inherit;
     font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; /* 跨平台强制mono字体 */
     height:190px;
   }
   .note-btnbar {
     display:flex; gap:6px;
-    button { background:var(--ab-menu-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
+    button { background:var(--am-bg-color); border:1px solid var(--ab-tab-root-bd-color); color:currentColor; border-radius:6px; cursor:pointer; padding: 4px 10px; }
   }
 }
 .show-altkey .note-root .note-btnbar button.btn::after {
@@ -156,16 +158,15 @@ export default {
     onLoad() {},
 
     onUnload() {
-        if (cache_ctx) cache_ctx.api.unregisterSubPanel('note-panel')
+        this.app.api.unregisterSubPanel('note-panel')
     },
 
     async run(ctx) {
         // 首次运行时注册面板
-        if (!cache_ctx) {
-            cache_ctx = ctx
-            cache_el = buildPanel()
-            ctx.api.registerSubPanel({ id: 'note-panel', el: cache_el })
-        } else cache_ctx = ctx
+        if (!cache_el) {
+            cache_el = buildPanel(this.app)
+            this.app.api.registerSubPanel({ id: 'note-panel', el: cache_el })
+        }
 
         // 有选中文本时 // TODO 判断一下上次有没有未保存的内容，若有，提供恢复方案
         if (cache_el_content) {
@@ -177,8 +178,8 @@ export default {
         alt_v_state = false
 
         // 切换到当前面板
-        ctx.api.hidePanel(['menu'])
-        ctx.api.showPanel(['note-panel'])
+        this.app.api.hidePanel(['menu'])
+        this.app.api.showPanel(['note-panel'])
         cache_el_content?.focus()
     }
 }

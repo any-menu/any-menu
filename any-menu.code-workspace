@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "src/Tauri"
+		},
+		{
+			"path": "src/CoreSource"
 		}
 	],
 	"settings": {

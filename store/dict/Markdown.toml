@@ -1,8 +1,8 @@
 [[categories]]
 label = "表格"
 key = "table 表格"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 |     |     |
 | --- | --- |
 |     |     |
@@ -12,8 +12,8 @@ callback = '''
 [[categories]]
 label = "代码块"
 key = "codeblock 代码块"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```
 
 ```
@@ -23,8 +23,8 @@ callback = '''
 [[categories]]
 label = "数学块"
 key = "mathblock 数学块"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 $$
 
 $$
@@ -34,8 +34,8 @@ $$
 [[categories]]
 label = "脚注"
 key = "footnote 脚注"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 [^1]
 
 [^1]: 

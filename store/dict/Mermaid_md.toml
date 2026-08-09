@@ -4,8 +4,8 @@ label = "流程图"
 [[categories.children]]
 label = "流程图"
 key = "flowchart graph 流程图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 flowchart TD
     A[Start] --> B{Is it?}
@@ -19,8 +19,8 @@ flowchart TD
 [[categories.children]]
 label = "流程图2"
 key = "flowchart graph 流程图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 flowchart TB
     c1-->a2
@@ -45,8 +45,8 @@ label = "时序图"
 [[categories.children]]
 label = "时序图"
 key = "sequenceDiagram 时序图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 sequenceDiagram
     participant A as Alice
@@ -59,8 +59,8 @@ sequenceDiagram
 [[categories.children]]
 label = "时序图2"
 key = "sequenceDiagram 时序图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 sequenceDiagram
     par Alice to Bob
@@ -82,8 +82,8 @@ label = "类图"
 [[categories.children]]
 label = "类图"
 key = "classDiagram 类图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 title: Animal example
@@ -117,8 +117,8 @@ classDiagram
 [[categories.children]]
 label = "类图2"
 key = "classDiagram 类图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 classDiagram
 
@@ -148,8 +148,8 @@ label = "状态图"
 [[categories.children]]
 label = "状态图"
 key = "stateDiagram 状态图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 title: Simple sample
@@ -168,8 +168,8 @@ stateDiagram-v2
 [[categories.children]]
 label = "状态图2"
 key = "stateDiagram 状态图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 stateDiagram
     direction LR
@@ -190,8 +190,8 @@ label = "实体关系图"
 [[categories.children]]
 label = "实体关系图"
 key = "erDiagram 实体关系图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 title: Order example
@@ -209,8 +209,8 @@ label = "用户旅程图"
 [[categories.children]]
 label = "用户旅程图"
 key = "journey 用户旅程图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 journey
     title My working day
@@ -230,8 +230,8 @@ label = "甘特图"
 [[categories.children]]
 label = "甘特图"
 key = "gantt 甘特图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 gantt
     title A Gantt Diagram
@@ -248,8 +248,8 @@ gantt
 [[categories.children]]
 label = "甘特图2"
 key = "gantt 甘特图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 gantt
     dateFormat  YYYY-MM-DD
@@ -290,8 +290,8 @@ label = "饼图"
 [[categories.children]]
 label = "饼图"
 key = "pie 饼图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 pie title Pets adopted by volunteers
     "Dogs" : 386
@@ -306,8 +306,8 @@ label = "象限图"
 [[categories.children]]
 label = "象限图"
 key = "quadrant 象限图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 quadrantChart
     title Reach and engagement of campaigns
@@ -329,8 +329,8 @@ quadrantChart
 [[categories.children]]
 label = "象限图2"
 key = "quadrant 象限图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 config:
@@ -356,8 +356,8 @@ label = "需求图"
 [[categories.children]]
 label = "需求图"
 key = "requirement 需求图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 requirementDiagram
 
@@ -379,8 +379,8 @@ test_entity - satisfies -> test_req
 [[categories.children]]
 label = "需求图2"
 key = "requirement 需求图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 requirementDiagram
 
@@ -458,8 +458,8 @@ label = "Git图"
 [[categories.children]]
 label = "Git图"
 key = "gitGraph Git图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 title: Example Git diagram
@@ -484,8 +484,8 @@ label = "C4图"
 [[categories.children]]
 label = "C4图"
 key = "C4Context C4图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 C4Context
     title System Context diagram for Internet Banking System
@@ -538,8 +538,8 @@ label = "思维导图"
 [[categories.children]]
 label = "思维导图"
 key = "mindmap 思维导图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 mindmap
   root((mindmap))
@@ -567,8 +567,8 @@ label = "时间线图"
 [[categories.children]]
 label = "时间线图"
 key = "timeline 时间线图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 timeline
     title History of Social Media Platform
@@ -583,8 +583,8 @@ timeline
 [[categories.children]]
 label = "时间线图2"
 key = "timeline 时间线图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 timeline
 title MermaidChart 2023 Timeline
@@ -605,8 +605,8 @@ label = "ZenUML"
 [[categories.children]]
 label = "ZenUML"
 key = "ZenUML"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 zenuml
     title Demo
@@ -622,8 +622,8 @@ label = "桑基图"
 [[categories.children]]
 label = "桑基图"
 key = "sankey 桑基图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 sankey
 
@@ -641,8 +641,8 @@ label = "XY图"
 [[categories.children]]
 label = "XY图"
 key = "xychart XY图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 xychart
     title "Sales Revenue"
@@ -659,8 +659,8 @@ label = "框图"
 [[categories.children]]
 label = "框图"
 key = "block 框图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 block
   columns 3
@@ -683,8 +683,8 @@ label = "数据包图"
 [[categories.children]]
 label = "数据包图"
 key = "packet 数据包图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 title: "TCP Packet"
@@ -716,8 +716,8 @@ label = "看板图"
 [[categories.children]]
 label = "看板图"
 key = "kanban 看板图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 kanban
 todo[Todo]
@@ -728,8 +728,8 @@ todo[Todo]
 [[categories.children]]
 label = "看板图2"
 key = "kanban 看板图2"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 config:
@@ -763,8 +763,8 @@ label = "架构图"
 [[categories.children]]
 label = "架构图"
 key = "architecture-beta 架构图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 architecture-beta
     group api(cloud)[API]
@@ -786,8 +786,8 @@ label = "雷达图"
 [[categories.children]]
 label = "雷达图"
 key = "radar-beta 雷达图 蜘蛛图 星图 蛛网图 极坐标图 Kiviat 图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 config:
@@ -816,8 +816,8 @@ label = "树型图"
 [[categories.children]]
 label = "树型图"
 key = "treemap-beta 树型图"
-detail = "md"
-callback = '''
+type = "md"
+content = '''
 ```mermaid
 ---
 config:

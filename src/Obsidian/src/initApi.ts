@@ -4,13 +4,14 @@ import {
   type Plugin,
   Notice,
 } from 'obsidian'
-import { RequestUrlParam, requestUrl } from 'obsidian'
-import { getLanguage } from 'obsidian'; // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
+import {
+  RequestUrlParam, requestUrl,
+  getLanguage // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
+} from 'obsidian'
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
-import { global_setting } from '@/Core/setting'
-import { AMPanel, global_el } from '@/Core/panel';
-import { getCursorInfo } from './panel'
-import { AM_SETTINGS_DEFAULT } from "./SettingTab"
+import { global_setting } from '@/Core/shared/setting'
+import { activeAMPanel } from '@/Core/panels/MulPanel';
+import { getCursorInfo } from './panels'
 
 export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用
@@ -18,10 +19,25 @@ export function initApi(plugin: Plugin) {
   
   global_setting.platform = 'obsidian-plugin'
 
-  // 语言环境
-  // obsidian 强制为 'auto' 类型，不允许在设置中手动指定语言类型
-  // if (global_setting.config.language == 'auto') { // 触发时机有问题
-  global_setting.state.language = getLanguage()
+  // obsidian 版本的某些默认配置有所不同
+  {
+    // 路径
+    const obConfigDir = plugin.app.vault.configDir; // 不一定 '.obsidian'，ob 设置 > 文件与链接 > 高级 > 切换设置文件夹可以设置
+    global_setting.config.cache_paths = `${obConfigDir}/plugins/any-menu/cache/`
+    global_setting.config.config_paths = `${obConfigDir}/plugins/any-menu/config/`
+    global_setting.config.dict_paths = `${obConfigDir}/plugins/any-menu/dict/`
+
+    // 语言环境
+    // obsidian 强制为 'auto' 类型，不允许在设置中手动指定语言类型
+    // if (global_setting.config.language == 'auto') { // 触发时机有问题
+    global_setting.state.language = getLanguage()
+
+    // 明暗模式
+    global_setting.api.getSystemIsDark = () => {
+      return activeDocument.body.classList.contains('theme-dark')
+    }
+    // global_setting.config.darkmode as 'light'|'dark'|'auto'
+  }
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
@@ -63,10 +79,10 @@ export function initApi(plugin: Plugin) {
     }
 
     if (global_setting.state.isPin) {
-      global_el.amPanel?.el.classList.add('am-pin-active')
+      activeAMPanel?.el.classList.add('am-pin-active')
     }
     else {
-      global_el.amPanel?.el.classList.remove('am-pin-active')
+      activeAMPanel?.el.classList.remove('am-pin-active')
     }
   }
 
@@ -77,7 +93,7 @@ export function initApi(plugin: Plugin) {
       return
     }
 
-    AMPanel.panel_hide()
+    activeAMPanel?.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     if (!plugin) return
     const cursorInfo = getCursorInfo(plugin)
@@ -276,6 +292,7 @@ export function initApi(plugin: Plugin) {
     }
   }
 
+  /* 旧版-读写配置，废弃。新版统一了 app 和 obsidian 版本的逻辑
   // obsidian 专用api: plugin.loadData, plugin.saveData 的封装
   global_setting.api.loadConfig = async (): Promise<boolean> => {
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
@@ -285,9 +302,10 @@ export function initApi(plugin: Plugin) {
 
     // 需要保持一致性，obsidian 专属设置与通用的 global 设置
     global_setting.isDebug = settings.isDebug
-    global_setting.config = global_setting.config = { ...global_setting.config, ...settings.config };
+    Object.assign(global_setting.config, settings.config };
 
     // 如果没有配置文件则生成一个默认值的配置文件
+    // (略，此处使用默认配置)
     // if (!data) {
     //   await plugin.saveData(settings)
     // }
@@ -309,6 +327,7 @@ export function initApi(plugin: Plugin) {
     await plugin.saveData(settings)
     return true
   }
+  */
 
   // 后端为 obsidian 时使用 —— obsidian api 版本 (支持跨域; 不支持SSE，已废弃)
   /*global_setting.api.urlRequest = async (conf: UrlRequestConfig): Promise<UrlResponse | null> => {
@@ -409,7 +428,7 @@ export function initApi(plugin: Plugin) {
       if (conf.isParseJson) {
         try {
           json = response.json;
-        } catch (_) {
+        } catch {
           json = null;
         }
       }
@@ -435,5 +454,4 @@ export function initApi(plugin: Plugin) {
     console.warn("obsidian 版需要 plugin 和 editor 上下文，应使用 getCursorInfo() 代替")
     return { x: -1, y: -1 }
   }
-
 }

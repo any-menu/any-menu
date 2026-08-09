@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    // "baseUrl": ".",
+    // 注意: Vite 打包时无法使用 tsconfig.json 中的路径别名，
+    //   如果项目用了 vite，还需要设置 resolve.alias。
+    //   如 Tauri 和 Browser 子项目 (Obsidian 那边是 esbuild)
+    "paths": {
+      "@/*": ["./src/*"],
+      // "@/Core/*": ["./src/CoreSource/*"],
+    },
+    "module": "ESNext",
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "src/Obsidian/", "src/Tauri/", "src/Browser/"
+  ]
+}

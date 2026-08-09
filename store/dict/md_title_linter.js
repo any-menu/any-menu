@@ -28,8 +28,8 @@ export default {
     metadata: {
         id: 'anymenu-md-title-linter',
         name: '清除md标题样式冗余',
-        version: '1.0.1',
-        min_app_version: '1.1.0',
+        version: '1.0.2',
+        min_app_version: '1.2.0',
         author: 'LincZero',
         icon: `\
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heading-icon lucide-heading">
@@ -73,6 +73,6 @@ export default {
         }
         str = lines.join('\n')
 
-        ctx.api.sendText(str)
+        this.app.api.sendText(str)
     }
 }

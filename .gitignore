@@ -12,3 +12,6 @@ main.js
 
 # rust-analyzer vscode 插件可能生成
 /target/
+
+*Backup
+src/CoreSource
