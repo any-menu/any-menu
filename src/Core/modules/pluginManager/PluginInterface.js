@@ -53,7 +53,7 @@ export const AppCtxDemo = {
                 if (position != undefined) {
                     console.warn('非 app 环境不支持 position 参数');
                 }
-                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_show(undefined, list, true, false);
+                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_show(undefined, list, true);
             }
         },
         togglePanel: (item) => {

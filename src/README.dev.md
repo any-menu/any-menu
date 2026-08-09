@@ -106,3 +106,16 @@ git remote add prorepo https://github.com/any-menu/any-menu-pro.git
 # or: git push -u origin main
 git push -u prorepo main
 ```
+
+上面时临时 push 时切换对应的仓库，永久切换默认推送仓库做法如下：
+
+```bash
+# 1．查看当前远程地址(确认一下)
+git remote -v
+
+# 2. 例如将 normal 作为默认
+# 先将 origin 重命名为 pro
+git remote rename origin pro
+# 再将 normal 重命名为 origin
+git remote rename normal origin
+```
