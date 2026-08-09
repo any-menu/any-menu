@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "types": ["node"],
+
+    // 默认 `.`。若被覆盖，则 tsconfig 配置中的所有相对路径所的指向都会被改变
     // "baseUrl": ".",
+
     // 注意: Vite 打包时无法使用 tsconfig.json 中的路径别名，
     //   如果项目用了 vite，还需要设置 resolve.alias。
     //   如 Tauri 和 Browser 子项目 (Obsidian 那边是 esbuild)

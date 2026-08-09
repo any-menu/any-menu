@@ -21,5 +21,4 @@
                       // 或在for of时报错：类型“HTMLCollection”必须具有返回迭代器的 "[Symbol.iterator]()" 方法
     ],
   },
-  "exclude": ["../Tauri/", "../Obsidian/"]
 }

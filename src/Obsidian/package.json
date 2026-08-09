@@ -7,7 +7,7 @@
 	"license": "GNU Affero General Public License v3.0",
 	"main": "main.js",
 	"scripts": {
-		"prebuild": "pnpm copy_style && pnpm -C ../../ core:update",
+		"prebuild": "pnpm copy_style && pnpm -C ../../ prebuild",
 		"build-pinyin": "tsc -noEmit -skipLibCheck && node esbuild.config.pinyin.mjs production",
 		"build-min": "tsc -noEmit -skipLibCheck && node esbuild.config.min.mjs production",
 		"build": "pnpm build-min",

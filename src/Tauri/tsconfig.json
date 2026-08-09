@@ -23,5 +23,4 @@
     "noFallthroughCasesInSwitch": true,
   },
   "include": ["src"],
-  "exclude": ["../Obsidian/", "../Browser/"]
 }
