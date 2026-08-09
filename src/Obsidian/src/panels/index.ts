@@ -80,9 +80,9 @@ export function registerAMContextMenu(plugin: Plugin) {
     // 3. 显示面板
     activeAMPanel.panel_hide()
     activeAMPanel.panel_show(
-      {x: ret.x, y: ret.y},
+      {x: ret.x, y: ret.y, is_reverse: ret.is_reverse},
       panel_list,
-      is_focus, ret.is_reverse
+      is_focus,
     )
   }
 

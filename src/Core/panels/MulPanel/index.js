@@ -136,13 +136,13 @@ export class AMPanel extends AbsAmPanel {
             amPanel_list.splice(index, 1);
         }
     }
-    panel_show(pos, append_list, is_focus = true, is_reverse = false, is_show_container = true) {
+    panel_show(pos, append_list, is_focus = true, is_show_container = true) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         {
             if (pos === undefined) {
             }
             else if (global_setting.platform == 'app') {
-                if (!is_reverse) {
+                if (!pos.is_reverse) {
                     ;
                     this.el['sty' + 'le'].left = `0px`;
                     this.el['sty' + 'le'].top = `0px`;
@@ -162,7 +162,7 @@ export class AMPanel extends AbsAmPanel {
                 this.el['sty' + 'le'].left = `${pos.x}px`;
                 this.el['sty' + 'le'].top = `${pos.y}px`;
                 this.el['sty' + 'le'].bottom = 'unset';
-                if (!is_reverse) {
+                if (!pos.is_reverse) {
                     ;
                     this.el['sty' + 'le'].transform = `translate(0, 0)`;
                     this.el.classList.remove('am-reverse');
@@ -246,10 +246,6 @@ export class AMPanel extends AbsAmPanel {
         }
         window.removeEventListener('mousedown', this.visual_listener_mousedown);
         window.removeEventListener('keydown', this.visual_listener_keydown);
-        if (this.el.classList.contains('am-hide')) {
-            console.warn('Call the hiding method in the hidden state.');
-            return;
-        }
         {
             if (list == undefined) {
                 this.state.show_panel_list = [];

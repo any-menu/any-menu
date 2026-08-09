@@ -156,9 +156,8 @@ export function registerAMContextMenu_Ob(plugin: Plugin) {
           if (rect.right == 0) return
           activeAMPanel?.panel_hide()
           activeAMPanel?.panel_show(
-            { x:rect.right, y:rect.top },
+            { x:rect.right, y:rect.top, is_reverse: false },
             global_setting.config.panel_preset2[0].list,
-            false,
             false,
           )
         })

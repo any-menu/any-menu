@@ -255,10 +255,9 @@ export class DocumentListeners {
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
       activeAMPanel.panel_hide()
       activeAMPanel.panel_show(
-        {x: ret.x, y: ret.y},
+        {x: ret.x, y: ret.y, is_reverse: ret.is_reverse},
         panel_list,
         false, // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
-        ret.is_reverse
       )
     }
   }

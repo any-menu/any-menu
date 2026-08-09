@@ -473,7 +473,12 @@ export async function showWindow(
   void applyFocusMode()
 
   // 显示&聚焦搜索框、建议栏，恢复虚拟聚焦状态
-  activeAMPanel?.panel_show({x: 0, y: 0}, panel_list, is_focus, is_reverse);
+  activeAMPanel?.panel_hide(undefined, undefined, false)
+  activeAMPanel?.panel_show(
+    {x: 0, y: 0, is_reverse: is_reverse}, // app 环境位置由窗口控制，而非面板元素位置控制
+    panel_list,
+    is_focus,
+  );
   autoHide_unFocusMode(is_focus, appWindow);
 }
 
