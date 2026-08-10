@@ -13,9 +13,16 @@ declare const _default: {
     Config: string;
     Config2: string;
     'Config file2': string;
-    'Dict config': string;
+    'Path config': string;
+    'Config path': string;
+    'Config path2': string;
     'Dict path': string;
     'Dict path2': string;
+    'Note path': string;
+    'Note path2': string;
+    'Cache path': string;
+    'Cache path2': string;
+    'Dict config': string;
     'Dict online source': string;
     'Dict online source2': string;
     'Dict index config': string;
@@ -29,8 +36,6 @@ declare const _default: {
     'Show panel: preset 1': string;
     'Show panel: preset 2': string;
     'Show panel: preset 3': string;
-    'Note path': string;
-    'Note path2': string;
     'Debug mode': string;
     'Debug mode2': string;
     'Auto show toolbar on select': string;

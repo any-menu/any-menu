@@ -184,7 +184,7 @@ export interface PluginAppCtx {
      * @param basePath  基础路径标识 (详见 readFile 函数说明)
      * @param relPath   相对路径，禁止包含 `../` 等路径穿越
      * @param content   文件内容
-     * @param is_append 是否追加写入
+     * @param is_append 是否追加写入 @default false
      * 
      * TODO 开放任意文件路径的权限，注意禁止 relPath 包含 ../ 等路径穿越
      */

@@ -24,12 +24,14 @@ export declare class SettingItemText extends SettingItemAbs {
     el: HTMLInputElement;
     constructor(parent_el: HTMLElement);
     setType(type: 'text' | 'number' | 'date' | 'color' | 'email' | 'url' | 'time' | 'password'): this;
+    setDisabled(disabled: boolean): this;
     setValue(value: string): this;
     onChange(callback: (value: string, el: HTMLInputElement) => void): this;
 }
 export declare class SettingItemTextArea extends SettingItemAbs {
     el: HTMLTextAreaElement;
     constructor(parent_el: HTMLElement);
+    setDisabled(disabled: boolean): this;
     setValue(value: string): this;
     onChange(callback: (value: string, el: HTMLTextAreaElement) => void): this;
 }
@@ -37,6 +39,7 @@ export declare class SettingItemToggle extends SettingItemAbs {
     el: HTMLElement;
     el_input: HTMLInputElement;
     constructor(parent_el: HTMLElement);
+    setDisabled(disabled: boolean): this;
     setValue(value: boolean): this;
     onChange(callback: (value: boolean, el: HTMLElement) => void): this;
 }
@@ -48,12 +51,14 @@ export declare class SettingItemSelect extends SettingItemAbs {
         label: string;
     }[]): void;
     addOption(value: string, label: string): void;
+    setDisabled(disabled: boolean): this;
     setValue(value: string): this;
     onChange(callback: (value: string, el: HTMLElement) => void): this;
 }
 export declare class SettingItemColorPicker extends SettingItemAbs {
     el: HTMLInputElement;
     constructor(parent_el: HTMLElement);
+    setDisabled(disabled: boolean): this;
     setValue(value: string): this;
     onChange(callback: (value: string, el: HTMLElement) => void): this;
 }

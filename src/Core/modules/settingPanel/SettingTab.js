@@ -959,7 +959,13 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
         new SettingItem(tab_content)
             .setDesc(t('Config2'));
         new SettingItem(tab_content)
-            .setHeading(t('Dict config'));
+            .setHeading(t('Path config'));
+        new SettingItem(tab_content)
+            .setName(t('Config path'))
+            .setDesc(t('Config path2'))
+            .addText(text => text
+            .setValue(global_setting.config.config_paths)
+            .setDisabled(true));
         new SettingItem(tab_content)
             .setName(t('Dict path'))
             .setDesc(t('Dict path2'))
@@ -969,6 +975,26 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
             global_setting.config.dict_paths = value;
             yield global_setting.api.saveConfig();
         })));
+        new SettingItem(tab_content)
+            .setName(t('Note path'))
+            .setDesc(t('Note path2'))
+            .addText(text => text
+            .setValue(global_setting.config.note_paths)
+            .onChange((value) => __awaiter(this, void 0, void 0, function* () {
+            global_setting.config.note_paths = value;
+            yield global_setting.api.saveConfig();
+        })));
+        new SettingItem(tab_content)
+            .setName(t('Cache path'))
+            .setDesc(t('Cache path2'))
+            .addText(text => text
+            .setValue(global_setting.config.cache_paths)
+            .onChange((value) => __awaiter(this, void 0, void 0, function* () {
+            global_setting.config.cache_paths = value;
+            yield global_setting.api.saveConfig();
+        })));
+        new SettingItem(tab_content)
+            .setHeading(t('Dict config'));
         new SettingItem(tab_content)
             .setName(t('Dict online source'))
             .setDesc(t('Dict online source2'))
@@ -1037,15 +1063,6 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
             .setValue(JSON.stringify(global_setting.config.panel_preset2[2].list))
             .onChange((value) => __awaiter(this, void 0, void 0, function* () {
             global_setting.config.panel_preset2[2].list = JSON.parse(value);
-            yield global_setting.api.saveConfig();
-        })));
-        new SettingItem(tab_content)
-            .setName(t('Note path'))
-            .setDesc(t('Note path2'))
-            .addText(text => text
-            .setValue(global_setting.config.note_paths)
-            .onChange((value) => __awaiter(this, void 0, void 0, function* () {
-            global_setting.config.note_paths = value;
             yield global_setting.api.saveConfig();
         })));
         new SettingItem(tab_content)
