@@ -24,4 +24,9 @@
                       // 或在for of时报错：类型“HTMLCollection”必须具有返回迭代器的 "[Symbol.iterator]()" 方法
     ],
   },
+
+  // 不能排除 src/Obsidian/，否则 eslint 无法自动去除该排除，检查时存在有问题
+  "exclude": [
+    "src/Tauri/", "src/Browser/"
+  ]
 }
