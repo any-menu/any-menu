@@ -104,6 +104,10 @@ export class SettingItemText extends SettingItemAbs {
         this.el.type = type;
         return this;
     }
+    setDisabled(disabled) {
+        this.el.disabled = disabled;
+        return this;
+    }
     setValue(value) {
         this.el.value = value;
         return this;
@@ -121,6 +125,10 @@ export class SettingItemTextArea extends SettingItemAbs {
         this.el = document.createElement('textarea');
         parent_el.appendChild(this.el);
         this.el.classList.add('setting-item-textarea');
+    }
+    setDisabled(disabled) {
+        this.el.disabled = disabled;
+        return this;
     }
     setValue(value) {
         this.el.value = value;
@@ -151,6 +159,10 @@ export class SettingItemToggle extends SettingItemAbs {
                 this.el.classList.remove('is-enabled');
             }
         });
+    }
+    setDisabled(disabled) {
+        this.el_input.disabled = disabled;
+        return this;
     }
     setValue(value) {
         this.el_input.checked = value;
@@ -190,6 +202,10 @@ export class SettingItemSelect extends SettingItemAbs {
         opt.textContent = label;
         this.el.appendChild(opt);
     }
+    setDisabled(disabled) {
+        this.el.disabled = disabled;
+        return this;
+    }
     setValue(value) {
         this.el.value = value;
         return this;
@@ -208,6 +224,10 @@ export class SettingItemColorPicker extends SettingItemAbs {
         parent_el.appendChild(this.el);
         this.el.type = 'color';
         this.el.classList.add('setting-item-color-picker');
+    }
+    setDisabled(disabled) {
+        this.el.disabled = disabled;
+        return this;
     }
     setValue(value) {
         this.el.value = value;

@@ -28,11 +28,19 @@ export default {
     'Config2': '暂时并非所有可配置项均支持可视化编辑，部分配置可到插件/软件文件夹下手动编辑配置文件。',
     'Config file2': `注意：在这编辑与你在插件文件夹中文本方式编辑 data.json，除多了 json 格式检查外没有区别。
 一般不推荐进行手动编辑，推荐使用其他标签页进行可视化编辑。如果需要在此编辑，建议编辑前先按下 "刷新" 按钮`,
-    'Dict config': '字典配置',
+    'Path config': '路径配置',
+    'Config path': '配置文件路径',
+    'Config path2': '(不可设置，仅显示)',
     'Dict path': '词典路径',
     'Dict path2': '词典保存路径。你可以保存在文档库中方便随时编辑，如 ./dict/；\n\
 也可以把词典保存在插件文件中，如 `./.obsidian/plugins/any-menu/`\n\
 (安全策略) 程序及插件无法访问配置路径以外的路径',
+    'Note path': '笔记路径',
+    'Note path2': '快捷笔记功能中，笔记的保存路径。\n\
+(安全策略) 程序及插件无法访问配置路径以外的路径',
+    'Cache path': '缓存路径',
+    'Cache path2': '缓存网络 / 本地数据',
+    'Dict config': '字典配置',
     'Dict online source': '在线词库来源',
     'Dict online source2': '在线词库来源: gitee 或 github (若无法访问 github 则推荐用 gitee)',
     'Dict index config': '字典索引配置',
@@ -47,9 +55,6 @@ export default {
     'Show panel: preset 1': '显示面板: 预设 1',
     'Show panel: preset 2': '显示面板: 预设 2',
     'Show panel: preset 3': '显示面板: 预设 3',
-    'Note path': '笔记保存路径',
-    'Note path2': '快捷笔记功能中，笔记的保存路径。\n\
-(安全策略) 程序及插件无法访问配置路径以外的路径',
     'Debug mode': '调试模式',
     'Debug mode2': '仅供开发者使用。主要为开启一些额外的控制台打印。',
     'Auto show toolbar on select': '选中文本时自动显示工具栏',
