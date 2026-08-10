@@ -106,11 +106,13 @@ export async function initApi_with_server() {
     content: string,
     is_append?: boolean
   ): Promise<boolean> => {
+    if (is_append === undefined) is_append = false
+
     try {
       await request<boolean>('/writeFile', {
         relPath,
         content,
-        is_append: is_append ?? false,
+        is_append,
       });
       return true;
     } catch {
@@ -355,13 +357,19 @@ export async function initApi_with_opfs() {
     }
   }
 
-  global_setting.api.writeFile = async (relPath: string, content: string, isAppend?: boolean): Promise<boolean> => {
+  global_setting.api.writeFile = async (
+    relPath: string,
+    content: string,
+    is_append?: boolean
+  ): Promise<boolean> => {
+    if (is_append === undefined) is_append = false
+
     try {
       const fileHandle = await getFileHandle(relPath, true);
       if (!fileHandle) return false;
 
       let finalContent = content;
-      if (isAppend) {
+      if (is_append) {
         const existing = await global_setting.api.readFile(relPath);
         finalContent = (existing ?? '') + content;
       }

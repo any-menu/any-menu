@@ -234,7 +234,9 @@ export function initApi(plugin: Plugin) {
     }
   }
 
-  global_setting.api.writeFile = async (relPath: string, content: string): Promise<boolean> => {
+  global_setting.api.writeFile = async (relPath: string, content: string, is_append?: boolean): Promise<boolean> => {
+    if (is_append === undefined) is_append = false
+
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
     const app = plugin?.app
     if (!plugin || !app) { console.error('Obsidian global plugin obj not initialized for writeFile'); return false }
@@ -247,18 +249,21 @@ export function initApi(plugin: Plugin) {
     const targetPath = (isBasePluginPath) ? `${pluginBaseDir}/${relPath}` : `${relPath}`
 
     try {
-      // 提取目录路径
+      // 保证目录存在。
+      // 提取目录路径：
       // 如果路径中包含'/'，则最后一个'/'之前的部分是目录
       // 如果路径不包含'/'，则表示文件在根目录，没有需要创建的子目录
       const dirPath = targetPath.includes('/') ? targetPath.substring(0, targetPath.lastIndexOf('/')) : null;
-
-      // 如果存在目录路径，并且该目录尚不存在，则创建它
-      if (dirPath && !(await app.vault.adapter.exists(dirPath))) {
+      if (dirPath && !(await app.vault.adapter.exists(dirPath))) { // 如果存在目录路径，并且该目录尚不存在，则创建它
         await app.vault.adapter.mkdir(dirPath);
       }
 
-      // 写入文件
-      await app.vault.adapter.write(targetPath, content);
+      // 写入或追加文件
+      if (is_append) {
+        await app.vault.adapter.append(targetPath, content);
+      } else {
+        await app.vault.adapter.write(targetPath, content);
+      }
       return true;
     } catch (error) {
       console.error(`Failed to write file at path: ${targetPath}`, error);
