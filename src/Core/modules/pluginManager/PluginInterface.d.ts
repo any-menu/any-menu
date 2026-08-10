@@ -9,7 +9,7 @@ export declare function appCtxDemo_createFunctions(id: string, name: string): {
     writeFile(content: string, path?: {
         relPath: string;
         basePath?: "CACHE" | "NOTE" | "DICT";
-    }, is_append?: boolean | undefined): Promise<boolean>;
+    }, is_append?: boolean): Promise<boolean>;
 };
 export declare const PluginRunCtxDemo: PluginRunCtx;
 export declare const PluginInterfaceDemo: string;

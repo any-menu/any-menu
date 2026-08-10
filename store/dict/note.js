@@ -1,20 +1,14 @@
 let cache_el = null
-let cache_el_content = null
+// 方便修改元素内容
+let cache_contentEl = null
+let cache_titleNameEl = null
+let cache_fileNameEl = null
 
 let alt_v_state = false  // 虚拟alt状态
 
 function buildPanel(app) {
     const root = document.createElement('div')
         root.className = 'note-root'
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
 
     // 工具栏
     const toolbar = document.createElement('div'); root.appendChild(toolbar);
@@ -27,25 +21,23 @@ function buildPanel(app) {
         folderPath.placeholder = '默认: 配置的笔记路径'
 
     // 文件名
-    const fileName = document.createElement('input'); toolbar.appendChild(fileName);
-        fileName.type = 'text'
-        fileName.title = '相对路径文件名'
-        fileName.placeholder = '请输入文件名...'
-        fileName.value = `${year}-${month}-${day}.md`
+    cache_fileNameEl = document.createElement('input'); toolbar.appendChild(cache_fileNameEl);
+        cache_fileNameEl.type = 'text'
+        cache_fileNameEl.title = '相对路径文件名'
+        cache_fileNameEl.placeholder = '请输入文件名...'
 
     // 标题
-    const titleName = document.createElement('input'); toolbar.appendChild(titleName);
-        titleName.type = 'text'
-        titleName.title = '标题名'
-        titleName.placeholder = '请输入标题，可为空，默认自动生成当前时间戳'
-        titleName.value = `${hours}:${minutes}:${seconds}.${milliseconds}`
-        
+    cache_titleNameEl = document.createElement('input'); toolbar.appendChild(cache_titleNameEl);
+        cache_titleNameEl.type = 'text'
+        cache_titleNameEl.title = '标题名'
+        cache_titleNameEl.placeholder = '请输入标题，可为空，默认自动生成当前时间戳'
+
+    update_el_value()
 
     // 原文区域
-    const contentEl = document.createElement('textarea'); root.appendChild(contentEl); contentEl.id = '__translate_src'
-        contentEl.className = 'note-content'
-        contentEl.placeholder = '请输入...'
-        cache_el_content = contentEl
+    cache_contentEl = document.createElement('textarea'); root.appendChild(cache_contentEl); cache_contentEl.id = '__translate_src'
+        cache_contentEl.className = 'note-content'
+        cache_contentEl.placeholder = '请输入...'
 
     // 操作按钮
     const btnBar = document.createElement('div'); root.appendChild(btnBar);
@@ -55,8 +47,8 @@ function buildPanel(app) {
         btnSave.className = 'btn'
         btnSave.dataset.altKey = '1'
         btnSave.onclick = async () => {
-            const ret = await app.api.writeFile(`## ${titleName.value}\n\n${contentEl.value}\n\n`, {
-                relPath: folderPath.value + fileName.value,
+            const ret = await app.api.writeFile(`## ${cache_titleNameEl.value}\n\n${cache_contentEl.value}\n\n`, {
+                relPath: folderPath.value + cache_fileNameEl.value,
                 basePath: 'NOTE', 
             }, true)
             if (ret) {
@@ -71,21 +63,21 @@ function buildPanel(app) {
         cleanBtn.className = 'btn'
         cleanBtn.dataset.altKey = '2'
         cleanBtn.onclick = () => {
-            contentEl.value = ''
+            cache_contentEl.value = ''
         }
 
     const btnCopy = document.createElement('button'); btnBar.appendChild(btnCopy); btnCopy.textContent = '复制'
         btnCopy.className = 'btn'
         btnCopy.dataset.altKey = '3'
         btnCopy.onclick = () => {
-            if (app && contentEl.value) app.api.saveToClipboard(contentEl.value)
+            if (app && cache_contentEl.value) app.api.saveToClipboard(cache_contentEl.value)
         }
 
     const btnInsert = document.createElement('button'); btnBar.appendChild(btnInsert); btnInsert.textContent = '插入'
         btnInsert.className = 'btn'
         btnInsert.dataset.altKey = '4'
         btnInsert.onclick = () => {
-            if (app && contentEl.value) app.api.sendText(contentEl.value)
+            if (app && cache_contentEl.value) app.api.sendText(cache_contentEl.value)
         }
 
     const btnCodeblock = document.createElement('button'); btnBar.appendChild(btnCodeblock); btnCodeblock.textContent = '嵌入代码块'
@@ -93,10 +85,10 @@ function buildPanel(app) {
         btnCodeblock.dataset.altKey = '5'
         btnCodeblock.onclick = () => {
             let number_flag = // 包含在内的最大连续反引号数量 + 1 (最少为3)，确保不会和内容中的反引号冲突
-                contentEl.value.match(/`+/g)?.reduce((max, cur) => Math.max(max, cur.length), 0) ?? 0
+                cache_contentEl.value.match(/`+/g)?.reduce((max, cur) => Math.max(max, cur.length), 0) ?? 0
             number_flag = Math.max(number_flag + 1, 3)
             const codeblock_flag = '`'.repeat(number_flag)
-            contentEl.value = `${codeblock_flag}\n${contentEl.value}\n${codeblock_flag}\n`
+            cache_contentEl.value = `${codeblock_flag}\n${cache_contentEl.value}\n${codeblock_flag}\n`
         }
 
     const btnHistory = document.createElement('button'); btnBar.appendChild(btnHistory); btnHistory.textContent = '历史记录'
@@ -107,8 +99,8 @@ function buildPanel(app) {
         }
 
     const init_alt_mode = () => { // 复用 panel 提供的 alt 键管理
-        contentEl.addEventListener('keydown', (ev) => {
-            if (!contentEl.matches('.show-altkey *')) return
+        cache_contentEl.addEventListener('keydown', (ev) => {
+            if (!cache_contentEl.matches('.show-altkey *')) return
             if (ev.key === '1') { btnSave.click(); ev.preventDefault() }
             else if (ev.key === '2') { cleanBtn.click(); ev.preventDefault() }
             else if (ev.key === '3') { btnCopy.click(); ev.preventDefault() }
@@ -122,11 +114,25 @@ function buildPanel(app) {
     return root
 }
 
+function update_el_value() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+    cache_fileNameEl.value = `${year}-${month}-${day}.md`
+    cache_titleNameEl.value = `${hours}:${minutes}:${seconds}.${milliseconds}`
+}
+
 export default {
     metadata: {
         id: 'anymenu-note',
         name: '笔记',
-        version: '1.0.2',
+        version: '1.0.3',
         min_app_version: '1.2.0',
         author: 'LincZero',
         description: '快速保存笔记、查看笔记',
@@ -169,17 +175,20 @@ export default {
         }
 
         // 有选中文本时 // TODO 判断一下上次有没有未保存的内容，若有，提供恢复方案
-        if (cache_el_content) {
+        if (cache_contentEl) {
             if (ctx.env.selectedText) { // 没选中就不覆盖了
-                cache_el_content.value = ctx.env.selectedText
+                cache_contentEl.value = ctx.env.selectedText
             }
         }
+
+        // 更新日期和时间
+        update_el_value()
 
         alt_v_state = false
 
         // 切换到当前面板
         this.app.api.hidePanel(['menu'])
         this.app.api.showPanel(['note-panel'])
-        cache_el_content?.focus()
+        cache_contentEl?.focus()
     }
 }
