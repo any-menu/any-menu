@@ -228,38 +228,6 @@ export function initApi() {
     return await invoke("delete_file", { path: relPath });
   }
 
-  // TODO 注意: 
-  // 
-  // 之前的开发中，都是开发环境用 Tauri/src-tauri/ (比较方便)，
-  // 生产环境中用 Tauri/src-tauri/target/debug/
-  // 
-  // 但这里由于安全策略，前者也要相对于 Tauri/src-tauri/target/debug/。
-  //   和之前不同。
-  // 
-  // 所以在开发阶段，如果你想要让这里也生效，
-  // 你需要把 src-tauri/dist 文件夹往 src-tauri/target/debug/ 复制一下
-  // 后续我再看怎么弄更统一一点
-  global_setting.other.app_convertFileSrc = async (relPath: string) => {
-    // 去掉开头的 "./" 或 ".\\"
-    const cleanPath = relPath.replace(/^\.(\/|\\)/, '');
-
-    // absPath - 自定义版
-    // // const exeDir = await invoke<string>('get_exe_dir');
-    // let resourceDir2 = cache_resourceDir || await invoke<string>('get_resource_dir'); // TODO 这里应该缓存，别每次访问
-    // if (resourceDir2.length > 0 && !resourceDir2.endsWith('/') && !resourceDir2.endsWith('\\')) {
-    //   resourceDir2 += '/'
-    // }
-    // const absPath = resourceDir2 + cleanPath; // 这里如果用 Tauri json 好像有问题
-
-    // absPath - Tauri API 版，resolveResource 直接以资源目录为根解析相对路径
-    // let dirTest = await resourceDir() // 这个是 src-tauri/target/debug/
-    let resourceDir2 = await resolveResource(cleanPath)
-    const absPath = resourceDir2
-
-    const assetPath = convertFileSrc(absPath)
-    return assetPath
-  }
-
   // 读写配置 (新版) - 多窗口多线程同步版
   global_setting.api.loadConfig = async (): Promise<boolean|string> => {
     const obj: any = await invoke('read_all_json_config')
@@ -468,9 +436,12 @@ export function initApi() {
   //   }
   // }
 
-  // app 专用 API
+  // #region app 专用 API
+
   global_setting.other.app_show = showWindow
+
   global_setting.other.app_hide = hideWindow
+
   global_setting.other.app_createTitlebar = async function (container: HTMLElement) {
 
     const win = getCurrentWindow()
@@ -500,6 +471,40 @@ export function initApi() {
 
     container.appendChild(maximizeBtn)
   }
+
+  // TODO 注意: 
+  // 
+  // 之前的开发中，都是开发环境用 Tauri/src-tauri/ (比较方便)，
+  // 生产环境中用 Tauri/src-tauri/target/debug/
+  // 
+  // 但这里由于安全策略，前者也要相对于 Tauri/src-tauri/target/debug/。
+  //   和之前不同。
+  // 
+  // 所以在开发阶段，如果你想要让这里也生效，
+  // 你需要把 src-tauri/dist 文件夹往 src-tauri/target/debug/ 复制一下
+  // 后续我再看怎么弄更统一一点
+  global_setting.other.app_convertFileSrc = async (relPath: string) => {
+    // 去掉开头的 "./" 或 ".\\"
+    const cleanPath = relPath.replace(/^\.(\/|\\)/, '');
+
+    // absPath - 自定义版
+    // // const exeDir = await invoke<string>('get_exe_dir');
+    // let resourceDir2 = cache_resourceDir || await invoke<string>('get_resource_dir'); // TODO 这里应该缓存，别每次访问
+    // if (resourceDir2.length > 0 && !resourceDir2.endsWith('/') && !resourceDir2.endsWith('\\')) {
+    //   resourceDir2 += '/'
+    // }
+    // const absPath = resourceDir2 + cleanPath; // 这里如果用 Tauri json 好像有问题
+
+    // absPath - Tauri API 版，resolveResource 直接以资源目录为根解析相对路径
+    // let dirTest = await resourceDir() // 这个是 src-tauri/target/debug/
+    let resourceDir2 = await resolveResource(cleanPath)
+    const absPath = resourceDir2
+
+    const assetPath = convertFileSrc(absPath)
+    return assetPath
+  }
+
+  // #endregion
 }
 
 // 旧，废弃
