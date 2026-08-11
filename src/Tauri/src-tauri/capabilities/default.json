@@ -5,7 +5,6 @@
   "windows": ["main", "am-config"],
   "permissions": [
     "core:default",
-    "opener:default",
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-position",
@@ -16,12 +15,14 @@
     "core:window:allow-toggle-maximize",
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-ignore-cursor-events",
+    "opener:default",
     "log:default",
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
     "notification:default",
     "clipboard-manager:allow-write-image",
+    "dialog:default",
     "fs:default",
     "fs:allow-read-file",
     {

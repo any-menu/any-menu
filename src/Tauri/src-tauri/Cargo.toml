@@ -39,6 +39,7 @@ axum = { version = "0.8.9", features = ["ws"] } # HTTP服务器框架
 tower-http = { version = "0.6.10", features = ["cors"] } # HTTP服务器实用工具 (如解决跨域问题)
 tokio = "1.52.3" # 异步运行时 (HTTP服务器依赖)
 clipboard-rs = "0.3.4" # 跨平台剪切板库
+tauri-plugin-dialog = "2" # 对话框，打开文件对话框等
 
 # PC 端
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
