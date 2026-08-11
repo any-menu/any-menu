@@ -210,9 +210,9 @@ export const global_setting = {
         renderMarkdown: null,
         app_show: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),
         app_hide: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),
+        app_showInExplorer: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),
+        app_selectInExplorer: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); return null; }),
         app_convertFileSrc: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); return '[error]'; }),
-        app_onChange: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作，或未定义"); }),
-        app_offChange: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作，或未定义"); }),
         app_createTitlebar: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作，或未定义"); }),
     }
 };

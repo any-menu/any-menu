@@ -104,9 +104,9 @@ export declare const global_setting: {
         renderMarkdown: null | ((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>);
         app_show: (pos?: 'cursor' | 'center', panel_list?: string[]) => Promise<void>;
         app_hide: (panel_list?: string[], forceBlurApp?: boolean) => Promise<void>;
+        app_showInExplorer: (relPath: string) => Promise<void>;
+        app_selectInExplorer: (relPath: string) => Promise<string | null>;
         app_convertFileSrc: (relPath: string) => Promise<string>;
-        app_onChange: () => Promise<void>;
-        app_offChange: () => Promise<void>;
         app_createTitlebar: (el: HTMLElement) => Promise<void>;
     };
 };

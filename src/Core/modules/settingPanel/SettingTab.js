@@ -963,13 +963,13 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
         new SettingItem(tab_content)
             .setName(t('Config path'))
             .setDesc(t('Config path2'))
-            .addText(text => text
+            .addPath(text => text
             .setValue(global_setting.config.config_paths)
             .setDisabled(true));
         new SettingItem(tab_content)
             .setName(t('Dict path'))
             .setDesc(t('Dict path2'))
-            .addText(text => text
+            .addPath(text => text
             .setValue(global_setting.config.dict_paths)
             .onChange((value) => __awaiter(this, void 0, void 0, function* () {
             global_setting.config.dict_paths = value;
@@ -978,7 +978,7 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
         new SettingItem(tab_content)
             .setName(t('Note path'))
             .setDesc(t('Note path2'))
-            .addText(text => text
+            .addPath(text => text
             .setValue(global_setting.config.note_paths)
             .onChange((value) => __awaiter(this, void 0, void 0, function* () {
             global_setting.config.note_paths = value;
@@ -987,7 +987,7 @@ function initSettingTab_configUI(tab_nav_container, tab_content_container) {
         new SettingItem(tab_content)
             .setName(t('Cache path'))
             .setDesc(t('Cache path2'))
-            .addText(text => text
+            .addPath(text => text
             .setValue(global_setting.config.cache_paths)
             .onChange((value) => __awaiter(this, void 0, void 0, function* () {
             global_setting.config.cache_paths = value;

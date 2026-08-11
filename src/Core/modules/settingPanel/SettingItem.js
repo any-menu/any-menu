@@ -1,3 +1,13 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { global_setting } from "../../shared/setting";
 export class SettingItem {
     constructor(parent_el) {
         this.parent_el = parent_el;
@@ -67,6 +77,11 @@ export class SettingItem {
         callback(text);
         return this;
     }
+    addPath(callback) {
+        const text = new SettingItemPath(this.el_control);
+        callback(text);
+        return this;
+    }
     addTextArea(callback) {
         const text = new SettingItemTextArea(this.el_control);
         callback(text);
@@ -106,6 +121,48 @@ export class SettingItemText extends SettingItemAbs {
     }
     setDisabled(disabled) {
         this.el.disabled = disabled;
+        return this;
+    }
+    setValue(value) {
+        this.el.value = value;
+        return this;
+    }
+    onChange(callback) {
+        this.el.addEventListener('change', () => {
+            callback(this.el.value, this.el);
+        });
+        return this;
+    }
+}
+export class SettingItemPath extends SettingItemAbs {
+    constructor(parent_el) {
+        super(parent_el);
+        this.el = document.createElement('input');
+        parent_el.appendChild(this.el);
+        this.el.classList.add('setting-item-path');
+        this.el.type = 'text';
+        if (global_setting.platform != 'app')
+            return;
+        this.btn = document.createElement('button');
+        parent_el.appendChild(this.btn);
+        this.btn.classList.add('setting-item-path-button');
+        global_setting.api.saveInnerHTML(this.btn, '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open-icon lucide-folder-open"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>');
+        this.btn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+            global_setting.other.app_selectInExplorer(this.el.value).then((v) => {
+                if (v)
+                    this.el.value = v;
+            });
+        }));
+    }
+    setType(type) {
+        this.el.dataset.type = type;
+        this.el.type = type;
+        return this;
+    }
+    setDisabled(disabled) {
+        this.el.disabled = disabled;
+        if (this.btn)
+            this.btn.disabled = disabled;
         return this;
     }
     setValue(value) {
