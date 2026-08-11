@@ -15,7 +15,7 @@ export function input_suggestion(el_input, el_container) {
             if (val && item.substring(0, val.length).toUpperCase() != val.toUpperCase())
                 continue;
             const suggestionItem = document.createElement("div");
-            global_setting.api.saveInnerHTML(suggestionItem, "<strong>" + item.substring(0, val.length) + "</strong>" + item.substring(val.length));
+            global_setting.api.safeInnerHTML(suggestionItem, "<strong>" + item.substring(0, val.length) + "</strong>" + item.substring(val.length));
             suggestionItem.dataset.value = item;
             suggestionItem.addEventListener("click", function (ev) {
                 ev.preventDefault();

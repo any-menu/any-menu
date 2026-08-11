@@ -73,7 +73,7 @@ export const global_setting = {
         activeDocUrl: undefined,
     },
     api: {
-        saveInnerHTML: (el, string) => {
+        safeInnerHTML: (el, string) => {
             const safeNode = DOMPurify.sanitize(string, {
                 USE_PROFILES: { html: true, svg: true },
                 RETURN_DOM_FRAGMENT: true

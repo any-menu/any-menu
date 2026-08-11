@@ -53,7 +53,7 @@ export function init_item(_p_this_1, li_1, item_1) {
         else if (mode === 'icon') {
             li.title = item.label;
             if (!item.icon) {
-                global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
+                global_setting.api.safeInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
             }
             else if (item.icon.startsWith("lucide-")) {
                 const iconName = item.icon.replace("lucide-", "");
@@ -70,17 +70,17 @@ export function init_item(_p_this_1, li_1, item_1) {
                     const span = document.createElement('span');
                     li.appendChild(span);
                     span.classList.add('am-icon', 'am-icon-lucide');
-                    global_setting.api.saveInnerHTML(span, (_a = lucideIconCache.get(iconName)) !== null && _a !== void 0 ? _a : "");
+                    global_setting.api.safeInnerHTML(span, (_a = lucideIconCache.get(iconName)) !== null && _a !== void 0 ? _a : "");
                 }
                 else {
                     const span = document.createElement('span');
                     li.appendChild(span);
                     span.classList.add('am-icon', 'am-icon-lucide');
-                    global_setting.api.saveInnerHTML(span, '');
+                    global_setting.api.safeInnerHTML(span, '');
                     fetch(iconUrl)
                         .then(response => {
                         if (!response.ok) {
-                            global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
+                            global_setting.api.safeInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
                             throw new Error(`Icon ${iconName} not found`);
                         }
                         return response.text();
@@ -88,11 +88,11 @@ export function init_item(_p_this_1, li_1, item_1) {
                         .then(svgText => {
                         lucideIconCache.set(iconName, svgText);
                         save_lucideIconCache(lucideIconCache);
-                        global_setting.api.saveInnerHTML(span, svgText);
+                        global_setting.api.safeInnerHTML(span, svgText);
                     })
                         .catch(error => {
                         console.warn("Failed to load Lucide icon:", error);
-                        global_setting.api.saveInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
+                        global_setting.api.safeInnerHTML(li, textToIcon(item.label, { twoLettersForEnglish: true }).html);
                     });
                 }
             }
@@ -100,7 +100,7 @@ export function init_item(_p_this_1, li_1, item_1) {
                 const span = document.createElement('span');
                 li.appendChild(span);
                 span.classList.add('am-icon', 'am-icon-svg');
-                global_setting.api.saveInnerHTML(span, item.icon);
+                global_setting.api.safeInnerHTML(span, item.icon);
             }
         }
         if (item.content != undefined) {
