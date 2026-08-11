@@ -73,7 +73,7 @@ export declare const global_setting: {
         activeDocUrl?: string;
     };
     api: {
-        saveInnerHTML: (el: HTMLElement, content: string) => void;
+        safeInnerHTML: (el: HTMLElement, content: string) => void;
         isFolder: (relPath: string) => Promise<boolean>;
         readFile: (relPath: string) => Promise<string | null>;
         readFolder: (relPath: string, recursion_depth?: number) => Promise<string[]>;

@@ -62,7 +62,7 @@ function initSettingTab_miniDocs(tab_nav_container, tab_content_container) {
     const div = document.createElement('div');
     tab_content.appendChild(div);
     div.classList.add('am-inner-html');
-    global_setting.api.saveInnerHTML(div, t('Mini docs2'));
+    global_setting.api.safeInnerHTML(div, t('Mini docs2'));
     tab_nav.classList.add('active');
     tab_content.classList.add('active');
 }
@@ -537,7 +537,7 @@ function initSettingTab_toolbar(tab_nav_container, tab_content_container) {
     const add_btn = document.createElement('button');
     tab_content.appendChild(add_btn);
     add_btn.classList.add('setting_row-add-btn');
-    global_setting.api.saveInnerHTML(add_btn, SVG_ICON_ADD);
+    global_setting.api.safeInnerHTML(add_btn, SVG_ICON_ADD);
     add_btn.title = t('Add');
     add_btn.addEventListener('click', () => {
         const newName = '';
@@ -550,7 +550,7 @@ function initSettingTab_toolbar(tab_nav_container, tab_content_container) {
     const refresh_btn = document.createElement('button');
     tab_content.appendChild(refresh_btn);
     refresh_btn.classList.add('setting_row-refresh-btn');
-    global_setting.api.saveInnerHTML(refresh_btn, SVG_ICON_REFRESH);
+    global_setting.api.safeInnerHTML(refresh_btn, SVG_ICON_REFRESH);
     refresh_btn.title = t('Refresh');
     function fn_refresh() {
         el_rows.innerHTML = '';
@@ -569,7 +569,7 @@ function initSettingTab_toolbar(tab_nav_container, tab_content_container) {
         const el_row_drag = document.createElement('span');
         el_row.appendChild(el_row_drag);
         el_row_drag.classList.add('drag-btn');
-        global_setting.api.saveInnerHTML(el_row_drag, SVG_ICON_GRIP);
+        global_setting.api.safeInnerHTML(el_row_drag, SVG_ICON_GRIP);
         el_row_drag.title = t('Drag');
         const el_row_name = document.createElement('input');
         el_row.appendChild(el_row_name);
@@ -585,7 +585,7 @@ function initSettingTab_toolbar(tab_nav_container, tab_content_container) {
         const el_row_delete = document.createElement('button');
         el_row.appendChild(el_row_delete);
         el_row_delete.classList.add('delete-btn');
-        global_setting.api.saveInnerHTML(el_row_delete, SVG_ICON_DELETE);
+        global_setting.api.safeInnerHTML(el_row_delete, SVG_ICON_DELETE);
         el_row_delete.title = t('Delete');
         el_row_delete.addEventListener('click', () => {
             const idx = Number(el_row.dataset.index);
@@ -707,7 +707,7 @@ function initSettingTab_contextMenu(tab_nav_container, tab_content_container) {
     const add_btn = document.createElement('button');
     tab_content.appendChild(add_btn);
     add_btn.classList.add('setting_row-add-btn');
-    global_setting.api.saveInnerHTML(add_btn, SVG_ICON_ADD);
+    global_setting.api.safeInnerHTML(add_btn, SVG_ICON_ADD);
     add_btn.title = t('Add');
     add_btn.addEventListener('click', () => {
         const newName = '';
@@ -720,7 +720,7 @@ function initSettingTab_contextMenu(tab_nav_container, tab_content_container) {
     const refresh_btn = document.createElement('button');
     tab_content.appendChild(refresh_btn);
     refresh_btn.classList.add('setting_row-refresh-btn');
-    global_setting.api.saveInnerHTML(refresh_btn, SVG_ICON_REFRESH);
+    global_setting.api.safeInnerHTML(refresh_btn, SVG_ICON_REFRESH);
     refresh_btn.title = t('Refresh');
     function fn_refresh() {
         el_rows.innerHTML = '';
@@ -739,7 +739,7 @@ function initSettingTab_contextMenu(tab_nav_container, tab_content_container) {
         const el_row_drag = document.createElement('span');
         el_row.appendChild(el_row_drag);
         el_row_drag.classList.add('drag-btn');
-        global_setting.api.saveInnerHTML(el_row_drag, SVG_ICON_GRIP);
+        global_setting.api.safeInnerHTML(el_row_drag, SVG_ICON_GRIP);
         el_row_drag.title = t('Drag');
         const el_row_name = document.createElement('input');
         el_row.appendChild(el_row_name);
@@ -755,7 +755,7 @@ function initSettingTab_contextMenu(tab_nav_container, tab_content_container) {
         const el_row_delete = document.createElement('button');
         el_row.appendChild(el_row_delete);
         el_row_delete.classList.add('delete-btn');
-        global_setting.api.saveInnerHTML(el_row_delete, SVG_ICON_DELETE);
+        global_setting.api.safeInnerHTML(el_row_delete, SVG_ICON_DELETE);
         el_row_delete.title = t('Delete');
         el_row_delete.addEventListener('click', () => {
             const idx = Number(el_row.dataset.index);
