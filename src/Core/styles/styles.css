@@ -1443,13 +1443,17 @@ table.dataview-table .btn {
 }
 .am-config .setting-item .setting-item-control {
   margin-top: 4px;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 8px;
+  align-items: flex-start;
 }
 .am-config .setting-item .setting-item-control input[type=number]::-webkit-outer-spin-button,
 .am-config .setting-item .setting-item-control input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.am-config .setting-item .setting-item-control .setting-item-text {
+.am-config .setting-item .setting-item-control .setting-item-text, .am-config .setting-item .setting-item-control .setting-item-path, .am-config .setting-item .setting-item-control .setting-item-textarea {
   padding: 4px 8px;
   border-radius: 6px;
   border: 0.5px solid var(--ab-tab-root-bd-color);
@@ -1457,6 +1461,13 @@ table.dataview-table .btn {
   box-shadow: none;
   background-color: var(--am-pre-bg-color);
   color: var(--am-text-color);
+}
+.am-config .setting-item .setting-item-control .setting-item-path-button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: currentColor;
 }
 .am-config .setting-item .setting-item-control .setting-item-toggle {
   display: inline-block;

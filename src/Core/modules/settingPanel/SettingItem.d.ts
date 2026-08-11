@@ -11,6 +11,7 @@ export declare class SettingItem {
     setHeading(heading: string): this;
     setDivider(): this;
     addText(callback: (text: SettingItemText) => void): this;
+    addPath(callback: (text: SettingItemPath) => void): this;
     addTextArea(callback: (text: SettingItemTextArea) => void): this;
     addToggle(callback: (toggle: SettingItemToggle) => void): this;
     addDropdown(callback: (select: SettingItemSelect) => void): this;
@@ -23,7 +24,16 @@ declare abstract class SettingItemAbs {
 export declare class SettingItemText extends SettingItemAbs {
     el: HTMLInputElement;
     constructor(parent_el: HTMLElement);
-    setType(type: 'text' | 'number' | 'date' | 'color' | 'email' | 'url' | 'time' | 'password'): this;
+    setType(type: 'text' | 'number' | 'date' | 'color' | 'email' | 'url' | 'time' | 'password' | 'search' | 'file'): this;
+    setDisabled(disabled: boolean): this;
+    setValue(value: string): this;
+    onChange(callback: (value: string, el: HTMLInputElement) => void): this;
+}
+export declare class SettingItemPath extends SettingItemAbs {
+    el: HTMLInputElement;
+    btn?: HTMLButtonElement;
+    constructor(parent_el: HTMLElement);
+    setType(type: 'text' | 'number' | 'date' | 'color' | 'email' | 'url' | 'time' | 'password' | 'search' | 'file'): this;
     setDisabled(disabled: boolean): this;
     setValue(value: string): this;
     onChange(callback: (value: string, el: HTMLInputElement) => void): this;

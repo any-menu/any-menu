@@ -8,9 +8,11 @@ import { hideWindow, showWindow } from '../module/window'
 // convertFileSrc 需要 tauri.confi.json 中的 security 中的一些修改
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { listen } from '@tauri-apps/api/event'
-import { resolveResource } from '@tauri-apps/api/path';
+import { resolveResource } from '@tauri-apps/api/path'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { fetch as tauri_fetch } from '@tauri-apps/plugin-http'
+import { openPath } from '@tauri-apps/plugin-opener'
+import { open } from '@tauri-apps/plugin-dialog'
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
 // import { writeImage } from '@tauri-apps/plugin-clipboard-manager'; // TODO 删除依赖
 // import { readFile } from '@tauri-apps/plugin-fs'; // TODO 删除依赖，或换用当前文件处理的实现方式
@@ -91,13 +93,13 @@ export function initApi() {
       // 发送通知
       // 这个是系统级的通知，缺点: 无法控制显示时长、堆叠/排序
       // 如果想要解决该缺点，可以应用内通知 (不过目前该软件并非常规窗口使用逻辑，要做这点可能得维护一个专用于通知的窗口)
-      sendNotification({
+      await sendNotification({
         title: 'AnyMenu',
         body: message,
         // icon: '可选：图标路径'
       });
     } catch (error) {
-      console.error('发送通知失败:', error);
+      console.error('发送通知失败:', error); // 通知权限不足时回退到 alert 或 console.error
     }
   }
 
@@ -442,6 +444,50 @@ export function initApi() {
 
   global_setting.other.app_hide = hideWindow
 
+  const app_relPath_to_absPath = async (relPath: string): Promise<string> => {
+    // 去掉开头的 "./" 或 ".\\"
+    const cleanPath = relPath.replace(/^\.(\/|\\)/, '');
+
+    // absPath - 自定义版
+    // // const exeDir = await invoke<string>('get_exe_dir');
+    // let resourceDir2 = cache_resourceDir || await invoke<string>('get_resource_dir'); // TODO 这里应该缓存，别每次访问
+    // if (resourceDir2.length > 0 && !resourceDir2.endsWith('/') && !resourceDir2.endsWith('\\')) {
+    //   resourceDir2 += '/'
+    // }
+    // const absPath = resourceDir2 + cleanPath; // 这里如果用 Tauri json 好像有问题
+
+    // absPath - Tauri API 版，resolveResource 直接以资源目录为根解析相对路径
+    // let dirTest = await resourceDir() // 这个是 src-tauri/target/debug/
+    const absPath = await resolveResource(cleanPath)
+
+    // absPath - 其他
+    // 好像还有一种是 `import { resourceDir } from '@tauri-apps/api/path'` + 拼接的版本
+
+    return absPath
+  }
+
+  global_setting.other.app_showInExplorer = async (relPath: string): Promise<void> => {
+    const absPath = await app_relPath_to_absPath(relPath)
+
+    try {
+      await openPath(absPath);
+    } catch {
+      global_setting.api.notify(`路径不存在，找不到文件夹：${relPath}`)
+    }
+  }
+
+  global_setting.other.app_selectInExplorer = async (relPath: string): Promise<string | null> => {
+    const absPath = await app_relPath_to_absPath(relPath)
+
+      const file = await open({
+        multiple: false,  // 是否允许多选
+        directory: true,  // 是否选择文件夹
+        defaultPath: absPath, // 默认路径。备注常用路径 '/home/user/Documents',
+      });
+
+      return file
+  }
+
   global_setting.other.app_createTitlebar = async function (container: HTMLElement) {
 
     const win = getCurrentWindow()
@@ -484,22 +530,7 @@ export function initApi() {
   // 你需要把 src-tauri/dist 文件夹往 src-tauri/target/debug/ 复制一下
   // 后续我再看怎么弄更统一一点
   global_setting.other.app_convertFileSrc = async (relPath: string) => {
-    // 去掉开头的 "./" 或 ".\\"
-    const cleanPath = relPath.replace(/^\.(\/|\\)/, '');
-
-    // absPath - 自定义版
-    // // const exeDir = await invoke<string>('get_exe_dir');
-    // let resourceDir2 = cache_resourceDir || await invoke<string>('get_resource_dir'); // TODO 这里应该缓存，别每次访问
-    // if (resourceDir2.length > 0 && !resourceDir2.endsWith('/') && !resourceDir2.endsWith('\\')) {
-    //   resourceDir2 += '/'
-    // }
-    // const absPath = resourceDir2 + cleanPath; // 这里如果用 Tauri json 好像有问题
-
-    // absPath - Tauri API 版，resolveResource 直接以资源目录为根解析相对路径
-    // let dirTest = await resourceDir() // 这个是 src-tauri/target/debug/
-    let resourceDir2 = await resolveResource(cleanPath)
-    const absPath = resourceDir2
-
+    const absPath = await app_relPath_to_absPath(relPath)
     const assetPath = convertFileSrc(absPath)
     return assetPath
   }
