@@ -1,5 +1,7 @@
+/** 通用的游标/选区数据工具集 */
+
 /** 获取游标和选区位置，还有对一些信息的采集 */
-export function getCursorInfo(): {
+export function getCursorPos(): {
   pos: {left: number, top: number, right: number, bottom: number}
 } | null {
   const ret = getSelectionRect()
@@ -22,32 +24,34 @@ export function getCursorInfo(): {
 function getSelectionRect(): {
   left: number; top: number; right: number; bottom: number
 } | null {
-  // 处理原生 `<input>` 或 `<textarea>` 的选中文本
-  const activeEl = document.activeElement;
+  // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
+  const activeEl = document.activeElement as HTMLElement|null
   if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
     const ret = getSelectionRect_in_inputEl(activeEl)
     return ret
   }
 
-  // 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
-  const selection = window.getSelection()
-  if (selection && selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0)
-    if (range) {
-      const rect = range.getBoundingClientRect()
-      // 即使是折叠选区，rect 也有有效的 left/top 值
-      if (rect) {
-        return {
-          left: rect.left,
-          top: rect.top,
-          right: rect.right,
-          bottom: rect.bottom,
+  // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
+  // 备注: 此时的 activeEl 一般会是 `body`
+  {
+    const selection = window.getSelection()
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      if (range) {
+        const rect = range.getBoundingClientRect()
+        // 即使是折叠选区，rect 也有有效的 left/top 值
+        if (rect) {
+          return {
+            left: rect.left,
+            top: rect.top,
+            right: rect.right,
+            bottom: rect.bottom,
+          }
         }
       }
     }
+    return null
   }
-
-  return null
 }
 
 /**

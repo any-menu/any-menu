@@ -26,8 +26,8 @@
  */
 
 import { global_setting } from "@/Core/shared/setting"
-import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
-import { getCursorInfo } from "./cursorInfo"
+import { activeAMPanel } from "@/Core/panels/MulPanel"
+import { getCursorPos } from "./cursorInfo"
 import { EditorTools } from "../utils/initApi";
 
 export class DocumentListeners {
@@ -240,7 +240,7 @@ export class DocumentListeners {
       const panel_list = global_setting.config.panel_preset2[1].list
 
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo()
+      const cursorInfo = getCursorPos()
       if (!cursorInfo) {
         console.warn('获取光标位置失败')
         return
@@ -262,24 +262,35 @@ export class DocumentListeners {
     }
   }
 
-  /// 获取选区变化时所在的 el
-  /// 可基于此实现 isInPanel (无法判断也返回 false)
+  /** 获取选区所在的 el
+   * 可基于此实现 isInPanel (无法判断也返回 false)
+   * 
+   * 主要是选区变化时调用
+   */
   static get_selection_el(): HTMLElement | null {
-    const selection = document.getSelection();
-    
-    // 获取选区变化时的目标元素
-    let el: HTMLElement|null
-    // 有选区时，取选区所在容器判断
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0)
-      const node = range.commonAncestorContainer
-      el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
-    }
-    // 无选区时（例如单纯聚焦），检查当前活动元素
-    else {
-      el = document.activeElement as (HTMLElement | null);
+    // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
+    const activeEl = document.activeElement as HTMLElement|null
+    if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
+      return activeEl
     }
 
-    return el
+    // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
+    // 备注: 此时的 activeEl 一般会是 `body`
+    else {
+      const selection = document.getSelection(); // 无法获取 textarea 等元素的选中
+      // 获取选区变化时的目标元素
+      let el: HTMLElement|null
+      // 有选区时，取选区所在容器判断
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0)
+        const node = range.commonAncestorContainer
+        el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
+      }
+      // 无选区时（例如单纯聚焦），检查当前活动元素
+      else {
+        el = activeEl
+      }
+      return el
+    }
   }
 }

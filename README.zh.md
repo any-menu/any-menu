@@ -179,8 +179,9 @@ App版可以在任何文本环境下使用: (旧版截图)
 - 完善在线版
   - 增加 ProseMirror / Wordgard
   - 增加虚拟文件系统
-  - 修复:  `Debug panel` 在特定情况下 `savedCursorState` 显示不更新。 
-    稳定复现方法: 先选中textarea文本，点击下面的文本元素，回到textarea元素
+  - [x] 修复:  `Debug panel` 在特定情况下 `savedCursorState` 显示不更新。 
+    稳定复现方法: 先选中textarea文本，点击下面的文本元素，回到textarea元素。
+    用户选中下面的文本元素 (有选区状态)，再回到textarea元素，则可以恢复正常。
 - 置顶状态菜单增强
   - 需要增加重新获取环境功能
     添加模拟重新召唤窗口的一些必要措施，如当前选中文本的获取

@@ -413,7 +413,7 @@ export namespace EditorTools {
   // 召唤面板时对应的文本编辑器
   // 包括: 要保存的光标状态
   interface TextInputCursorState {
-    element: HTMLTextAreaElement | HTMLInputElement; // 目标元素
+    element: HTMLTextAreaElement | HTMLInputElement; // 目标元素 // TODO 支持 editableDiv
     // selectedText // 这个直接保存到状态中
     start: number;
     end: number;
