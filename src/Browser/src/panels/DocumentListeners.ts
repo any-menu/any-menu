@@ -176,17 +176,18 @@ export class DocumentListeners {
 
   /** 智能更新选区
    * 
-   * ## 智能更新规则：
+   * ## 智能更新规则
    * 
    * 避免在弹出面板中的选区行为，去影响本来在编辑器区域中的选区事件
    * 主要有两个判断:
    * 1. 判断选区变更时，是否在弹出面板对应的 class 内
    * 2. (可选) 判断选区变更时是否在编辑器对应的 class 内
    * 
-   * ## 注意
+   * ## 更新内容
    * 
-   * 此处暂时不更新到 global_setting.state.selectedText 中
-   * 原因是还没解决聚焦到 am-panel 上导致原元素上的选择状态变为空的情况
+   * 1. 光标所在元素
+   * 2. 光标位置 (by EditorTools)。仅召唤面板时更新
+   * 3. 选取内容 selectedText
    */
   protected updateSelectedText() {
     const el: HTMLElement|null = DocumentListeners.get_selection_el()
@@ -202,9 +203,7 @@ export class DocumentListeners {
     }
 
     // 更新当前选中状态 - 光标位置
-    if (el && el instanceof HTMLTextAreaElement) {
-      EditorTools.saveCurrentCursor(el)
-    }
+    EditorTools.saveCurrentCursor(el)
 
     // 2. 更新当前选中状态 - 选中文本
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区

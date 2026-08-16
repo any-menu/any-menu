@@ -109,7 +109,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       info_el_msg.textContent = 
         (new Date().toLocaleString()) + '\n' +
         JSON.stringify(global_setting.state, null, 2) + '\n' +
-        JSON.stringify(EditorTools.state, null, 2)
+        JSON.stringify(EditorTools.state, null, 2) + '\n' +
+        `el: ${EditorTools.state.savedCursorState?.element.tagName} .${EditorTools.state.savedCursorState?.element.className}`
     }, 500)
   }
 
