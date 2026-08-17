@@ -20,7 +20,16 @@
   gap: 20px;
   padding: 20px;
 
-  .am-browser-debug-textarea {
+  .am-browser-debug-textels {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    >* {
+      flex: 1;
+    }
+  }
+
+  .am-browser-debug-textel {
     resize: vertical;
     height: 300px;
     padding: 10px;
@@ -67,7 +76,7 @@
     flex-basis: 100%;
   }
 
-  .am-browser-debug-textarea,
+  .am-browser-debug-textel,
   .am-browser-debug-btn,
   .am-browser-debug-info,
   .am-config {

@@ -71,16 +71,36 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
   }
 
-  // 文本框
-  let textarea: HTMLTextAreaElement
+  // 文本框集
   {
-    textarea = document.createElement('textarea'); main_el.appendChild(textarea);
-      textarea.textContent = 'Test, textarea demo.\n'
-      textarea.setAttribute('spellcheck', 'false')
-      textarea.classList.add('am-browser-debug-textarea')
-    // textarea.onblur = () => {
-    //   EditorTools.saveCurrentCursor(textarea)
-    // }
+    const textsEl = document.createElement('div'); main_el.appendChild(textsEl);
+      textsEl.classList.add('am-browser-debug-textels')
+
+    // 文本框 - textarea
+    {
+      const textEl: HTMLTextAreaElement = document.createElement('textarea'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Textarea demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-textarea')
+    }
+
+    // 文本框 - editable div
+    {
+      const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Editable div demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-editable')
+        textEl.setAttribute('contenteditable', 'true')
+    }
+
+    // 文本框 - uneditable div
+    {
+      const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Not editable div demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-uneditable')
+        textEl.setAttribute('contenteditable', 'false')
+    }
   }
 
   // debug 信息面板
@@ -110,7 +130,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         (new Date().toLocaleString()) + '\n' +
         JSON.stringify(global_setting.state, null, 2) + '\n' +
         JSON.stringify(EditorTools.state, null, 2) + '\n' +
-        `el: ${EditorTools.state.savedCursorState?.element.tagName} .${EditorTools.state.savedCursorState?.element.className}`
+        `el: ${EditorTools.state.savedCursorState?.element.tagName}\n.${EditorTools.state.savedCursorState?.element.className}`
     }, 500)
   }
 
