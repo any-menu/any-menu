@@ -27,8 +27,7 @@
 
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel } from "@/Core/panels/MulPanel"
-import { get_selection_rect, get_selection_el } from "./cursorInfo"
-import { EditorTools } from "../utils/initApi";
+import { get_selection_rect, get_selection_el, EditorTools } from "./cursorInfo"
 
 export class DocumentListeners {
 
