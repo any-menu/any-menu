@@ -151,46 +151,49 @@ export const global_setting = {
         sendText: (text) => __awaiter(void 0, void 0, void 0, function* () {
             var _a, _b;
             console.warn("未实现 api.sendText 方法，将使用通用浏览器行为");
-            const activeElement = document.activeElement;
-            if (activeElement) {
-                const active = activeElement;
-                const tagName = active.tagName;
-                const isInput = tagName === 'INPUT';
-                const isTextarea = tagName === 'TEXTAREA';
-                const isContentEditable = active.isContentEditable;
+            const activeEl = document.activeElement;
+            if (!activeEl) {
+                console.warn('没有活动的元素，将demo文本生成到剪贴板');
+                navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err));
+                return;
+            }
+            else {
+                const isInput = activeEl instanceof HTMLInputElement;
+                const isTextarea = activeEl instanceof HTMLTextAreaElement;
+                const isContentEditable = activeEl.isContentEditable;
                 if (isInput || isTextarea) {
-                    const el = active;
+                    const el = activeEl;
                     const nonTextTypes = ['checkbox', 'radio', 'file', 'button', 'submit', 'reset', 'image', 'hidden'];
                     if (!el.disabled &&
                         !el.readOnly &&
-                        !(isInput && nonTextTypes.includes(active.type))) {
+                        !(isInput && nonTextTypes.includes(activeEl.type))) {
                         const start = (_a = el.selectionStart) !== null && _a !== void 0 ? _a : 0;
                         const end = (_b = el.selectionEnd) !== null && _b !== void 0 ? _b : 0;
                         el.setRangeText(text, start, end, 'end');
                         el.dispatchEvent(new Event('input', { bubbles: true }));
+                        return;
                     }
                 }
                 else if (isContentEditable) {
-                    const sel = window.getSelection();
-                    if (sel && sel.rangeCount > 0) {
-                        const range = sel.getRangeAt(0);
+                    const selection = window.getSelection();
+                    if (selection && selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
                         range.deleteContents();
                         const textNode = document.createTextNode(text);
                         range.insertNode(textNode);
                         range.setStartAfter(textNode);
                         range.collapse(true);
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                        active.dispatchEvent(new Event('input', { bubbles: true }));
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        activeEl.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                     else {
                         console.warn('没有活动的选区，将demo文本生成到剪贴板');
                         navigator.clipboard.writeText(text).catch(err => console.error('Could not copy text: ', err));
                     }
+                    return;
                 }
             }
-            console.warn('没有活动的元素，将demo文本生成到剪贴板');
-            navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err));
         }),
         saveToClipboard: (text) => __awaiter(void 0, void 0, void 0, function* () {
             try {

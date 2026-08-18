@@ -30,13 +30,16 @@
   }
 
   .am-browser-debug-textel {
-    resize: vertical;
-    height: 300px;
     padding: 10px;
     border: solid 1px var(--am-bd-color);
     background: var(--am-pre-bg-color);
     color: var(--am-pre-text-color);
     font-size: 17px;
+
+    &.am-browser-debug-textarea {
+      height: 260px;
+      resize: vertical;
+    }
   }
 
   .am-browser-debug-btn {
