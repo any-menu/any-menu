@@ -1,17 +1,35 @@
 /** 通用的游标/选区数据工具集 */
 
-/** 获取游标和选区位置，还有对一些信息的采集 */
-export function getCursorPos(): {
-  pos: {left: number, top: number, right: number, bottom: number}
-} | null {
-  const ret = getSelectionRect()
-  return ret ? {pos:ret} : null
+/** 获取选区所在的 el
+ * 可基于此实现 isInPanel (无法判断也返回 false)
+ * 
+ * 主要是选区变化时调用
+ */
+export function get_selection_el(): HTMLElement | null {
+  // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
+  const activeEl = document.activeElement as HTMLElement|null
+  if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
+    return activeEl
+  }
 
-  // return {
-  //   pos: {
-  //     left: 200, top: 200, right: 400, bottom: 400
-  //   }
-  // }
+  // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
+  // 备注: 此时的 activeEl 一般会是 `body`。我们不用那个，而是找更具体的
+  else {
+    const selection = document.getSelection(); // 无法获取 textarea 等元素的选中
+    // 获取选区变化时的目标元素
+    let el: HTMLElement|null
+    // 有选区时，取选区所在容器判断
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      const node = range.commonAncestorContainer
+      el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
+    }
+    // 无选区时（例如单纯聚焦），检查当前活动元素
+    else {
+      el = activeEl
+    }
+    return el
+  }
 }
 
 /**
@@ -21,18 +39,18 @@ export function getCursorPos(): {
  * 
  * @returns 矩形位置对象，或 null 表示无法获取
  */
-function getSelectionRect(): {
+export function get_selection_rect(): {
   left: number; top: number; right: number; bottom: number
 } | null {
   // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
   const activeEl = document.activeElement as HTMLElement|null
   if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
-    const ret = getSelectionRect_in_inputEl(activeEl)
+    const ret = get_selection_rect__in_inputEl(activeEl)
     return ret
   }
 
   // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
-  // 备注: 此时的 activeEl 一般会是 `body`
+  // 备注: 此时的 activeEl 一般会是 `body`。我们不用那个，而是找更具体的
   {
     const selection = window.getSelection()
     if (selection && selection.rangeCount > 0) {
@@ -57,7 +75,7 @@ function getSelectionRect(): {
 /**
  * 通过镜像法获取 `<input>` / `<textarea>` 光标的坐标
  */
-function getSelectionRect_in_inputEl(
+function get_selection_rect__in_inputEl(
   input: HTMLInputElement | HTMLTextAreaElement
 ): { left: number; top: number; right: number; bottom: number } | null {
   // 1. 准备 - 创建一个隐藏的镜像元素，用于计算文本偏移

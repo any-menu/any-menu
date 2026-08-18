@@ -27,7 +27,7 @@
 
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel } from "@/Core/panels/MulPanel"
-import { getCursorPos } from "./cursorInfo"
+import { get_selection_rect, get_selection_el } from "./cursorInfo"
 import { EditorTools } from "../utils/initApi";
 
 export class DocumentListeners {
@@ -190,7 +190,7 @@ export class DocumentListeners {
    * 3. 选取内容 selectedText
    */
   protected updateSelectedText() {
-    const el: HTMLElement|null = DocumentListeners.get_selection_el()
+    const el: HTMLElement|null = get_selection_el()
 
     // 1. 排除
     // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
@@ -239,8 +239,8 @@ export class DocumentListeners {
       const panel_list = global_setting.config.panel_preset2[1].list
 
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorPos()
-      if (!cursorInfo) {
+      const selectionRect = get_selection_rect()
+      if (!selectionRect) {
         console.warn('获取光标位置失败')
         return
       }
@@ -248,7 +248,7 @@ export class DocumentListeners {
       // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
       const panel_size = activeAMPanel.get_size(panel_list)
-      const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
+      const ret = activeAMPanel.fix_position(screen_size, panel_size, selectionRect, "side", "center", "top")
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
@@ -258,38 +258,6 @@ export class DocumentListeners {
         panel_list,
         false, // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
       )
-    }
-  }
-
-  /** 获取选区所在的 el
-   * 可基于此实现 isInPanel (无法判断也返回 false)
-   * 
-   * 主要是选区变化时调用
-   */
-  static get_selection_el(): HTMLElement | null {
-    // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
-    const activeEl = document.activeElement as HTMLElement|null
-    if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
-      return activeEl
-    }
-
-    // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
-    // 备注: 此时的 activeEl 一般会是 `body`
-    else {
-      const selection = document.getSelection(); // 无法获取 textarea 等元素的选中
-      // 获取选区变化时的目标元素
-      let el: HTMLElement|null
-      // 有选区时，取选区所在容器判断
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0)
-        const node = range.commonAncestorContainer
-        el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
-      }
-      // 无选区时（例如单纯聚焦），检查当前活动元素
-      else {
-        el = activeEl
-      }
-      return el
     }
   }
 }

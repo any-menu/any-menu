@@ -31,8 +31,9 @@
 
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 import { global_setting } from "@/Core/shared/setting"
-import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
+import { activeAMPanel } from "@/Core/panels/MulPanel"
 import { DocumentListeners as DocumentListeners_ } from "@/Browser/src/panels/DocumentListeners"
+import { get_selection_el } from "@/Browser/src/panels/cursorInfo"
 import { getCursorInfo } from "."
 
 export class DocumentListeners extends DocumentListeners_ {
@@ -63,7 +64,7 @@ export class DocumentListeners extends DocumentListeners_ {
   }
 
   protected override updateSelectedText() {
-    const el: HTMLElement|null = DocumentListeners_.get_selection_el()
+    const el: HTMLElement|null = get_selection_el()
   
     // 1. 排除
     // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
