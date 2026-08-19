@@ -196,70 +196,78 @@ function get_selection_rect__in_inputEl(
   }
 }
 
+// TODO
 export function get_selection_text() {
 
 }
 
-/** textarea 简易编辑器管理
+// 获取光标选区
+function get_selection_range(el: HTMLElement): 
+  {start: number, end: number} | Range | null
+{
+  // b1. 处理原生 `<input>` 或 `<textarea>` 的选中选区
+  if (el instanceof HTMLTextAreaElement){
+    return {
+      start: el.selectionStart,
+      end: el.selectionEnd,
+    }
+  } else if (el instanceof HTMLInputElement) {
+    return {
+      start: el.selectionStart ?? 0,
+      end: el.selectionEnd ?? 0,
+    }
+  }
+
+  // b2. editable div、not-editable div 的选中选区
+  {
+    const selection = window.getSelection()
+    if (!selection || selection.rangeCount === 0) return null
+
+    const range = selection.getRangeAt(0)
+    // 确保选区确实在目标元素内部
+    if (el.contains(range.commonAncestorContainer)) {
+      return range.cloneRange()
+    }
+  }
+
+  return null
+}
+
+/** 简易编辑器管理。
+ * 
+ * 编辑对象可能是 textarea、input、editable div、not-editable div
+ * 
  * 主要管理聚焦转移和恢复时的聚焦状态和光标位置恢复
  */
 export namespace EditorTools {
 
-  // 召唤面板时对应的文本编辑器
-  // 包括: 要保存的光标状态
-  interface TextInputCursorState {
-    el: HTMLTextAreaElement | HTMLInputElement | HTMLElement; // 目标元素
-    // selectedText // 这个直接保存到状态中
-    start: number;
-    end: number;
-  }
-
   export const state: {
-    savedCursorState: TextInputCursorState | null
+    el: HTMLTextAreaElement | HTMLInputElement | HTMLElement | null
+    range: {start: number, end: number} | Range | null
   } = {
-    savedCursorState: null
+    el: null,
+    range: null
   }
 
-  // 获取光标位置
-  function get_selection_pos(el: HTMLElement): {start: number, end: number}|null {
-    // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
-    if (el instanceof HTMLTextAreaElement){
-      return {
-        start: el.selectionStart,
-        end: el.selectionEnd,
-      }
-    } else if (el instanceof HTMLInputElement) {
-      return {
-        start: el.selectionStart ?? 0,
-        end: el.selectionEnd ?? 0,
-      }
-    }
-
-    // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
-    // 备注: 此时的 activeEl 一般会是 `body`。我们不用那个，而是找更具体的
-    { // 暂不支持
-      return null
-    }
-
-    return null
-  }
-  
   // 保存光标状态
   export function saveCurrentCursor(el: HTMLElement): void {
-    const ret = get_selection_pos(el)
-    if (!ret) {
-      state.savedCursorState = {
-        el: el,
-        start: 0,
-        end: 0,
-      }
-      return
-    }
+    const ret = get_selection_range(el)
 
-    state.savedCursorState = {
-      el: el,
-      start: ret.start,
-      end: ret.end,
+    // 无法获取
+    if (!ret) {
+      state.el = null
+      state.range = null
+    }
+    else if (ret instanceof Range) {
+      state.el = el
+      state.range = ret
+    }
+    else {
+      state.el = el
+      state.range = {
+        start: ret.start,
+        end: ret.end,
+      }
     }
   }
 
@@ -267,13 +275,25 @@ export namespace EditorTools {
   // (可选) 可以顺便在光标位置插入文本内容
   export function recoverCursor(insertText: string = ''): void {
     // 1. 获取保存的状态
-    if (!state.savedCursorState || !document.contains(state.savedCursorState.el)) {
-      return // 获取保存状态失败
+    if (!state.el || !document.contains(state.el)) {
+      console.warn('No cache editor\'s el or range, can\'t recover range.')
+      return
     }
-    let el = state.savedCursorState.el
-    if (!(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement)) {
-      return // 之前保存的不是 input 或 textarea // TODO 支持 editableDiv
-    }
+
+    // 职责链模式
+    let ret = recoverCursor_textarea(insertText)
+    if (ret) return
+    ret = recoverCursor_editableDiv(insertText)
+    if (ret) return
+    console.warn('Current el not editable.')
+    return
+  }
+
+  function recoverCursor_textarea(insertText: string = ''): boolean {
+    if (!(state.el instanceof HTMLTextAreaElement || state.el instanceof HTMLInputElement)) { return false }
+    if (!state.range) { console.error('Unreacheable 1'); return false }
+    if (state.range instanceof Range) { console.error('Unreacheable 2'); return false }
+    const el = state.el
 
     // 2. 光标原位置信息获取
     // 先查看是否已经是聚焦状态，如果是，则使用当前的光标位置，而非从状态中更新
@@ -282,8 +302,8 @@ export namespace EditorTools {
       start = el.selectionStart ?? 0;
       end = el.selectionEnd ?? 0;
     } else { // 未聚焦 → 使用保存的光标位置
-      start = state.savedCursorState.start;
-      end = state.savedCursorState.end;
+      start = state.range.start;
+      end = state.range.end;
     }
 
     // 3. 获取当前值和新值，设置文本
@@ -301,8 +321,53 @@ export namespace EditorTools {
     el.focus();
 
     // 5. 清空/更新保存的状态
-    state.savedCursorState.start = newCursorPos
-    state.savedCursorState.end = newCursorPos
+    state.range.start = newCursorPos
+    state.range.end = newCursorPos
     // state.savedCursorState = null; // (可选) 清空以防止重复使用
+
+    return true
+  }
+
+  function recoverCursor_editableDiv(insertText: string = ''): boolean {
+    if (!state.el || !state.el.isContentEditable) { return false }
+    if (!state.range) { console.error('Unreacheable 3'); return false }
+    if (!(state.range instanceof Range)) { console.error('Unreacheable 4'); return false }
+    const el = state.el
+
+    // 如果当前已聚焦在 contenteditable 且存在有效选区，则优先使用当前选区而非缓存选区
+    if (document.activeElement === el) {
+      const selection = window.getSelection()
+      if (selection && selection.rangeCount > 0) {
+        const currentRange = selection.getRangeAt(0)
+        if (el.contains(currentRange.commonAncestorContainer)) {
+          state.range = currentRange
+        }
+      }
+    }
+
+    // 插入文本、并更新 Range
+    if (insertText) {
+      state.range.deleteContents()
+      const textNode = document.createTextNode(insertText)
+      state.range.insertNode(textNode)
+
+      // 将 range 移动到插入文本之后
+      state.range.setStartAfter(textNode)
+      state.range.setEndAfter(textNode)
+      // state.range = state.range.cloneRange()
+    }
+
+    // 恢复 selection
+    const selection = window.getSelection()
+    if (selection) {
+      // contenteditable 需要先聚焦，否则选区可能无法正常显示
+      if (el.isContentEditable) {
+        el.focus()
+      }
+      selection.removeAllRanges()
+      selection.addRange(state.range)
+    }
+
+    return true
   }
 }

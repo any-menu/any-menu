@@ -206,6 +206,7 @@ export class DocumentListeners {
 
     // 2. 更新当前选中状态 - 选中文本
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
+    // TODO 分别处理 textarea、editable div、not-editable div
     const selection = document.getSelection()
     if (!selection || !selection.isCollapsed || selection.toString() === '') { // 无选中
       this.previewSelection = null; global_setting.state.selectedText = undefined;
