@@ -208,7 +208,7 @@ export namespace EditorTools {
   // 召唤面板时对应的文本编辑器
   // 包括: 要保存的光标状态
   interface TextInputCursorState {
-    element: HTMLTextAreaElement | HTMLInputElement | HTMLElement; // 目标元素
+    el: HTMLTextAreaElement | HTMLInputElement | HTMLElement; // 目标元素
     // selectedText // 这个直接保存到状态中
     start: number;
     end: number;
@@ -219,26 +219,47 @@ export namespace EditorTools {
   } = {
     savedCursorState: null
   }
+
+  // 获取光标位置
+  function get_selection_pos(el: HTMLElement): {start: number, end: number}|null {
+    // b1. 处理原生 `<input>` 或 `<textarea>` 的选中文本
+    if (el instanceof HTMLTextAreaElement){
+      return {
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      }
+    } else if (el instanceof HTMLInputElement) {
+      return {
+        start: el.selectionStart ?? 0,
+        end: el.selectionEnd ?? 0,
+      }
+    }
+
+    // b2. 标准 Selection / Range API (无法处理 `textarea` 等内部元素隐藏的元素)
+    // 备注: 此时的 activeEl 一般会是 `body`。我们不用那个，而是找更具体的
+    { // 暂不支持
+      return null
+    }
+
+    return null
+  }
   
   // 保存光标状态
   export function saveCurrentCursor(el: HTMLElement): void {
-    // b1. 非 textarea 或 input 元素
-    if (!(el && el instanceof HTMLTextAreaElement)) { // TODO 支持 editableDiv
+    const ret = get_selection_pos(el)
+    if (!ret) {
       state.savedCursorState = {
-        element: el,
+        el: el,
         start: 0,
         end: 0,
       }
       return
     }
 
-    // b2. textarea 或 input 元素
-    {
-      state.savedCursorState = {
-        element: el,
-        start: el.selectionStart,
-        end: el.selectionEnd,
-      }
+    state.savedCursorState = {
+      el: el,
+      start: ret.start,
+      end: ret.end,
     }
   }
 
@@ -246,10 +267,10 @@ export namespace EditorTools {
   // (可选) 可以顺便在光标位置插入文本内容
   export function recoverCursor(insertText: string = ''): void {
     // 1. 获取保存的状态
-    if (!state.savedCursorState || !document.contains(state.savedCursorState.element)) {
+    if (!state.savedCursorState || !document.contains(state.savedCursorState.el)) {
       return // 获取保存状态失败
     }
-    let el = state.savedCursorState.element
+    let el = state.savedCursorState.el
     if (!(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement)) {
       return // 之前保存的不是 input 或 textarea // TODO 支持 editableDiv
     }

@@ -131,7 +131,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         (new Date().toLocaleString()) + '\n' +
         JSON.stringify(global_setting.state, null, 2) + '\n' +
         JSON.stringify(EditorTools.state, null, 2) + '\n' +
-        `el: ${EditorTools.state.savedCursorState?.element.tagName}\n.${EditorTools.state.savedCursorState?.element.className}`
+        `el: ${EditorTools.state.savedCursorState?.el.tagName}\n.${EditorTools.state.savedCursorState?.el.className}`
     }, 500)
   }
 
