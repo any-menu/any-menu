@@ -191,24 +191,25 @@ export class DocumentListeners {
   protected updateSelectedText() {
     const el: HTMLElement|null = get_selection_el()
 
-    // 1. 排除
-    // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
-    if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
-      return
-    }
-    // 1.2. 只匹配某些 class 中/编辑模式下的选中项
-    if (!el) { // 无法获取 el 也认为不在目标元素上
-      return
+    // 1. 选区状态更新的过滤规则
+    {
+      // 不匹配在弹出的工具栏/菜单上的选中行为
+      if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+        return
+      }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      if (!el) { // 无法获取 el 也认为不在目标元素上
+        return
+      }
     }
 
-    // 更新当前选中状态 - 光标位置
+    // 2. 更新当前选中状态 - 光标位置
     EditorTools.saveCurrentCursor(el)
 
-    // 2. 更新当前选中状态 - 选中文本
+    // 3. 更新当前选中状态 - 选中文本
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
-    // TODO 分别处理 textarea、editable div、not-editable div
     const selection = document.getSelection()
-    if (!selection || !selection.isCollapsed || selection.toString() === '') { // 无选中
+    if (!selection || selection.toString() === '') { // 无选中。不再判断 `!selection.isCollapsed`，否则只响应 textarea
       this.previewSelection = null; global_setting.state.selectedText = undefined;
     }
     else { // 有选中
@@ -229,9 +230,24 @@ export class DocumentListeners {
   protected async showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
-  
-    void show_panel_auto()
 
+    // 1. 面板弹出的过滤规则
+    {
+      const el = EditorTools.state.el
+      if (!el) return
+      // 匹配在弹出的工具栏/菜单上的选中行为
+      if (el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+        return
+      }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      // TODO 这里的是 browser 环境的临时规则，应该允许用户自定义这里的高级规则
+      if (!el.classList.contains('am-browser-debug-textel')) {
+        return
+      }
+    }
+
+    // 2. 显示面板
+    void show_panel_auto()
     async function show_panel_auto () {
       if (!activeAMPanel) return
       

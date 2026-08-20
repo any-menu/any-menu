@@ -54,6 +54,8 @@
     position: fixed;
     top: 400px;
     right: 10px;
+    max-width: 400px;
+    overflow: auto;
 
     padding: 10px;
     z-index: 14;
