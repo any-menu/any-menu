@@ -35,6 +35,7 @@
     background: var(--am-pre-bg-color);
     color: var(--am-pre-text-color);
     font-size: 17px;
+    white-space: pre-wrap;
 
     &.am-browser-debug-textarea {
       height: 260px;
