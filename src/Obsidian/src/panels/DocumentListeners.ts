@@ -31,8 +31,9 @@
 
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 import { global_setting } from "@/Core/shared/setting"
-import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
+import { activeAMPanel } from "@/Core/panels/MulPanel"
 import { DocumentListeners as DocumentListeners_ } from "@/Browser/src/panels/DocumentListeners"
+import { get_selection_el } from "@/Browser/src/panels/cursorInfo"
 import { getCursorInfo } from "."
 
 export class DocumentListeners extends DocumentListeners_ {
@@ -63,18 +64,15 @@ export class DocumentListeners extends DocumentListeners_ {
   }
 
   protected override updateSelectedText() {
-    const el: HTMLElement|null = DocumentListeners_.get_selection_el()
-  
-    // 1. 排除
-    // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
-    if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也为不在 panel 上
-      return
-    }
-    // 1.2. 只匹配某些 class 中/编辑模式下的选中项
-    const selectedText = getSelection_editor(this.plugin)
-    if (!selectedText) {
-      this.previewSelection = null
-      return
+    // 1. 选区状态更新的过滤规则
+    {
+      const el: HTMLElement|null = get_selection_el()
+      // 不匹配在弹出的工具栏/菜单上的选中行为
+      if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也为不在 panel 上
+        return
+      }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      // 略，暂无此白名单
     }
 
     // 2. 更新当前的选中状态
@@ -105,16 +103,29 @@ export class DocumentListeners extends DocumentListeners_ {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    void show_panel_auto(this.plugin, editor)
+    void show_panel_auto(this, editor)
 
-    async function show_panel_auto (plugin: Plugin, editor: Editor) {
+    async function show_panel_auto(p_this: DocumentListeners, editor: Editor) {
       if (!activeAMPanel) return
+
+      // 1. 面板弹出的过滤规则
+      {
+        // 匹配在弹出的工具栏/菜单上的选中行为
+        // TODO 黑名单应排除 .am-panel
+
+        // 只匹配某些 class 中/编辑模式下的选中项
+        const selectedText = getSelection_editor(p_this.plugin)
+        if (!selectedText) {
+          p_this.previewSelection = null
+          return
+        }
+      }
 
       // 0. 默认参数
       const panel_list = global_setting.config.panel_preset2[1].list
 
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo(plugin, editor)
+      const cursorInfo = getCursorInfo(p_this.plugin, editor)
       if (!cursorInfo) {
         console.warn('获取光标位置失败')
         return

@@ -1159,6 +1159,11 @@ html, body, #main {
   stroke: var(--am-bright-color);
 }
 
+/* -------------------------------- debug 面板 --------------------------- */
+.am-debug {
+  padding: 6px;
+}
+
 /* -------------------------------- 快速编辑器 --------------------------- */
 .am-mini-editor {
   position: relative;

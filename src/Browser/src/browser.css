@@ -20,14 +20,27 @@
   gap: 20px;
   padding: 20px;
 
-  .am-browser-debug-textarea {
-    resize: vertical;
-    height: 300px;
+  .am-browser-debug-textels {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    >* {
+      flex: 1;
+    }
+  }
+
+  .am-browser-debug-textel {
     padding: 10px;
     border: solid 1px var(--am-bd-color);
     background: var(--am-pre-bg-color);
     color: var(--am-pre-text-color);
     font-size: 17px;
+    white-space: pre-wrap;
+
+    &.am-browser-debug-textarea {
+      height: 260px;
+      resize: vertical;
+    }
   }
 
   .am-browser-debug-btn {
@@ -42,6 +55,8 @@
     position: fixed;
     top: 400px;
     right: 10px;
+    max-width: 400px;
+    overflow: auto;
 
     padding: 10px;
     z-index: 14;
@@ -67,7 +82,7 @@
     flex-basis: 100%;
   }
 
-  .am-browser-debug-textarea,
+  .am-browser-debug-textel,
   .am-browser-debug-btn,
   .am-browser-debug-info,
   .am-config {

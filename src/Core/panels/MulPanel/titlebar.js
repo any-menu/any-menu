@@ -16,7 +16,8 @@ export class AMTitlebar extends AbsAmPanel {
         this.createHideBtn();
         this.createPanelManagerBtn();
         this.createReverseBtn();
-        global_setting.other.app_createTitlebar(this.el);
+        if (global_setting.platform == 'app')
+            global_setting.other.app_createTitlebar(this.el);
         this.panel_hide();
         AMPin.initEvent(this.el, amPanel);
     }
@@ -67,7 +68,7 @@ export class AMTitlebar extends AbsAmPanel {
                 const el_hr = document.createElement('hr');
                 el_panel_list.appendChild(el_hr);
                 const all_panel_list = [
-                    'search', 'toolbar', 'menu', 'miniEditor', 'info',
+                    'search', 'toolbar', 'menu', 'miniEditor', 'info', 'debug',
                     ...Object.keys((_b = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.custom_sub_panel) !== null && _b !== void 0 ? _b : {})
                 ];
                 for (const item_name of all_panel_list) {
@@ -76,6 +77,7 @@ export class AMTitlebar extends AbsAmPanel {
                     el_item.innerText = item_name;
                     el_item.title = item_name;
                     el_item.onclick = () => {
+                        activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_toggle(item_name);
                     };
                 }
             }

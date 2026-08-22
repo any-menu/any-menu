@@ -8,6 +8,7 @@ import { AMContextMenu } from '../contextmenu/index';
 import { AMMiniEditor } from '../miniEditor/index';
 import { AMPin } from './pin/index';
 import { AMTitlebar } from './titlebar';
+import { AMDebug } from '../debug';
 export let activeAMPanel = null;
 const amPanel_list = [];
 export class AMPanel extends AbsAmPanel {
@@ -30,9 +31,10 @@ export class AMPanel extends AbsAmPanel {
             amTitlebar: null,
             amPin: null,
             amSearch: null,
+            amToolbar: null,
             amContextMenu: null,
             amMiniEditor: null,
-            amToolbar: null,
+            amDebug: null,
             amCustom: null,
         };
         this.state = {
@@ -86,6 +88,9 @@ export class AMPanel extends AbsAmPanel {
         if (!sub_panels.amMiniEditor) {
             sub_panels.amMiniEditor = AMMiniEditor.factory(this);
         }
+        if (!sub_panels.amDebug) {
+            sub_panels.amDebug = AMDebug.factory(this);
+        }
         if (!sub_panels.amCustom) {
             sub_panels.amCustom = document.createElement('div');
             el.appendChild(sub_panels.amCustom);
@@ -137,7 +142,7 @@ export class AMPanel extends AbsAmPanel {
         }
     }
     panel_show(pos, append_list, is_focus = true, is_show_container = true) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         {
             if (pos === undefined) {
             }
@@ -223,8 +228,11 @@ export class AMPanel extends AbsAmPanel {
                     (_a = this.sub_panels.amMiniEditor) === null || _a === void 0 ? void 0 : _a.panel_show(global_setting.state.infoText, false);
                 });
             }
+            else if (item == 'debug') {
+                (_h = this.sub_panels.amDebug) === null || _h === void 0 ? void 0 : _h.panel_show();
+            }
             else {
-                const target_custom_el = (_h = this.custom_sub_panel) === null || _h === void 0 ? void 0 : _h[item];
+                const target_custom_el = (_j = this.custom_sub_panel) === null || _j === void 0 ? void 0 : _j[item];
                 if (target_custom_el)
                     target_custom_el.classList.remove('am-hide');
                 else
@@ -237,7 +245,7 @@ export class AMPanel extends AbsAmPanel {
         window.addEventListener('keydown', this.visual_listener_keydown);
     }
     panel_hide(list, focusHide = false, is_hide_container = true) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         if (global_setting.state.isPin && !focusHide) {
             if (!list || list.length === 0) {
                 this.el.blur();
@@ -267,6 +275,7 @@ export class AMPanel extends AbsAmPanel {
             (_b = this.sub_panels.amToolbar) === null || _b === void 0 ? void 0 : _b.panel_hide();
             (_c = this.sub_panels.amContextMenu) === null || _c === void 0 ? void 0 : _c.panel_hide();
             (_d = this.sub_panels.amMiniEditor) === null || _d === void 0 ? void 0 : _d.panel_hide();
+            (_e = this.sub_panels.amDebug) === null || _e === void 0 ? void 0 : _e.panel_hide();
             for (const key in this.custom_sub_panel) {
                 this.custom_sub_panel[key].classList.add('am-hide');
             }
@@ -274,15 +283,17 @@ export class AMPanel extends AbsAmPanel {
         else {
             for (const item of list) {
                 if (item == 'search')
-                    (_e = this.sub_panels.amSearch) === null || _e === void 0 ? void 0 : _e.panel_hide();
+                    (_f = this.sub_panels.amSearch) === null || _f === void 0 ? void 0 : _f.panel_hide();
                 else if (item == 'toolbar')
-                    (_f = this.sub_panels.amToolbar) === null || _f === void 0 ? void 0 : _f.panel_hide();
+                    (_g = this.sub_panels.amToolbar) === null || _g === void 0 ? void 0 : _g.panel_hide();
                 else if (item == 'menu')
-                    (_g = this.sub_panels.amContextMenu) === null || _g === void 0 ? void 0 : _g.panel_hide();
+                    (_h = this.sub_panels.amContextMenu) === null || _h === void 0 ? void 0 : _h.panel_hide();
                 else if (item == 'miniEditor')
-                    (_h = this.sub_panels.amMiniEditor) === null || _h === void 0 ? void 0 : _h.panel_hide();
-                else if (item == 'info')
                     (_j = this.sub_panels.amMiniEditor) === null || _j === void 0 ? void 0 : _j.panel_hide();
+                else if (item == 'info')
+                    (_k = this.sub_panels.amMiniEditor) === null || _k === void 0 ? void 0 : _k.panel_hide();
+                else if (item == 'debug')
+                    (_l = this.sub_panels.amDebug) === null || _l === void 0 ? void 0 : _l.panel_hide();
                 else {
                     for (const key in this.custom_sub_panel) {
                         if (key == item) {
@@ -296,7 +307,7 @@ export class AMPanel extends AbsAmPanel {
         }
     }
     panel_toggle(item) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         const index = this.state.show_panel_list.indexOf(item);
         if (index !== -1) {
             this.state.show_panel_list.splice(index, 1);
@@ -318,6 +329,8 @@ export class AMPanel extends AbsAmPanel {
             (_f = this.sub_panels.amMiniEditor) === null || _f === void 0 ? void 0 : _f.set_flag('info');
             (_g = this.sub_panels.amMiniEditor) === null || _g === void 0 ? void 0 : _g.panel_toggle();
         }
+        else if (item == 'debug')
+            (_h = this.sub_panels.amDebug) === null || _h === void 0 ? void 0 : _h.panel_toggle();
         else {
             const target_custom_el = this.custom_sub_panel[item];
             if (!target_custom_el) {
@@ -400,6 +413,9 @@ export class AMPanel extends AbsAmPanel {
             }
             else if (item == 'info') {
                 height += 276;
+            }
+            else if (item == 'debug') {
+                height += 300;
             }
             else if (item == 'toolbar') {
                 height += 32;

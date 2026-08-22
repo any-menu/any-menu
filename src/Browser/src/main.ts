@@ -4,8 +4,9 @@ import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '@/Core/initTool'
-import { EditorTools, initApi, initApi_with_server } from './utils/initApi'
+import { initApi, initApi_with_server } from './utils/initApi'
 import { DocumentListeners } from './panels/DocumentListeners'
+import { EditorTools } from './panels/cursorInfo'
 
 // #region 启动时阅读配置文件
 
@@ -65,22 +66,42 @@ window.addEventListener("DOMContentLoaded", async () => {
         activeAMPanel.panel_hide()
         activeAMPanel.panel_show(
           {x: 30, y: 200, is_reverse: false},
-          global_setting.config.panel_preset2[0].list,
+          [...global_setting.config.panel_preset2[0].list, 'debug'],
           true
         )
       }
   }
 
-  // 文本框
-  let textarea: HTMLTextAreaElement
+  // 文本框集
   {
-    textarea = document.createElement('textarea'); main_el.appendChild(textarea);
-      textarea.textContent = 'Test, textarea demo.\n'
-      textarea.setAttribute('spellcheck', 'false')
-      textarea.classList.add('am-browser-debug-textarea')
-    // textarea.onblur = () => {
-    //   EditorTools.saveCurrentCursor(textarea)
-    // }
+    const textsEl = document.createElement('div'); main_el.appendChild(textsEl);
+      textsEl.classList.add('am-browser-debug-textels')
+
+    // 文本框 - textarea
+    {
+      const textEl: HTMLTextAreaElement = document.createElement('textarea'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Textarea demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-textarea')
+    }
+
+    // 文本框 - editable div
+    {
+      const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Editable div demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-editable')
+        textEl.setAttribute('contenteditable', 'true')
+    }
+
+    // 文本框 - uneditable div
+    {
+      const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+        textEl.textContent = 'Not editable div demo.\n'
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-uneditable')
+        textEl.setAttribute('contenteditable', 'false')
+    }
   }
 
   // debug 信息面板
@@ -109,7 +130,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       info_el_msg.textContent = 
         (new Date().toLocaleString()) + '\n' +
         JSON.stringify(global_setting.state, null, 2) + '\n' +
-        JSON.stringify(EditorTools.state, null, 2)
+        JSON.stringify(EditorTools.state, null, 2) + '\n' +
+        `el: ${EditorTools.state.el?.tagName}\n.${EditorTools.state.el?.className}`
     }, 500)
   }
 
@@ -123,15 +145,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // 设置面板
   initSettingPanel(main_el)
-
-  // 置顶按钮 (仅 debug 时显示)
-  if (!global_setting.isDebug) return;
-  const pin_btn = document.createElement('button'); main_el.appendChild(pin_btn); pin_btn.classList.add('btn-1', 'windows-pin');
-  // https://lucide.dev/icons/pin
-  global_setting.api.safeInnerHTML(pin_btn, `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pin-icon lucide-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>`)
-  pin_btn.addEventListener('click', () => {
-    global_setting.api.pin()
-  })
 })
 
 function initSettingPanel(el: HTMLElement) {

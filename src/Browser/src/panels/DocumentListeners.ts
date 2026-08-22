@@ -26,9 +26,8 @@
  */
 
 import { global_setting } from "@/Core/shared/setting"
-import { activeAMPanel, AMPanel } from "@/Core/panels/MulPanel"
-import { getCursorInfo } from "./cursorInfo"
-import { EditorTools } from "../utils/initApi";
+import { activeAMPanel } from "@/Core/panels/MulPanel"
+import { get_selection_rect, get_selection_el, EditorTools } from "./cursorInfo"
 
 export class DocumentListeners {
 
@@ -176,40 +175,41 @@ export class DocumentListeners {
 
   /** 智能更新选区
    * 
-   * ## 智能更新规则：
+   * ## 智能更新规则
    * 
    * 避免在弹出面板中的选区行为，去影响本来在编辑器区域中的选区事件
    * 主要有两个判断:
    * 1. 判断选区变更时，是否在弹出面板对应的 class 内
    * 2. (可选) 判断选区变更时是否在编辑器对应的 class 内
    * 
-   * ## 注意
+   * ## 更新内容
    * 
-   * 此处暂时不更新到 global_setting.state.selectedText 中
-   * 原因是还没解决聚焦到 am-panel 上导致原元素上的选择状态变为空的情况
+   * 1. 光标所在元素
+   * 2. 光标位置 (by EditorTools)。仅召唤面板时更新
+   * 3. 选取内容 selectedText
    */
   protected updateSelectedText() {
-    const el: HTMLElement|null = DocumentListeners.get_selection_el()
+    const el: HTMLElement|null = get_selection_el()
 
-    // 1. 排除
-    // 1.1. 不匹配在弹出的工具栏/菜单上的选中行为
-    if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
-      return
-    }
-    // 1.2. 只匹配某些 class 中/编辑模式下的选中项
-    if (!el) { // 无法获取 el 也认为不在目标元素上
-      return
-    }
-
-    // 更新当前选中状态 - 光标位置
-    if (el && el instanceof HTMLTextAreaElement) {
-      EditorTools.saveCurrentCursor(el)
+    // 1. 选区状态更新的过滤规则
+    {
+      // 不匹配在弹出的工具栏/菜单上的选中行为
+      if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+        return
+      }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      if (!el) { // 无法获取 el 也认为不在目标元素上
+        return
+      }
     }
 
-    // 2. 更新当前选中状态 - 选中文本
+    // 2. 更新当前选中状态 - 光标位置
+    EditorTools.saveCurrentCursor(el)
+
+    // 3. 更新当前选中状态 - 选中文本
     // isCollapsed 更快，且其为 true 而文本串为空是可能的，表示有一个无文本选区
     const selection = document.getSelection()
-    if (!selection || !selection.isCollapsed || selection.toString() === '') { // 无选中
+    if (!selection || selection.toString() === '') { // 无选中。不再判断 `!selection.isCollapsed`，否则只响应 textarea
       this.previewSelection = null; global_setting.state.selectedText = undefined;
     }
     else { // 有选中
@@ -230,9 +230,24 @@ export class DocumentListeners {
   protected async showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
-  
-    void show_panel_auto()
 
+    // 1. 面板弹出的过滤规则
+    {
+      const el = EditorTools.state.el
+      if (!el) return
+      // 匹配在弹出的工具栏/菜单上的选中行为
+      if (el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+        return
+      }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      // TODO 这里的是 browser 环境的临时规则，应该允许用户自定义这里的高级规则
+      if (!el.classList.contains('am-browser-debug-textel')) {
+        return
+      }
+    }
+
+    // 2. 显示面板
+    void show_panel_auto()
     async function show_panel_auto () {
       if (!activeAMPanel) return
       
@@ -240,8 +255,8 @@ export class DocumentListeners {
       const panel_list = global_setting.config.panel_preset2[1].list
 
       // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo()
-      if (!cursorInfo) {
+      const selectionRect = get_selection_rect()
+      if (!selectionRect) {
         console.warn('获取光标位置失败')
         return
       }
@@ -249,7 +264,7 @@ export class DocumentListeners {
       // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
       const panel_size = activeAMPanel.get_size(panel_list)
-      const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
+      const ret = activeAMPanel.fix_position(screen_size, panel_size, selectionRect, "side", "center", "top")
 
       // 3. 显示面板
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
@@ -260,26 +275,5 @@ export class DocumentListeners {
         false, // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
       )
     }
-  }
-
-  /// 获取选区变化时所在的 el
-  /// 可基于此实现 isInPanel (无法判断也返回 false)
-  static get_selection_el(): HTMLElement | null {
-    const selection = document.getSelection();
-    
-    // 获取选区变化时的目标元素
-    let el: HTMLElement|null
-    // 有选区时，取选区所在容器判断
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0)
-      const node = range.commonAncestorContainer
-      el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as HTMLElement)
-    }
-    // 无选区时（例如单纯聚焦），检查当前活动元素
-    else {
-      el = document.activeElement as (HTMLElement | null);
-    }
-
-    return el
   }
 }

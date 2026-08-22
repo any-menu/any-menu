@@ -7,6 +7,7 @@ import { AMContextMenu } from '../contextmenu/index';
 import { AMMiniEditor } from '../miniEditor/index';
 import { AMPin } from './pin/index';
 import { AMTitlebar } from './titlebar';
+import { AMDebug } from '../debug';
 export declare let activeAMPanel: AMPanel | null;
 export declare class AMPanel extends AbsAmPanel {
     sub_panels: {
@@ -16,6 +17,7 @@ export declare class AMPanel extends AbsAmPanel {
         amToolbar: AMToolbar | null;
         amContextMenu: AMContextMenu | null;
         amMiniEditor: AMMiniEditor | null;
+        amDebug: AMDebug | null;
         amCustom: HTMLElement | null;
     };
     state: {

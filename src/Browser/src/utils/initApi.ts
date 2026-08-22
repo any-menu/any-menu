@@ -6,6 +6,7 @@
 import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
 import { global_setting } from "@/Core/shared/setting";
 import { activeAMPanel } from '@/Core/panels/MulPanel';
+import { EditorTools } from "../panels/cursorInfo";
 
 export async function initApi() {
   global_setting.platform = 'browser'
@@ -403,84 +404,4 @@ export async function initApi_with_opfs() {
   console.log('🔍 After init:');
   await printFileTree();
   // --- 初始化结束 ---
-}
-
-/** textarea 简易编辑器管理
- * 主要管理聚焦转移和恢复时的聚焦状态和光标位置恢复
- */
-export namespace EditorTools {
-
-  // 召唤面板时对应的文本编辑器
-  // 包括: 要保存的光标状态
-  interface TextInputCursorState {
-    element: HTMLTextAreaElement | HTMLInputElement; // 目标元素
-    // selectedText // 这个直接保存到状态中
-    start: number;
-    end: number;
-  }
-
-  export const state: {
-    savedCursorState: TextInputCursorState | null
-  } = {
-    savedCursorState: null
-  }
-  
-  // 保存光标状态
-  export function saveCurrentCursor(element: HTMLTextAreaElement): void {
-    // 选中文本，两方法:
-    // - getSelection 版 (当前)
-    // - selectionStart 和 selectionEnd 获取版
-    //   - 仅表单元素、仅纯文本
-
-    // 不保存选中状态，因为这里是失焦点触发，失焦时选中项会丢失，为空。但我们要保留之前的选中状态
-    // const selection = document.getSelection()
-    // global_setting.state.selectedText = selection?.toString() ?? undefined
-
-    // 其他状态
-    state.savedCursorState = {
-      element,
-      start: element.selectionStart,
-      end: element.selectionEnd,
-    }
-  }
-
-  // 恢复光标位置
-  // (可选) 可以顺便在光标位置插入文本内容
-  export function recoverCursor(insertText: string = '') {
-    // 1. 获取保存的状态
-    if (!state.savedCursorState || !document.contains(state.savedCursorState.element)) {
-      return;
-    }
-    let { element } = state.savedCursorState;
-
-    // 2. 光标原位置信息获取
-    // 先查看是否已经是聚焦状态，如果是，则使用当前的光标位置，而非从状态中更新
-    let start: number, end: number;
-    if (document.activeElement === element) { // 已聚焦 → 使用当前实际光标位置
-      start = element.selectionStart ?? 0;
-      end = element.selectionEnd ?? 0;
-    } else { // 未聚焦 → 使用保存的光标位置
-      start = state.savedCursorState.start;
-      end = state.savedCursorState.end;
-    }
-
-    // 3. 获取当前值和新值，设置文本
-    const currentValue = element.value;
-    const newValue = 
-      currentValue.substring(0, start) + 
-      insertText + 
-      currentValue.substring(end);
-    element.value = newValue;
-
-    // 4. 计算新的光标位置，设置光标位置和聚焦状态
-    const newCursorPos = start + insertText.length;
-    element.selectionStart = newCursorPos;
-    element.selectionEnd = newCursorPos;
-    element.focus();
-
-    // 5. 清空/更新保存的状态
-    state.savedCursorState.start = newCursorPos
-    state.savedCursorState.end = newCursorPos
-    // state.savedCursorState = null; // (可选) 清空以防止重复使用
-  }
 }
