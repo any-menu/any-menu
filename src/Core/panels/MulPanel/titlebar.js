@@ -77,6 +77,7 @@ export class AMTitlebar extends AbsAmPanel {
                     el_item.innerText = item_name;
                     el_item.title = item_name;
                     el_item.onclick = () => {
+                        activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_toggle(item_name);
                     };
                 }
             }
