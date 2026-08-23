@@ -127,11 +127,17 @@ window.addEventListener("DOMContentLoaded", async () => {
       info_el_title.textContent = 'Debug panel'
     const info_el_msg = document.createElement('div'); info_el.appendChild(info_el_msg);
     setInterval(() => {
-      info_el_msg.textContent = 
-        (new Date().toLocaleString()) + '\n' +
-        JSON.stringify(global_setting.state, null, 2) + '\n' +
-        JSON.stringify(EditorTools.state, null, 2) + '\n' +
-        `el: ${EditorTools.state.el?.tagName}\n.${EditorTools.state.el?.className}`
+      info_el_msg.textContent = `time: ${new Date().toLocaleString()}\n`
+      info_el_msg.textContent += `selection: ${global_setting.state.selectedText}\n`
+      const range = EditorTools.state.range
+      if (!range) {
+        info_el_msg.textContent += 'range: null\n'
+      } else if (range instanceof Range) {
+        info_el_msg.textContent += `range: {start:${range.startOffset},end:${range.endOffset}}\n`
+      } else {
+        info_el_msg.textContent += `range: ${JSON.stringify(range)}\n`
+      }
+      info_el_msg.textContent += `el: ${EditorTools.state.el?.tagName}\n.${EditorTools.state.el?.className}`
     }, 500)
   }
 
