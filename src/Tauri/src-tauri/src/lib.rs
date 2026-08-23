@@ -65,6 +65,7 @@ pub async fn run() {
         .plugin(tauri_plugin_notification::init()) // 本地通知插件
         .plugin(tauri_plugin_clipboard_manager::init()) // 剪贴板管理插件
         .plugin(tauri_plugin_fs::init()) // 文件系统插件
+        .plugin(tauri_plugin_dialog::init()) // 对话框 (如文件对话框)
 
         .setup(|app| {
             let app_handle = app.app_handle();

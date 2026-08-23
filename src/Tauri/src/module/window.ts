@@ -316,6 +316,8 @@ export async function toggleWindow(panel_list?: string[], is_focus?: boolean) {
  * @param panel_list 同 Panel::show 的参数
  * @param is_focus 同 Panel::show 的参数
  * @param is_reverse 同 Panel::show 的参数
+ * 
+ * TODO fix 'center' 模式中，屏幕尺寸获取不适配
  */
 export async function showWindow(
   pos?: 'cursor'|'center'|{x: number, y: number},

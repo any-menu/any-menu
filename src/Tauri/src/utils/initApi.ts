@@ -479,13 +479,13 @@ export function initApi() {
   global_setting.other.app_selectInExplorer = async (relPath: string): Promise<string | null> => {
     const absPath = await app_relPath_to_absPath(relPath)
 
-      const file = await open({
-        multiple: false,  // 是否允许多选
-        directory: true,  // 是否选择文件夹
-        defaultPath: absPath, // 默认路径。备注常用路径 '/home/user/Documents',
-      });
+    const file = await open({
+      multiple: false,  // 是否允许多选
+      directory: true,  // 是否选择文件夹
+      defaultPath: absPath, // 默认路径。备注常用路径 '/home/user/Documents',
+    });
 
-      return file
+    return file
   }
 
   global_setting.other.app_createTitlebar = async function (container: HTMLElement) {
