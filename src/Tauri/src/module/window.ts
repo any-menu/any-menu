@@ -343,6 +343,8 @@ export async function showWindow(
 
   // 计算并应用坐标
   let cursor: PhysicalPosition
+  // 获取光标位置，同时会自动更新获取当前选中的文本
+  const cursor2 = await global_setting.api.getCursorXY()
   // TODO 设置 class 告知 Panel 目前的外部窗口是居中还是鼠标显示
   if (pos === 'cursor') {
     // step1. 鼠标位置 (类似于quciker app)
@@ -353,7 +355,6 @@ export async function showWindow(
 
     // step2. 光标位置 (类似于windows自带的 `win+.` 面板)
     // 注意: 这里会同时自动更新 selectedText
-    let cursor2 = await global_setting.api.getCursorXY()
     if (global_setting.isDebug) global_setting.state.infoText += `[cursorPosition]\nx:${cursor2.x}, y:${cursor2.y}\n\n`
     if (global_setting.isDebug) global_setting.state.infoText += `[selectedText]\ntext:${global_setting.state.selectedText}\n\n`
     let cursor2_flag = false // 是否成功获取到光标坐标
@@ -500,8 +501,12 @@ export async function showWindow(
  */
 export async function hideWindow(list?: string[], forceBlurApp: boolean = false) {
   if (global_setting.state.isPin) { // 置顶状态
-    if (forceBlurApp) await invoke("release_focus"); 
-    return
+    if (forceBlurApp) {
+      await invoke("release_focus")
+      return
+    } else {
+      return
+    }
   }
 
   activeAMPanel?.panel_hide(list) // 隐藏面板&失焦面板

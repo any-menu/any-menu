@@ -33,7 +33,7 @@ export class AMDebug extends AbsAmPanel {
                     showText;
         };
         fn();
-        this.interval = window.setInterval(fn, 500);
+        this.interval = window.setInterval(fn, 100);
     }
     panel_hide() {
         if (this.el.classList.contains('am-hide')) {

@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { activeAMPanel } from ".";
 import { global_setting } from "../../shared/setting";
 import { AbsAmPanel } from "../abs";
@@ -16,6 +25,8 @@ export class AMTitlebar extends AbsAmPanel {
         this.createHideBtn();
         this.createPanelManagerBtn();
         this.createReverseBtn();
+        if (global_setting.platform == 'app')
+            this.createRefreshBtn();
         if (global_setting.platform == 'app')
             global_setting.other.app_createTitlebar(this.el);
         this.panel_hide();
@@ -102,5 +113,20 @@ export class AMTitlebar extends AbsAmPanel {
                 return;
             activeAMPanel.el.classList.toggle('am-reverse');
         });
+    }
+    createRefreshBtn() {
+        if (global_setting.platform !== 'app')
+            return;
+        const btn = document.createElement('button');
+        this.el.appendChild(btn);
+        btn.classList.add('am-titlebar-btn', 'am-titlebar-refresh');
+        btn.title = '更新信息';
+        btn.innerText = '更新信息';
+        btn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+            yield global_setting.other.app_hide(undefined, true);
+            window.setTimeout(() => {
+                void global_setting.other.app_show();
+            }, 200);
+        }));
     }
 }

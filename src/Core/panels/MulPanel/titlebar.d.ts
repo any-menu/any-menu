@@ -9,4 +9,5 @@ export declare class AMTitlebar extends AbsAmPanel {
     private createHideBtn;
     private createPanelManagerBtn;
     private createReverseBtn;
+    private createRefreshBtn;
 }
