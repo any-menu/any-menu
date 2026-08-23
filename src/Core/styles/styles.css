@@ -995,7 +995,10 @@ div.editable-textarea-textarea {
   border-bottom: 1px solid var(--am-bd-color);
 }
 .am-titlebar .am-titlebar-manager .am-titlebar-list > div {
-  padding: 6px 14px;
+  display: flex;
+  gap: 3px;
+  height: 20px;
+  padding: 6px 14px 6px 7px;
   border-radius: 8px;
   text-align: left;
   white-space: nowrap;
@@ -1004,6 +1007,19 @@ div.editable-textarea-textarea {
 }
 .am-titlebar .am-titlebar-manager .am-titlebar-list > div:hover {
   background: var(--ab-tab-root-hv-color);
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div .list-left {
+  width: 20px;
+  height: 20px;
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div .list-content {
+  overflow: hidden;
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div svg {
+  display: none;
+}
+.am-titlebar .am-titlebar-manager .am-titlebar-list > div.shown svg {
+  display: unset;
 }
 
 .editable-codeblock-p {
