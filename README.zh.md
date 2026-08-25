@@ -191,7 +191,7 @@ App版可以在任何文本环境下使用: (旧版截图)
 
 ### TODO 20260814
 
-- 完善在线版
+- 完善在线版 (TODO, Next step)
   - 增加 ProseMirror / Wordgard
   - 增加虚拟文件系统
   - [x] 修复:  `Debug panel` 在特定情况下 `savedCursorState` 显示不更新。 
@@ -243,7 +243,7 @@ locales/、setting
 ### TODO 20260613
 
 - [ ] 折叠和展开 搜索框 (可选: toolbar、contextmenu)
-- [ ] 按钮允许激活状态显示 (用于切换和开关面板)
+- [x] 按钮允许激活状态显示 (用于切换和开关面板)
 - [ ] Windows 系统好像是可以区分聚焦窗口和鼠标悬浮窗口的
   一大优点是在鼠标可以在不聚焦到 a 窗口的前提下去点击里面的控件 (mac好像做不到)
 
