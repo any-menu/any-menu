@@ -102,6 +102,14 @@ window.addEventListener("DOMContentLoaded", async () => {
         textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-uneditable')
         textEl.setAttribute('contenteditable', 'false')
     }
+
+    // 文本框 - ProseMirror div
+    // {
+    //   const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+    //     textEl.textContent = 'ProseMirror div demo.\n'
+    //     textEl.setAttribute('spellcheck', 'false')
+    //     textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-prosemirror')
+    // }
   }
 
   // debug 信息面板
