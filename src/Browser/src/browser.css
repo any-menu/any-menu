@@ -1,4 +1,4 @@
-@import url("./ProseMirror.css");
+@import url("./ProseMirror/ProseMirror.css");
 /** browser 环境专用样式 */
 @import url("../../Core/styles/styles.css");
 

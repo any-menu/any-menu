@@ -5,8 +5,8 @@ import { EditorView } from "prosemirror-view"
 import { Schema, DOMParser } from "prosemirror-model"
 import { schema } from "prosemirror-schema-basic"
 import { addListNodes } from "prosemirror-schema-list"
-// import { schema, defaultMarkdownParser,
-//         defaultMarkdownSerializer } from "prosemirror-markdown"
+import { schema as schema_md, defaultMarkdownParser,
+        defaultMarkdownSerializer } from "prosemirror-markdown"
 import { exampleSetup } from "prosemirror-example-setup"
 
 import { global_setting } from '@/Core/shared/setting'
@@ -117,10 +117,12 @@ window.addEventListener("DOMContentLoaded", async () => {
       const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
         textEl.setAttribute('spellcheck', 'false')
         textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-prosemirror')
+
+      /* // 默认版 ProseMirror
       const contentEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(contentEl);
         contentEl.style.display = 'none'
         contentEl.innerHTML = `<h2>示例文档</h2>
-  <p>ProseMirror div demo。这是一个段落，包含<strong>粗体</strong>和<em>斜体</em>。</p>
+  <p>ProseMirror div demo2。这是一个段落，包含<strong>粗体</strong>和<em>斜体</em>。</p>
   <ul>
     <li>列表项一</li>
     <li>列表项二</li>
@@ -128,18 +130,34 @@ window.addEventListener("DOMContentLoaded", async () => {
   <p>继续输入内容体验编辑器。</p>
 `;
 
-      // 将prosemirror-schema-list中的节点混合到基本模式中
-      // 创建一个支持列表的模式。
+      将prosemirror-schema-list中的节点混合到基本模式中
+      创建一个支持列表的模式。
       const mySchema = new Schema({
         nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
         marks: schema.spec.marks
       })
-
-      // window.view = 
-      new EditorView(textEl, {
+      
+      const view = new EditorView(textEl, {
         state: EditorState.create({
           doc: DOMParser.fromSchema(mySchema).parse(contentEl),
           plugins: exampleSetup({schema: mySchema})
+        })
+      })*/
+
+      // Markdown 版 ProseMirror
+      const mySchema = schema_md // 直接使用 markdown schema（已包含列表、标题、代码块等节点）
+      const initialDoc = defaultMarkdownParser.parse(`## 示例文档
+
+ProseMirror markdown demo。这是一个段落，包含**粗体**和*斜体*。
+
+- 列表项一
+- 列表项二
+
+继续输入内容体验编辑器。`) // 使用 markdown 解析器解析初始内容
+      const view = new EditorView(textEl, {
+        state: EditorState.create({
+          doc: initialDoc,
+          plugins: exampleSetup({ schema: mySchema })
         })
       })
     }
@@ -174,6 +192,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       if (!range) {
         info_el_msg.textContent += 'range: null\n'
       } else if (range instanceof Range) {
+        // 注意: `range.startContainer` 和 `range.endContainer` 可能不同。
+        //   所以可能存在 `endOffset > startOffset` 的情况
         info_el_msg.textContent += `range: {start:${range.startOffset},end:${range.endOffset}}\n`
       } else {
         info_el_msg.textContent += `range: ${JSON.stringify(range)}\n`
