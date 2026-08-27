@@ -2,12 +2,13 @@
 
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { Schema, DOMParser } from "prosemirror-model"
-import { schema } from "prosemirror-schema-basic"
-import { addListNodes } from "prosemirror-schema-list"
 import { schema as schema_md, defaultMarkdownParser,
         defaultMarkdownSerializer } from "prosemirror-markdown"
 import { exampleSetup } from "prosemirror-example-setup"
+// import { Schema, DOMParser } from "prosemirror-model"
+// import { schema } from "prosemirror-schema-basic"
+// import { addListNodes } from "prosemirror-schema-list"
+import { selectionPlugin } from "./ProseMirror/plugin"
 
 import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
@@ -154,10 +155,13 @@ ProseMirror markdown demo。这是一个段落，包含**粗体**和*斜体*。
 - 列表项二
 
 继续输入内容体验编辑器。`) // 使用 markdown 解析器解析初始内容
-      const view = new EditorView(textEl, {
+      new EditorView(textEl, { // const view = 
         state: EditorState.create({
           doc: initialDoc,
-          plugins: exampleSetup({ schema: mySchema })
+          plugins: [
+            ...exampleSetup({ schema: mySchema }),
+            selectionPlugin,
+          ]
         })
       })
     }
