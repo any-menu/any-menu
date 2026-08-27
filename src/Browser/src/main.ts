@@ -1,5 +1,14 @@
 /** 主面板相关 */
 
+import { EditorState } from "prosemirror-state"
+import { EditorView } from "prosemirror-view"
+import { Schema, DOMParser } from "prosemirror-model"
+import { schema } from "prosemirror-schema-basic"
+import { addListNodes } from "prosemirror-schema-list"
+// import { schema, defaultMarkdownParser,
+//         defaultMarkdownSerializer } from "prosemirror-markdown"
+import { exampleSetup } from "prosemirror-example-setup"
+
 import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
@@ -104,12 +113,36 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     // 文本框 - ProseMirror div
-    // {
-    //   const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
-    //     textEl.textContent = 'ProseMirror div demo.\n'
-    //     textEl.setAttribute('spellcheck', 'false')
-    //     textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-prosemirror')
-    // }
+    {
+      const textEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(textEl);
+        textEl.setAttribute('spellcheck', 'false')
+        textEl.classList.add('am-browser-debug-textel', 'am-browser-debug-prosemirror')
+      const contentEl: HTMLDivElement = document.createElement('div'); textsEl.appendChild(contentEl);
+        contentEl.style.display = 'none'
+        contentEl.innerHTML = `<h2>示例文档</h2>
+  <p>ProseMirror div demo。这是一个段落，包含<strong>粗体</strong>和<em>斜体</em>。</p>
+  <ul>
+    <li>列表项一</li>
+    <li>列表项二</li>
+  </ul>
+  <p>继续输入内容体验编辑器。</p>
+`;
+
+      // 将prosemirror-schema-list中的节点混合到基本模式中
+      // 创建一个支持列表的模式。
+      const mySchema = new Schema({
+        nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
+        marks: schema.spec.marks
+      })
+
+      // window.view = 
+      new EditorView(textEl, {
+        state: EditorState.create({
+          doc: DOMParser.fromSchema(mySchema).parse(contentEl),
+          plugins: exampleSetup({schema: mySchema})
+        })
+      })
+    }
   }
 
   // debug 信息面板

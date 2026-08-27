@@ -14,5 +14,14 @@
 	"devDependencies": {
 		"tslib": "^2.8.1",
 		"vite": "^8.1.0"
+	},
+	"dependencies": {
+		"prosemirror-example-setup": "^1.2.3",
+		"prosemirror-markdown": "^1.13.6",
+		"prosemirror-model": "^1.25.11",
+		"prosemirror-schema-basic": "^1.2.4",
+		"prosemirror-schema-list": "^1.5.1",
+		"prosemirror-state": "^1.4.4",
+		"prosemirror-view": "^1.42.3"
 	}
 }
