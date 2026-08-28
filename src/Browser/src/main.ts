@@ -38,21 +38,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   await initApi()
   await initApi_with_server()
   await init_config() // 保证先读取配置再初始化别的
-  // 自动更新选中文本 (防抖版，非节流版)
-  // 目前不可用: 失焦会导致清空所选文本
-  // {
-  //   let timer: ReturnType<typeof setTimeout>;
-  //   document.addEventListener('selectionchange', () => {
-  //     clearTimeout(timer)
-  //     timer = setTimeout(() => {
-  //       const selection = document.getSelection()
-  //       const currentText = selection?.toString() ?? undefined
-  //       global_setting.state.selectedText = currentText
-  //     }, 200)
-  //   })
-  // }
-  const documentListeners = new DocumentListeners()
-  documentListeners.register() // 也不用去 unregister 了，持续到页面销毁
 
   // 展开面板按钮
   {
@@ -205,6 +190,11 @@ ProseMirror markdown demo。这是一个段落，包含**粗体**和*斜体*。
       info_el_msg.textContent += `el: ${EditorTools.state.el?.tagName}\n.${EditorTools.state.el?.className}`
     }, 500)
   }
+
+  // init - 自动更新选中文本 (防抖版，非节流版)
+  const documentListeners = new DocumentListeners()
+  documentListeners.setShow_whiteList('am-browser-debug-textel') // TODO 这里的是 browser 环境的临时规则，应该允许用户自定义这里的高级规则
+  documentListeners.register() // 也不用去 unregister 了，持续到页面销毁
 
   // initMenu
   {

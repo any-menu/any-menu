@@ -173,6 +173,15 @@ export class DocumentListeners {
     this.updateSelectedText()
   }
 
+  selection_whiteList: string|null = null
+  public setSelection_whiteList(className: string) {
+    this.selection_whiteList = className
+  }
+  show_whiteList: string|null = null
+  public setShow_whiteList(className: string) {
+    this.show_whiteList = className
+  }
+
   /** 智能更新选区
    * 
    * ## 智能更新规则
@@ -193,12 +202,13 @@ export class DocumentListeners {
 
     // 1. 选区状态更新的过滤规则
     {
+      if (!el) return
       // 不匹配在弹出的工具栏/菜单上的选中行为
-      if (el && el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
+      else if (el.closest(`.am-panel`) !== null) { // 无法获取 el 也认为不在 panel 上
         return
       }
       // 只匹配某些 class 中/编辑模式下的选中项
-      if (!el) { // 无法获取 el 也认为不在目标元素上
+      else if (this.selection_whiteList && !el.classList.contains(this.selection_whiteList)) {
         return
       }
     }
@@ -240,8 +250,7 @@ export class DocumentListeners {
         return
       }
       // 只匹配某些 class 中/编辑模式下的选中项
-      // TODO 这里的是 browser 环境的临时规则，应该允许用户自定义这里的高级规则
-      if (!el.classList.contains('am-browser-debug-textel')) {
+      if (this.show_whiteList && !el.classList.contains(this.show_whiteList)) {
         return
       }
     }

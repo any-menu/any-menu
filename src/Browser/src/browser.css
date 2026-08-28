@@ -42,6 +42,10 @@
       height: 260px;
       resize: vertical;
     }
+
+    &.am-browser-debug-prosemirror {
+      padding: 0;
+    }
   }
 
   .am-browser-debug-btn {
