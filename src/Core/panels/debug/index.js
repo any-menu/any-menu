@@ -10,6 +10,7 @@ export class AMDebug extends AbsAmPanel {
         p_panel.el.appendChild(el);
         el.classList.add('am-debug');
         super(el, p_panel.el, p_panel);
+        this.interval = -1;
         this.panel_hide();
     }
     panel_show() {
