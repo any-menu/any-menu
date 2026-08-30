@@ -12,7 +12,8 @@ import {
   Plugin
 } from 'obsidian'
 import { global_setting } from '@/Core/shared/setting'
-import { registerAMContextMenu_Ob, registerAMContextMenu, DocumentListeners } from './panels'
+import { registerAMContextMenu, DocumentListeners } from './panels'
+import { registerAMContextMenu_Ob } from './panels/ABContextMenu_Ob'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
