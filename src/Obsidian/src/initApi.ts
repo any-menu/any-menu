@@ -11,7 +11,7 @@ import {
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel } from '@/Core/panels/MulPanel';
-import { getCursorInfo } from './modules/cursor'
+import { getCursorInfo } from './modules/editor/cursor'
 
 export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用

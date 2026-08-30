@@ -29,7 +29,7 @@
  * TODO 封装一个基础类，然后 Obsidian、浏览器版等再派生具体差异实现
  */
 
-import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
+import { type Plugin, MarkdownView, ItemView } from "obsidian"
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel } from "@/Core/panels/MulPanel"
 import { DocumentListeners as DocumentListeners_ } from "@/Core/modules/editor/event"

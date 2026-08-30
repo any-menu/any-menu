@@ -5,9 +5,9 @@ import { t } from '@/Core/shared/locales/helper'
 import { AMPanel, activeAMPanel } from '@/Core/panels/MulPanel'
 import { initMenuData } from "@/Core/initTool"
 import { global_setting } from '@/Core/shared/setting'
-import { getCursorInfo } from '../modules/cursor'
+import { getCursorInfo } from '../modules/editor/cursor'
 
-export * from '../modules/event'
+export * from '../modules/editor/event'
 
 // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
 export function registerAMContextMenu(plugin: Plugin) {

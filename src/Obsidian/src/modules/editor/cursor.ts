@@ -3,7 +3,7 @@ import {
 } from 'obsidian'
 import { global_setting } from '@/Core/shared/setting'
 
-export * from '../modules/event'
+export * from './event'
 
 /** 获取游标和选区位置，还有对一些信息的采集
  * @param plugin 有editor优先用editor，没有则尝试通过plugin获取当前活动的editor
