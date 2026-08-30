@@ -86,61 +86,57 @@ export class DocumentListeners extends DocumentListeners_ {
     }
   }
 
-  /**
-   * 在预览模式下选中文本后，显示文本工具栏以供选择
-   * 
-   * 无选择内容则不工作
-   * 
-   * 注意: 和手动显示不同:
-   * - 在字符的上方显示
-   * - 必须是非聚焦显示
-   * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
-   */
   protected override async getMsg_and_showPanel() {
-    if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
-    if (!this.previewSelection) return // 没有选择
-  
-    const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) return
-    const editor = activeView.editor
-    void getMsg_and_showPanel_auto(this, editor)
+    // 1. 筛选条件 - 需选中文本且在指定的面板上选中
+    {
+      if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
+      if (!this.previewSelection) return // 没有选择
 
-    async function getMsg_and_showPanel_auto(p_this: DocumentListeners, editor: Editor) {
-      if (!activeAMPanel) return
+      // 不匹配在 amPanel 上的选中行为
+      // 略，下面的判断覆盖这个
 
-      // 1. 面板弹出的过滤规则
-      {
-        // 匹配在弹出的工具栏/菜单上的选中行为
-        // TODO 黑名单应排除 .am-panel
-
-        // 只匹配某些 class 中/编辑模式下的选中项
-        const selectedText = getSelection_editor(p_this.plugin)
-        if (!selectedText) {
-          p_this.previewSelection = null
-          return
-        }
+      // 只匹配某些 class 中/编辑模式下的选中项
+      const selectedText = getSelection_editor(this.plugin)
+      if (!selectedText) {
+        this.previewSelection = null
+        return
       }
 
-      // 0. 默认参数
-      const panel_list = global_setting.config.panel_preset2[1].list
+      // 其他
+      if (!activeAMPanel) return
+    }
 
-      // 1. 光标位置 // [!code hl] (右上)
-      const cursorInfo = getCursorInfo(p_this.plugin, editor)
+    // 2. 环境获取
+    let panel_list: string[]
+    let final_pos: {x: number; y: number; is_reverse: boolean;}
+    {
+      const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+      if (!activeView) return
+      const editor = activeView.editor
+
+      // 显示列表
+      panel_list = global_setting.config.panel_preset2[1].list
+
+      // 光标位置 // [!code hl] (右上)
+      const cursorInfo = getCursorInfo(this.plugin, editor)
       if (!cursorInfo) {
         console.warn('获取光标位置失败')
         return
       }
+      const pos = cursorInfo.pos
 
-      // 2. 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
+      // 光标修正 - 通过屏幕尺寸和面板尺寸，计算触底对齐/反向显示后的坐标
       const screen_size = { width: window.innerWidth, height: window.innerHeight }
       const panel_size = activeAMPanel.get_size(panel_list)
-      const ret = activeAMPanel.fix_position(screen_size, panel_size, cursorInfo.pos, "side", "center", "top")
+      final_pos = activeAMPanel.fix_position(screen_size, panel_size, pos, "side", "center", "top")
+    }
 
-      // 3. 显示面板
+    // 3. 显示面板
+    {
       if (global_setting.state.isPin) return // 已置顶 // (不能放前面，信息采集是需要的，如光标位置的获取会自动更新当前选中的文本)
       activeAMPanel.panel_hide()
       activeAMPanel.panel_show(
-        {x: ret.x, y: ret.y, is_reverse: ret.is_reverse},
+        {x: final_pos.x, y: final_pos.y, is_reverse: final_pos.is_reverse},
         panel_list,
         false, // 注意: 划词模式应强制为 false，不使用设置的 is_focus 选项
       )

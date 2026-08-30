@@ -147,11 +147,11 @@ export class DocumentListeners {
     }
     getMsg_and_showPanel() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!global_setting.config.auto_show_toolbar_on_select)
-                return;
-            if (!this.previewSelection)
-                return;
             {
+                if (!global_setting.config.auto_show_toolbar_on_select)
+                    return;
+                if (!this.previewSelection)
+                    return;
                 const el = EditorTools.state.el;
                 if (!el)
                     return;
@@ -161,26 +161,27 @@ export class DocumentListeners {
                 if (this.show_whiteList && !el.classList.contains(this.show_whiteList)) {
                     return;
                 }
+                if (!activeAMPanel)
+                    return;
             }
-            void getMsg_and_showPanel_auto();
-            function getMsg_and_showPanel_auto() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (!activeAMPanel)
-                        return;
-                    const panel_list = global_setting.config.panel_preset2[1].list;
-                    const selectionRect = get_selection_rect();
-                    if (!selectionRect) {
-                        console.warn('获取光标位置失败');
-                        return;
-                    }
-                    const screen_size = { width: window.innerWidth, height: window.innerHeight };
-                    const panel_size = activeAMPanel.get_size(panel_list);
-                    const ret = activeAMPanel.fix_position(screen_size, panel_size, selectionRect, "side", "center", "top");
-                    if (global_setting.state.isPin)
-                        return;
-                    activeAMPanel.panel_hide();
-                    activeAMPanel.panel_show({ x: ret.x, y: ret.y, is_reverse: ret.is_reverse }, panel_list, false);
-                });
+            let panel_list;
+            let final_pos;
+            {
+                panel_list = global_setting.config.panel_preset2[1].list;
+                const selectionRect = get_selection_rect();
+                if (!selectionRect) {
+                    console.warn('获取光标位置失败');
+                    return;
+                }
+                const screen_size = { width: window.innerWidth, height: window.innerHeight };
+                const panel_size = activeAMPanel.get_size(panel_list);
+                final_pos = activeAMPanel.fix_position(screen_size, panel_size, selectionRect, "side", "center", "top");
+            }
+            {
+                if (global_setting.state.isPin)
+                    return;
+                activeAMPanel.panel_hide();
+                activeAMPanel.panel_show({ x: final_pos.x, y: final_pos.y, is_reverse: final_pos.is_reverse }, panel_list, false);
             }
         });
     }
