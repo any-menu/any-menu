@@ -14,9 +14,9 @@ import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel, AMPanel } from '@/Core/panels/MulPanel'
 import { initSettingTab_1, initSettingTab_2 } from '@/Core/modules/settingPanel/SettingTab'
 import { initMenuData } from '@/Core/initTool'
+import { DocumentListeners } from '@/Core/modules/editor/event'
+import { EditorTools } from '@/Core/modules/editor/cursor'
 import { initApi, initApi_with_server } from './utils/initApi'
-import { DocumentListeners } from './panels/DocumentListeners'
-import { EditorTools } from './panels/cursorInfo'
 
 // #region 启动时阅读配置文件
 

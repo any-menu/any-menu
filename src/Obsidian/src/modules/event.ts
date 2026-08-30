@@ -32,9 +32,9 @@
 import { type Editor, type Plugin, MarkdownView, ItemView } from "obsidian"
 import { global_setting } from "@/Core/shared/setting"
 import { activeAMPanel } from "@/Core/panels/MulPanel"
-import { DocumentListeners as DocumentListeners_ } from "@/Browser/src/panels/DocumentListeners"
-import { get_selection_el } from "@/Browser/src/panels/cursorInfo"
-import { getCursorInfo } from "."
+import { DocumentListeners as DocumentListeners_ } from "@/Core/modules/editor/event"
+import { get_selection_el } from "@/Core/modules/editor/cursor"
+import { getCursorInfo } from "../panels"
 
 export class DocumentListeners extends DocumentListeners_ {
   constructor(

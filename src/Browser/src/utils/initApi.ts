@@ -6,7 +6,7 @@
 import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
 import { global_setting } from "@/Core/shared/setting";
 import { activeAMPanel } from '@/Core/panels/MulPanel';
-import { EditorTools } from "../panels/cursorInfo";
+import { EditorTools } from "@/Core/modules/editor/cursor";
 
 export async function initApi() {
   global_setting.platform = 'browser'
