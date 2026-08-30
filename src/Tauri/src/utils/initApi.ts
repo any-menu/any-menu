@@ -1,7 +1,7 @@
 import type { UrlRequestConfig, UrlResponse } from '../../../Type'
 import { global_setting } from '../../../Core/shared/setting'
 import { activeAMPanel } from '../../../Core/panels/MulPanel'
-import { hideWindow, showWindow } from '../module/window'
+import { hideWindow, getMsg_and_showWindow } from '../module/window'
 // import { toml_parse } from '../../../Core/panels/contextmenu/demo'
 
 // 注意 api/window 里的功能很多都需要开启权限，否则控制台会报错告诉你应该开启哪个权限
@@ -440,7 +440,7 @@ export function initApi() {
 
   // #region app 专用 API
 
-  global_setting.other.app_show = showWindow
+  global_setting.other.app_show = getMsg_and_showWindow
 
   global_setting.other.app_hide = hideWindow
 

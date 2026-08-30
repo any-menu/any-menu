@@ -298,7 +298,7 @@ export async function toggleWindow(panel_list?: string[], is_focus?: boolean) {
     if (isFocused) {
       await hideWindow()
     } else {
-      await showWindow('cursor', panel_list, is_focus)
+      await getMsg_and_showWindow('cursor', panel_list, is_focus)
     }
   } catch (error) {
     console.error('Window show fail:', error)
@@ -319,7 +319,7 @@ export async function toggleWindow(panel_list?: string[], is_focus?: boolean) {
  * 
  * TODO fix 'center' 模式中，屏幕尺寸获取不适配
  */
-export async function showWindow(
+export async function getMsg_and_showWindow(
   pos?: 'cursor'|'center'|{x: number, y: number},
   panel_list?: string[],
   is_focus: boolean = true,

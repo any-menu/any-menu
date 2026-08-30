@@ -44,7 +44,7 @@ export class DocumentListeners {
                 return;
             if (event.key === 'Shift' || event.key === 'Alt') {
                 if (this.isKeyboardSelection)
-                    window.setTimeout(() => void this.showPanel(), 10);
+                    window.setTimeout(() => void this.getMsg_and_showPanel(), 10);
             }
         };
         this.onDoubleClick = (event) => __awaiter(this, void 0, void 0, function* () {
@@ -54,7 +54,7 @@ export class DocumentListeners {
                 return;
             if (event.target.closest('.am-panel'))
                 return;
-            window.setTimeout(() => void this.showPanel(), 10);
+            window.setTimeout(() => void this.getMsg_and_showPanel(), 10);
         });
         this.onMouseDown = (event) => {
             this.isKeyboardSelection = false;
@@ -77,7 +77,7 @@ export class DocumentListeners {
             if (event.target.closest('.am-panel'))
                 return;
             if (this.isMouseSelecting)
-                window.setTimeout(() => void this.showPanel(), 10);
+                window.setTimeout(() => void this.getMsg_and_showPanel(), 10);
             this.isMouseSelecting = false;
         });
         this.onMouseMove = (event) => {
@@ -145,7 +145,7 @@ export class DocumentListeners {
             global_setting.state.selectedText = selection.toString();
         }
     }
-    showPanel() {
+    getMsg_and_showPanel() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!global_setting.config.auto_show_toolbar_on_select)
                 return;
@@ -162,8 +162,8 @@ export class DocumentListeners {
                     return;
                 }
             }
-            void show_panel_auto();
-            function show_panel_auto() {
+            void getMsg_and_showPanel_auto();
+            function getMsg_and_showPanel_auto() {
                 return __awaiter(this, void 0, void 0, function* () {
                     if (!activeAMPanel)
                         return;

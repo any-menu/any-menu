@@ -22,5 +22,5 @@ export declare class DocumentListeners {
     show_whiteList: string | null;
     setShow_whiteList(className: string): void;
     protected updateSelectedText(): void;
-    protected showPanel(): Promise<void>;
+    protected getMsg_and_showPanel(): Promise<void>;
 }

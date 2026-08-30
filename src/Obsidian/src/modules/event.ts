@@ -96,16 +96,16 @@ export class DocumentListeners extends DocumentListeners_ {
    * - 必须是非聚焦显示
    * - 如果为 pin 状态，则不要重置位置 (也可以不执行 show 函数了)
    */
-  protected override async showPanel() {
+  protected override async getMsg_and_showPanel() {
     if (!global_setting.config.auto_show_toolbar_on_select) return // 不开启选中自动弹出
     if (!this.previewSelection) return // 没有选择
   
     const activeView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     if (!activeView) return
     const editor = activeView.editor
-    void show_panel_auto(this, editor)
+    void getMsg_and_showPanel_auto(this, editor)
 
-    async function show_panel_auto(p_this: DocumentListeners, editor: Editor) {
+    async function getMsg_and_showPanel_auto(p_this: DocumentListeners, editor: Editor) {
       if (!activeAMPanel) return
 
       // 1. 面板弹出的过滤规则
