@@ -14,6 +14,7 @@ import {
 import { global_setting } from '@/Core/shared/setting'
 import { registerAMContextMenu, DocumentListeners } from './panels'
 import { registerAMContextMenu_Ob } from './panels/ABContextMenu_Ob'
+import { registerAMContextMenu3 } from './modules/editor/showEvent'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
@@ -33,8 +34,9 @@ export default class AnyMenuPlugin extends Plugin {
     this.addSettingTab(new AMSettingTab(this.app, this))
 
     // 菜单面板 - 元素
-    registerAMContextMenu_Ob(this) // 初始化菜单 - 默认菜单系统
-    registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
+    registerAMContextMenu()         // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
+    registerAMContextMenu_Ob(this)  // 初始化菜单 - Obsidian 默认右键菜单系统
+    registerAMContextMenu3(this)    // 初始化 Obsidian 手动召唤面板事件
     ;(new DocumentListeners(this)).register()  // 选中文本时自动显示工具栏
 
     // 通过后处理器获取ctx对象
