@@ -1,3 +1,5 @@
+/** 由快捷键引起的面板展示事件。外加黑白名单机制 */
+
 import TurndownService from 'turndown' // html2md(clipboard_selectedText_html) // html2md 库太老了，使用更现代的html2md库: turndown
 import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
@@ -207,23 +209,3 @@ async function updateShortcuts(appName: string) {
     }
   }
 }
-
-// registerShortcuts()
-// /** 注册全局快捷键
-//  * @deprecated 现在改为在后端 focus.rs 里动态注册和注销
-//  *   原因是要支持白名单和黑名单功能，当聚焦切换到黑/白名单窗口时动态注册/注销快捷键
-//  */
-// function registerShortcuts() {
-//   register('CommandOrControl+Space', (event) => { // CommandOrControl+Shift+Space
-//     if (event.state !== 'Pressed') return // Pressed/Released
-// 
-//     console.log('Shortcut triggered1', event)
-//     void toggleWindow()
-//   })
-//   register('Alt+A', (event) => {
-//     if (event.state !== 'Pressed') return // Pressed/Released
-// 
-//     console.log('Shortcut triggered2', event)
-//     void toggleWindow()
-//   })
-// }
