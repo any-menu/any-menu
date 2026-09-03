@@ -4,8 +4,8 @@ import TurndownService from 'turndown' // html2md(clipboard_selectedText_html) /
 import { listen } from '@tauri-apps/api/event'
 import { register, unregister, isRegistered } from '@tauri-apps/plugin-global-shortcut'
 import { global_setting } from '../../../Core/shared/setting'
-import { toggleWindow } from './window'
 import { activeAMPanel } from '../../../Core/panels/MulPanel'
+import { toggleWindow } from './window'
 
 // 显示面板: 搜索框+菜单
 const PRESET_1 = global_setting.config.panel_preset2[0]

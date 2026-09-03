@@ -8,7 +8,7 @@ import { activeAMPanel } from '@/Core/panels/MulPanel'
 import { global_setting } from '@/Core/shared/setting'
 import { getCursorInfo } from './cursor'
 
-export function registerAMContextMenu3(plugin: Plugin) {
+export function registerPanel_to_obsidianCommand(plugin: Plugin) {
   // 注册 Obsidian 命令
   {
     plugin.addCommand({
