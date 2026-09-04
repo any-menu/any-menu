@@ -1,3 +1,4 @@
+import { global_setting } from "../../shared/setting";
 export function get_selection_el() {
     const activeEl = document.activeElement;
     if (activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement) {
@@ -189,16 +190,16 @@ export var EditorTools;
     function recoverCursor(insertText = '') {
         if (!EditorTools.state.el || !document.contains(EditorTools.state.el)) {
             console.warn('No cache editor\'s el or range, can\'t recover range.');
-            return;
+            return false;
         }
         let ret = recoverCursor_textarea(insertText);
         if (ret)
-            return;
+            return true;
         ret = recoverCursor_editableDiv(insertText);
         if (ret)
-            return;
+            return true;
         console.warn('Current el not editable.');
-        return;
+        return false;
     }
     EditorTools.recoverCursor = recoverCursor;
     function recoverCursor_textarea(insertText = '') {
@@ -229,12 +230,13 @@ export var EditorTools;
             insertText +
             currentValue.substring(end);
         el.value = newValue;
-        const newCursorPos = start + insertText.length;
-        el.selectionStart = newCursorPos;
-        el.selectionEnd = newCursorPos;
+        const newSelectionEnd = start + insertText.length;
+        const newSelectionStart = global_setting.state.selectedText ? start : newSelectionEnd;
+        el.selectionStart = newSelectionStart;
+        el.selectionEnd = newSelectionEnd;
         el.focus();
-        EditorTools.state.range.start = newCursorPos;
-        EditorTools.state.range.end = newCursorPos;
+        EditorTools.state.range.start = newSelectionStart;
+        EditorTools.state.range.end = newSelectionEnd;
         return true;
     }
     function recoverCursor_editableDiv(insertText = '') {
@@ -259,12 +261,15 @@ export var EditorTools;
                 }
             }
         }
-        if (insertText) {
+        {
             EditorTools.state.range.deleteContents();
             const textNode = document.createTextNode(insertText);
             EditorTools.state.range.insertNode(textNode);
-            EditorTools.state.range.setStartAfter(textNode);
             EditorTools.state.range.setEndAfter(textNode);
+            if (global_setting.state.selectedText)
+                EditorTools.state.range.setStartBefore(textNode);
+            else
+                EditorTools.state.range.setStartAfter(textNode);
         }
         const selection = window.getSelection();
         if (selection) {

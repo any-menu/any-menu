@@ -15,5 +15,5 @@ export declare namespace EditorTools {
         } | Range | null;
     };
     function saveCurrentCursor(el: HTMLElement): void;
-    function recoverCursor(insertText?: string): void;
+    function recoverCursor(insertText?: string): boolean;
 }

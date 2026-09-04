@@ -35,7 +35,8 @@ export async function initApi() {
 
   global_setting.api.sendText = async (text: string) => {
     activeAMPanel?.panel_hide()
-    EditorTools.recoverCursor(text)
+    const ret = EditorTools.recoverCursor(text)
+    if (!ret) return
     if (global_setting.state.selectedText) global_setting.state.selectedText = text
     return
   }
