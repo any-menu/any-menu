@@ -996,9 +996,13 @@ div.editable-textarea-textarea {
 }
 .am-titlebar .am-titlebar-manager .am-titlebar-list > div {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 3px;
-  height: 20px;
-  padding: 6px 14px 6px 7px;
+  box-sizing: border-box;
+  height: 26px;
+  line-height: 26px;
+  padding: 2px 14px 2px 7px;
   border-radius: 8px;
   text-align: left;
   white-space: nowrap;
