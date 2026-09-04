@@ -33,10 +33,11 @@ export async function initApi() {
     }
   }
 
-  // const old_sendText = global_setting.api.sendText
   global_setting.api.sendText = async (text: string) => {
     activeAMPanel?.panel_hide()
     EditorTools.recoverCursor(text)
+    if (global_setting.state.selectedText) global_setting.state.selectedText = text
+    return
   }
 
   global_setting.api.pin = async (isPin?: boolean) => {

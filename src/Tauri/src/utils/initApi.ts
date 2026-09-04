@@ -124,7 +124,7 @@ export function initApi() {
   }
 
   // 当 'IMG_MODE' 时，str 是图片相对路径
-  global_setting.api.sendText = async (str: string, mode?: 'IMG_MODE') => {
+  global_setting.api.sendText = async (text: string, mode?: 'IMG_MODE') => {
     // 图片发送模式 (TODO 支持混合发送模式)
     if (mode === 'IMG_MODE') {
       // 方案1 - 使用纯前端 api 复制到剪切板
@@ -153,7 +153,7 @@ export function initApi() {
 
       // 方案3 - 自定义后端 API
       {
-        await invoke<null|string>("clipboard_set_file", { path: str })
+        await invoke<null|string>("clipboard_set_file", { path: text })
       }
 
       // 切换焦点
@@ -174,7 +174,9 @@ export function initApi() {
     await new Promise(resolve => setTimeout(resolve, 2)) // 等待一小段时间确保窗口已隐藏且焦点已切换
 
     // 通知后端黏贴
-    await invoke("send", { text: str, method: global_setting.config.send_text_method })
+    await invoke("send", { text: text, method: global_setting.config.send_text_method })
+    if (global_setting.state.selectedText) global_setting.state.selectedText = text
+    return
   }
 
   global_setting.api.saveToClipboard = async (text: string): Promise<void> => {
