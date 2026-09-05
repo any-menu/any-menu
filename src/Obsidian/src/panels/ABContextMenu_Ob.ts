@@ -242,11 +242,11 @@ export async function init_item2(
         item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
       if (plugin) {
         menuItem.onClick(() => { // [!code hl]
-          const ctx = PluginManager.getPluginRunCtx(item.label)
+          const ctx = PluginManager.getPluginRunCtx()
           void plugin.run(ctx)
         })
         if (plugin.onCreateItem) {
-          const ctx = PluginManager.getPluginRunCtx(item.label)
+          const ctx = PluginManager.getPluginRunCtx()
           plugin.onCreateItem(li, ctx)
         }
       }

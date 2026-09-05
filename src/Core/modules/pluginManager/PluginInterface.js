@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { global_setting } from "../../shared/setting";
 import { activeAMPanel } from "../../panels/MulPanel";
+import { PluginManager } from "./PluginManager";
 export const AppCtxDemo = {
     env: {
         platform: global_setting.platform,
@@ -20,6 +21,10 @@ export const AppCtxDemo = {
         pluginId: '<will be override>',
     },
     api: {
+        getRunCtx: () => {
+            console.error('will be override');
+            return null;
+        },
         sendText: (str) => { global_setting.api.sendText(str); activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide(); },
         saveToClipboard: (str) => { global_setting.api.saveToClipboard(str); },
         notify: () => {
@@ -69,6 +74,9 @@ export const AppCtxDemo = {
 };
 export function appCtxDemo_createFunctions(id, name) {
     return {
+        getRunCtx: () => {
+            return PluginManager.getPluginRunCtx();
+        },
         notify: (message) => __awaiter(this, void 0, void 0, function* () {
             yield global_setting.api.notify(name + ': ' + message);
         }),
