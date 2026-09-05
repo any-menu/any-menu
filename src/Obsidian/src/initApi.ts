@@ -11,7 +11,7 @@ import {
 import type { UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel } from '@/Core/panels/MulPanel';
-import { getCursorInfo } from './panels'
+import { getCursorInfo } from './modules/editor/cursor'
 
 export function initApi(plugin: Plugin) {
   // 注意: 后续部分 api 实现需要先初始化 global_setting.other.obsidian_plugin 后才能使用
@@ -104,13 +104,17 @@ export function initApi(plugin: Plugin) {
     const hasSelection = editor.somethingSelected()
     if (!hasSelection) {
       editor.replaceSelection(text)
+      if (global_setting.state.selectedText) global_setting.state.selectedText = text
+      return
     } else {
       const fromCursor = editor.getCursor("from") // 替换前记录起始位置
       editor.replaceSelection(text)
       const endCursor = editor.getCursor("to") // 替换后光标即为末尾
       editor.setSelection(fromCursor, endCursor)
+      if (global_setting.state.selectedText) global_setting.state.selectedText = text
+      return
 
-      // 此处好像无法正常工作。算了，如果要连续处理的话用快捷键召唤面板应该也差不多
+      // 下面好像无法正常工作。算了，如果要连续处理的话用快捷键召唤面板应该也差不多
       // 不由鼠标/键盘导致的选中状态，这种选中状态也应该弹出工具栏
       // if (global_setting.config.auto_show_toolbar_on_select) {
       //   global_setting.state.selectedText = text

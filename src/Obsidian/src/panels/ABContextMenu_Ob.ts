@@ -131,7 +131,7 @@ export class AMContextMenu_Ob { // extends AMContextMenu {
  * 
  * 推荐在onload中调用
  */
-export function registerAMContextMenu_Ob(plugin: Plugin) {
+export function registerPanel_to_obsidianMenu(plugin: Plugin) {
   const target = 'editor-menu' // 'editor' | 'file' | 'file-menu' | 'editor-menu' | 'status-bar' | 'body' | HTMLElement ...
   const abContextMenu = new AMContextMenu_Ob(plugin)
 

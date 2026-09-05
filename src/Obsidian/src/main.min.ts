@@ -12,7 +12,11 @@ import {
   Plugin,
 } from 'obsidian'
 import { global_setting } from '@/Core/shared/setting'
-import { registerAMContextMenu_Ob, registerAMContextMenu, DocumentListeners } from './panels'
+import { AMPanel } from '@/Core/panels/MulPanel'
+import { initMenuData } from '@/Core/initTool'
+import { registerPanel_to_obsidianMenu } from './panels/ABContextMenu_Ob'
+import { registerPanel_to_obsidianCommand } from './modules/editor/showEvent'
+import { DocumentListeners } from './modules/editor/event'
 import { AMSettingTab } from "./SettingTab"
 import { initApi } from './initApi'
 
@@ -21,7 +25,7 @@ global_setting.config.pinyin_index = false
 global_setting.config.pinyin_first_index = false
 
 export default class AnyMenuPlugin extends Plugin {
-  // settings: AMSettingInterface
+  documentListeners: DocumentListeners|undefined
 
   async onload() {
     if (global_setting.isDebug) console.log('>>> Loading plugin AnyMenu')
@@ -32,9 +36,20 @@ export default class AnyMenuPlugin extends Plugin {
     this.addSettingTab(new AMSettingTab(this.app, this))
 
     // 菜单面板 - 元素
-    registerAMContextMenu_Ob(this) // 初始化菜单 - 默认菜单系统
-    registerAMContextMenu(this) // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
-    ;(new DocumentListeners(this)).register()  // 选中文本时自动显示工具栏
+    {
+      // 初始化菜单 - 原始通用版本 (独立面板，非obsidian内置菜单)
+      {
+        // 搜索框和多极菜单 - 元素
+        AMPanel.factory(activeDocument.body)
+        // 搜索框和多极菜单 - 数据内容
+        void initMenuData() // TODO 应该分开 initDB 和 initMenu，前者可以在dom加载之前完成
+      }
+      // 召唤面板的多种方式：
+      registerPanel_to_obsidianMenu(this)     // Obsidian 默认右键菜单系统
+      registerPanel_to_obsidianCommand(this)  // Obsidian 命令和彩带按钮等
+      this.documentListeners = new DocumentListeners(this)
+      this.documentListeners.register()       // Obsdiian 编辑器选中文本事件
+    }
 
     // 通过后处理器获取ctx对象
     this.registerMarkdownPostProcessor((
@@ -46,6 +61,7 @@ export default class AnyMenuPlugin extends Plugin {
   }
 
   onunload() {
+    this.documentListeners?.unregister()
     activeDocument.body.querySelectorAll('body>.am-panel').forEach(el => el.remove())
     if (global_setting.isDebug) console.log('<<< Unloading plugin AnyMenu')
   }

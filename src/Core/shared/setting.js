@@ -171,6 +171,8 @@ export const global_setting = {
                         const end = (_b = el.selectionEnd) !== null && _b !== void 0 ? _b : 0;
                         el.setRangeText(text, start, end, 'end');
                         el.dispatchEvent(new Event('input', { bubbles: true }));
+                        if (global_setting.state.selectedText)
+                            global_setting.state.selectedText = text;
                         return;
                     }
                 }
@@ -186,12 +188,15 @@ export const global_setting = {
                         selection.removeAllRanges();
                         selection.addRange(range);
                         activeEl.dispatchEvent(new Event('input', { bubbles: true }));
+                        if (global_setting.state.selectedText)
+                            global_setting.state.selectedText = text;
+                        return;
                     }
                     else {
                         console.warn('没有活动的选区，将demo文本生成到剪贴板');
                         navigator.clipboard.writeText(text).catch(err => console.error('Could not copy text: ', err));
+                        return;
                     }
-                    return;
                 }
             }
         }),

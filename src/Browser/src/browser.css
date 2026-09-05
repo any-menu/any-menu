@@ -1,3 +1,4 @@
+@import url("./ProseMirror/ProseMirror.css");
 /** browser 环境专用样式 */
 @import url("../../Core/styles/styles.css");
 
@@ -40,6 +41,10 @@
     &.am-browser-debug-textarea {
       height: 260px;
       resize: vertical;
+    }
+
+    &.am-browser-debug-prosemirror {
+      padding: 0;
     }
   }
 

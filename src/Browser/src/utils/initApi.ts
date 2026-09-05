@@ -6,7 +6,7 @@
 import type { UrlResponse, UrlRequestConfig, UrlResponseData } from "../../../Type";
 import { global_setting } from "@/Core/shared/setting";
 import { activeAMPanel } from '@/Core/panels/MulPanel';
-import { EditorTools } from "../panels/cursorInfo";
+import { EditorTools } from "@/Core/modules/editor/cursor";
 
 export async function initApi() {
   global_setting.platform = 'browser'
@@ -33,10 +33,12 @@ export async function initApi() {
     }
   }
 
-  // const old_sendText = global_setting.api.sendText
   global_setting.api.sendText = async (text: string) => {
     activeAMPanel?.panel_hide()
-    EditorTools.recoverCursor(text)
+    const ret = EditorTools.recoverCursor(text)
+    if (!ret) return
+    if (global_setting.state.selectedText) global_setting.state.selectedText = text
+    return
   }
 
   global_setting.api.pin = async (isPin?: boolean) => {
