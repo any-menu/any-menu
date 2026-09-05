@@ -6,11 +6,11 @@ export default {
     metadata: {
         id: 'anymenu-md-color',
         name: 'md文字色',
-        version: '1.0.2',
+        version: '1.0.3',
         min_app_version: '1.2.0',
         author: 'LincZero',
         icon: 'lucide-baseline'
-        // 备用:
+        // 备用 icon:
         // 文字编辑类别: https://lucide.dev/icons/categories#text
         // 
         // 基线: lucide-baseline
@@ -38,23 +38,50 @@ export default {
             return;
         }
 
-        // 如果选中的文本已经包含 span 了 (可能之前设置过文字色或背景色)，则直接修改属性而不是再套一层
+        // b1. 选中的文本最外层是 span，则修改属性 (可能之前设置过文字色或背景色，不要再套一层，会较臃肿)
         const spanMatch = str.match(/^<span\s+style="([^"]*)">([\s\S]*)<\/span>$/);
         if (spanMatch) {
+            // 解析标签
             let style = spanMatch[1];
             let newStr = spanMatch[2];
-            // 用负向后行断言，避免误匹配 background-color
-            const colorRegex = /(?<![a-zA-Z-])color\s*:[^;]*(;?)/i;
-            if (colorRegex.test(style)) {
-                // 已有 color 属性，直接替换
-                style = style.replace(colorRegex, `color:${cache_color};`);
-            } else {
-                // 没有 color 属性，追加
-                style = `color:${cache_color};${style}`;
+            const colorRegex = /(?<![a-zA-Z-])color\s*:[^;]*(;?)/i; // 用负向后行断言，避免误匹配 background-color
+            const colorMatch = style.match(colorRegex);
+            const colorValue = colorMatch
+                ? colorMatch[0].replace(/^color\s*:\s*/i, '').replace(/;?\s*$/, '').trim()
+                : null;
+
+            // b11. 已有 color 属性
+            if (colorMatch) {
+                // 颜色相同 → 移除 color 声明
+                if (colorValue.toLowerCase() === cache_color.toLowerCase()) {
+                    let newStyle = style.replace(colorRegex, '');
+
+                    // 清理多余的分号和空格、属性、标签
+                    newStyle = newStyle
+                        .replace(/;\s*;/g, ';')        // 合并连续分号
+                        .replace(/^\s*;+|;+\s*$/g, '') // 去除首尾分号
+                        .trim();
+                    if (newStyle) { // 还有其他属性，保留 span 和 style
+                        this.app.api.sendText(`<span style="${newStyle}">${newStr}</span>`); return;
+                    } else { // style 已空，直接输出纯文本
+                        this.app.api.sendText(newStr); return;
+                    }
+                }
+                // 颜色不同 → 替换为新颜色
+                else {
+                    style = style.replace(colorRegex, `color:${cache_color};`);
+                    this.app.api.sendText(`<span style="${style}">${newStr}</span>`); return;
+                }
             }
-            this.app.api.sendText(`<span style="${style}">${newStr}</span>`);
-        } else {
-            this.app.api.sendText(`<span style="color:${cache_color}">${str}</span>`);
+            // b12. 没有 color 属性，追加
+            else {
+                style = `color:${cache_color};${style}`;
+                this.app.api.sendText(`<span style="${style}">${newStr}</span>`); return;
+            }
+        }
+        // b2. 为选中文本包裹 span 标签
+        else {
+            this.app.api.sendText(`<span style="color:${cache_color};">${str}</span>`); return;
         }
     },
 
