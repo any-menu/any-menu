@@ -16,19 +16,22 @@ let panelEl = null
  *     - azure:          Microsoft Azure Translator, 需在 AZURE_API_KEY 中填入 key 和 AZURE_REGION 中填入区域
  *     - baidu:          百度翻译 API, 需在 BAIDU_APP_ID 和 BAIDU_SECRET_KEY 中填入信息
  *
- * 注意: 需要 API Key 的翻译源，目前需要用户直接在本文件中硬编码 API Key。
- *       这是临时方案，后续会提供安全的脚本 API 来读写存储敏感信息，届时会更新此处实现。
+ * 注意: 需要 API Key 的翻译源，请通过环境变量 (如 ANYMENU_DEEPL_API_KEY) 配置，
+ *       不要将 API Key 硬编码在本文件中，以免随版本控制或发布包泄露。
  */
 
-// === 用户可配置的 API Key (需要时请直接修改此处) ===
-const DEEPL_API_KEY = ''      // DeepL API Key, 例如 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx'
+// === 用户可配置的 API Key ===
+// 出于安全考虑，不建议将 API Key 硬编码在此源文件中 (会随版本控制/发布包泄露)。
+// 请改为通过环境变量配置，本文件仅在运行时读取，不落盘存储密钥。
+const getEnvKey = (name) => (typeof process !== 'undefined' && process.env && process.env[name]) || ''
+const DEEPL_API_KEY = getEnvKey('ANYMENU_DEEPL_API_KEY')      // DeepL API Key, 例如 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx'
 const LIBRE_URL = 'https://libretranslate.com'  // LibreTranslate 实例地址
-const LIBRE_API_KEY = ''      // LibreTranslate API Key (部分实例需要)
-const YANDEX_API_KEY = ''     // Yandex Translate API Key
-const AZURE_API_KEY = ''      // Azure Translator API Key
-const AZURE_REGION = ''       // Azure 区域, 例如 'eastasia'
-const BAIDU_APP_ID = ''       // 百度翻译 APP ID
-const BAIDU_SECRET_KEY = ''   // 百度翻译密钥
+const LIBRE_API_KEY = getEnvKey('ANYMENU_LIBRE_API_KEY')      // LibreTranslate API Key (部分实例需要)
+const YANDEX_API_KEY = getEnvKey('ANYMENU_YANDEX_API_KEY')     // Yandex Translate API Key
+const AZURE_API_KEY = getEnvKey('ANYMENU_AZURE_API_KEY')      // Azure Translator API Key
+const AZURE_REGION = getEnvKey('ANYMENU_AZURE_REGION')       // Azure 区域, 例如 'eastasia'
+const BAIDU_APP_ID = getEnvKey('ANYMENU_BAIDU_APP_ID')       // 百度翻译 APP ID
+const BAIDU_SECRET_KEY = getEnvKey('ANYMENU_BAIDU_SECRET_KEY')   // 百度翻译密钥
 
 const ENGINES = {
     google: {
