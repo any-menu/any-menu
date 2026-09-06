@@ -11,7 +11,7 @@
   这里可以用 pnpm 脚本 **快速修改**，如: `pnpm -r exec pnpm version 1.2.4`
 - `/manifest.json` 用于 obsidian 插件
 - `/src/Tauri/src-tauri/` 下的 `tauri.conf.json` 和 `Cargo.toml` 用于 App 版本
-- (可选) `/package.json` 的版本
+- (可选) `/package.json` 和 `/src/CoreSource/package.json` 的版本
 
 现在我弄了一个脚本，方便一些。
 运行 `pnpm run bump 1.2.4` 即可 (自行替换目标版本)

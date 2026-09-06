@@ -18,15 +18,14 @@ export default {
     metadata: {
         id: 'anymenu-md-color-highlight',
         name: 'md多色高亮',
-        version: '1.0.3',
-        min_app_version: '1.2.0',
+        version: '1.0.4',
+        min_app_version: '1.2.4',
         author: 'LincZero',
         icon: 'lucide-highlighter',
         css: `
 .md-color-highlight-panel>span {
   cursor: pointer;
 }`
-        // md-color-highlight-panel
     },
 
     onUnload() {
@@ -75,7 +74,7 @@ export default {
         el.addEventListener('mousedown', (e) => {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
-                cache_el = buildPanel()
+                cache_el = this.buildPanel()
                 this.app.api.registerSubPanel({ id: 'md-color-panel-highlight', el: cache_el })
             }
 
@@ -94,21 +93,22 @@ export default {
             cache_el_am_icon = el_am_icon;
             el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', cache_color);
         }
-    }
-}
+    },
 
-function buildPanel() {
-    const root = document.createElement('div')
-        root.className = 'md-color-highlight-panel'
-    
-    for (const [key, value] of Object.entries(emoji_dict)) {
-        const item = document.createElement('span');
-            root.appendChild(item);
-            item.innerText = value;
-        item.onclick = () => {
-            cache_color = key; cache_el_am_icon.style.setProperty('--color', cache_color);
+    buildPanel() {
+        const root = document.createElement('div')
+            root.className = 'md-color-highlight-panel'
+        
+        for (const [key, value] of Object.entries(emoji_dict)) {
+            const item = document.createElement('span');
+                root.appendChild(item);
+                item.innerText = value;
+            item.onclick = () => {
+                cache_color = key; cache_el_am_icon.style.setProperty('--color', cache_color);
+                const ctx = this.app.api.getRunCtx(); if (ctx) void this.run(ctx);
+            }
         }
-    }
 
-    return root
+        return root
+    }
 }

@@ -6,8 +6,8 @@ export default {
     metadata: {
         id: 'anymenu-md-color',
         name: 'md文字色',
-        version: '1.0.3',
-        min_app_version: '1.2.0',
+        version: '1.0.4',
+        min_app_version: '1.2.4',
         author: 'LincZero',
         icon: 'lucide-baseline'
         // 备用 icon:
@@ -90,7 +90,7 @@ export default {
         el.addEventListener('mousedown', (e) => {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
-                cache_el = buildPanel()
+                cache_el = this.buildPanel()
                 this.app.api.registerSubPanel({ id: 'md-color-panel', el: cache_el })
             }
 
@@ -109,22 +109,23 @@ export default {
             cache_el_am_icon = el_am_icon;
             el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', cache_color);
         }
+    },
+
+    buildPanel() {
+        const root = document.createElement('div')
+            root.className = 'md-color-panel'
+        
+        const input = document.createElement('input');
+            root.appendChild(input);
+            input.type = 'color';
+            input.value = cache_color;
+            input.click();
+            input.onchange = () => {
+                cache_color = input.value; cache_el_am_icon.style.setProperty('--color', cache_color);
+                input.value = cache_color
+                const ctx = this.app.api.getRunCtx(); if (ctx) void this.run(ctx);
+            }
+
+        return root
     }
-}
-
-function buildPanel() {
-    const root = document.createElement('div')
-        root.className = 'md-color-panel'
-    
-    const input = document.createElement('input');
-        root.appendChild(input);
-        input.type = 'color';
-        input.value = cache_color;
-        input.click();
-        input.onchange = () => {
-            cache_color = input.value; cache_el_am_icon.style.setProperty('--color', cache_color);
-            input.value = cache_color
-        }
-
-    return root
 }
