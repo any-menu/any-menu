@@ -1,4 +1,10 @@
-/* 使用: 例如 `pnpm run bump 1.1.5` */
+/* 使用: 例如 `pnpm run bump 1.1.5`
+ *
+ * 工作内容包括:
+ * - 更新 monorepo 各 package.json 的版本号
+ * - 更新 obsidian 环境中: manifest.json 的版本号
+ * - 更新 tauri 环境中: tauri 配置中的版本号
+ */
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -38,10 +44,10 @@ function updateJsonFile(filePath) {
 // 2. 更新 manifest.json
 updateJsonFile('manifest.json');
 
-// 3. 更新 tauri.conf.json
+// 3.1. 更新 tauri.conf.json
 updateJsonFile('src/Tauri/src-tauri/tauri.conf.json');
 
-// 4. 更新 Cargo.toml
+// 3.2. 更新 Cargo.toml
 const cargoTomlPath = path.resolve(import.meta.dirname, '../..', 'src/Tauri/src-tauri/Cargo.toml');
 if (fs.existsSync(cargoTomlPath)) {
   let content = fs.readFileSync(cargoTomlPath, 'utf8');

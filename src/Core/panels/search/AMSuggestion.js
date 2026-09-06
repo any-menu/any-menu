@@ -177,7 +177,7 @@ export class AMSuggestion {
                     var _a;
                     if (item.value.startsWith('@am-script: ')) {
                         const script_id = item.value.substring('@am-script: '.length);
-                        (_a = PLUGIN_MANAGER.plugin_list[script_id]) === null || _a === void 0 ? void 0 : _a.run(PluginManager.getPluginRunCtx(item.key));
+                        (_a = PLUGIN_MANAGER.plugin_list[script_id]) === null || _a === void 0 ? void 0 : _a.run(PluginManager.getPluginRunCtx());
                         this.panel_hide();
                     }
                     else {

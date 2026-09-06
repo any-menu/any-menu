@@ -145,6 +145,13 @@ export interface PluginAppCtx {
   /** API 接口 */
   api: {
     /**
+     * 主动获取运行时的上下文 (低风险)
+     * 
+     * 如可能，请使用 run 函数自带的 ctx 参数，而非从这里调用
+     */
+    getRunCtx: () => PluginRunCtx | null;
+
+    /**
      * 输出文本到当前位置，输出结束后自动隐藏（低风险）
      */
     sendText: (str: string) => void;

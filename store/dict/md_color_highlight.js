@@ -3,72 +3,70 @@ let cache_el = null // 注册的自定义面板
 let cache_hoverEl = null // 悬浮显示的自定义面板
 let cache_el_am_icon = null // 工具栏按钮的图标
 
+const emoji_dict = {
+    'red':      '🟥',
+    'blue':     '🟦',
+    'green':    '🟩',
+    'brown':    '🟫',
+    'orangered':'🟧',
+    'yellow':   '🟨',
+    'purple':   '🟪',
+    'black':    '⬛',
+    'white':    '⬜'
+}
+
 export default {
     metadata: {
-        id: 'anymenu-md-background',
-        name: 'md背景色',
+        id: 'anymenu-md-color-highlight',
+        name: 'md多色高亮',
         version: '1.0.4',
         min_app_version: '1.2.4',
         author: 'LincZero',
-        icon: 'lucide-paintbrush'
+        icon: 'lucide-highlighter',
+        css: `
+.md-color-highlight-panel>span {
+  cursor: pointer;
+}`
     },
 
     onUnload() {
-        this.app.api.unregisterSubPanel('md-background-panel')
+        this.app.api.unregisterSubPanel('md-color-panel-highlight')
     },
 
     async run(ctx) {
-        console.log('run debug')
         const str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
             return;
         }
+        const cache_emoji = emoji_dict[cache_color]
 
         // b1. 选中的文本最外层是 span，则修改属性 (可能之前设置过文字色或背景色，不要再套一层，会较臃肿)
-        const spanMatch = str.match(/^<span\s+style="([^"]*)">([\s\S]*)<\/span>$/);
+        const spanMatch = str.match(/^==(.)(.*)==$/u); // 注意 `u` 模式保证第一个匹配项是完整的 Unicode/Emoji 字符
         if (spanMatch) {
             // 解析标签
-            let style = spanMatch[1];
+            let emoji = spanMatch[1];
             let newStr = spanMatch[2];
-            const bgRegex = /background\s*:[^;]*(;?)/i;
-            const bgMatch = style.match(bgRegex);
-            const bgValue = bgMatch
-                ? bgMatch[0].replace(/^background\s*:\s*/i, '').replace(/;?\s*$/, '').trim()
-                : null;
 
-            // b11. 已有 bg 属性
-            if (bgMatch) {
-                // 颜色相同 → 移除 bg 声明
-                if (bgValue.toLowerCase() === cache_color.toLowerCase()) {
-                    let newStyle = style.replace(bgRegex, '');
-
-                    // 清理多余的分号和空格、属性、标签
-                    newStyle = newStyle
-                        .replace(/;\s*;/g, ';')        // 合并连续分号
-                        .replace(/^\s*;+|;+\s*$/g, '') // 去除首尾分号
-                        .trim();
-                    if (newStyle) { // 还有其他属性，保留 span 和 style
-                        this.app.api.sendText(`<span style="${newStyle}">${newStr}</span>`); return;
-                    } else { // style 已空，直接输出纯文本
-                        this.app.api.sendText(newStr); return;
-                    }
+            // b11. 已有 highlight-emoji 属性
+            if (cache_emoji) {
+                // 颜色相同 → 移除声明
+                if (emoji == cache_emoji) {
+                    this.app.api.sendText(newStr); return;
                 }
                 // 颜色不同 → 替换为新颜色
                 else {
-                    style = style.replace(bgRegex, `background:${cache_color};`);
-                    this.app.api.sendText(`<span style="${style}">${newStr}</span>`); return;
+                    this.app.api.sendText(`==${cache_emoji}${newStr}==`); return;
                 }
             }
-            // b12. 没有 bg 属性，追加
+            // b12. 没有 highlight-emoji 属性，追加
             else {
-                style = `background:${cache_color};${style}`;
-                this.app.api.sendText(`<span style="${style}">${newStr}</span>`); return;
+                this.app.api.sendText(`==${cache_emoji}${emoji}${newStr}==`); return;
             }
         }
         // b2. 为选中文本包裹 span 标签
         else {
-            this.app.api.sendText(`<span style="background:${cache_color};">${str}</span>`); return;
+            this.app.api.sendText(`==${cache_emoji}${str}==`); return;
         }
     },
 
@@ -80,12 +78,12 @@ export default {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
                 cache_el = this.buildPanel()
-                this.app.api.registerSubPanel({ id: 'md-background-panel', el: cache_el })
+                this.app.api.registerSubPanel({ id: 'md-color-panel-highlight', el: cache_el })
             }
 
             // 切换到当前面板
             this.app.api.hidePanel(['menu'])
-            this.app.api.showPanel(['md-background-panel'])
+            this.app.api.showPanel(['md-color-panel-highlight'])
 
             e.preventDefault()
             e.stopPropagation()
@@ -112,21 +110,18 @@ export default {
     // 创建自定义面板
     buildPanel() {
         const root = document.createElement('div')
-            root.className = 'md-background-panel'
+            root.className = 'md-color-highlight-panel'
         
-        const input = document.createElement('input');
-            root.appendChild(input);
-            input.type = 'color';
-            input.value = cache_color;
-            // input.click();
-            input.onchange = (e) => {
-                cache_color = input.value; cache_el_am_icon.style.setProperty('--color', cache_color);
-                input.value = cache_color
+        for (const [key, value] of Object.entries(emoji_dict)) {
+            const item = document.createElement('span');
+                root.appendChild(item);
+                item.innerText = value;
+            item.onclick = (e) => {
+                cache_color = key; cache_el_am_icon.style.setProperty('--color', cache_color);
                 const ctx = this.app.api.getRunCtx(); if (ctx) void this.run(ctx);
-            }
-            input.onclick = (e) => {
                 e.stopPropagation() // 避免按钮的悬浮面板上的点击冒泡到按钮上
             }
+        }
 
         return root
     }

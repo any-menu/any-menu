@@ -1,6 +1,7 @@
 import type { PluginAppCtx, PluginRunCtx } from "../../../Type";
 export declare const AppCtxDemo: PluginAppCtx;
 export declare function appCtxDemo_createFunctions(id: string, name: string): {
+    getRunCtx: () => PluginRunCtx;
     notify: (message: string) => Promise<void>;
     readFile(path?: {
         relPath: string;

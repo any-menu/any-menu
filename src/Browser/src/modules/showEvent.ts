@@ -18,7 +18,7 @@ export function addShowPanelBtn(btn: HTMLElement) {
     activeAMPanel.panel_hide()
     activeAMPanel.panel_show(
       {x: 30, y: 200, is_reverse: false},
-      [...global_setting.config.panel_preset2[0].list, 'debug'],
+      global_setting.config.panel_preset2[0].list, // [...global_setting.config.panel_preset2[0].list, 'debug'],
       true
     )
   }

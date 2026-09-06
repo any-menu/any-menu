@@ -8,7 +8,7 @@ export declare class PluginManager {
     private loadPlugin_validatePlugin;
     static loadPlugin_isVersionCompatible(minVersion: string, currentVersion: string): boolean;
     static getPluginAppCtx(plugin: PluginInterface): PluginAppCtx;
-    static getPluginRunCtx(_label?: string): PluginRunCtx;
+    static getPluginRunCtx(): PluginRunCtx;
     cachePluginMeta(): Promise<void>;
     private static pluginSheets;
     private static injectPluginCss;

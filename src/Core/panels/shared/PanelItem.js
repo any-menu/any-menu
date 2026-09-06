@@ -133,11 +133,11 @@ export function init_item(_p_this_1, li_1, item_1) {
                 const plugin = ((_b = item.plugin) !== null && _b !== void 0 ? _b : item.content) ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
                 if (plugin) {
                     li.addEventListener('click', () => {
-                        const ctx = PluginManager.getPluginRunCtx(item.label);
+                        const ctx = PluginManager.getPluginRunCtx();
                         void plugin.run(ctx);
                     });
                     if (plugin.onCreateItem) {
-                        const ctx = PluginManager.getPluginRunCtx(item.label);
+                        const ctx = PluginManager.getPluginRunCtx();
                         plugin.onCreateItem(li, ctx);
                     }
                 }

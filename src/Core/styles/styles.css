@@ -957,6 +957,9 @@ div.editable-textarea-textarea {
   border-radius: 10px;
 }
 .am-titlebar button.am-titlebar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   position: relative;
   height: 29px;
   background: none;
@@ -1024,6 +1027,11 @@ div.editable-textarea-textarea {
 }
 .am-titlebar .am-titlebar-manager .am-titlebar-list > div.shown svg {
   display: unset;
+}
+
+.am-reverse .am-titlebar .am-titlebar-manager .am-titlebar-list {
+  top: unset;
+  bottom: calc(100% + 1px);
 }
 
 .editable-codeblock-p {
@@ -1182,6 +1190,7 @@ html, body, #main {
 /* -------------------------------- debug 面板 --------------------------- */
 .am-debug {
   padding: 6px;
+  white-space: pre-wrap;
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */
@@ -1219,13 +1228,30 @@ html, body, #main {
 
 /* -------------------------------- 自定义面板 --------------------------- */
 .am-custom-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   overflow-y: auto;
   max-height: 100%;
 }
-.am-custom-panel > div {
+
+.am-custom-panel > div,
+.am-custom-hover-panel {
   background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
+}
+
+.am-custom-hover-panel {
+  position: absolute;
+  top: 100%;
+  padding: 6px;
+  z-index: 12;
+}
+
+.am-reverse .am-custom-hover-panel {
+  top: unset;
+  bottom: 100%;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */

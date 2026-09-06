@@ -2,6 +2,17 @@
 
 更新日志
 
+## 1.2.4
+
+- feat
+  - **New plugin api**: `app.api.getRunCtx()`
+  - Add plugin: md-color-highlight
+- ...
+
+## ...
+
+(有空再补充)
+
 ## 1.2.0-beta3 (2026-06-14)
 
 > [!WARNING]

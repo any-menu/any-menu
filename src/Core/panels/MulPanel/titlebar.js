@@ -53,7 +53,9 @@ export class AMTitlebar extends AbsAmPanel {
         this.el.appendChild(btn);
         btn.classList.add('am-titlebar-btn', 'am-titlebar-manager');
         btn.title = '面板管理';
-        btn.innerText = '面板管理';
+        global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-blocks">' +
+            '<path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"/><rect x="14" y="2" width="8" height="8" rx="1"/></svg>' +
+            '面板管理');
         let el_panel_list = document.createElement('div');
         btn.appendChild(el_panel_list);
         el_panel_list.classList.add('am-titlebar-list', 'am-hide');
@@ -107,7 +109,9 @@ export class AMTitlebar extends AbsAmPanel {
         this.el.appendChild(btn);
         btn.classList.add('am-titlebar-btn', 'am-titlebar-reverse');
         btn.title = '上下翻转';
-        btn.innerText = '上下翻转';
+        global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-vertical">' +
+            '<path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>' +
+            '翻转');
         btn.addEventListener('click', () => {
             if (!activeAMPanel)
                 return;
@@ -121,7 +125,9 @@ export class AMTitlebar extends AbsAmPanel {
         this.el.appendChild(btn);
         btn.classList.add('am-titlebar-btn', 'am-titlebar-refresh');
         btn.title = '更新信息';
-        btn.innerText = '更新信息';
+        global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw">' +
+            '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>' +
+            '更新');
         btn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
             yield global_setting.other.app_hide(undefined, true);
             window.setTimeout(() => {

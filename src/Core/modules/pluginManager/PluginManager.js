@@ -128,7 +128,7 @@ export class PluginManager {
             api: Object.assign(Object.assign({}, AppCtxDemo.api), appCtxDemo_createFunctions(label, plugin.metadata.id))
         };
     }
-    static getPluginRunCtx(_label) {
+    static getPluginRunCtx() {
         return Object.assign(Object.assign({}, PluginRunCtxDemo), { env: {
                 selectedText: global_setting.state.selectedText,
                 activeAppName: global_setting.state.activeAppName,
@@ -177,7 +177,7 @@ export class PluginManager {
         return __awaiter(this, void 0, void 0, function* () {
             const loader = new PluginManager();
             const plugin = yield loader.loadPlugin('PluginInterfaceDemo', PluginInterfaceDemo);
-            plugin.run(PluginManager.getPluginRunCtx('plugin demo'));
+            plugin.run(PluginManager.getPluginRunCtx());
             if (plugin.onUnload)
                 plugin.onUnload();
         });
