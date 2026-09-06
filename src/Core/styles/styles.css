@@ -1222,6 +1222,9 @@ html, body, #main {
 
 /* -------------------------------- 自定义面板 --------------------------- */
 .am-custom-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   overflow-y: auto;
   max-height: 100%;
 }
