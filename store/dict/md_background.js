@@ -1,6 +1,7 @@
 let cache_color = 'red';
-let cache_el = null
-let cache_el_am_icon = null
+let cache_el = null // 注册的自定义面板
+let cache_hoverEl = null // 悬浮显示的自定义面板
+let cache_el_am_icon = null // 工具栏按钮的图标
 
 export default {
     metadata: {
@@ -17,6 +18,7 @@ export default {
     },
 
     async run(ctx) {
+        console.log('run debug')
         const str = ctx.env.selectedText
         if (!str) {
             console.warn('需要选中文本后再执行');
@@ -71,7 +73,9 @@ export default {
     },
 
     onCreateItem(el) {
-        // 右键点击时可以选择颜色
+        if (!el.classList.contains('am-toolbar-item')) return // 非工具栏项不参与 (应该让软件而非插件处理?)
+
+        // 右键点击展开面板
         el.addEventListener('mousedown', (e) => {
             if (e.button !== 2) return; // 仅响应右键点击
             if (!cache_el) {
@@ -87,6 +91,15 @@ export default {
             e.stopPropagation()
         })
 
+        // 鼠标悬浮展开面板
+        el.addEventListener('mouseenter', (_) => {
+            cache_hoverEl?.remove();
+            cache_hoverEl = this.buildPanel(); el.appendChild(cache_hoverEl); cache_hoverEl.classList.add('am-custom-hover-panel')
+        })
+        el.addEventListener('mouseleave', (_) => {
+            cache_hoverEl?.remove();
+        })
+
         // 这里的样式处理应该移到主逻辑而非插件中?
         // 有可能是工具栏项 (.am-toolbar-item) 或多级菜单项 (am-context-menu-item)
         const el_am_icon = el.querySelector(':scope.am-toolbar-item > .am-icon')
@@ -96,6 +109,7 @@ export default {
         }
     },
 
+    // 创建自定义面板
     buildPanel() {
         const root = document.createElement('div')
             root.className = 'md-background-panel'
@@ -104,11 +118,14 @@ export default {
             root.appendChild(input);
             input.type = 'color';
             input.value = cache_color;
-            input.click();
-            input.onchange = () => {
+            // input.click();
+            input.onchange = (e) => {
                 cache_color = input.value; cache_el_am_icon.style.setProperty('--color', cache_color);
                 input.value = cache_color
                 const ctx = this.app.api.getRunCtx(); if (ctx) void this.run(ctx);
+            }
+            input.onclick = (e) => {
+                e.stopPropagation() // 避免按钮的悬浮面板上的点击冒泡到按钮上
             }
 
         return root

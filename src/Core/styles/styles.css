@@ -1228,10 +1228,24 @@ html, body, #main {
   overflow-y: auto;
   max-height: 100%;
 }
-.am-custom-panel > div {
+
+.am-custom-panel > div,
+.am-custom-hover-panel {
   background: var(--am-bg-color);
   border: 1px solid var(--ab-tab-root-bd-color);
   border-radius: 8px;
+}
+
+.am-custom-hover-panel {
+  position: absolute;
+  top: 100%;
+  padding: 6px;
+  z-index: 12;
+}
+
+.am-reverse .am-custom-hover-panel {
+  top: unset;
+  bottom: 100%;
 }
 
 /* -------------------------------- 配置页面 ----------------------------- */
