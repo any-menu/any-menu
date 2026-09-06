@@ -1029,6 +1029,11 @@ div.editable-textarea-textarea {
   display: unset;
 }
 
+.am-reverse .am-titlebar .am-titlebar-manager .am-titlebar-list {
+  top: unset;
+  bottom: calc(100% + 1px);
+}
+
 .editable-codeblock-p {
   margin: 1px;
   max-width: 100%;
@@ -1185,6 +1190,7 @@ html, body, #main {
 /* -------------------------------- debug 面板 --------------------------- */
 .am-debug {
   padding: 6px;
+  white-space: pre-wrap;
 }
 
 /* -------------------------------- 快速编辑器 --------------------------- */
