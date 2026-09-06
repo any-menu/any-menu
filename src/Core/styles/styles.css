@@ -957,6 +957,9 @@ div.editable-textarea-textarea {
   border-radius: 10px;
 }
 .am-titlebar button.am-titlebar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   position: relative;
   height: 29px;
   background: none;
