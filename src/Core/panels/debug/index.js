@@ -18,19 +18,20 @@ export class AMDebug extends AbsAmPanel {
             this.el.classList.remove('am-hide');
         }
         window.clearInterval(this.interval);
+        const len = 6;
         const fn = () => {
             let showText = global_setting.state.selectedText;
             if (!showText) {
                 showText = `""`;
             }
-            else if (showText.length > 13) {
-                showText = `"${showText.slice(0, 5)} ... ${showText.slice(-5)}"`;
+            else if (showText.length > 2 * len + 3) {
+                showText = `"${showText.slice(0, len)} ... ${showText.slice(-len)}"`;
             }
             else {
                 showText = `"${showText}"`;
             }
             this.el.textContent =
-                (new Date().toLocaleString()) + '\n' +
+                (new Date().toLocaleTimeString('en-GB')) + '    ' +
                     showText;
         };
         fn();

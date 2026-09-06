@@ -11,8 +11,7 @@ export class AMSearch extends AbsAmPanel {
         p_panel.el.appendChild(el);
         el.classList.add('am-search');
         super(el, p_panel.el, p_panel);
-        this.el_input = null;
-        this.amSuggestion = null;
+        this.interval = -1;
         this.init_el();
         this.panel_hide();
     }
@@ -33,35 +32,48 @@ export class AMSearch extends AbsAmPanel {
         return this.el;
     }
     panel_show(is_focus = false) {
-        if (this.el_input)
-            this.el_input.value = '';
-        if (this.amSuggestion)
-            this.amSuggestion.panel_hide();
+        this.el_input.value = '';
+        this.amSuggestion.panel_hide();
         if (this.el) {
             this.el.classList.remove('am-hide');
         }
         ;
         (() => {
-            var _a;
             if (!is_focus)
                 return;
             if (!global_setting.focusStrategy)
                 return;
-            (_a = this.el_input) === null || _a === void 0 ? void 0 : _a.focus();
+            this.el_input.focus();
         })();
+        window.clearInterval(this.interval);
+        const len = 6;
+        const fn = () => {
+            let showText = global_setting.state.selectedText;
+            if (!showText) {
+                showText = `""`;
+            }
+            else if (showText.length > 2 * len + 3) {
+                showText = `"${showText.slice(0, len)} ... ${showText.slice(-len)}"`;
+            }
+            else {
+                showText = `"${showText}"`;
+            }
+            this.el_input.placeholder = 'Search...    ' +
+                (new Date().toLocaleTimeString('en-GB')) + '    ' +
+                showText;
+        };
+        fn();
+        this.interval = window.setInterval(fn, 100);
     }
     panel_hide() {
-        var _a;
-        if (this.el_input)
-            this.el_input.value = '';
-        if (this.amSuggestion)
-            this.amSuggestion.panel_hide();
+        this.el_input.value = '';
+        this.amSuggestion.panel_hide();
         if (this.el.classList.contains('am-hide')) {
             console.warn('Call the hiding method in the hidden state. [Search panel]');
             return;
         }
         this.el.classList.add('am-hide');
-        (_a = this.el_input) === null || _a === void 0 ? void 0 : _a.blur();
+        this.el_input.blur();
         (() => {
             if (!global_setting.focusStrategy)
                 return;
@@ -79,6 +91,7 @@ export class AMSearch extends AbsAmPanel {
             const editor = activeView.editor;
             editor.focus();
         })();
+        window.clearInterval(this.interval);
     }
     panel_toggle() {
         var _a;
