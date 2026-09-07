@@ -102,7 +102,7 @@ export default {
         const el_am_icon = el.querySelector(':scope.am-toolbar-item > .am-icon')
         if (el_am_icon) {
             cache_el_am_icon = el_am_icon;
-            el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', cache_color);
+            el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', (cache_color=='null') ? 'currentColor' : cache_color);
         }
     },
 
@@ -117,7 +117,7 @@ export default {
                 root.appendChild(item);
                 item.innerText = value;
             item.onclick = (e) => {
-                cache_color = key; cache_el_am_icon.style.setProperty('--color', cache_color);
+                cache_color = key; cache_el_am_icon.style.setProperty('--color', (cache_color=='null') ? 'currentColor' : cache_color);
                 const ctx = this.app.api.getRunCtx(); if (ctx) void this.run(ctx);
                 e.stopPropagation() // 避免按钮的悬浮面板上的点击冒泡到按钮上
             }
