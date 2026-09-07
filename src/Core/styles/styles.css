@@ -1245,6 +1245,7 @@ html, body, #main {
 .am-custom-hover-panel {
   position: absolute;
   top: 100%;
+  left: 0;
   padding: 6px;
   z-index: 12;
 }
@@ -1481,6 +1482,7 @@ table.dataview-table .btn {
 .am-config .setting-item .setting-item-info {
   display: flex;
   flex-direction: column;
+  flex: unset;
   align-items: flex-start;
 }
 .am-config .setting-item .setting-item-info .setting-item-name {
@@ -1496,6 +1498,7 @@ table.dataview-table .btn {
   margin-top: 4px;
   display: flex;
   flex-direction: row-reverse;
+  flex: unset;
   gap: 8px;
   align-items: flex-start;
 }
