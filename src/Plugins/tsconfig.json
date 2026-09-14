@@ -1,0 +1,15 @@
+// cd 到该文件夹内，
+// `tsc --watch` 或 `tsc -w` 即可监听脚本变化和自动编译
+// 或 `npx tsc -p tsconfig.json`
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "../../store/dict/", // 若不设置，编译后的 .js 文件在原处
+    "rootDir": "./",           // 源代码根目录
+    "strict": false,           // 脚本文件可适当放宽
+    "esModuleInterop": true
+  },
+  "include": ["**/*.ts"],      // 只包含脚本文件夹内的所有 .ts 文件
+  "exclude": ["node_modules", "dist"]
+}

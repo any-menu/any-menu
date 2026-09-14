@@ -1,0 +1,15 @@
+{
+  "name": "any-menu-plugins",
+  "private": true,
+  "version": "1.2.4",
+  "author": "LincZero",
+  "description": "",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "npx tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {}
+}

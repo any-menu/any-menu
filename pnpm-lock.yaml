@@ -183,6 +183,8 @@ importers:
         specifier: ^8.0.0
         version: 8.1.0(@types/node@25.9.2)(esbuild@0.27.7)(yaml@2.9.0)
 
+  src/Plugins: {}
+
   src/Tauri:
     dependencies:
       '@tauri-apps/api':
