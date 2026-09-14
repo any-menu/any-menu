@@ -8,7 +8,8 @@ import { PanelItem } from '@/Type'
 // import { AMContextMenu } from "@/Core/panels/contextmenu"
 import { global_setting } from '@/Core/shared/setting'
 import { init_item } from '@/Core/panels/shared/PanelItem'
-import { PLUGIN_MANAGER, PluginManager } from '@/Core/modules/pluginManager/PluginManager'
+import { PluginCtx } from '@/Core/modules/pluginManager/PluginCtx'
+import { PLUGIN_MANAGER } from '@/Core/modules/pluginManager/PluginManager'
 import { activeAMPanel, all_append_data, AMContextMenu } from '@/Core/panels/MulPanel'
 
 /**
@@ -242,11 +243,11 @@ export async function init_item2(
         item.content ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
       if (plugin) {
         menuItem.onClick(() => { // [!code hl]
-          const ctx = PluginManager.getPluginRunCtx()
+          const ctx = PluginCtx.getPluginRunCtx()
           void plugin.run(ctx)
         })
         if (plugin.onCreateItem) {
-          const ctx = PluginManager.getPluginRunCtx()
+          const ctx = PluginCtx.getPluginRunCtx()
           plugin.onCreateItem(li, ctx)
         }
       }

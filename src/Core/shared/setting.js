@@ -216,6 +216,7 @@ export const global_setting = {
         obsidian_ctx: null,
         obsidian_run_command: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非obsidian环境不支持此操作"); }),
         renderMarkdown: null,
+        editor_get: null,
         app_show: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),
         app_hide: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),
         app_showInExplorer: () => __awaiter(void 0, void 0, void 0, function* () { console.warn("非app环境不支持此操作"); }),

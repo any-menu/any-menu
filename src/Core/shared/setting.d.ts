@@ -1,4 +1,4 @@
-import type { UrlRequestConfig, UrlResponse } from '../../Type';
+import type { EditorApi, UrlRequestConfig, UrlResponse } from '../../Type';
 export declare const global_setting: {
     platform: 'app' | 'obsidian-plugin' | 'browser-plugin' | 'vscode-plugin' | 'browser';
     isDebug: boolean;
@@ -98,10 +98,11 @@ export declare const global_setting: {
         getSystemIsDark: () => boolean;
     };
     other: {
-        obsidian_plugin: any | null;
-        obsidian_ctx: any | null;
+        obsidian_plugin: null | any;
+        obsidian_ctx: null | any;
         obsidian_run_command: null | ((commandId: string) => Promise<void>);
         renderMarkdown: null | ((markdown: string, el: HTMLElement, ctx?: any) => Promise<void>);
+        editor_get: null | (() => null | EditorApi);
         app_show: (pos?: 'cursor' | 'center', panel_list?: string[]) => Promise<void>;
         app_hide: (panel_list?: string[], forceBlurApp?: boolean) => Promise<void>;
         app_showInExplorer: (relPath: string) => Promise<void>;

@@ -10,7 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { global_setting } from "../../shared/setting";
 import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB";
 import { activeAMPanel } from "../MulPanel/index";
-import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager";
+import { PluginCtx } from "../../modules/pluginManager/PluginCtx";
+import { PLUGIN_MANAGER } from "../../modules/pluginManager/PluginManager";
 export class AMSuggestion {
     static factory(el_input, el_input_parent) {
         const amSuggestion = new AMSuggestion();
@@ -177,7 +178,7 @@ export class AMSuggestion {
                     var _a;
                     if (item.value.startsWith('@am-script: ')) {
                         const script_id = item.value.substring('@am-script: '.length);
-                        (_a = PLUGIN_MANAGER.plugin_list[script_id]) === null || _a === void 0 ? void 0 : _a.run(PluginManager.getPluginRunCtx());
+                        (_a = PLUGIN_MANAGER.plugin_list[script_id]) === null || _a === void 0 ? void 0 : _a.run(PluginCtx.getPluginRunCtx());
                         this.panel_hide();
                     }
                     else {

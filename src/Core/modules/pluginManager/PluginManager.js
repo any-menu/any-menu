@@ -19,7 +19,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 import { global_setting } from '../../shared/setting';
-import { AppCtxDemo, appCtxDemo_createFunctions, PluginInterfaceDemo, PluginRunCtxDemo } from './PluginInterface';
+import { PluginCtx } from './PluginCtx';
 import { z } from 'zod';
 import pkg from '../../package.json';
 const currentAppVersion = pkg.version;
@@ -69,7 +69,7 @@ export class PluginManager {
                     rawPlugin = new rawPlugin();
                 }
                 const plugin = this.loadPlugin_validatePlugin(rawPlugin);
-                const appContext = PluginManager.getPluginAppCtx(plugin);
+                const appContext = PluginCtx.getPluginAppCtx(plugin);
                 if (plugin.app === undefined) {
                     ;
                     plugin.app = appContext;
@@ -120,22 +120,6 @@ export class PluginManager {
         }
         return true;
     }
-    static getPluginAppCtx(plugin) {
-        var _a;
-        const label = (_a = plugin.metadata.name) !== null && _a !== void 0 ? _a : plugin.metadata.id;
-        return {
-            env: Object.assign(Object.assign({}, AppCtxDemo.env), { pluginName: label, pluginId: plugin.metadata.id }),
-            api: Object.assign(Object.assign({}, AppCtxDemo.api), appCtxDemo_createFunctions(label, plugin.metadata.id))
-        };
-    }
-    static getPluginRunCtx() {
-        return Object.assign(Object.assign({}, PluginRunCtxDemo), { env: {
-                selectedText: global_setting.state.selectedText,
-                activeAppName: global_setting.state.activeAppName,
-                activeDocTitle: global_setting.state.activeDocTitle,
-                activeDocUrl: global_setting.state.activeDocUrl,
-            } });
-    }
     cachePluginMeta() {
         return __awaiter(this, void 0, void 0, function* () {
             const path = global_setting.config.cache_paths + 'cache_plugin_meta.json';
@@ -176,8 +160,8 @@ export class PluginManager {
     static demo() {
         return __awaiter(this, void 0, void 0, function* () {
             const loader = new PluginManager();
-            const plugin = yield loader.loadPlugin('PluginInterfaceDemo', PluginInterfaceDemo);
-            plugin.run(PluginManager.getPluginRunCtx());
+            const plugin = yield loader.loadPlugin('PluginInterfaceDemo', PluginCtx.PluginInterfaceDemo);
+            plugin.run(PluginCtx.getPluginRunCtx());
             if (plugin.onUnload)
                 plugin.onUnload();
         });

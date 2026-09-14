@@ -1,4 +1,4 @@
-import type { MetadataCache, PluginAppCtx, PluginInterface, PluginRunCtx } from '../../../Type';
+import type { MetadataCache, PluginInterface } from '../../../Type';
 export declare class PluginManager {
     plugin_list: Record<string, PluginInterface>;
     plugin_list2: Record<string, MetadataCache>;
@@ -7,8 +7,6 @@ export declare class PluginManager {
     loadPlugin(file_path: string, scriptContent: string): Promise<PluginInterface>;
     private loadPlugin_validatePlugin;
     static loadPlugin_isVersionCompatible(minVersion: string, currentVersion: string): boolean;
-    static getPluginAppCtx(plugin: PluginInterface): PluginAppCtx;
-    static getPluginRunCtx(): PluginRunCtx;
     cachePluginMeta(): Promise<void>;
     private static pluginSheets;
     private static injectPluginCss;

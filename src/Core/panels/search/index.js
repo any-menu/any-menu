@@ -18,7 +18,7 @@ export class AMSearch extends AbsAmPanel {
     init_el() {
         this.el_input = document.createElement('input');
         this.el.appendChild(this.el_input);
-        this.el_input.classList.add('am-search-input');
+        this.el_input.classList.add('am-search-input', 'am-input');
         this.el_input.type = 'search';
         this.el_input.placeholder = 'Search...';
         this.el_input.addEventListener('keydown', (ev) => {
@@ -48,19 +48,25 @@ export class AMSearch extends AbsAmPanel {
         window.clearInterval(this.interval);
         const len = 6;
         const fn = () => {
-            let showText = global_setting.state.selectedText;
-            if (!showText) {
-                showText = `""`;
+            var _a, _b, _c, _d;
+            let selectedText_show = global_setting.state.selectedText;
+            if (!selectedText_show) {
+                selectedText_show = `""`;
             }
-            else if (showText.length > 2 * len + 3) {
-                showText = `"${showText.slice(0, len)} ... ${showText.slice(-len)}"`;
+            else if (selectedText_show.length > 2 * len + 3) {
+                selectedText_show = `"${selectedText_show.slice(0, len)} ... ${selectedText_show.slice(-len)}"`;
             }
             else {
-                showText = `"${showText}"`;
+                selectedText_show = `"${selectedText_show}"`;
             }
+            const editorApi = (_b = (_a = global_setting.other).editor_get) === null || _b === void 0 ? void 0 : _b.call(_a);
+            const editorApi_len = editorApi ? editorApi.getRange().length : 0;
+            const selectedText_len = (_d = (_c = global_setting.state.selectedText) === null || _c === void 0 ? void 0 : _c.length) !== null && _d !== void 0 ? _d : 0;
+            const len_msg = selectedText_len + '/' + editorApi_len;
             this.el_input.placeholder = 'Search...    ' +
                 (new Date().toLocaleTimeString('en-GB')) + '    ' +
-                showText;
+                selectedText_show + '    ' +
+                len_msg;
         };
         fn();
         this.interval = window.setInterval(fn, 100);

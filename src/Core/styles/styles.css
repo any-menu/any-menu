@@ -556,16 +556,6 @@ div.editable-textarea-textarea {
 .am-search input.am-search-input {
   height: 100%;
   width: 100%;
-  box-sizing: border-box;
-  padding: 0 12px;
-  border: none;
-  outline: none;
-  color: var(--am-pre-text-color);
-  background: var(--am-pre-bg-color);
-  border-radius: 8px;
-}
-.am-search input.am-search-input:focus {
-  border-color: var(--am-pre-bd-hlcolor);
 }
 
 /* -------------------------------- 输入建议 ----------------------------- */
@@ -1374,72 +1364,17 @@ html, body, #main {
   white-space: normal;
 }
 
-table.dataview-table {
-  overflow-x: auto;
-  width: 100%;
-  border-collapse: collapse;
-}
-table.dataview-table tbody {
-  overflow-y: auto;
-}
-table.dataview-table tbody tr:hover {
-  background-color: var(--ab-tab-root-hv-color);
-}
-table.dataview-table tbody tr:hover > td {
-  border-color: var(--ab-tab-root-bg-color);
-}
-table.dataview-table tbody tr > td {
-  white-space: pre;
-  border: 1px solid var(--ab-table-border-color);
-  padding: 0 8px;
-}
-table.dataview-table .btn {
-  width: 100%;
+.am-dict-search {
+  position: absolute;
+  top: 8px;
+  width: calc(100% - 16px);
+  height: 26px;
 }
 
-.dataview-card {
-  display: grid;
-  grid-auto-flow: row;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  width: 100%;
-  overflow-y: auto;
-  gap: 9px;
+.am-config .am-dataview {
+  margin-top: 34px;
 }
-.dataview-card .card {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 6px;
-  border: solid 1px var(--ab-tab-root-bd-color);
-  padding: 10px;
-  border-radius: 10px;
-}
-.dataview-card .card:hover {
-  background-color: var(--ab-tab-root-hv-color);
-}
-.dataview-card .card > div {
-  font-size: 15px;
-  line-height: 24px;
-  width: 100%;
-}
-.dataview-card .card > div.name {
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 26px;
-}
-.dataview-card .card > div.uninstall, .dataview-card .card > div.isenabled, .dataview-card .card > div.isdownload {
-  width: auto;
-  margin-top: auto;
-}
-.dataview-card .card > div.uninstall, .dataview-card .card > div.isdownload {
-  margin-left: auto;
-}
-.dataview-card .card .btn {
-  float: right;
-  height: 24px;
-}
-
-.dataview-table .btn, .dataview-card .btn {
+.am-config .am-dataview .btn {
   height: 26px;
   padding: 0 10px;
   line-height: 26px;
@@ -1453,17 +1388,80 @@ table.dataview-table .btn {
   background-color: gray;
   color: white;
 }
-.dataview-table .btn[color=green], .dataview-card .btn[color=green] {
+.am-config .am-dataview .btn[color=green] {
   background-color: #67C23A;
   color: white;
 }
-.dataview-table .btn[color=red], .dataview-card .btn[color=red] {
+.am-config .am-dataview .btn[color=red] {
   background-color: #F56C6C;
   color: white;
 }
-.dataview-table .btn[color=blue], .dataview-card .btn[color=blue] {
+.am-config .am-dataview .btn[color=blue] {
   background-color: #409EFF;
   color: white;
+}
+.am-config .am-dataview table.dataview-table {
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+.am-config .am-dataview table.dataview-table tbody {
+  overflow-y: auto;
+}
+.am-config .am-dataview table.dataview-table tbody tr:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-config .am-dataview table.dataview-table tbody tr:hover > td {
+  border-color: var(--ab-tab-root-bg-color);
+}
+.am-config .am-dataview table.dataview-table tbody tr > td {
+  white-space: pre;
+  border: 1px solid var(--ab-table-border-color);
+  padding: 0 8px;
+}
+.am-config .am-dataview table.dataview-table .btn {
+  width: 100%;
+}
+.am-config .am-dataview .dataview-card {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  width: 100%;
+  overflow-y: auto;
+  gap: 9px;
+}
+.am-config .am-dataview .dataview-card .card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  border: solid 1px var(--ab-tab-root-bd-color);
+  padding: 10px;
+  border-radius: 10px;
+}
+.am-config .am-dataview .dataview-card .card:hover {
+  background-color: var(--ab-tab-root-hv-color);
+}
+.am-config .am-dataview .dataview-card .card > div {
+  font-size: 15px;
+  line-height: 24px;
+  width: 100%;
+}
+.am-config .am-dataview .dataview-card .card > div.name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+}
+.am-config .am-dataview .dataview-card .card > div.uninstall, .am-config .am-dataview .dataview-card .card > div.isenabled, .am-config .am-dataview .dataview-card .card > div.isdownload {
+  width: auto;
+  margin-top: auto;
+}
+.am-config .am-dataview .dataview-card .card > div.uninstall, .am-config .am-dataview .dataview-card .card > div.isdownload {
+  margin-left: auto;
+}
+.am-config .am-dataview .dataview-card .card .btn {
+  float: right;
+  height: 24px;
 }
 
 /* -------------------------------- 配置页面配置项 ------------------------ */
@@ -1707,6 +1705,23 @@ div.menu .menu-scroll {
 }
 :root.am-theme-dark #main button:active, :root.am-theme-dark #am-config button:active {
   background-color: rgba(15, 15, 15, 0.4117647059);
+}
+
+.am-btn {
+  cursor: pointer;
+}
+
+.am-input {
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: none;
+  outline: none;
+  color: var(--am-pre-text-color);
+  background: var(--am-pre-bg-color);
+  border-radius: 8px;
+}
+.am-input:focus {
+  border-color: var(--am-pre-bd-hlcolor);
 }
 
 /* -------------------------------- 默认并废弃 --------------------------- */

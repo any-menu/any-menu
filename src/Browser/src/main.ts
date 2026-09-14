@@ -156,9 +156,32 @@ ProseMirror markdown demo。这是一个段落，包含**粗体**和*斜体*。
     const info_el_title = document.createElement('h3'); info_el.appendChild(info_el_title);
       info_el_title.textContent = 'Debug panel'
     const info_el_msg = document.createElement('div'); info_el.appendChild(info_el_msg);
+
+    // 实时更新状态 - 开启
+    const len = 6 // 最大头尾显示字符，用于润色和压缩显示文本
     setInterval(() => {
+      let selectedText_show = global_setting.state.selectedText
+      if (!selectedText_show) {
+        selectedText_show = `""`
+      } else if (selectedText_show.length > 2*len+3) {
+        selectedText_show = `"${selectedText_show.slice(0, len)} ... ${selectedText_show.slice(-len)}"`
+      } else {
+        selectedText_show = `"${selectedText_show}"`
+      }
+
+      let editorApi_show = ''
+      const editorApi = global_setting.other.editor_get?.()
+      if (editorApi) {
+        const selections = editorApi.getSelections()
+        editorApi_show = JSON.stringify({
+          len: editorApi.getRange().length,
+          start: selections[0]?.start,
+          end: selections[0]?.end,
+        }, null, 2)
+      }
+
       info_el_msg.textContent = `time: ${new Date().toLocaleString()}\n`
-      info_el_msg.textContent += `selection: ${global_setting.state.selectedText}\n`
+      info_el_msg.textContent += `selection: ${selectedText_show}\n`
       const range = EditorTools.state.range
       if (!range) {
         info_el_msg.textContent += 'range: null\n'
@@ -169,6 +192,7 @@ ProseMirror markdown demo。这是一个段落，包含**粗体**和*斜体*。
       } else {
         info_el_msg.textContent += `range: ${JSON.stringify(range)}\n`
       }
+      info_el_msg.textContent += `editorApi: ${editorApi_show}\n`
       info_el_msg.textContent += `el: ${EditorTools.state.el?.tagName}\n.${EditorTools.state.el?.className}`
     }, 500)
   }

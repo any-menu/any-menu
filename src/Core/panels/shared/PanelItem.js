@@ -7,7 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { PLUGIN_MANAGER, PluginManager } from "../../modules/pluginManager/PluginManager";
+import { PluginCtx } from "../../modules/pluginManager/PluginCtx";
+import { PLUGIN_MANAGER } from "../../modules/pluginManager/PluginManager";
 import { global_setting } from "../../shared/setting";
 import { textToIcon } from "./utils";
 const lucideIconCache = new Map();
@@ -133,11 +134,11 @@ export function init_item(_p_this_1, li_1, item_1) {
                 const plugin = ((_b = item.plugin) !== null && _b !== void 0 ? _b : item.content) ? PLUGIN_MANAGER.plugin_list[item.content] : undefined;
                 if (plugin) {
                     li.addEventListener('click', () => {
-                        const ctx = PluginManager.getPluginRunCtx();
+                        const ctx = PluginCtx.getPluginRunCtx();
                         void plugin.run(ctx);
                     });
                     if (plugin.onCreateItem) {
-                        const ctx = PluginManager.getPluginRunCtx();
+                        const ctx = PluginCtx.getPluginRunCtx();
                         plugin.onCreateItem(li, ctx);
                     }
                 }

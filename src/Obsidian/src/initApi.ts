@@ -8,7 +8,7 @@ import {
   RequestUrlParam, requestUrl,
   getLanguage // https://github.com/obsidianmd/obsidian-translations?tab=readme-ov-file#existing-languages
 } from 'obsidian'
-import type { UrlRequestConfig, UrlResponse } from '@/Type'
+import type { EditorApi, UrlRequestConfig, UrlResponse } from '@/Type'
 import { global_setting } from '@/Core/shared/setting'
 import { activeAMPanel } from '@/Core/panels/MulPanel';
 import { getCursorInfo } from './modules/editor/cursor'
@@ -37,6 +37,19 @@ export function initApi(plugin: Plugin) {
       return activeDocument.body.classList.contains('theme-dark')
     }
     // global_setting.config.darkmode as 'light'|'dark'|'auto'
+
+    global_setting.other.obsidian_run_command = async (commandId: string): Promise<void> => {
+      if (!global_setting.other.obsidian_plugin) return
+      // 用户如果不知道id，可以在控制台使用 app.commands.commands 查询
+      // 另一个方式是一些插件会提供相关的命令，如 Meta Bind 插件提供 Select and copy command id 功能 (TODO 此插件也应该要提供)  
+      const plugin = global_setting.other.obsidian_plugin as Plugin|null
+      const app = plugin?.app
+      if (!app) return
+      // // @ts-expect-error 类型“App”上不存在属性“commands”
+      // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
+      // @ts-expect-error 类型“App”上不存在属性“commands”
+      app.commands?.executeCommandById?.(commandId)
+    }
   }
 
   global_setting.other.renderMarkdown = async (markdown: string, el: HTMLElement, ctx?: MarkdownPostProcessorContext): Promise<void> => {
@@ -54,18 +67,7 @@ export function initApi(plugin: Plugin) {
     void MarkdownRenderer.render(app, markdown, el, app.workspace.getActiveViewOfType(MarkdownView)?.file?.path??"", mdrc)
   }
 
-  global_setting.other.obsidian_run_command = async (commandId: string): Promise<void> => {
-    if (!global_setting.other.obsidian_plugin) return
-    // 用户如果不知道id，可以在控制台使用 app.commands.commands 查询
-    // 另一个方式是一些插件会提供相关的命令，如 Meta Bind 插件提供 Select and copy command id 功能 (TODO 此插件也应该要提供)  
-    const plugin = global_setting.other.obsidian_plugin as Plugin|null
-    const app = plugin?.app
-    if (!app) return
-    // // @ts-expect-error 类型“App”上不存在属性“commands”
-    // const available = app.commands.commands[item.callback] // 可选，验证是否存在命令
-    // @ts-expect-error 类型“App”上不存在属性“commands”
-    app.commands?.executeCommandById?.(commandId)
-  }
+  global_setting.other.editor_get = initApi_editor_get
 
   global_setting.api.notify = async (message: string): Promise<void> => {
     new Notice(message); // 参数二可选持续时间
@@ -110,7 +112,7 @@ export function initApi(plugin: Plugin) {
       const fromCursor = editor.getCursor("from") // 替换前记录起始位置
       editor.replaceSelection(text)
       const endCursor = editor.getCursor("to") // 替换后光标即为末尾
-      editor.setSelection(fromCursor, endCursor)
+      editor.setSelection(fromCursor, endCursor) // 如果以后支持多光标，这里可以用 `setSelections`
       if (global_setting.state.selectedText) global_setting.state.selectedText = text
       return
 
@@ -463,4 +465,64 @@ export function initApi(plugin: Plugin) {
     console.warn("obsidian 版需要 plugin 和 editor 上下文，应使用 getCursorInfo() 代替")
     return { x: -1, y: -1 }
   }
+}
+
+type EditorRange = {start: number, end: number}
+function initApi_editor_get(): null | EditorApi {
+  const plugin = global_setting.other.obsidian_plugin as Plugin
+  if (!plugin) return null
+  const activeView = plugin.app.workspace.getActiveViewOfType(MarkdownView); 
+  if (!activeView) return null
+  const editor = activeView.editor
+
+  const editorApi: EditorApi = {
+    getRange: (range?: EditorRange): string => {
+      if (!range) return editor.getValue();
+
+      const from = editor.offsetToPos(Math.min(range.start, range.end));
+      const to = editor.offsetToPos(Math.max(range.start, range.end));
+      return editor.getRange(from, to);
+    },
+
+    replaceRange: (text: string, range?: EditorRange): void => {
+      if (range) { // 提供范围时，替换对应范围
+        const from = editor.offsetToPos(range.start);
+        const to = editor.offsetToPos(range.end);
+        editor.replaceRange(text, from, to);
+      }
+      else { // 未提供范围时，替换整篇内容
+        editor.setValue(text);
+      }
+    },
+    replaceRanges(list: {text: string, range: EditorRange}[]) {
+        // 从后往前替换，避免前面的替换导致后面的偏移失效
+        const sorted = [...list].sort((a, b) => b.range.start - a.range.start);
+        for (const { text, range } of sorted) {
+          const from = editor.offsetToPos(Math.min(range.start, range.end));
+          const to = editor.offsetToPos(Math.max(range.start, range.end));
+          editor.replaceRange(text, from, to);
+        }
+    },
+
+    getSelections: (): EditorRange[] => {
+      return editor.listSelections().map((range) => {
+        const a = editor.posToOffset(range.anchor);
+        const b = editor.posToOffset(range.head);
+        return { start: Math.min(a, b), end: Math.max(a, b) };
+      });
+    },
+    setSelection: (range: EditorRange): void => {
+      const anchor = editor.offsetToPos(range.start);
+      const head = editor.offsetToPos(range.end);
+      editor.setSelection(anchor, head);
+    },
+    setSelections: (range_list: EditorRange[]): void => {
+      const ranges = range_list.map((sel) => ({
+        anchor: editor.offsetToPos(sel.start),
+        head: editor.offsetToPos(sel.end),
+      }));
+      editor.setSelections(ranges);
+    },
+  }
+  return editorApi
 }
