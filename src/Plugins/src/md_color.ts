@@ -1,4 +1,4 @@
-import { PluginRunCtx, PluginInterface } from '../../Type'
+import type { PluginRunCtx, PluginInterface } from '../../Type'
 
 let cache_color = 'red';
 let cache_el: HTMLElement|null = null // 注册的自定义面板
@@ -124,8 +124,6 @@ export default {
             el_am_icon.classList.add('has-more'); el_am_icon.style.setProperty('--color', cache_color);
         }
     },
-
-    
 } satisfies PluginInterface;
 
 // 创建自定义面板
@@ -138,7 +136,7 @@ function buildPanel(plugin: PluginInterface): HTMLElement {
         input.type = 'color';
         input.value = cache_color;
         // input.click();
-        input.onchange = (e) => {
+        input.onchange = (_) => {
             cache_color = input.value; cache_el_am_icon?.style.setProperty('--color', cache_color);
             input.value = cache_color
             const ctx = plugin.app!.api.getRunCtx(); if (ctx) void plugin.run(ctx);

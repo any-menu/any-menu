@@ -131,7 +131,7 @@ function buildPanel(plugin) {
     input.type = 'color';
     input.value = cache_color;
     // input.click();
-    input.onchange = (e) => {
+    input.onchange = (_) => {
         cache_color = input.value;
         cache_el_am_icon?.style.setProperty('--color', cache_color);
         input.value = cache_color;
