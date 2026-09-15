@@ -6,10 +6,17 @@
   "description": "",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "npx tsc -p tsconfig.json"
+    "build": "npx tsc -p tsconfig.json && pnpm sync",
+    "sync": "pnpm sync1 && pnpm sync2 && pnpm sync3",
+    "sync1": "copyfiles -u 1 \"./dist/**/*\" ../../store/dict/",
+    "sync2": "copyfiles -u 1 \"./dist/**/*\" ../Browser/dict/",
+    "sync3": "copyfiles -u 1 \"./dist/**/*\" ../Tauri/src-tauri/dict/"
   },
   "keywords": [],
   "license": "GPL-3.0-only",
   "packageManager": "pnpm@10.10.0",
-  "devDependencies": {}
+  "devDependencies": {
+    "tslib": "^2.8.1",
+    "copyfiles": "^2.4.1"
+  }
 }

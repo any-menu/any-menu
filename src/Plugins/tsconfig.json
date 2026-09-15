@@ -3,13 +3,17 @@
 // 或 `npx tsc -p tsconfig.json`
 {
   "compilerOptions": {
+    // 插件要 ESNext node 体系
+    // 若改 CommonJS 会有问题，`export default {` 变成 `export.defaults =`，无法识别
     "target": "ES2020",
-    "module": "CommonJS",
-    "outDir": "../../store/dict/", // 若不设置，编译后的 .js 文件在原处
-    "rootDir": "./",           // 源代码根目录
-    "strict": false,           // 脚本文件可适当放宽
+    "module": "ESNext",
+    "moduleResolution": "node",
+
+    "outDir": "./dist/",
+    "rootDir": "./src/",            // 源代码根目录
+    "strict": false,                // 脚本文件可适当放宽
     "esModuleInterop": true
   },
-  "include": ["**/*.ts"],      // 只包含脚本文件夹内的所有 .ts 文件
+  "include": ["**/*.ts"],           // 只包含脚本文件夹内的所有 .ts 文件
   "exclude": ["node_modules", "dist"]
 }
