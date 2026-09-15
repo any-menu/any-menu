@@ -56,7 +56,9 @@ export class PluginManager {
             var _a;
             let blobUrl = null;
             try {
-                const blob = new Blob([scriptContent], { type: 'application/javascript' });
+                let sourceName = file_path.replace(/^.*[\\/]/, '');
+                const scriptWithSourceURL = scriptContent + `\n//# sourceURL=${sourceName}`;
+                const blob = new Blob([scriptWithSourceURL], { type: 'application/javascript' });
                 blobUrl = URL.createObjectURL(blob);
                 const Function2 = Function;
                 const dynamicImport = new Function2('url', 'return import(url)');
