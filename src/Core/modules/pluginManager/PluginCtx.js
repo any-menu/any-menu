@@ -79,6 +79,7 @@ export var PluginCtx;
             getRunCtx: () => {
                 return PluginCtx.getPluginRunCtx();
             },
+            getEditorApi: global_setting.other.editor_get,
             notify: (message) => __awaiter(this, void 0, void 0, function* () {
                 yield global_setting.api.notify(name + ': ' + message);
             }),
