@@ -38,7 +38,6 @@ export default {
 // 编辑器版
 function run_with_editor(plugin) {
     const editorApi = plugin.app.api.getEditorApi?.();
-    console.log('editorApi ret', editorApi, plugin.app.api.getEditorApi);
     if (!editorApi)
         return false;
     const text = editorApi.getRange();
@@ -63,7 +62,9 @@ async function run_with_selectedText(_plugin, ctx) {
     // 这里可以模拟 `Caps + G` (`ctrl+left` + `ctrl+shift+right`)
     return false;
 }
-// 根据 text 和 selection 判断扩大后的范围。
+/** 根据 text 和 selection 判断扩大后的范围
+ * @author vibe coding by deepseek-v4-pro, review by LincZero
+ */
 function expandSelection(text, start, end) {
     // ---- 工具函数 ----
     const isEscaped = (s, pos) => {

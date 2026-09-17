@@ -111,7 +111,7 @@ function buildPanel(plugin) {
         item.innerText = value;
         item.onclick = (e) => {
             cache_color = key;
-            cache_el_am_icon.style.setProperty('--color', (cache_color == 'null') ? 'currentColor' : cache_color);
+            cache_el_am_icon?.style.setProperty('--color', (cache_color == 'null') ? 'currentColor' : cache_color);
             const ctx = this.app.api.getRunCtx();
             if (ctx)
                 void this.run(ctx);

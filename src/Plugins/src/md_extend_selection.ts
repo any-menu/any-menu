@@ -39,8 +39,7 @@ export default {
 
 // 编辑器版
 function run_with_editor(plugin: PluginInterface) {
-    const editorApi = plugin.app.api.getEditorApi?.()
-    console.log('editorApi ret', editorApi, plugin.app.api.getEditorApi)
+    const editorApi = plugin.app!.api.getEditorApi?.()
     if (!editorApi) return false
 
     const text = editorApi.getRange()
@@ -73,7 +72,7 @@ async function run_with_selectedText(_plugin: PluginInterface, ctx: PluginRunCtx
 }
 
 /** 根据 text 和 selection 判断扩大后的范围
- * vibe coding by deepseek-v4-pro
+ * @author vibe coding by deepseek-v4-pro, review by LincZero
  */
 function expandSelection(text: string, start: number, end: number): { start: number; end: number } {
     type Range = { start: number; end: number; priority: number };

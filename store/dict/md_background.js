@@ -34,7 +34,7 @@ export default {
             // b11. 已有 bg 属性
             if (bgMatch) {
                 // 颜色相同 → 移除 bg 声明
-                if (bgValue.toLowerCase() === cache_color.toLowerCase()) {
+                if (bgValue?.toLowerCase() === cache_color.toLowerCase()) {
                     let newStyle = style.replace(bgRegex, '');
                     // 清理多余的分号和空格、属性、标签
                     newStyle = newStyle
@@ -118,7 +118,7 @@ function buildPanel(plugin) {
     // input.click();
     input.onchange = (_) => {
         cache_color = input.value;
-        cache_el_am_icon.style.setProperty('--color', cache_color);
+        cache_el_am_icon?.style.setProperty('--color', cache_color);
         input.value = cache_color;
         const ctx = plugin.app.api.getRunCtx();
         if (ctx)
