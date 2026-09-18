@@ -100,7 +100,9 @@ export interface PluginInterface {
   onUnload?: () => void;
 }
 
-/** 插件运行时上下文 */
+/** 插件运行时上下文
+ * (一些软件/插件运行期间会频繁变化的东西)
+ */
 export interface PluginRunCtx {
   /** 环境信息 */
   env: {
@@ -143,7 +145,8 @@ export interface PluginAppCtx {
     pluginName: string;
     pluginId: string;
   },
-  /** 通用 API 接口 */
+
+  /** 常用通用 API 接口 */
   api: {
     /**
      * 主动获取运行时的上下文 (低风险)
@@ -264,7 +267,124 @@ export interface PluginAppCtx {
     // 
     // 话说这里要弄权限管理不，如上面那些带风险的接口
     // 然后没有权限的插件调用这些接口时，就会 NOTICE方式提示用户某插件需要，并引导用户自行开启
-  };
+  },
+
+  /** 模块 API 接口 (v1.2.5 新增，开发中)
+   * 
+   * ## 模块拆分系统
+   * 
+   * 一是分类后更简洁和易用
+   * 二是可以做自动权限管理和标签管理
+   *   - 标注类型: 插件是什么类型的插件 (作用于哪些模块)，方便用于搜索自己喜欢的插件
+   *   - 权限限制: 插件声明权限后，才会给插件相关的上下文 api，否则不给。(所有插件的 global app 环境都是独立的，这点与 ob 不同)
+   *   - 标注平台: 例如如果是使用了 editor 和 ob_editor 的插件，有可能做了多平台适配或仅编辑器适配。
+   * 三是方便以后新增更多的模块，甚至允许插件定义模块，插件依赖/扩展其他插件的情况
+   *   - 明确插件依赖图 (有可能存在多依赖，所以不是树，是单向有环图)
+   *   - 插件依赖插件系统 (模块/插件可以自己去定义模块接口，所以可能会出现插件依赖插件的情况)
+   * 
+   * ## 默认依赖图
+   * 
+   * - 通用 api
+   *   - 文本处理器 (editor 类)
+   *     - ... (这里可能有多个分支，ob / ty / app / 内部编辑器)
+   *   - 数据库模块 (搜索系统会使用。会有两个依赖于此的面板，搜索面板 & 数据库后台管理面板)
+   *   - 文件管理器 (未开发) (依赖 文件IO，，包括常用的文件工具)
+   *   - 插件管理器 (依赖 网络IO+文件IO，进行插件的状态管理)
+   *   - 剪切板管理器 (未开发) (类似 quick-clipboard 软件)
+   *   - 窗口管理器 (未开发) (包括窗口名，窗口类，窗口内容 (仅少数窗口可) 等)
+   *   - 面板管理器 (TODO 当前 titlebar 那个的实现逻辑应该改为悬浮显示面板管理器)
+   *     - 按位置分类: 快速面板、悬浮面板、独立面板、设置面板、……
+   *     - 按功能分类: 编辑器面板、文件管理面板、剪切板面板、……
+   * 
+   * ## 模块分类
+   * 
+   * - 其中，`面板模块` 为一大类。不提供核心功能，而是依赖核心功能创建可视化面板，来方便利用核心功能。
+   */
+  modules?: {
+    // 通用 IO (文件/网络等)
+    io: {
+      readFile: typeof this.api.readFile,
+      writeFile: typeof this.api.readFile,
+      urlRequest: typeof this.api.urlRequest,
+      // TODO 加密存写系统
+    };
+
+    // 光标系统
+    cursor: {
+      sendText: typeof this.api.sendText,
+      saveToClipboard: typeof this.api.saveToClipboard,
+    };
+
+    // (仅特定环境) 编辑器系统 (外部编辑器 & 内置编辑器应该都能用)
+    editor: {
+      getEditorApi: typeof this.api.getEditorApi,
+    };
+
+    // (仅特定环境) obsidian 编辑器系统
+    editor_ob: {
+      plugin: any; // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
+      ctx: any;
+    };
+
+    // (仅特定环境) 窗口环境
+    window: {
+      getRunCtx: typeof this.api.getRunCtx,
+    };
+
+    // 数据库系统
+    // TODO 这个也弄一个 debug 管理面板出来
+    db: {
+      add_data_by_json: null, // SEARCH_DB.add_data_by_json
+      call_command: null, // 调用其他插件的命令/函数
+    },
+
+    // ------------------ 面板类模块 ------------------
+
+    // 自定义面板模块。TODO 需区分悬浮面板、常驻面板、弹窗面板、设置面板
+    panel: {
+      hidePanel: typeof this.api.hidePanel,
+      showPanel: typeof this.api.showPanel,
+      togglePanel: typeof this.api.togglePanel,
+      registerSubPaenl: typeof this.api.registerSubPaenl,
+      unregisterSubPaenl: typeof this.api.unregisterSubPaenl,
+
+      notify: typeof this.api.notify,
+    };
+
+    // 插件管理，可以开/关/下载/卸载插件 (高危险)
+    // TODO 管理面板归类过来此处
+    pluginsManager: {
+    };
+
+    // (未开发) 文件库管理器
+    filesManager: {
+    };
+
+    // 内部编辑器面板
+    editor_panel: {
+    };
+
+    // 多级菜单系统
+    // TODO 完善 debug 管理面板 (设置面板中的那个)
+    contextMenu: {
+      append_data: null,
+    },
+
+    // 自定义按钮模块 (工具栏系统)
+    // TODO 完善 debug 管理面板 (设置面板中的那个)
+    toolbar: {
+      append_date: null,
+      // onCreateItem
+    },
+
+    // 插件快速定义语法糖:
+    // 字典类: 等同于一个使用了 数据库+命令+多级菜单系统 的模板插件
+    // interface 类: 等同于一个仅使用高频功能的模板插件
+    //   高频核心: 一个自定义命令 + 一个工具栏注册的callback
+
+    // 事件系统。无，不使用统一全局的事件系统，而是分散到模块中
+    // ~~event: {};~~
+  },
 }
 
 /** 不一定存在，编辑器api。仅当调出面板的环境是编辑器且软件能一定程度与该软件交互时，才可用
