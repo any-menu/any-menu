@@ -72,7 +72,7 @@ export var PluginCtx;
             unregisterSubPanel: (id) => {
                 activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.unregister_sub_panel(id);
             }
-        }
+        },
     };
     function appCtxDemo_createFunctions(id, name) {
         return {

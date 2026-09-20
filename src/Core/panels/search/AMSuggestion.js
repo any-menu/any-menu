@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { global_setting } from "../../shared/setting";
-import { SEARCH_DB, SEARCH_DB_img } from "./SearchDB";
+import { SEARCH_DB, SEARCH_DB_img } from "../../modules/db/SearchDB";
 import { activeAMPanel } from "../MulPanel/index";
 import { PluginCtx } from "../../modules/pluginManager/PluginCtx";
 import { PLUGIN_MANAGER } from "../../modules/pluginManager/PluginManager";
