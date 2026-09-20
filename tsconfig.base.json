@@ -18,6 +18,6 @@
     "**/*.ts"
   ],
   "exclude": [
-    "src/Obsidian/", "src/Tauri/", "src/Browser/"
+    "src/Obsidian/", "src/Tauri/", "src/Browser/", "src/Plugins/"
   ]
 }

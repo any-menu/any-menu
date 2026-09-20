@@ -27,6 +27,6 @@
 
   // 不能排除 src/Obsidian/，否则 eslint 无法自动去除该排除，检查时存在有问题
   "exclude": [
-    "src/Tauri/", "src/Browser/"
+    "src/Tauri/", "src/Browser/", "src/Plugins/"
   ]
 }
