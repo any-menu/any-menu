@@ -1,5 +1,5 @@
-import { type AMPanel } from ".";
 import { AbsAmPanel } from "../abs";
+import { type AMPanel } from ".";
 export declare class AMTitlebar extends AbsAmPanel {
     amPanel: AMPanel;
     static factory(amPanel: AMPanel): AMTitlebar;
