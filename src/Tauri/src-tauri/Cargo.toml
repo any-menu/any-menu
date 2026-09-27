@@ -55,4 +55,5 @@ windows = { version = "0.62.1", features = [
     "Win32_UI_WindowsAndMessaging",
     "Win32_System_Com",
     "Win32_System_Ole",
+    "Win32_UI_TextServices", # TSF (Text Services Framework)
 ] }

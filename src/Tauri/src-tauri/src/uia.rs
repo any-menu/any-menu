@@ -25,10 +25,14 @@ use log::{debug, warn, info, error};
 use crate::text;
 use crate::utils;
 
+// use crate::tsf;
+
 // #region getScreenSize
 
 #[tauri::command]
 pub fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), String> {
+    // let _ = tsf::debug_tsf();
+
     // // 获取窗口所在的显示器
     // let window = app_handle
     //     // .get_window("main") // tauri v1
@@ -106,7 +110,7 @@ pub fn get_screen_size(app_handle: tauri::AppHandle) -> Result<(i32, i32), Strin
 // #region winapi 方式
 
 // 打印窗口、编辑器、光标 (插入符号，而非鼠标) 等信息
-pub fn get_win_message() -> (i32, i32) { 
+pub fn get_win_message() -> (i32, i32) {
     info!("  > print_msg --------------");
     let mut x = -1;
     let mut y = -1;
