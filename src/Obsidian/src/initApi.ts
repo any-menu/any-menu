@@ -92,14 +92,14 @@ export function initApi(plugin: Plugin) {
     if (mode === 'IMG_MODE') {
       console.warn("非 App 环境未实现图片的输出功能，敬请期待");
       void global_setting.api.notify("非 App 环境未实现图片的输出功能，敬请期待");
-      return
+      return false
     }
 
     activeAMPanel?.panel_hide()
     const plugin = global_setting.other.obsidian_plugin as Plugin|null
-    if (!plugin) return
+    if (!plugin) return false
     const cursorInfo = getCursorInfo(plugin)
-    if (!cursorInfo) return
+    if (!cursorInfo) return false
     const editor = cursorInfo.editor
 
     // 输出前先判断是否有选中内容，若有，输出后保持选中新内容
@@ -107,14 +107,14 @@ export function initApi(plugin: Plugin) {
     if (!hasSelection) {
       editor.replaceSelection(text)
       if (global_setting.state.selectedText) global_setting.state.selectedText = text
-      return
+      return true
     } else {
       const fromCursor = editor.getCursor("from") // 替换前记录起始位置
       editor.replaceSelection(text)
       const endCursor = editor.getCursor("to") // 替换后光标即为末尾
       editor.setSelection(fromCursor, endCursor) // 如果以后支持多光标，这里可以用 `setSelections`
       if (global_setting.state.selectedText) global_setting.state.selectedText = text
-      return
+      return true
 
       // 下面好像无法正常工作。算了，如果要连续处理的话用快捷键召唤面板应该也差不多
       // 不由鼠标/键盘导致的选中状态，这种选中状态也应该弹出工具栏

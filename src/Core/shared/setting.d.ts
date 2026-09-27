@@ -92,7 +92,7 @@ export declare const global_setting: {
         getInfo: () => Promise<string | null>;
         notify: (message: string) => Promise<void>;
         pin: (isPin?: boolean) => Promise<void>;
-        sendText: (text: string, mode?: 'IMG_MODE') => Promise<void>;
+        sendText: (text: string, mode?: 'IMG_MODE') => Promise<boolean | null>;
         saveToClipboard: (text: string) => Promise<void>;
         urlRequest: (conf: UrlRequestConfig) => Promise<UrlResponse | null>;
         getSystemIsDark: () => boolean;

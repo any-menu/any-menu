@@ -162,8 +162,18 @@ export interface PluginAppCtx {
 
     /**
      * 输出文本到当前位置，输出结束后自动隐藏（低风险）
+     * 
+     * 额外功能:
+     * - 编辑器版本:
+     *   - 选中文本并转化输出: 输出后应自动选中新内容并更新选中状态 (文本、范围、位置等)
+     *   - 无输出模板: 输出后不自动选中
+     * - 非编辑器版本: 输出后不自动选中 (也无法)
+     * 
+     * @returns
+     *   - 编辑器版本: 可判断输出成功则 true，失败 false
+     *   - 非编辑器版本: 通常返回 null 表示无法判断是否成功
      */
-    sendText: (str: string) => void;
+    sendText: (str: string) => Promise<boolean | null>;
 
     /**
      * 保存到剪切板（低风险）
@@ -298,10 +308,16 @@ export interface PluginAppCtx {
    * 
    * ## 模块分类
    * 
-   * - 其中，`面板模块` 为一大类。不提供核心功能，而是依赖核心功能创建可视化面板，来方便利用核心功能。
+   * 例如，`面板模块` 为一大类。不提供核心功能，而是依赖核心功能创建可视化面板，来方便利用核心功能。
+   * 
+   * 但好像意义不大，太多复合类别的东西了
    */
   modules?: {
     // 通用 IO (文件/网络等)
+    // TODO 思考: 文件IO 和网络IO
+    // - 若拆分，则利于权限管理
+    // - 若不拆分，则更整洁，避免模块类别过多
+    // - 或者二次分类，可能会比较好
     io: {
       readFile: typeof this.api.readFile,
       writeFile: typeof this.api.readFile,
@@ -315,6 +331,18 @@ export interface PluginAppCtx {
       saveToClipboard: typeof this.api.saveToClipboard,
     };
 
+    // 数据库系统
+    // TODO 这个也弄一个 debug 管理面板出来
+    db: {
+      add_data_by_json: null, // SEARCH_DB.add_data_by_json
+      call_command: null, // 调用其他插件的命令/函数
+    },
+
+    // (仅特定环境?) 剪切板管理系统
+    // TODO 可视化面板
+    clipboard: {
+    };
+
     // (仅特定环境) 编辑器系统 (外部编辑器 & 内置编辑器应该都能用)
     editor: {
       getEditorApi: typeof this.api.getEditorApi,
@@ -326,17 +354,10 @@ export interface PluginAppCtx {
       ctx: any;
     };
 
-    // (仅特定环境) 窗口环境
+    // (仅特定环境?) 窗口环境
     window: {
       getRunCtx: typeof this.api.getRunCtx,
     };
-
-    // 数据库系统
-    // TODO 这个也弄一个 debug 管理面板出来
-    db: {
-      add_data_by_json: null, // SEARCH_DB.add_data_by_json
-      call_command: null, // 调用其他插件的命令/函数
-    },
 
     // ------------------ 面板类模块 ------------------
 
@@ -500,24 +521,6 @@ export interface PanelItem {
 
   // (仅插件创建的项才有，词典等其他方式创建时这里是未定义)
   plugin?: PluginInterface
-
-  // 下面内容均为废弃项
-  /*
-    * 执行该项
-    * - 字符串: 输出该字符串，一般用于词典。方便声明demo模板
-    * - 函数: 自定义回调，一般用于自定义脚本
-    * 
-    * 废弃，且没有 string 类型的可能
-    */
-  // callback?: string | PluginInterface_run
-  /*
-    * 仅脚本支持的部分
-    * 
-    * 这里的 string 类型是无效的 (应去掉)，放这里只是为了避免 toml_parse 转该类型时编辑器报错
-    * 
-    * 废弃
-    */
-  // onCreateItem_callback?: string | PluginInterface_onCreateItem
 }
 
 /** 加载过的插件的元数据缓存

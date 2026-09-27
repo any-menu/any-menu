@@ -27,7 +27,11 @@ export var PluginCtx;
                 return null;
             },
             getEditorApi: global_setting.other.editor_get,
-            sendText: (str) => { global_setting.api.sendText(str); activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide(); },
+            sendText: (str) => __awaiter(this, void 0, void 0, function* () {
+                const ret = yield global_setting.api.sendText(str);
+                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide();
+                return ret;
+            }),
             saveToClipboard: (str) => { global_setting.api.saveToClipboard(str); },
             notify: () => {
                 console.error('will be override');
