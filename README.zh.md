@@ -258,7 +258,7 @@ TODO: EditorApi 的非选中文本也认为是一个零内容的选区，而非�
   目前am debug面板也没用，聚合下那个获取文本和窗口class的程序
 - todo:
   am clipboard子面板待新增，仿tauti clipboard那个程序来建造
-- [ ] 优化 sendText api 的返回值。
+- [x] 优化 sendText api 的返回值。
   话说sendText本质也是局部环境可用，其他环境失效。只是目前没办法判断是否可用，所以才成为通用api。应该给他个返回值，编辑器版本可判断输出成功则true，失败false。但大部分情况是返回null表示无法判断是否成功。
 
 ### TODO 20260915
