@@ -370,6 +370,9 @@ export interface PluginAppCtx {
       unregisterSubPaenl: typeof this.api.unregisterSubPaenl,
 
       notify: typeof this.api.notify,
+      add_drag_handle: (handleEl: HTMLElement, targetEl: HTMLElement,
+        callback?: (is_move: boolean) => void
+      ) => void,
     };
 
     // 插件管理，可以开/关/下载/卸载插件 (高危险)
