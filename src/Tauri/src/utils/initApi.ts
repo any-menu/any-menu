@@ -166,7 +166,7 @@ export function initApi() {
           method: "clipboard"
       });
 
-      return
+      return null
     }
 
     // 切换焦点
@@ -176,7 +176,7 @@ export function initApi() {
     // 通知后端黏贴
     await invoke("send", { text: text, method: global_setting.config.send_text_method })
     if (global_setting.state.selectedText) global_setting.state.selectedText = text
-    return
+    return null
   }
 
   global_setting.api.saveToClipboard = async (text: string): Promise<void> => {
