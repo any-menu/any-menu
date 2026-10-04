@@ -13,7 +13,7 @@
 //   var app: PluginAppCtx;
 // }
 
-/** 插件必须实现的接口 */
+/** 插件必须实现的接口 (接口/类二选一) */
 export interface PluginInterface {
   /* 
    * 该成员存在，当不放类型里
@@ -27,32 +27,7 @@ export interface PluginInterface {
   app?: PluginAppCtx;
 
   /** 元数据 */
-  metadata: {
-    /** 唯一标识符 */
-    id: string;
-    /** 脚本版本 */
-    version: string;
-    /** 宿主应用最低版本要求 */
-    min_app_version: string;
-    /** 插件名称（不提供则默认为 id） */
-    name?: string;
-    /** 插件作者 */
-    author?: string;
-    /** 插件描述 */
-    description?: string;
-    /**
-     * 图标
-     * - 支持 lucide 图标名，格式: `"lucide-图标名"`，如 `"lucide-table"`。图标名可于 https://lucide.dev/ 查询
-     * - 支持 SVG 字符串（应用前采取 dompurify 安全措施）
-     * - 不填时会使用名字默认构造图标
-     */
-    icon?: string;
-    /**
-     * CSS 字符串，插件加载时自动注入到 `<head>`，卸载时自动移除。
-     * 若使用 TypeScript 模板仓库开发，build 工具会自动将 `.css` 文件内容填入此字段。
-     */
-    css?: string;
-  };
+  metadata: PluginMetadata;
 
   /*
    * 旧版接口
@@ -108,6 +83,53 @@ export interface PluginInterface {
    * 插件卸载时调用
    */
   onUnload?: () => void;
+}
+
+/** 插件必须实现的类 (接口/类二选一)
+ * @deprecated 暂废弃，不支持。
+ *   Type/` 导入非 type 的行为，与使用 Blob 加载插件的行为，相冲突
+ */
+export abstract class PluginBase implements PluginInterface {
+  // 由加载器自动注入
+  app: PluginAppCtx;
+
+  // 必须由用户提供
+  abstract metadata: PluginMetadata;
+
+  abstract run(runCtx: PluginRunCtx): Promise<void>;
+
+  onCreateItem(el: HTMLElement, ctx: PluginRunCtx): void;
+
+  onLoad(app: PluginAppCtx): void;
+
+  onUnload(): void;
+}
+
+export interface PluginMetadata {
+  /** 唯一标识符 */
+  id: string;
+  /** 脚本版本 */
+  version: string;
+  /** 宿主应用最低版本要求 */
+  min_app_version: string;
+  /** 插件名称（不提供则默认为 id） */
+  name?: string;
+  /** 插件作者 */
+  author?: string;
+  /** 插件描述 */
+  description?: string;
+  /**
+   * 图标
+   * - 支持 lucide 图标名，格式: `"lucide-图标名"`，如 `"lucide-table"`。图标名可于 https://lucide.dev/ 查询
+   * - 支持 SVG 字符串（应用前采取 dompurify 安全措施）
+   * - 不填时会使用名字默认构造图标
+   */
+  icon?: string;
+  /**
+   * CSS 字符串，插件加载时自动注入到 `<head>`，卸载时自动移除。
+   * 若使用 TypeScript 模板仓库开发，build 工具会自动将 `.css` 文件内容填入此字段。
+   */
+  css?: string;
 }
 
 /** 插件运行时上下文

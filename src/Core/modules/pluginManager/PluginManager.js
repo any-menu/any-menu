@@ -69,6 +69,15 @@ export class PluginManager {
                 }
                 if (typeof rawPlugin === 'function') {
                     rawPlugin = new rawPlugin();
+                    const staticMetadata = rawPlugin.metadata;
+                    if (staticMetadata && !rawPlugin.metadata) {
+                        rawPlugin.metadata = staticMetadata;
+                    }
+                }
+                else if (rawPlugin && typeof rawPlugin === 'object') {
+                }
+                else {
+                    throw new Error('Plugin script must export a default object or class, path:' + file_path);
                 }
                 const plugin = this.loadPlugin_validatePlugin(rawPlugin);
                 const appContext = PluginCtx.getPluginAppCtx(plugin);

@@ -88,7 +88,7 @@ export default {
         }
     },
 
-    onCreateItem(el) {
+    onCreateItem(el: HTMLElement) {
         if (!el.classList.contains('am-toolbar-item')) return // 非工具栏项不参与 (应该让软件而非插件处理?)
 
         // 右键点击展开面板
