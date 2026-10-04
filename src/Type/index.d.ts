@@ -5,6 +5,14 @@
  * 如果你是脚本/插件开发者，只需阅读此文件即可
  */
 
+// 不要给全局 app，每个插件 app 的应独立。
+// 例如插件 id 和插件名的获取、例如权限控制。
+// 
+// declare global {
+//   // eslint-disable-next-line no-var
+//   var app: PluginAppCtx;
+// }
+
 /** 插件必须实现的接口 */
 export interface PluginInterface {
   /* 
@@ -13,8 +21,10 @@ export interface PluginInterface {
    * 不要赋值。插件加载时会自动填充，方便插件访问。
    * 亦同 onLoad 方法给的那个参数，不使用这个也没有问题。
    * 这个只是方便使用的语法糖而已
+   * 
+   * 缺点: 插件每次使用都要判空 `app?.xxx`
    */
-  app?: PluginAppCtx
+  app?: PluginAppCtx;
 
   /** 元数据 */
   metadata: {
