@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { global_setting } from "../../shared/setting";
 import { activeAMPanel } from "../../panels/MulPanel";
 import { add_drag_handle } from "../../panels/shared/drag_tool";
+import { SEARCH_DB } from "../../modules/db";
+import { PLUGIN_MANAGER } from "./PluginManager";
 export var PluginCtx;
 (function (PluginCtx) {
     const AppCtxDemo_api = {
@@ -90,8 +92,17 @@ export var PluginCtx;
                 saveToClipboard: AppCtxDemo_api.saveToClipboard,
             },
             db: {
-                add_data_by_json: null,
-                call_command: null,
+                add_data_by_json: (json) => {
+                    SEARCH_DB.add_data_by_json(json, undefined);
+                },
+                call_command: (script_id) => {
+                    const plugin = PLUGIN_MANAGER.plugin_list[script_id];
+                    if (!plugin) {
+                        console.error('Can\'t find id: ' + script_id);
+                        return;
+                    }
+                    plugin.run(PluginCtx.getPluginRunCtx());
+                },
             },
             clipboard: {},
             editor: {
@@ -117,10 +128,16 @@ export var PluginCtx;
             filesManager: {},
             editor_panel: {},
             contextMenu: {
-                append_data: null,
+                append_data: (items) => {
+                    var _a;
+                    (_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.sub_panels.amContextMenu) === null || _a === void 0 ? void 0 : _a.append_data(items);
+                },
             },
             toolbar: {
-                append_date: null,
+                append_date: (items) => {
+                    var _a;
+                    (_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.sub_panels.amToolbar) === null || _a === void 0 ? void 0 : _a.append_data(items);
+                },
             },
         },
     };

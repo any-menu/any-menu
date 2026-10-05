@@ -366,8 +366,8 @@ export interface PluginAppCtx {
     // 数据库系统
     // TODO 这个也弄一个 debug 管理面板出来
     db: {
-      add_data_by_json: null, // SEARCH_DB.add_data_by_json
-      call_command: null, // 调用其他插件的命令/函数
+      add_data_by_json: (json: {key: string, name?: string, value: string}[]) => void,
+      call_command: (script_id: string) => void,
     },
 
     // (仅特定环境?) 剪切板管理系统
@@ -423,13 +423,15 @@ export interface PluginAppCtx {
     // 多级菜单系统
     // TODO 完善 debug 管理面板 (设置面板中的那个)
     contextMenu: {
-      append_data: null,
+      append_data: (items: PanelItem[]) => void,
+      // remove_data:
     },
 
     // 自定义按钮模块 (工具栏系统)
     // TODO 完善 debug 管理面板 (设置面板中的那个)
     toolbar: {
-      append_date: null,
+      append_date: (items: PanelItem[]) => void,
+      // remove_data:
       // onCreateItem
     },
 
