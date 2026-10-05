@@ -6,6 +6,7 @@ export declare class AMTitlebar extends AbsAmPanel {
     constructor(amPanel: AMPanel);
     panel_hide(): void;
     panel_show(): void;
+    private createFoldBtn;
     private createHideBtn;
     private createPanelManagerBtn;
     private createReverseBtn;

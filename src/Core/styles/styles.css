@@ -552,6 +552,12 @@ div.editable-textarea-textarea {
 .am-panel.am-reverse {
   flex-direction: column-reverse;
 }
+.am-panel.am-panel-fold > .am-titlebar {
+  display: flex;
+}
+.am-panel.am-panel-fold > * {
+  display: none;
+}
 .am-panel.am-hide {
   visibility: hidden !important;
   display: flex !important;

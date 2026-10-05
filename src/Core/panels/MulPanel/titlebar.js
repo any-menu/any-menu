@@ -24,6 +24,7 @@ export class AMTitlebar extends AbsAmPanel {
         super(el, amPanel.el, amPanel);
         this.amPanel = amPanel;
         AMPin.factory(this, amPanel);
+        this.createFoldBtn();
         this.createHideBtn();
         this.createPanelManagerBtn();
         this.createReverseBtn();
@@ -39,6 +40,39 @@ export class AMTitlebar extends AbsAmPanel {
     }
     panel_show() {
         this.el.classList.remove('am-hide');
+    }
+    createFoldBtn() {
+        const fold_html_str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-down-up preview-icon">' +
+            '<path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>' +
+            '折叠';
+        const unfold_html_str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-up-down preview-icon">' +
+            '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>' +
+            '展开';
+        const btn = document.createElement('button');
+        this.el.appendChild(btn);
+        btn.classList.add('am-titlebar-btn', 'am-titlebar-fold');
+        btn.title = '折叠或展开';
+        let current_fold = false;
+        function toggle_fold(is_fold) {
+            if (!activeAMPanel)
+                return;
+            if (typeof is_fold === 'boolean')
+                current_fold = is_fold;
+            else
+                current_fold = !current_fold;
+            if (current_fold) {
+                activeAMPanel.el.classList.add('am-panel-fold');
+                global_setting.api.safeInnerHTML(btn, unfold_html_str);
+            }
+            else {
+                activeAMPanel.el.classList.remove('am-panel-fold');
+                global_setting.api.safeInnerHTML(btn, fold_html_str);
+            }
+        }
+        toggle_fold(false);
+        btn.addEventListener('click', () => {
+            toggle_fold();
+        });
     }
     createHideBtn() {
         const btn = document.createElement('button');
