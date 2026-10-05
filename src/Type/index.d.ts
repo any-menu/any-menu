@@ -167,12 +167,12 @@ export interface PluginRunCtx {
 export interface PluginAppCtx {
   env: {
     /** 当前平台 */
-    platform: 'app' | 'obsidian-plugin' | string;
+    platform: 'app' | 'obsidian-plugin' | string,
     /** 仅 Obsidian 环境拥有 */
     obsidian?: {
-      plugin: any; // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
+      plugin: any, // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
       // app, 略，plugin.app 获取就好
-      ctx: any;
+      ctx: any,
     };
     pluginName: string;
     pluginId: string;
@@ -355,13 +355,13 @@ export interface PluginAppCtx {
       writeFile: typeof this.api.readFile,
       urlRequest: typeof this.api.urlRequest,
       // TODO 加密存写系统
-    };
+    },
 
     // 光标系统
     cursor: {
       sendText: typeof this.api.sendText,
       saveToClipboard: typeof this.api.saveToClipboard,
-    };
+    },
 
     // 数据库系统
     // TODO 这个也弄一个 debug 管理面板出来
@@ -373,23 +373,23 @@ export interface PluginAppCtx {
     // (仅特定环境?) 剪切板管理系统
     // TODO 可视化面板
     clipboard: {
-    };
+    },
 
     // (仅特定环境) 编辑器系统 (外部编辑器 & 内置编辑器应该都能用)
     editor: {
       getEditorApi: typeof this.api.getEditorApi,
-    };
+    },
 
     // (仅特定环境) obsidian 编辑器系统
     editor_ob: {
       plugin: any; // 仅 obsidian 环境拥有。类型同 import type { Plugin } from "obsidian"
       ctx: any;
-    };
+    },
 
     // (仅特定环境?) 窗口环境
     window: {
       getRunCtx: typeof this.api.getRunCtx,
-    };
+    },
 
     // ------------------ 面板类模块 ------------------
 
@@ -398,27 +398,27 @@ export interface PluginAppCtx {
       hidePanel: typeof this.api.hidePanel,
       showPanel: typeof this.api.showPanel,
       togglePanel: typeof this.api.togglePanel,
-      registerSubPaenl: typeof this.api.registerSubPaenl,
-      unregisterSubPaenl: typeof this.api.unregisterSubPaenl,
+      registerSubPanel: typeof this.api.registerSubPanel,
+      unregisterSubPanel: typeof this.api.unregisterSubPanel,
 
       notify: typeof this.api.notify,
       add_drag_handle: (handleEl: HTMLElement, targetEl: HTMLElement,
         callback?: (is_move: boolean) => void
       ) => void,
-    };
+    },
 
     // 插件管理，可以开/关/下载/卸载插件 (高危险)
     // TODO 管理面板归类过来此处
     pluginsManager: {
-    };
+    },
 
     // (未开发) 文件库管理器
     filesManager: {
-    };
+    },
 
     // 内部编辑器面板
     editor_panel: {
-    };
+    },
 
     // 多级菜单系统
     // TODO 完善 debug 管理面板 (设置面板中的那个)

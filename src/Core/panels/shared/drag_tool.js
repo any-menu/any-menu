@@ -1,5 +1,5 @@
 import { global_setting } from "../../shared/setting";
-export function init_drag_handle(handleEl, targetEl, callback) {
+export function add_drag_handle(handleEl, targetEl, callback) {
     let isDragging = false;
     let didDrag = false;
     let startElx = 0;

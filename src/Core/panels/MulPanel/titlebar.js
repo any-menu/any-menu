@@ -12,7 +12,7 @@ import { global_setting } from "../../shared/setting";
 import { AbsAmPanel } from "../abs";
 import { activeAMPanel } from ".";
 import { AMPin } from './pin/index';
-import { init_drag_handle } from "../shared/drag_tool";
+import { add_drag_handle } from "../shared/drag_tool";
 export class AMTitlebar extends AbsAmPanel {
     static factory(amPanel) {
         return new AMTitlebar(amPanel);
@@ -32,7 +32,7 @@ export class AMTitlebar extends AbsAmPanel {
         if (global_setting.platform == 'app')
             global_setting.other.app_createTitlebar(this.el);
         this.panel_hide();
-        init_drag_handle(this.el, amPanel.el);
+        add_drag_handle(this.el, amPanel.el);
     }
     panel_hide() {
         this.el.classList.add('am-hide');
