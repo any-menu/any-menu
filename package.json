@@ -21,6 +21,8 @@
     "ob:build-min": "cd ./src/Obsidian && pnpm build-min",
     "ob:lint": "cd ./src/Obsidian && pnpm lint",
     "ob:lint:fix": "cd ./src/Obsidian && pnpm lint:fix",
+    "plugins:dev": "cd ./src/Plugins && pnpm dev",
+    "plugins:build": "cd ./src/Plugins && pnpm build",
     "browser:dev": "cd ./src/Browser && pnpm dev",
     "browser:build": "cd ./src/Browser && pnpm build",
     "bump": "node src/Scripts/bump.mjs",

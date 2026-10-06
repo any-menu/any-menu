@@ -1,0 +1,19 @@
+// cd 到该文件夹内，
+// `tsc --watch` 或 `tsc -w` 即可监听脚本变化和自动编译
+// 或 `npx tsc -p tsconfig.json`
+{
+  "compilerOptions": {
+    // 插件要 ESNext node 体系
+    // 若改 CommonJS 会有问题，`export default {` 变成 `export.defaults =`，无法识别
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+
+    "outDir": "./dist/",
+    "rootDir": "./src/",            // 源代码根目录
+    "strict": false,                // 脚本文件可适当放宽
+    "esModuleInterop": true
+  },
+  "include": ["**/*.ts"],           // 只包含脚本文件夹内的所有 .ts 文件
+  "exclude": ["node_modules", "dist"]
+}

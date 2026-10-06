@@ -9,8 +9,67 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { global_setting } from "../../shared/setting";
 import { activeAMPanel } from "../../panels/MulPanel";
+import { add_drag_handle } from "../../panels/shared/drag_tool";
+import { SEARCH_DB } from "../../modules/db";
+import { PLUGIN_MANAGER } from "./PluginManager";
 export var PluginCtx;
 (function (PluginCtx) {
+    const AppCtxDemo_api = {
+        getRunCtx: () => {
+            console.error('will be override');
+            return null;
+        },
+        getEditorApi: global_setting.other.editor_get,
+        sendText: (str) => __awaiter(this, void 0, void 0, function* () {
+            const ret = yield global_setting.api.sendText(str);
+            activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide();
+            return ret;
+        }),
+        saveToClipboard: (str) => { global_setting.api.saveToClipboard(str); },
+        notify: () => {
+            console.error('will be override');
+            return '';
+        },
+        urlRequest: (conf) => global_setting.api.urlRequest(conf),
+        readFile() {
+            return __awaiter(this, void 0, void 0, function* () {
+                console.error('will be override');
+                return '';
+            });
+        },
+        writeFile() {
+            return __awaiter(this, void 0, void 0, function* () {
+                console.error('will be override');
+                return false;
+            });
+        },
+        hidePanel: (list) => {
+            activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide(list);
+            if (list == undefined && global_setting.platform === 'app') {
+                global_setting.other.app_hide(list);
+            }
+        },
+        showPanel: (list, position) => {
+            if (global_setting.platform === 'app') {
+                global_setting.other.app_show(position, list);
+            }
+            else {
+                if (position != undefined) {
+                    console.warn('非 app 环境不支持 position 参数');
+                }
+                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_show(undefined, list, true);
+            }
+        },
+        togglePanel: (item) => {
+            activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_toggle(item);
+        },
+        registerSubPanel: (options) => {
+            activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.register_sub_panel(options.id, options.el);
+        },
+        unregisterSubPanel: (id) => {
+            activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.unregister_sub_panel(id);
+        }
+    };
     const AppCtxDemo = {
         env: {
             platform: global_setting.platform,
@@ -21,64 +80,73 @@ export var PluginCtx;
             pluginName: '<will be override>',
             pluginId: '<will be override>',
         },
-        api: {
-            getRunCtx: () => {
-                console.error('will be override');
-                return null;
+        api: AppCtxDemo_api,
+        modules: {
+            io: {
+                readFile: AppCtxDemo_api.readFile,
+                writeFile: AppCtxDemo_api.readFile,
+                urlRequest: AppCtxDemo_api.urlRequest,
             },
-            getEditorApi: global_setting.other.editor_get,
-            sendText: (str) => { global_setting.api.sendText(str); activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide(); },
-            saveToClipboard: (str) => { global_setting.api.saveToClipboard(str); },
-            notify: () => {
-                console.error('will be override');
-                return '';
+            cursor: {
+                sendText: AppCtxDemo_api.sendText,
+                saveToClipboard: AppCtxDemo_api.saveToClipboard,
             },
-            urlRequest: (conf) => global_setting.api.urlRequest(conf),
-            readFile() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    console.error('will be override');
-                    return '';
-                });
-            },
-            writeFile() {
-                return __awaiter(this, void 0, void 0, function* () {
-                    console.error('will be override');
-                    return false;
-                });
-            },
-            hidePanel: (list) => {
-                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide(list);
-                if (list == undefined && global_setting.platform === 'app') {
-                    global_setting.other.app_hide(list);
-                }
-            },
-            showPanel: (list, position) => {
-                if (global_setting.platform === 'app') {
-                    global_setting.other.app_show(position, list);
-                }
-                else {
-                    if (position != undefined) {
-                        console.warn('非 app 环境不支持 position 参数');
+            db: {
+                add_data_by_json: (json) => {
+                    SEARCH_DB.add_data_by_json(json, undefined);
+                },
+                call_command: (script_id) => {
+                    const plugin = PLUGIN_MANAGER.plugin_list[script_id];
+                    if (!plugin) {
+                        console.error('Can\'t find id: ' + script_id);
+                        return;
                     }
-                    activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_show(undefined, list, true);
-                }
+                    plugin.run(PluginCtx.getPluginRunCtx());
+                },
             },
-            togglePanel: (item) => {
-                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_toggle(item);
+            clipboard: {},
+            editor: {
+                getEditorApi: AppCtxDemo_api.getEditorApi,
             },
-            registerSubPanel: (options) => {
-                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.register_sub_panel(options.id, options.el);
+            editor_ob: {
+                plugin: global_setting.other.obsidian_plugin,
+                ctx: global_setting.other.obsidian_ctx
             },
-            unregisterSubPanel: (id) => {
-                activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.unregister_sub_panel(id);
-            }
-        }
+            window: {
+                getRunCtx: AppCtxDemo_api.getRunCtx,
+            },
+            panel: {
+                hidePanel: AppCtxDemo_api.hidePanel,
+                showPanel: AppCtxDemo_api.showPanel,
+                togglePanel: AppCtxDemo_api.togglePanel,
+                registerSubPanel: AppCtxDemo_api.registerSubPanel,
+                unregisterSubPanel: AppCtxDemo_api.unregisterSubPanel,
+                notify: AppCtxDemo_api.notify,
+                add_drag_handle: add_drag_handle,
+            },
+            pluginsManager: {},
+            filesManager: {},
+            editor_panel: {},
+            contextMenu: {
+                append_data: (items) => {
+                    var _a;
+                    (_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.sub_panels.amContextMenu) === null || _a === void 0 ? void 0 : _a.append_data(items);
+                },
+            },
+            toolbar: {
+                append_date: (items) => {
+                    var _a;
+                    (_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.sub_panels.amToolbar) === null || _a === void 0 ? void 0 : _a.append_data(items);
+                },
+            },
+        },
     };
     function appCtxDemo_createFunctions(id, name) {
         return {
             getRunCtx: () => {
                 return PluginCtx.getPluginRunCtx();
             },
+            getEditorApi: global_setting.other.editor_get,
             notify: (message) => __awaiter(this, void 0, void 0, function* () {
                 yield global_setting.api.notify(name + ': ' + message);
             }),

@@ -155,7 +155,7 @@ export const global_setting = {
             if (!activeEl) {
                 console.warn('没有活动的元素，将demo文本生成到剪贴板');
                 navigator.clipboard.writeText(text).catch(err => console.error("Could not copy text: ", err));
-                return;
+                return null;
             }
             else {
                 const isInput = activeEl instanceof HTMLInputElement;
@@ -173,7 +173,7 @@ export const global_setting = {
                         el.dispatchEvent(new Event('input', { bubbles: true }));
                         if (global_setting.state.selectedText)
                             global_setting.state.selectedText = text;
-                        return;
+                        return null;
                     }
                 }
                 else if (isContentEditable) {
@@ -190,15 +190,16 @@ export const global_setting = {
                         activeEl.dispatchEvent(new Event('input', { bubbles: true }));
                         if (global_setting.state.selectedText)
                             global_setting.state.selectedText = text;
-                        return;
+                        return null;
                     }
                     else {
                         console.warn('没有活动的选区，将demo文本生成到剪贴板');
                         navigator.clipboard.writeText(text).catch(err => console.error('Could not copy text: ', err));
-                        return;
+                        return null;
                     }
                 }
             }
+            return null;
         }),
         saveToClipboard: (text) => __awaiter(void 0, void 0, void 0, function* () {
             try {

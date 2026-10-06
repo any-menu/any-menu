@@ -56,7 +56,9 @@ export class PluginManager {
             var _a;
             let blobUrl = null;
             try {
-                const blob = new Blob([scriptContent], { type: 'application/javascript' });
+                let sourceName = file_path.replace(/^.*[\\/]/, '');
+                const scriptWithSourceURL = scriptContent + `\n//# sourceURL=${sourceName}`;
+                const blob = new Blob([scriptWithSourceURL], { type: 'application/javascript' });
                 blobUrl = URL.createObjectURL(blob);
                 const Function2 = Function;
                 const dynamicImport = new Function2('url', 'return import(url)');
@@ -67,6 +69,15 @@ export class PluginManager {
                 }
                 if (typeof rawPlugin === 'function') {
                     rawPlugin = new rawPlugin();
+                    const staticMetadata = rawPlugin.metadata;
+                    if (staticMetadata && !rawPlugin.metadata) {
+                        rawPlugin.metadata = staticMetadata;
+                    }
+                }
+                else if (rawPlugin && typeof rawPlugin === 'object') {
+                }
+                else {
+                    throw new Error('Plugin script must export a default object or class, path:' + file_path);
                 }
                 const plugin = this.loadPlugin_validatePlugin(rawPlugin);
                 const appContext = PluginCtx.getPluginAppCtx(plugin);

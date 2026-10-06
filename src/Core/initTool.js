@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { activeAMPanel } from "./panels/MulPanel";
 import { global_setting } from "./shared/setting";
-import { SEARCH_DB, SEARCH_DB_img } from "./panels/search/SearchDB";
+import { SEARCH_DB, SEARCH_DB_img } from "./modules/db";
 import { PLUGIN_MANAGER, PluginManager } from "./modules/pluginManager/PluginManager";
 import { toml_parse } from "./panels/contextmenu/demo";
 import * as yaml from 'js-yaml';

@@ -7,10 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { activeAMPanel } from ".";
+import { create_panelManger_panel } from "../../modules/panelManager";
 import { global_setting } from "../../shared/setting";
 import { AbsAmPanel } from "../abs";
+import { activeAMPanel } from ".";
 import { AMPin } from './pin/index';
+import { add_drag_handle } from "../shared/drag_tool";
 export class AMTitlebar extends AbsAmPanel {
     static factory(amPanel) {
         return new AMTitlebar(amPanel);
@@ -21,7 +23,9 @@ export class AMTitlebar extends AbsAmPanel {
         el.classList.add('am-titlebar');
         super(el, amPanel.el, amPanel);
         this.amPanel = amPanel;
+        this.fold_btn = null;
         AMPin.factory(this, amPanel);
+        this.createFoldBtn();
         this.createHideBtn();
         this.createPanelManagerBtn();
         this.createReverseBtn();
@@ -30,7 +34,7 @@ export class AMTitlebar extends AbsAmPanel {
         if (global_setting.platform == 'app')
             global_setting.other.app_createTitlebar(this.el);
         this.panel_hide();
-        AMPin.initEvent(this.el, amPanel);
+        add_drag_handle(this.el, amPanel.el);
     }
     panel_hide() {
         this.el.classList.add('am-hide');
@@ -38,13 +42,53 @@ export class AMTitlebar extends AbsAmPanel {
     panel_show() {
         this.el.classList.remove('am-hide');
     }
+    createFoldBtn() {
+        this.fold_btn = document.createElement('button');
+        this.el.appendChild(this.fold_btn);
+        this.fold_btn.classList.add('am-titlebar-btn', 'am-titlebar-fold');
+        this.fold_btn.title = '折叠或展开';
+        this.toggle_fold(false);
+        add_drag_handle(this.fold_btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
+            this.toggle_fold();
+        });
+    }
+    toggle_fold(is_fold) {
+        if (!activeAMPanel)
+            return;
+        if (is_fold === undefined) {
+            const current_fold = activeAMPanel.el.classList.contains('am-panel-fold');
+            is_fold = !current_fold;
+        }
+        if (is_fold) {
+            activeAMPanel.el.classList.add('am-panel-fold');
+            if (this.fold_btn) {
+                const UNFOLD_HTML_STR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-up-down preview-icon">' +
+                    '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>' +
+                    '展开';
+                global_setting.api.safeInnerHTML(this.fold_btn, UNFOLD_HTML_STR);
+            }
+        }
+        else {
+            activeAMPanel.el.classList.remove('am-panel-fold');
+            if (this.fold_btn) {
+                const FOLD_HTML_STR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-down-up preview-icon">' +
+                    '<path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>' +
+                    '折叠';
+                global_setting.api.safeInnerHTML(this.fold_btn, FOLD_HTML_STR);
+            }
+        }
+    }
     createHideBtn() {
         const btn = document.createElement('button');
         this.el.appendChild(btn);
         btn.classList.add('am-titlebar-btn', 'am-titlebar-minimize');
         btn.title = '隐藏';
         btn.innerText = '隐藏';
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide([], true);
         });
     }
@@ -58,44 +102,17 @@ export class AMTitlebar extends AbsAmPanel {
             '面板');
         let el_panel_list = document.createElement('div');
         btn.appendChild(el_panel_list);
-        el_panel_list.classList.add('am-titlebar-list', 'am-hide');
+        el_panel_list.classList.add('am-hide');
         let is_show = false;
-        btn.addEventListener('click', () => {
-            var _a;
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             if (!is_show) {
                 is_show = true;
                 btn.classList.add('active');
                 el_panel_list.classList.remove('am-hide');
                 el_panel_list.innerHTML = '';
-                const all_panel_list = ['search', 'toolbar', 'menu', 'miniEditor', 'info', 'debug'];
-                const custom_sub_panel_list = Object.keys((_a = activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.custom_sub_panel) !== null && _a !== void 0 ? _a : {});
-                if (custom_sub_panel_list.length > 0) {
-                    all_panel_list.push('hr', ...custom_sub_panel_list);
-                }
-                for (const item_name of all_panel_list) {
-                    if (item_name === 'hr') {
-                        const el_hr = document.createElement('hr');
-                        el_panel_list.appendChild(el_hr);
-                        continue;
-                    }
-                    const el_item = document.createElement('div');
-                    el_panel_list.appendChild(el_item);
-                    el_item.title = item_name;
-                    if (activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.state.show_panel_list.includes(item_name))
-                        el_item.classList.add('shown');
-                    el_item.onclick = () => {
-                        activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_toggle(item_name);
-                        el_item.classList.toggle('shown');
-                    };
-                    const el_left = document.createElement('div');
-                    el_item.appendChild(el_left);
-                    el_left.classList.add('list-left');
-                    global_setting.api.safeInnerHTML(el_left, '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>');
-                    const el_content = document.createElement('div');
-                    el_item.appendChild(el_content);
-                    el_content.classList.add('list-content');
-                    el_content.innerText = item_name;
-                }
+                create_panelManger_panel(el_panel_list);
             }
             else {
                 is_show = false;
@@ -112,7 +129,9 @@ export class AMTitlebar extends AbsAmPanel {
         global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-vertical">' +
             '<path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>' +
             '翻转');
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             if (!activeAMPanel)
                 return;
             activeAMPanel.el.classList.toggle('am-reverse');
@@ -128,7 +147,9 @@ export class AMTitlebar extends AbsAmPanel {
         global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw">' +
             '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>' +
             '更新');
-        btn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => __awaiter(this, void 0, void 0, function* () {
+            if (is_move)
+                return;
             yield global_setting.other.app_hide(undefined, true);
             window.setTimeout(() => {
                 void global_setting.other.app_show();
