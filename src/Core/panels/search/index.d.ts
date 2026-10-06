@@ -6,7 +6,7 @@ export declare class AMSearch extends AbsAmPanel {
     private interval;
     static factory(p_panel: AbsAmPanel): AMSearch;
     constructor(p_panel: AbsAmPanel);
-    init_el(): HTMLElement;
+    init_el(p_panel: AbsAmPanel): HTMLElement;
     panel_show(is_focus?: boolean): void;
     panel_hide(): void;
     panel_toggle(): void;

@@ -1,3 +1,4 @@
+import { add_drag_handle } from "../shared/drag_tool";
 import { global_setting } from "../../shared/setting";
 import { AbsAmPanel } from "../abs";
 import { AMSuggestion } from "./AMSuggestion";
@@ -12,15 +13,16 @@ export class AMSearch extends AbsAmPanel {
         el.classList.add('am-search');
         super(el, p_panel.el, p_panel);
         this.interval = -1;
-        this.init_el();
+        this.init_el(p_panel);
         this.panel_hide();
     }
-    init_el() {
+    init_el(p_panel) {
         this.el_input = document.createElement('input');
         this.el.appendChild(this.el_input);
         this.el_input.classList.add('am-search-input', 'am-input');
         this.el_input.type = 'search';
         this.el_input.placeholder = 'Search...';
+        add_drag_handle(this.el_input, p_panel.el);
         this.el_input.addEventListener('keydown', (ev) => {
             if (ev.key === 'Escape' && this.el_input && this.el_input.value.trim() != "") {
                 this.el_input.value = "";
