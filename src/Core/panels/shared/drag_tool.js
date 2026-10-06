@@ -1,5 +1,6 @@
 import { global_setting } from "../../shared/setting";
 export function add_drag_handle(handleEl, targetEl, callback) {
+    handleEl === null || handleEl === void 0 ? void 0 : handleEl.classList.add('am-app-drag');
     let isDragging = false;
     let didDrag = false;
     let rawTargetEl = targetEl;
@@ -13,6 +14,9 @@ export function add_drag_handle(handleEl, targetEl, callback) {
     handleEl.addEventListener('mousedown', (e) => {
         if (e.button !== 0)
             return;
+        if (handleEl instanceof HTMLInputElement && handleEl.value.length > 0) {
+            return;
+        }
         const startElRect = targetEl.getBoundingClientRect();
         startElx = startElRect.x;
         startEly = startElRect.y;
@@ -26,7 +30,8 @@ export function add_drag_handle(handleEl, targetEl, callback) {
         handleEl.classList.add('am-pin--dragging');
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
-        e.preventDefault();
+        if (!(handleEl instanceof HTMLInputElement))
+            e.preventDefault();
         e.stopPropagation();
     });
     const onMouseMove = (e) => {
@@ -57,7 +62,8 @@ export function add_drag_handle(handleEl, targetEl, callback) {
         didDrag = false;
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
-        e.preventDefault();
+        if (!(handleEl instanceof HTMLInputElement))
+            e.preventDefault();
         e.stopPropagation();
     };
 }

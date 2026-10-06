@@ -570,14 +570,15 @@ div.editable-textarea-textarea {
 }
 
 /* -------------------------------- 面板置顶按钮 ------------------------- */
-#main > .am-panel .am-pin, #main > .am-panel .am-pin svg, #main > .am-panel .windows-pin, #main > .am-panel .windows-pin svg {
+input.am-app-drag:-moz-placeholder {
   -webkit-app-region: drag;
 }
-#main > .am-panel .am-search-input:-moz-placeholder {
+.am-app-drag, input.am-app-drag:placeholder-shown {
   -webkit-app-region: drag;
 }
-#main > .am-panel .am-search-input:placeholder-shown {
-  -webkit-app-region: drag;
+
+input.am-app-drag {
+  -webkit-app-region: no-drag;
 }
 
 .am-panel-out {
@@ -1519,10 +1520,6 @@ div.editable-textarea-textarea {
 }
 
 /** 标题栏 */
-#main > .am-panel .am-titlebar {
-  -webkit-app-region: drag;
-}
-
 .am-titlebar {
   display: flex;
   flex-direction: row-reverse;
