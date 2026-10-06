@@ -23,6 +23,7 @@ export class AMTitlebar extends AbsAmPanel {
         el.classList.add('am-titlebar');
         super(el, amPanel.el, amPanel);
         this.amPanel = amPanel;
+        this.fold_btn = null;
         AMPin.factory(this, amPanel);
         this.createFoldBtn();
         this.createHideBtn();
@@ -42,41 +43,42 @@ export class AMTitlebar extends AbsAmPanel {
         this.el.classList.remove('am-hide');
     }
     createFoldBtn() {
-        const fold_html_str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-down-up preview-icon">' +
-            '<path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>' +
-            '折叠';
-        const unfold_html_str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-up-down preview-icon">' +
-            '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>' +
-            '展开';
-        const btn = document.createElement('button');
-        this.el.appendChild(btn);
-        btn.classList.add('am-titlebar-btn', 'am-titlebar-fold');
-        btn.title = '折叠或展开';
-        let current_fold = activeAMPanel ?
-            activeAMPanel.el.classList.contains('am-panel-fold') :
-            false;
-        function toggle_fold(is_fold) {
-            if (!activeAMPanel)
-                return;
-            if (typeof is_fold === 'boolean')
-                current_fold = is_fold;
-            else
-                current_fold = !current_fold;
-            if (current_fold) {
-                activeAMPanel.el.classList.add('am-panel-fold');
-                global_setting.api.safeInnerHTML(btn, unfold_html_str);
-            }
-            else {
-                activeAMPanel.el.classList.remove('am-panel-fold');
-                global_setting.api.safeInnerHTML(btn, fold_html_str);
-            }
-        }
-        toggle_fold(false);
-        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+        this.fold_btn = document.createElement('button');
+        this.el.appendChild(this.fold_btn);
+        this.fold_btn.classList.add('am-titlebar-btn', 'am-titlebar-fold');
+        this.fold_btn.title = '折叠或展开';
+        this.toggle_fold(false);
+        add_drag_handle(this.fold_btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
             if (is_move)
                 return;
-            toggle_fold();
+            this.toggle_fold();
         });
+    }
+    toggle_fold(is_fold) {
+        if (!activeAMPanel)
+            return;
+        if (is_fold === undefined) {
+            const current_fold = activeAMPanel.el.classList.contains('am-panel-fold');
+            is_fold = !current_fold;
+        }
+        if (is_fold) {
+            activeAMPanel.el.classList.add('am-panel-fold');
+            if (this.fold_btn) {
+                const UNFOLD_HTML_STR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-up-down preview-icon">' +
+                    '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>' +
+                    '展开';
+                global_setting.api.safeInnerHTML(this.fold_btn, UNFOLD_HTML_STR);
+            }
+        }
+        else {
+            activeAMPanel.el.classList.remove('am-panel-fold');
+            if (this.fold_btn) {
+                const FOLD_HTML_STR = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevrons-down-up preview-icon">' +
+                    '<path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>' +
+                    '折叠';
+                global_setting.api.safeInnerHTML(this.fold_btn, FOLD_HTML_STR);
+            }
+        }
     }
     createHideBtn() {
         const btn = document.createElement('button');
