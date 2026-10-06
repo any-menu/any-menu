@@ -52,7 +52,9 @@ export class AMTitlebar extends AbsAmPanel {
         this.el.appendChild(btn);
         btn.classList.add('am-titlebar-btn', 'am-titlebar-fold');
         btn.title = '折叠或展开';
-        let current_fold = false;
+        let current_fold = activeAMPanel ?
+            activeAMPanel.el.classList.contains('am-panel-fold') :
+            false;
         function toggle_fold(is_fold) {
             if (!activeAMPanel)
                 return;
@@ -70,7 +72,9 @@ export class AMTitlebar extends AbsAmPanel {
             }
         }
         toggle_fold(false);
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             toggle_fold();
         });
     }
@@ -80,7 +84,9 @@ export class AMTitlebar extends AbsAmPanel {
         btn.classList.add('am-titlebar-btn', 'am-titlebar-minimize');
         btn.title = '隐藏';
         btn.innerText = '隐藏';
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.panel_hide([], true);
         });
     }
@@ -96,7 +102,9 @@ export class AMTitlebar extends AbsAmPanel {
         btn.appendChild(el_panel_list);
         el_panel_list.classList.add('am-hide');
         let is_show = false;
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             if (!is_show) {
                 is_show = true;
                 btn.classList.add('active');
@@ -119,7 +127,9 @@ export class AMTitlebar extends AbsAmPanel {
         global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-vertical">' +
             '<path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>' +
             '翻转');
-        btn.addEventListener('click', () => {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => {
+            if (is_move)
+                return;
             if (!activeAMPanel)
                 return;
             activeAMPanel.el.classList.toggle('am-reverse');
@@ -135,7 +145,9 @@ export class AMTitlebar extends AbsAmPanel {
         global_setting.api.safeInnerHTML(btn, '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw">' +
             '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>' +
             '更新');
-        btn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+        add_drag_handle(btn, activeAMPanel === null || activeAMPanel === void 0 ? void 0 : activeAMPanel.el, (is_move) => __awaiter(this, void 0, void 0, function* () {
+            if (is_move)
+                return;
             yield global_setting.other.app_hide(undefined, true);
             window.setTimeout(() => {
                 void global_setting.other.app_show();

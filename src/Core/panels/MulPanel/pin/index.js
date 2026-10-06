@@ -22,12 +22,12 @@ export class AMPin extends AbsAmPanel {
                 global_setting.api.pin(true);
             }
             if (global_setting.state.isPin) {
-                (_a = amPanel === null || amPanel === void 0 ? void 0 : amPanel.sub_panels.amTitlebar) === null || _a === void 0 ? void 0 : _a.panel_show();
-                (_b = amPanel === null || amPanel === void 0 ? void 0 : amPanel.sub_panels.amPin) === null || _b === void 0 ? void 0 : _b.hide();
+                (_a = amPanel.sub_panels.amTitlebar) === null || _a === void 0 ? void 0 : _a.panel_show();
+                (_b = amPanel.sub_panels.amPin) === null || _b === void 0 ? void 0 : _b.hide();
             }
             else {
-                (_c = amPanel === null || amPanel === void 0 ? void 0 : amPanel.sub_panels.amTitlebar) === null || _c === void 0 ? void 0 : _c.panel_hide();
-                (_d = amPanel === null || amPanel === void 0 ? void 0 : amPanel.sub_panels.amPin) === null || _d === void 0 ? void 0 : _d.show();
+                (_c = amPanel.sub_panels.amTitlebar) === null || _c === void 0 ? void 0 : _c.panel_hide();
+                (_d = amPanel.sub_panels.amPin) === null || _d === void 0 ? void 0 : _d.show();
             }
         });
     }

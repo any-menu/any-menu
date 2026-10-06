@@ -2,6 +2,8 @@ import { global_setting } from "../../shared/setting";
 export function add_drag_handle(handleEl, targetEl, callback) {
     let isDragging = false;
     let didDrag = false;
+    let rawTargetEl = targetEl;
+    targetEl = targetEl !== null && targetEl !== void 0 ? targetEl : document.body;
     let startElx = 0;
     let startEly = 0;
     let startElLeft = 0;
@@ -32,6 +34,8 @@ export function add_drag_handle(handleEl, targetEl, callback) {
             return;
         didDrag = true;
         if (global_setting.platform === 'app')
+            return;
+        if (!rawTargetEl)
             return;
         let endMouseX = Math.max(0, Math.min(e.clientX, window.innerWidth));
         let endMouseY = Math.max(0, Math.min(e.clientY, window.innerHeight));
